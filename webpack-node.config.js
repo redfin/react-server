@@ -46,7 +46,10 @@ module.exports = {
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" },
 
             // webpack wants real bad for this to be a string, for some reason... the resolve(...) works
-            { test: /\/routes\/routes\.js$/, loader: require.resolve('./buildutils/RouteHydrationLoader') }
+            { test: /\/routes\/routes\.js$/, loader: require.resolve('./buildutils/RouteHydrationLoader') },
+
+            // for server-side, we don't need style files
+            { test: /\.less$/, loader: "null-loader"}
 
             //{ test: /\.png/, loader: "url-loader?limit=100000&mimetype=image/png" },
             //{ test: /\.gif/, loader: "url-loader?limit=100000&mimetype=image/gif" },
