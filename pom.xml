@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<project>
+	<parent>
+		<artifactId>redfin.allPOM</artifactId>
+		<groupId>com.redfin</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.redfin</groupId>
+	<artifactId>r3s</artifactId>
+	<name>Redfin React Rendering Server (r3s)</name>
+	<version>1.0-SNAPSHOT</version>
+	<properties>
+		<webpack.bin>./node_modules/webpack/bin/webpack.js</webpack.bin>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+						<buildcommands><buildcommand>org.eclipse.wst.common.project.facet.core.builder</buildcommand></buildcommands>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.4</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.7.1</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<id>buildr3s</id>
+						<configuration>
+							<tasks>
+								<echo>Installing project npm dependencies...</echo>
+								<exec
+									dir="${project.basedir}"
+									executable="npm"
+									failonerror="true">
+										<arg line="--registry http://builder.redfintest.com:7732/ install" />
+								</exec>
+
+								<!--
+									TODO: if the extract-text-plugin barfs its little error, it could mean
+									that the deployable is hosed. We really need to fix that...
+								-->
+								<echo>Building for the browser...</echo>
+								<exec
+									dir="${project.basedir}"
+									executable="${webpack.bin}"
+									failonerror="true">
+										<arg line="--config webpack.config.js" />
+								</exec>
+
+								<echo>Building for node...</echo>
+								<exec
+									dir="${project.basedir}"
+									executable="${webpack.bin}"
+									failonerror="true">
+										<arg line="--config webpack-node.config.js" />
+								</exec>
+
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<resources>
+
+		</resources>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+
+	</profiles>
+
+	<reporting>
+		<plugins>
+			
+		</plugins>
+	</reporting>
+	
+</project>
