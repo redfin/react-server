@@ -1,9 +1,6 @@
 #!/bin/bash
 trap 'killall' INT
 
-WEBPACK="./node_modules/webpack/bin/webpack.js"
-
-EXTRAS="$1"
 
 killall() {
     trap '' INT TERM     # ignore INT and TERM while shutting down
@@ -13,13 +10,10 @@ killall() {
     echo DONE
 }
 
-mvn clean
+# build code for client-side and server-side
+mvn clean package
 
-# build code for client-side, and then watch for changes
-$WEBPACK --config webpack.config.js $EXTRAS
-
-# build code for server-side, and start node
-$WEBPACK --config webpack-node.config.js
+export R3S_CONFIGS="$(pwd)/target/config/dev"
+export DEBUG="rf:*"
 
 node ./target/node/compiled-app.js
-

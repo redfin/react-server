@@ -22,6 +22,7 @@
     "routr": "0.0.5",
     "superagent": "0.20.0",
     "webpack": "1.4.13",
+    "extract-text-webpack-plugin": "^0.3.5",
     "rimraf": "2.2.8"
   },
   "devDependencies": {

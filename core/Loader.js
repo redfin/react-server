@@ -1,6 +1,7 @@
 
 var Q = require('q'),
-	debug = require('debug')('Loader');
+	debug = require('debug')('rf:Loader'),
+	config = require("triton/core/config");
 
 
 // can't do "export class Loader"
@@ -106,7 +107,7 @@ module.exports = class Loader {
 			promise = dfd.promise;
 
 		// TODO: make this request cancelable
-		this.context.superagent.get(actualUrl)
+		this.context.superagent.get(this._apiServerPrefix() + actualUrl)
 			.end( res => {
 
 				debug("Response Came Back!");
@@ -219,6 +220,21 @@ module.exports = class Loader {
 		} else {
 			debug("WTF?");
 		}
+	}
+
+	_apiServerPrefix () {
+		var prefix;
+
+		if (SERVER_SIDE) {
+			// internal URL. Is likely different than the public URL, and indeed
+			// shouldn't be displayed publicly, probably?
+			prefix = config.internal.apiServerPrefix;
+		} else {
+			// public URL (e.g. http://www.redfin.com)
+			prefix = config.apiServerPrefix;
+		}
+		debug("_apiServerPrefix: " + prefix);
+		return prefix;
 	}
 
 };

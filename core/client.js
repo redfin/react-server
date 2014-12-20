@@ -36,6 +36,20 @@ module.exports = {
 		
 		var initialRenderDfd = Q.defer();
 
+		var dehydratedConfig = window.RF && window.RF.Config;
+		if (!dehydratedConfig) {
+			throw new Error("RF.Config not specified!");
+		}
+
+		// rehydrate the 'env' object
+		var config = require("./config");
+		config.rehydrate(dehydratedConfig);
+
+		// update the URL from which webpack jsonp-loads require.ensure scripts
+		// (mostly for lazy-loading routes for client-side routing)
+		// TODO: factor this out somewhere
+		__webpack_public_path__ = config.imageServerUrl + '/r3sjs/';
+
 		var dehydratedState = window.RF && window.RF.InitialContext;
 
 		var context = new RequestContext.Builder().setRoutes(routes).create();

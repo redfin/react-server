@@ -26,7 +26,6 @@ module.exports = {
     entry: entry,
     output: {
         path: "./target/browser",
-        publicPath: "/r3sjs/",
         filename: "[name]" + bundleNameUtil.JS_BUNDLE_SUFFIX
     },
     resolve: {

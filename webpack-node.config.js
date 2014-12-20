@@ -16,7 +16,6 @@ module.exports = {
     entry: null,  // to be filled in by the app -sra.
     output: {
         path: "./target/node",
-        publicPath: "/r3sjs/",
         filename: "compiled-app.js",
         libraryTarget: 'commonjs'
     },

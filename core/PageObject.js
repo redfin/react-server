@@ -1,6 +1,4 @@
 
-var bundleNameUtil = require('./util/bundleNameUtil');
-
 class PageObject {
 
 	constructor (context, route) {
@@ -19,12 +17,13 @@ class PageObject {
 		return "";
 	}
 
-	getJsBundle () {
-		return bundleNameUtil.getJsBundleFromRouteName(this._route.name);
+	getHeadScriptFiles () {
+		return [];
 	}
 
-	getStylesheet () {
-		return bundleNameUtil.getCssRollupNameFromRouteName(this._route.name);
+	// singular, for now
+	getHeadStylesheet () {
+		return "";
 	}
 
 	getCanonicalUrl () {

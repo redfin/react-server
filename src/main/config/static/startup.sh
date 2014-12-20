@@ -18,7 +18,9 @@ export NODE_ENV="production"
 # Use this PID file
 export R3S_PID="/redfin/r3s/.pid"
 
+export R3S_CONFIGS="/redfin/r3s/conf"
 
+export DEBUG="rf:*"
 
 LOGDIR=/redfin/r3s/logs
 echo "Starting R3S..."

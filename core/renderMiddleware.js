@@ -4,7 +4,8 @@ var debug = require('debug')('rf:renderMiddleware'),
 	AppRoot = React.createFactory(require('./components/AppRoot')),
 	RequestContext = require('./context/RequestContext'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
-	Q = require('q');
+	Q = require('q'),
+	config = require('./config');
 
 
 // TODO FIXME ?? 
@@ -164,33 +165,25 @@ function renderMetaTags (pageObject) {
 
 function renderScripts(pageObject) {
 	// default script
-	var scripts = ["common.js"];
-
-	var pageBundle = pageObject.getJsBundle();
-	if (pageBundle) {
-		scripts.push(pageBundle);
+	var scripts = pageObject.getHeadScriptFiles();
+	if (scripts && !Array.isArray(scripts)) {
+		scripts = [scripts];
 	}
 
 	return scripts.map( (scriptPath) => {
 		// make sure there's a leading '/'
-		if (scriptPath && scriptPath.charAt(0) !== '/') {
-			scriptPath = '/' + scriptPath;
-		}
-		return '<script src="/r3sjs' + scriptPath +'"></script>'
+		return '<script src="' + scriptPath +'"></script>'
 	}).join("\n");
 
 
 }
 
 function renderStylesheets (pageObject) {
-	var stylesheet = pageObject.getStylesheet();
+	var stylesheet = pageObject.getHeadStylesheet();
 	if (!stylesheet) {
 		return "";
 	}
-	if (stylesheet && stylesheet.charAt(0) !== '/') {
-		stylesheet = '/' + stylesheet;
-	}
-	return '<link rel="stylesheet" type="text/css" href="/r3sjs' + stylesheet + '" id="'+ ClientCssHelper.PAGE_CSS_NODE_ID + '">' 
+	return '<link rel="stylesheet" type="text/css" href="' + stylesheet + '" id="'+ ClientCssHelper.PAGE_CSS_NODE_ID + '">' 
 }
 
 
@@ -207,6 +200,7 @@ function writeBodyAndData(req, res, context, start, navigateResult) {
 
 	debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
+	res.expose(getNonInternalConfigs(), "Config");
 
 
 	res.write("</div>"); // <div id="content">
@@ -218,7 +212,6 @@ function writeBodyAndData(req, res, context, start, navigateResult) {
 
 	debug("Content Written: " + (new Date().getTime() - start.getTime()) + "ms");
 }
-
 
 function setupLateArrivals(req, res, context, start) {
 	var loader = context.loader;
@@ -237,4 +230,14 @@ function setupLateArrivals(req, res, context, start) {
 		res.end("</body></html>");
 		debug("All Done: " + (new Date().getTime() - start.getTime()) + "ms");
 	});
+}
+
+function getNonInternalConfigs() {
+	var nonInternal = {};
+	Object.keys(config).forEach( configKey => {
+		if (configKey !== 'internal') {
+			nonInternal[configKey] = config[configKey];
+		}
+	});
+	return nonInternal;
 }

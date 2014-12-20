@@ -25,17 +25,14 @@ var ClientCssHelper = module.exports = {
 			return;
 		}
 
-		var newCss = pageObject.getStylesheet();
+		var newCss = pageObject.getHeadStylesheet();
 
 		if (!loadedCss[routeName] && newCss) {
 			var styleTag = document.createElement('link');
 			styleTag.rel = 'stylesheet';
 			styleTag.type = 'text/css';
 
-			if (newCss.charAt(0) !== '/') {
-				newCss = '/' + newCss;
-			}
-			styleTag.href = "/r3sjs" + newCss;
+			styleTag.href = newCss;
 			loadedCss[routeName] = styleTag;
 		}
 
