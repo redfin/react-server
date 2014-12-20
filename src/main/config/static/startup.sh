@@ -26,4 +26,4 @@ LOGDIR=/redfin/r3s/logs
 echo "Starting R3S..."
 echo "Logging to: $LOGDIR/r3s.log"
 
-nohup $NODE_HOME/bin/node /redfin/r3s/compiled-app.js >> $LOGDIR/r3s.log 2>&1 &
+nohup $NODE_HOME/bin/node /redfin/r3s/start.js /redfin/r3s/compiled-app.js >> $LOGDIR/r3s.log 2>&1 &
