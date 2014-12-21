@@ -220,7 +220,7 @@ function setupLateArrivals(req, res, context, start) {
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
 			debug("Late arrival: " + pendingRequest.url + ". Arrived " + (new Date().getTime() - start.getTime()) + "ms after page start.");
-			res.write("<script>window.initialRenderDfd.done(function () { window.context.loader.lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + "); });</script>");
+			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
 		})
 	});
 
