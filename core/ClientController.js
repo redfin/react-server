@@ -12,7 +12,7 @@ window.React = React;
 
 class ClientController extends EventEmitter {
 
-	constructor ({routes, dehydratedState}) {
+	constructor ({routes, dehydratedState, mountNode}) {
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
@@ -22,8 +22,13 @@ class ClientController extends EventEmitter {
 			dehydratedState.InitialContext,
 			routes
 		);
+		this.mountNode = mountNode;
+
+		var irDfd = this._initialRenderDfd = Q.defer();
+		this.once('render', irDfd.resolve.bind(irDfd));
 
 		this._setupNavigateListener();
+		this._setupLateArrivalHandler();
 
 		this._previouslyRendered = false;
 	}
@@ -60,16 +65,14 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (result) {
-		var mountNode = document.getElementById('content');
 
 		debug('React Rendering');
 		React.render(AppRoot({
 			childComponent: result.component,
 			context: this.context,
 			pageStore: result.pageObject.getPageStore()
-		}), mountNode, () => {
+		}), this.mountNode, () => {
 			debug('React Rendered');
-			this._previouslyRendered = true;
 			this.emit('render');
 		});
 	}
@@ -78,6 +81,18 @@ class ClientController extends EventEmitter {
 		var location = window.location;
 		var path = location.pathname + location.search;
 		this.context.navigate({path: path});
+	}
+
+	_setupLateArrivalHandler () {
+		// used by <script> callbacks to register data sent down on the
+		// initial connection after initial render
+		window.__lateArrival = this.lateArrival.bind(this);
+	}
+
+	lateArrival (url, data) {
+		this._initialRenderDfd.promise.done( () => {
+			this.context.loader.lateArrival(url, data);
+		});
 	}
 
 }

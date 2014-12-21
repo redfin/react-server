@@ -45,14 +45,7 @@ module.exports = function(routesFilename) {
 			"window.rfBootstrap = function () {\n" +
 			// make sure component is part of the entrypoint
 			"\tvar component = require('" + routes[routeName].resolveComponent + "');\n" +
-			"\tvar renderDfd = client.initialize(component, routes);\n" +
-			"\twindow.__lateArrival = function __lateArrival (url, data) {\n" +
-			"\t\trenderDfd.done(function () {\n" +
-			"\t\t\tvar context = window.controller.context;\n" +
-			"\t\t\tcontext.loader.lateArrival(url, data);\n" +
-			"\t\t});\n" +
-			"\t}\n" +
-			"\treturn renderDfd;\n" +
+			"\treturn client.initialize(component, routes);\n" +
 			"}";
 
 		var outFileName = "./target-entrypoints/" + routeName + "Entry__generated.js";
