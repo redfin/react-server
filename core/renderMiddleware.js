@@ -206,7 +206,7 @@ function writeBodyAndData(req, res, context, start, navigateResult) {
 	res.write("</div>"); // <div id="content">
 
 	var pageFooter = ""
-		+ "<script> " + res.locals.state + "; window.initialRenderDfd = window.rfBootstrap();</script>";
+		+ "<script> " + res.locals.state + "; window.rfBootstrap();</script>";
 
 	res.write(pageFooter);
 
