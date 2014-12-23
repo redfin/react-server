@@ -4,8 +4,7 @@
  * which we use in our CommentFilteredJSONView responses
  */
 
-var superagent = require('superagent'),
-	debug = require('debug')('rf:SuperAgentExtender');
+var debug = require('debug')('rf:SuperAgentExtender');
 
 function parseSquigglyJson(value) {
 	if (/^{}&&/.test(value)) {
@@ -14,36 +13,31 @@ function parseSquigglyJson(value) {
 	return JSON.parse(value);
 }
 
-module.exports = {
+module.exports = function (superagent) {
+	debug('Configuring SuperAgent to allow parsing of response bodies using squiggly json')
 
-	useSquigglyJson: function useSquigglyJson() {
+	if (SERVER_SIDE) {
 
-		debug('Configuring SuperAgent to allow parsing of response bodies using squiggly json')
+		superagent.parse['application/json'] = function(res, fn){
+			res.text = '';
+			res.setEncoding('utf8');
+			res.on('data', function(chunk){ res.text += chunk; });
+			res.on('end', function(){
+				
+				try {
+					fn(null, parseSquigglyJson(res.text));
+				} catch (err) {
+					fn(err);
+				}
+			});
+		};
 
-		if (SERVER_SIDE) {
+	} else {
 
-			superagent.parse['application/json'] = function(res, fn){
-				res.text = '';
-				res.setEncoding('utf8');
-				res.on('data', function(chunk){ res.text += chunk; });
-				res.on('end', function(){
-					
-					try {
-						fn(null, parseSquigglyJson(res.text));
-					} catch (err) {
-						fn(err);
-					}
-				});
-			};
-
-		} else {
-
-			// CLIENT_SIDE
-			superagent.parse['application/json'] = function (str) {
-				return parseSquigglyJson(str);
-			}
-
+		// CLIENT_SIDE
+		superagent.parse['application/json'] = function (str) {
+			return parseSquigglyJson(str);
 		}
 
-	}
-};
+	}	
+}

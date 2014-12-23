@@ -1,7 +1,7 @@
 
 var Q = require('q'),
 	debug = require('debug')('rf:Loader'),
-	config = require("triton/core/config");
+	config = require("./config");
 
 
 // can't do "export class Loader"
