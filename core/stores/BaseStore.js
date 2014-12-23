@@ -99,6 +99,8 @@ class BaseStore {
 		var cachedResult = this._loader.checkLoaded(url); 
 		if (cachedResult) {
 			this._handleLoadResult(name, cachedResult.getData());
+			// returning null is OK because we filter out nulls in loadData,
+			// and Q.allSettled with an empty array is resolved immediately
 			return null;
 		} else {
 			return this._loader.load(url).then(result => {
@@ -143,12 +145,12 @@ class BaseStore {
 
 		var dfd = Q.defer();
 		// we don't return the result of Q.allSettled so we can hide the loadResults from the caller.
-		Q.allSettled(loadPromises).then(function(results) {
+		Q.allSettled(loadPromises).then( (results) => {
 			this._isDone = true;
 			// TODO emitChange here?
 			dfd.resolve();
 		});
-		return dfd;
+		return dfd.promise;
 	}
 
 	//IMPLEMENT THIS IN SUBCLASSES IF NEEDED
