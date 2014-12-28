@@ -10,7 +10,7 @@ module.exports = {
     devtool: "source-map",
     entry: "./server",
     output: {
-        path: "./dist",
+        path: "./target",
         filename: "triton-server.js",
         libraryTarget: 'commonjs2'
     },

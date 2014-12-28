@@ -2,8 +2,8 @@
   "name": "triton",
   "version": "0.0.0",
   "description": "Redfin React Render Server",
-  "main": "dist/triton-server.js",
-  "browser": "dist/triton-client.js",
+  "main": "target/triton-server.js",
+  "browser": "target/triton-client.js",
   "author": "Navtej",
   "license": "MIT",
   "scripts": {

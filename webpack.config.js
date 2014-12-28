@@ -3,6 +3,7 @@ var DedupePlugin = require("webpack/lib/optimize/DedupePlugin");
 //var AggressiveMergingPlugin = require("webpack/lib/optimize/AggressiveMergingPlugin");
 var DefinePlugin = require("webpack/lib/DefinePlugin");
 var NewWatchingPlugin = require("webpack/lib/NewWatchingPlugin");
+var UglifyJsPlugin = require("webpack/lib/optimize/UglifyJsPlugin");
 
 
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
     devtool: "source-map",
     entry: "./client.js",
     output: {
-        path: "./dist",
+        path: "./target",
         filename: "triton-client.js",
         libraryTarget: 'commonjs2'
     },
