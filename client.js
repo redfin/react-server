@@ -4,6 +4,6 @@
  */
 var common = require("./common");
 
-common.controller = require("./core/ClientController");
+common.ClientController = require("./core/ClientController");
 
 module.exports = common;
