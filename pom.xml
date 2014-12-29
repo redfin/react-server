@@ -57,7 +57,7 @@
 											dir="${project.basedir}"
 											executable="${webpack.bin}"
 											failonerror="true">
-												<arg line="--config webpack.config.js" />
+												<arg line="--bail --config webpack.config.js" />
 										</exec>
 										<echo>Replacing __webpack_require__ to allow this library to be required...</echo>
 										<replace file="target/triton-client.js" token="__webpack_require__" value="__triton_require__"/>
@@ -69,7 +69,7 @@
 											dir="${project.basedir}"
 											executable="${webpack.bin}"
 											failonerror="true">
-												<arg line="--config webpack-node.config.js" />
+												<arg line="--bail --config webpack-node.config.js" />
 										</exec>
 									</sequential>
 								</parallel>
