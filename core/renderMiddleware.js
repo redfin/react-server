@@ -5,8 +5,7 @@ var debug = require('debug')('rf:renderMiddleware'),
 	RequestContext = require('./context/RequestContext'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
-	config = require('./config'),
-	superagent = require("superagent");
+	config = require('./config');
 
 
 // TODO FIXME ?? 
@@ -34,10 +33,8 @@ class Renderer {
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(routes, {superAgentExtender}) {
-	if (superAgentExtender) {
-		superAgentExtender(superagent);
-	}
+module.exports = function(routes) {
+
 	return function (req, res, next) {
 
 		var start = new Date();
