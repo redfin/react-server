@@ -16,11 +16,11 @@
     "debug": "2.1.0",
     "q": "1.0.1",
     "routr": "0.0.5",
-    "superagent": "^0.21.0",
     "rimraf": "2.2.8"
   },
   "peerDependencies":{
-    "react": "0.12.2"
+    "react": "0.12.2",
+    "superagent": "^0.21.0"    
   },
   "devDependencies": {
     "webpack": "1.4.13",

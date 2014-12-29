@@ -16,7 +16,10 @@ module.exports = {
         filename: "triton-client.js",
         libraryTarget: 'commonjs2'
     },
-    externals: ["react"],
+    externals: [
+        "react", 
+        "superagent"
+    ],
     resolve: {
         extensions: ["", ".js", ".jsx"]
     },
