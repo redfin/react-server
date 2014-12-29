@@ -55,7 +55,7 @@
 									dir="${project.basedir}"
 									executable="${webpack.bin}"
 									failonerror="true">
-										<arg line="--config webpack.config.js" />
+										<arg line="--bail --config webpack.config.js" />
 								</exec>
 							</tasks>
 						</configuration>
