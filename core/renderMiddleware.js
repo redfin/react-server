@@ -235,6 +235,7 @@ function setupLateArrivals(req, res, context, start) {
 
 function getNonInternalConfigs() {
 	var nonInternal = {};
+	var config = config();
 	Object.keys(config).forEach( configKey => {
 		if (configKey !== 'internal') {
 			nonInternal[configKey] = config[configKey];

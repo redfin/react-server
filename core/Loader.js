@@ -228,10 +228,10 @@ module.exports = class Loader {
 		if (SERVER_SIDE) {
 			// internal URL. Is likely different than the public URL, and indeed
 			// shouldn't be displayed publicly, probably?
-			prefix = config.internal.apiServerPrefix;
+			prefix = config().internal.apiServerPrefix;
 		} else {
 			// public URL (e.g. http://www.redfin.com)
-			prefix = config.apiServerPrefix;
+			prefix = config().apiServerPrefix;
 		}
 		debug("_apiServerPrefix: " + prefix);
 		return prefix;

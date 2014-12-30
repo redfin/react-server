@@ -107,7 +107,7 @@ function checkNotEmpty(state, key) {
 
 function buildConfig(dehydratedConfig) {
 	// rehydrate the config object
-	var config = require("./config");
+	var config = require("./config")();
 	config.rehydrate(dehydratedConfig);
 	return config;
 }
