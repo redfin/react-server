@@ -193,6 +193,9 @@ class BaseStore {
 // mixin for components that use an extended BaseStore as their top level store
 // assumes the store is passed in on the props as 'store'
 // TODO - is this too restrictive? maybe we do want multiple change handlers for different stores?
+
+var debugCscm = require('debug')('rf:BaseStore.ComponentStoreChangeMixin');
+
 BaseStore.ComponentStoreChangeMixin = {
 	componentDidMount: function () {
 		this.props.store.addChangeListener(this.__BaseStore_storeChange);
@@ -214,7 +217,11 @@ BaseStore.ComponentStoreChangeMixin = {
 	// funky name so that we don't prevent implementers from using
 	// the function name if they want
 	__BaseStore_storeChange: function () {
-		this.forceUpdate();
+		try {
+			this.forceUpdate();
+		} catch (e) {
+			debugCscm("Error occurred during component update: " + e, e);
+		}
 	}
 }
 
