@@ -142,7 +142,7 @@ function writeHeader(req, res, routeName, pageObject) {
 }
 
 function renderTitle (pageObject) {
-	return "<title>" + (pageObject.getTitle() || "Navtej's Awesome Test Page") + "</title>";
+	return "<title>" + (pageObject.getTitle() || "") + "</title>";
 }
 
 function renderMetaTags (pageObject) {
