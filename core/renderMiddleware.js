@@ -193,8 +193,7 @@ function writeBodyAndData(req, res, context, start, page) {
 	debug("Rendering AppRoot.");
 	var html = React.renderToString(AppRoot({
 		childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
-		context: context,
-		pageStore: page.getPageStore()
+		context: context
 	}));
 
 	res.write(html);

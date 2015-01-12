@@ -13,7 +13,7 @@ class Navigator extends EventEmitter {
 		this._currentRoute = null;
 	}
 
-	navigate (request) {
+	navigate (request, type) {
 
 		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl()}});
 		if (!route) {

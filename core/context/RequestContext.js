@@ -67,8 +67,8 @@ class RequestContext {
 		this.navigator.on('navigateDone', callback);
 	}
 
-	navigate (navOpts) {
-		this.navigator.navigate(navOpts);
+	navigate (request, type) {
+		this.navigator.navigate(request, type);
 	}
 
 	getBouncer () {

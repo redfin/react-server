@@ -9,6 +9,7 @@
 'use strict';
 
 var History = require('./History'),
+    ClientRequest = require("../ClientRequest"),
     EVT_PAGELOAD = 'pageload',
     EVT_POPSTATE = 'popstate',
     RouterMixin;
@@ -50,7 +51,7 @@ RouterMixin = {
                 // REDFIN-TODO: this appears to pass some state. Should we figure out how to replicate that?
                 // context.executeAction(navigateAction, {type: EVT_POPSTATE, path: path, params: e.state});
 
-                context.navigate({ type: EVT_POPSTATE, path: path });
+                context.navigate(new ClientRequest(path), EVT_POPSTATE);
                 
             }
         };

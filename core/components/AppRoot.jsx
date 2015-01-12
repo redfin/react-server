@@ -17,12 +17,6 @@ var AppRoot = React.createClass({
 
 	// called when re-render is called from the top-level
 	componentWillReceiveProps: function (nextProps) {
-		if (this.props.pageStore && this.props.pageStore !== nextProps.pageStore) {
-			// if the store has updated, disconnect events in the old store
-			if (typeof this.props.pageStore.removeAllActionListeners === 'function') {
-				this.props.pageStore.removeAllActionListeners();
-			}
-		}
 		var newState = this.navigator.getState();
 		this.setState(newState);
 	},

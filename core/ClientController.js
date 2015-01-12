@@ -72,8 +72,7 @@ class ClientController extends EventEmitter {
 		debug('React Rendering');
 		React.render(AppRoot({
 			childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
-			context: this.context,
-			pageStore: page.getPageStore()
+			context: this.context
 		}), this.mountNode, () => {
 			debug('React Rendered');
 			this.emit('render');
