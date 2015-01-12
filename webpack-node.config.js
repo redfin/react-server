@@ -31,6 +31,7 @@ module.exports = {
         "routr",
         "superagent",
         "webpack",
+        "winston",
         "rimraf",
         "fs"
     ],
