@@ -41,8 +41,17 @@ class ClientController extends EventEmitter {
 			debug('Executing navigate action');
 			
 			if (err) {
-				debug("There was an error:", err);
-				console.error(err);
+				// redirects are sent as errors, so let's handle it if that's the case. 
+				if (err.status && (err.status === 301 || err.status === 302)) {
+					if (!err.redirectUrl) {
+						console.error("A redirect status was sent without a corresponding redirect redirectUrl.", err);
+					} else {
+						setTimeout(() => this.context.navigate(new ClientRequest(err.redirectUrl)), 0);
+					}
+				} else {
+					debug("There was an error:", err);
+					console.error(err);
+				}
 				return;
 			}
 
