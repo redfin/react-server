@@ -142,15 +142,20 @@ function writeHeader(req, res, routeName, pageObject) {
 }
 
 function renderTitle (pageObject) {
+	if (!pageObject.getTitle) return "";
+
 	return "<title>" + (pageObject.getTitle() || "") + "</title>";
 }
 
 function renderMetaTags (pageObject) {
 	var metaTags = [ {charset: 'utf-8'} ];
 
-	var pageMetaTags = pageObject.getMetaTags();
-	if (pageMetaTags.length > 0) {
-		metaTags = metaTags.concat(pageMetaTags);
+
+	if (pageObject.getMetaTags) {
+		var pageMetaTags = pageObject.getMetaTags();
+		if (pageMetaTags.length > 0) {
+			metaTags = metaTags.concat(pageMetaTags);
+		}
 	}
 
 	return metaTags.map( tagData => {
@@ -165,6 +170,8 @@ function renderMetaTags (pageObject) {
 }
 
 function renderScripts(pageObject) {
+	if (!pageObject.getHeadScriptFiles) return "";
+
 	// default script
 	var scripts = pageObject.getHeadScriptFiles();
 	if (scripts && !Array.isArray(scripts)) {
@@ -180,6 +187,8 @@ function renderScripts(pageObject) {
 }
 
 function renderStylesheets (pageObject) {
+	if (!pageObject.getHeadStylesheet) return "";
+
 	var stylesheet = pageObject.getHeadStylesheet();
 	if (!stylesheet) {
 		return "";

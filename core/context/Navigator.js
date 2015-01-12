@@ -39,8 +39,8 @@ class Navigator extends EventEmitter {
 			// respond. -sra.
 			// note that handleRoute can return a handleRouteResult or a Promise of handleRouteResult. using
 			// Q() to normalize that and make it always be a Promise of handleRouteResult. -sra.
-			// TODO: stop sending context and route -sra.
-			Q(page.handleRoute(request, this.context.loader)).then(handleRouteResult => {
+			var handleRouteValueOrPromise = page.handleRoute ? page.handleRoute(request, this.context.loader) : {code: 200};
+			Q(handleRouteValueOrPromise).then(handleRouteResult => {
 				// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 				// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 				if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
