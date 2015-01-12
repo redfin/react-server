@@ -26,6 +26,7 @@ module.exports = {
         "debug",
         "q",
         "react",
+        "react/addons",
         "react-tools",
         "routr",
         "superagent",

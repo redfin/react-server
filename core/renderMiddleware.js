@@ -74,7 +74,6 @@ module.exports = function(routes) {
 		});
 
 		context.navigate(new ExpressServerRequest(req));
-//		context.navigate({path: req.path});
 
 	}
 }
@@ -92,7 +91,6 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 	writeHeader(req, res, routeName, page);
 
 	var doRenderCallback = function () {
-
 		// user data should never be the long pole here.
 		userDataDfd.done(function () {
 			writeBodyAndData(req, res, context, start, page);

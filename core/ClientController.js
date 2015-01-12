@@ -69,7 +69,6 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
-
 		debug('React Rendering');
 		React.render(AppRoot({
 			childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
