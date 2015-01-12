@@ -1,5 +1,5 @@
 
-var React = require('react'),
+var React = require('react/addons'),
 	RouterMixin = require('./RouterMixin'),
 	debug = require('debug')('AppRoot');
 
@@ -12,7 +12,6 @@ var AppRoot = React.createClass({
 	getInitialState: function () {
 		this.navigator = this.props.context.navigator;
 		var state = this.navigator.getState();
-		state.componentFactory = React.createFactory(this.props.childComponent);
 		return state;
 	},
 
@@ -25,15 +24,16 @@ var AppRoot = React.createClass({
 			}
 		}
 		var newState = this.navigator.getState();
-		newState.componentFactory = React.createFactory(nextProps.childComponent);
 		this.setState(newState);
 	},
 
 	render: function () {
-		if (this.state.componentFactory) {
+		// TODO: take out context and replace with continuation-local-storage -sra.
+		var child = React.addons.cloneWithProps(this.props.childComponent, { context: this.props.context });
+		if (this.props.childComponent) {
 			return (
 				<div>
-					{ this.state.componentFactory({ context: this.props.context, store: this.props.pageStore }) }
+					{ child }
 					{ this.state.loading ? <div className="loading">LOADING</div> : "" }
 				</div>
 			);

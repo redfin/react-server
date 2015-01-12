@@ -14,10 +14,10 @@ var debug = require('debug')('rf:BaseStore'),
 
 class BaseStore {
 
-	constructor (context) {
+	constructor (loader) {
 		this._emitter = new EventEmitter();
 
-		this._loader = context.loader;
+		this._loader = loader;
 		this._loadResults = {};
 		this._loadStatuses = {};
 		this._urls = {};

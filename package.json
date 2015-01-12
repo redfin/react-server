@@ -13,14 +13,15 @@
   "dependencies": {
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",
+    "cookie": "^0.1.2",
     "debug": "2.1.0",
     "q": "1.0.1",
-    "routr": "0.0.5",
-    "rimraf": "2.2.8"
+    "rimraf": "2.2.8",
+    "routr": "0.0.5"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "react": "0.12.2",
-    "superagent": "^0.21.0"    
+    "superagent": "^0.21.0"
   },
   "devDependencies": {
     "webpack": "1.4.13",

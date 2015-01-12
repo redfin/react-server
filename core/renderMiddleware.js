@@ -5,7 +5,8 @@ var debug = require('debug')('rf:renderMiddleware'),
 	RequestContext = require('./context/RequestContext'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
-	config = require('./config');
+	config = require('./config'),
+	ExpressServerRequest = require("./ExpressServerRequest");
 
 
 // TODO FIXME ?? 
@@ -51,7 +52,7 @@ module.exports = function(routes) {
 				});
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
-		context.onNavigate( (err, result) => {
+		context.onNavigate( (err, page) => {
 
 			if (err) {
 				debug("There was an error:", err);
@@ -68,16 +69,17 @@ module.exports = function(routes) {
 			debug('Executing navigate action');
 			
 			var userDataPromise = context.loadUserData();
-			beginRender(req, res, start, context, userDataPromise, result);
+			beginRender(req, res, start, context, userDataPromise, page);
 
 		});
 
-		context.navigate({path: req.path});
+		context.navigate(new ExpressServerRequest(req));
+//		context.navigate({path: req.path});
 
 	}
 }
 
-function beginRender(req, res, start, context, userDataDfd, navigateResult) {
+function beginRender(req, res, start, context, userDataDfd, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -87,13 +89,13 @@ function beginRender(req, res, start, context, userDataDfd, navigateResult) {
 	// TODO: should this include the common.js file? seems like it
 	// would give it a chance to download and parse while we're loading
 	// data
-	writeHeader(req, res, routeName, navigateResult.pageObject);
+	writeHeader(req, res, routeName, page);
 
 	var doRenderCallback = function () {
 
 		// user data should never be the long pole here.
 		userDataDfd.done(function () {
-			writeBodyAndData(req, res, context, start, navigateResult);
+			writeBodyAndData(req, res, context, start, page);
 			setupLateArrivals(req, res, context, start);
 		});
 	}
@@ -188,13 +190,13 @@ function renderStylesheets (pageObject) {
 }
 
 
-function writeBodyAndData(req, res, context, start, navigateResult) {
+function writeBodyAndData(req, res, context, start, page) {
 
 	debug("Rendering AppRoot.");
 	var html = React.renderToString(AppRoot({
-		childComponent: navigateResult.component,
+		childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
 		context: context,
-		pageStore: navigateResult.pageObject.getPageStore()
+		pageStore: page.getPageStore()
 	}));
 
 	res.write(html);

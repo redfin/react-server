@@ -1,15 +1,7 @@
 
 class PageObject {
 
-	constructor (context, route) {
-		if (!context) {
-			throw new Error("'context' parameter is required for PageObject");
-		}
-		if (!route) {
-			throw new Error("'route' parameter is required for PageObject");
-		}
-		this._context = context;
-		this._route = route;
+	constructor () {
 	}
 
 	getTitle () {

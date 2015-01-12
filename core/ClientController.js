@@ -5,7 +5,8 @@ var React = require('react'),
 	AppRoot = React.createFactory(require('./components/AppRoot')),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
-	EventEmitter = require("events").EventEmitter;
+	EventEmitter = require("events").EventEmitter,
+	ClientRequest = require("./ClientRequest");
 
 // for dev tools
 window.React = React;
@@ -36,7 +37,7 @@ class ClientController extends EventEmitter {
 	_setupNavigateListener () {
 		var context = this.context; 
 
-		context.onNavigate( (err, result) => {
+		context.onNavigate( (err, page) => {
 			debug('Executing navigate action');
 			
 			if (err) {
@@ -50,27 +51,30 @@ class ClientController extends EventEmitter {
 			if (!this._previouslyRendered) {
 				cssHelper.registerPageLoad(routeName);
 			} else {
-				var newTitle = result.pageObject.getTitle();
-				if (newTitle && newTitle !== document.title) {
-					document.title = newTitle;
-				}
+				// getTitle can return a String or a Promise of String. we wrap with Q here
+				// to normalize the result to promise of String.
+				Q(page.getTitle()).then(newTitle => {
+					if (newTitle && newTitle !== document.title) {
+						document.title = newTitle;
+					}
+				}).catch(err => console.error("Error while setting the document title", err));
 			}
 
-			cssHelper.ensureCss(routeName, result.pageObject);
+			cssHelper.ensureCss(routeName, page);
 
-			this._render(result);
+			this._render(page);
 
 		});
 
 	}
 
-	_render (result) {
+	_render (page) {
 
 		debug('React Rendering');
 		React.render(AppRoot({
-			childComponent: result.component,
+			childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
 			context: this.context,
-			pageStore: result.pageObject.getPageStore()
+			pageStore: page.getPageStore()
 		}), this.mountNode, () => {
 			debug('React Rendered');
 			this.emit('render');
@@ -80,7 +84,7 @@ class ClientController extends EventEmitter {
 	init () {
 		var location = window.location;
 		var path = location.pathname + location.search;
-		this.context.navigate({path: path});
+		this.context.navigate(new ClientRequest(path));
 	}
 
 	_setupLateArrivalHandler () {

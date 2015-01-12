@@ -34,8 +34,8 @@ module.exports = function(routesFilename) {
 
 	for (var i=0; i < routeNames.length; i++) {		
 	 	var routeName = routeNames[i];	 	
-	 	if (!routes[routeName].resolveComponent) {
-	 		console.error("route " + routeName + " has no resolveComponent property");
+	 	if (!routes[routeName].page) {
+	 		console.error("route " + routeName + " has no page property");
 	 	}
 
 	 	var entryPointCode = 
@@ -43,7 +43,7 @@ module.exports = function(routesFilename) {
 	 		"var epHelper = require('../entrypointHelper');\n" +
 			"window.rfBootstrap = function () {\n" +
 			// make sure component is part of the entrypoint
-			"\tvar component = require('" + routes[routeName].resolveComponent + "');\n" +
+			"\tvar component = require('" + routes[routeName].page + "');\n" +
 			"\tepHelper.initialize(component);\n" +
 			"}";
 

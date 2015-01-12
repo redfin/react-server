@@ -13,9 +13,9 @@ class Navigator extends EventEmitter {
 		this._currentRoute = null;
 	}
 
-	navigate (navOpts) {
+	navigate (request) {
 
-		var route = this.router.getRoute(navOpts.path, {navigate: navOpts});
+		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl()}});
 		if (!route) {
 			setTimeout( () => {
 				this.emit('navigateDone', { status: 404, message: "No Route!" });
@@ -28,21 +28,35 @@ class Navigator extends EventEmitter {
 
 		/* Breathe... */
 
-		route.config.resolveComponent().done( component => {
-			// when the handler function is done, we'll start it executing, optimistically
-			var actionFunc = Q.nfbind(component.handleRoute);
-			actionFunc(this.context, route).done( (pageObject) => {
+		route.config.page().done( pageConstructor => {
+			if (request.setRoute) {
+				request.setRoute(route);
+			}
+			// instantiate the page we need to fulfill this request.
+			var page = new pageConstructor(request, this.context.loader);
+
+			// call page.handleRoute(), and use the resulting code to decide how to 
+			// respond. -sra.
+			// note that handleRoute can return a handleRouteResult or a Promise of handleRouteResult. using
+			// Q() to normalize that and make it always be a Promise of handleRouteResult. -sra.
+			// TODO: stop sending context and route -sra.
+			Q(page.handleRoute(this.context, route)).then(handleRouteResult => {
+				// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
+				// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
+				if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
+					this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location});
+				}
+				if (handleRouteResult.page) {
+					// TODO: deal with returning a new Page object in handleRouteResult -sra.
+				}
+
 				this.finishRoute(route);
-				this.emit('navigateDone', null, {
-					component: component,
-					pageObject: pageObject
-				});
-			}, (err) => {
-				// if the handler function had an error (i.e., an indication of a redirect)
-				this.emit('navigateDone', err);
+				this.emit('navigateDone', null, page);
+			}).catch(err => {
+				console.error("Error while handling route.", err);
 			});
-		}, handlerFuncErr => {
-			console.error("Error resolving handler function", handlerFuncErr);
+		}, err => {
+			console.error("Error resolving page", err);
 		});
 
 	}
