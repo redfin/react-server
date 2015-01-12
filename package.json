@@ -13,7 +13,7 @@
   "dependencies": {
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",
-    "cookie": "^0.1.2",
+    "cookie": "0.1.2",
     "debug": "2.1.0",
     "q": "1.0.1",
     "rimraf": "2.2.8",
