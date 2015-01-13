@@ -40,7 +40,7 @@ module.exports = {
         extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx" ,".bars"]
     },
     resolveLoader: {
-        root: __dirname
+        root: __dirname // For the logging-name-loader, which is relative.
     },
     module: {
         loaders: [

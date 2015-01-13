@@ -26,7 +26,7 @@ module.exports = {
         extensions: ["", ".js", ".jsx"]
     },
     resolveLoader: {
-        root: __dirname
+        root: __dirname // For the logging-name-loader, which is relative.
     },
     module: {
         loaders: [            
