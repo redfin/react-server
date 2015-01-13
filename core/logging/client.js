@@ -27,7 +27,7 @@ var makeLogger = function(name, group){
 			console.log.apply(
 				console,
 				[
-					'%c '+level+':',
+					'%c'+level+':',
 					'color: '+config.colors[level],
 					'['+name+']'
 				].concat(args)
