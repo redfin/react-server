@@ -19,7 +19,8 @@ module.exports = {
     externals: [
         "react", 
         "react/addons",
-        "superagent"
+        "superagent",
+        "winston"
     ],
     resolve: {
         extensions: ["", ".js", ".jsx"]
