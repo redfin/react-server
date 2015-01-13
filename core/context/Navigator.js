@@ -32,31 +32,40 @@ class Navigator extends EventEmitter {
 			if (request.setRoute) {
 				request.setRoute(route);
 			}
-			// instantiate the page we need to fulfill this request.
-			var page = new pageConstructor();
-
-			// call page.handleRoute(), and use the resulting code to decide how to 
-			// respond. -sra.
-			// note that handleRoute can return a handleRouteResult or a Promise of handleRouteResult. using
-			// Q() to normalize that and make it always be a Promise of handleRouteResult. -sra.
-			var handleRouteValueOrPromise = page.handleRoute ? page.handleRoute(request, this.context.loader) : {code: 200};
-			Q(handleRouteValueOrPromise).then(handleRouteResult => {
-				// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
-				// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
-				if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
-					this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location});
-				}
-				if (handleRouteResult.page) {
-					// TODO: deal with returning a new Page object in handleRouteResult -sra.
-				}
-
-				this.finishRoute(route);
-				this.emit('navigateDone', null, page);
-			}).catch(err => {
-				console.error("Error while handling route.", err);
-			});
+			this.handlePage(pageConstructor, request, this.context.loader);
 		}, err => {
 			console.error("Error resolving page", err);
+		});
+
+	}
+
+	handlePage(pageConstructor, request, loader) {
+		// instantiate the page we need to fulfill this request.
+		var page = new pageConstructor();
+
+		// call page.handleRoute(), and use the resulting code to decide how to 
+		// respond. -sra.
+		// note that handleRoute can return a handleRouteResult or a Promise of handleRouteResult. using
+		// Q() to normalize that and make it always be a Promise of handleRouteResult. -sra.
+		var handleRouteValueOrPromise = page.handleRoute ? page.handleRoute(request, loader) : {code: 200};
+		Q(handleRouteValueOrPromise).then(handleRouteResult => {
+			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
+			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
+			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
+				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location});
+			}
+			if (handleRouteResult.page) {
+				// in this case, we should forward to a new page *without* changing the URL. Since we are already
+				// in an async callback, we should schedule a new handlePage with the new page constructor and return
+				// from this call.
+				setTimeout(() => this.handlePage(handleRouteResult.page, request, loader), 0);
+				return;
+			}
+
+			this.finishRoute();
+			this.emit('navigateDone', null, page);
+		}).catch(err => {
+			console.error("Error while handling route.", err);
 		});
 
 	}
@@ -81,7 +90,7 @@ class Navigator extends EventEmitter {
 		this._currentRoute = route;
 	}
 
-	finishRoute (route) {
+	finishRoute () {
 		this._loading = false;
 	}
 
