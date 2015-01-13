@@ -1,16 +1,20 @@
+// These are the primary log levels.
+// Your logger object has a method for each of these.
+var LOG_LEVELS = {
+	emergency : 7,
+	alert     : 6,
+	critical  : 5,
+	error     : 4,
+	warning   : 3,
+	notice    : 2,
+	info      : 1,
+	debug     : 0,
+}
+
 var config = {
 	main: {
 		baseLevel: 'debug',
-		levels: {
-			emergency : 7,
-			alert     : 6,
-			critical  : 5,
-			error     : 4,
-			warning   : 3,
-			notice    : 2,
-			info      : 1,
-			debug     : 0,
-		},
+		levels: LOG_LEVELS,
 		colors: {
 			emergency : 'red',
 			alert     : 'yellow',
@@ -22,6 +26,8 @@ var config = {
 			debug     : 'blue',
 		},
 	},
+
+	// This config is for an internal logger used by the `time` method.
 	stats: {
 		baseLevel: 'fast',
 		levels: {
