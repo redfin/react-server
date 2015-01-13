@@ -111,7 +111,7 @@ module.exports = class Loader {
 		this.context.superagent.get(this._apiServerPrefix() + actualUrl)
 			.end( res => {
 
-				logger.info("Response Came Back!");
+				logger.debug("Response Came Back!");
 
 				// server-side, we cache the response in the dataCache to
 				// present to the frontend
