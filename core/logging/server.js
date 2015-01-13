@@ -10,7 +10,7 @@ var getLogger = function(name){
 	return loggers.get(name, {
 		console: {
 			label     : name,
-			level     : 'info', // TODO: Base on configuration.
+			level     : 'debug',// TODO: Base on configuration.
 			colorize  : true,   // TODO: Only if isatty.
 			timestamp : false,  // TODO: Want this in production.
 			levels    : common.levels,
