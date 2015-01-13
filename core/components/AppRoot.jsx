@@ -1,11 +1,9 @@
 
 var React = require('react/addons'),
-	RouterMixin = require('./RouterMixin'),
 	debug = require('debug')('AppRoot');
 
 
 var AppRoot = React.createClass({
-	mixins: [RouterMixin],
 
 	displayName: "AppRoot",
 

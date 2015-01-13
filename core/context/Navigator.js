@@ -1,7 +1,8 @@
 
 var EventEmitter = require('events').EventEmitter,
 	Router = require('routr'),
-	Q = require('q');
+	Q = require('q'),
+	History = require("../components/History");
 
 class Navigator extends EventEmitter {
 
@@ -13,12 +14,22 @@ class Navigator extends EventEmitter {
 		this._currentRoute = null;
 	}
 
+	/**
+	 * type is one of 
+	 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
+	 * full page load
+	 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
+	 *    History.events.PAGELOAD: full browser page load, not using History API.
+	 *
+	 * Default is History.events.PAGELOAD.
+	 */
 	navigate (request, type) {
+		type = type || History.events.PAGELOAD;
 
-		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl()}});
+		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl(), type:type}});
 		if (!route) {
 			setTimeout( () => {
-				this.emit('navigateDone', { status: 404, message: "No Route!" });
+				this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);
 			}, 0);
 			return;
 		}
@@ -44,14 +55,14 @@ class Navigator extends EventEmitter {
 				// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 				// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 				if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
-					this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location});
+					this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, null, request.getUrl(), type);
 				}
 				if (handleRouteResult.page) {
 					// TODO: deal with returning a new Page object in handleRouteResult -sra.
 				}
 
 				this.finishRoute(route);
-				this.emit('navigateDone', null, page);
+				this.emit('navigateDone', null, page, request.getUrl(), type);
 			}).catch(err => {
 				console.error("Error while handling route.", err);
 			});
