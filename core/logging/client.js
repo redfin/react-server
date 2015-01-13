@@ -9,10 +9,15 @@
  */
 
 var common = require('./common')
+,   stats  = require('./stats')
 
 var loggers = {};
 
-var makeLogger = function(name){
+for (var group in common.config)
+	loggers[group] = {};
+
+var makeLogger = function(name, group){
+	var config = common.config[group];
 	var logger = {
 		name,
 		log: function(){
@@ -23,14 +28,14 @@ var makeLogger = function(name){
 				console,
 				[
 					'%c '+level+':',
-					'color: '+common.colors[level],
+					'color: '+config.colors[level],
 					'['+name+']'
 				].concat(args)
 			);
 		}
 	}
 
-	Object.keys(common.levels).forEach(level => {
+	Object.keys(config.levels).forEach(level => {
 		logger[level] = () => logger.log.apply(
 			logger, [level].concat([].slice.call(arguments))
 		);
@@ -39,8 +44,12 @@ var makeLogger = function(name){
 	return logger;
 }
 
-var getLogger = function(name){
-	return loggers[name] || (loggers[name] = makeLogger(name));
+var getLoggerForConfig = function(name, group){
+	return loggers[group][name] || (
+		loggers[group][name] = makeLogger(name, group)
+	);
 }
+
+var getLogger = stats.makeGetLogger(getLoggerForConfig);
 
 module.exports = { getLogger };

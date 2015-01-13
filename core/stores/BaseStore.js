@@ -6,7 +6,7 @@
  */
 // 'use strict';
 
-var debug = require('debug')('rf:BaseStore'),
+var logger = require('../logging').getLogger(__LOGGING_NAME__),
 	EventEmitter = require('events').EventEmitter,
 	Q = require('q'),
     CHANGE_EVENT = 'change';
@@ -70,10 +70,10 @@ class BaseStore {
 
 	_dupeCheckLoaderName(name) {
 		if (this._urls[name]) {
-			debug("Dataloader already exists with name " +name);
+			logger.debug("Dataloader already exists with name " +name);
 			throw ("Dataloader already exists with name " +name);
 		} else if (this._childStoreNames[name]) {
-			debug("Child store already exists with name " +name);
+			logger.debug("Child store already exists with name " +name);
 			throw ("Child store already exists with name " +name);
 		}
 	}
@@ -86,14 +86,15 @@ class BaseStore {
 		} catch(err) {
 			this._loadResults[name] = result;
 			this._loadStatuses[name] = BaseStore.LoadState.ERROR;
-			debug(err);
+			logger.error('Failed _handleLoadResult', err);
 			throw err;
 		}		
 	}
 
 	_loadByName(name) {
 		var url = this._urls[name];
-		debug("requesting " + name + ": " + url);
+		var t0 = new Date;
+		logger.debug("requesting " + name + ": " + url);
 		this._loadStatuses[name] = BaseStore.LoadState.LOADING;
 
 		var cachedResult = this._loader.checkLoaded(url); 
@@ -104,12 +105,13 @@ class BaseStore {
 			return null;
 		} else {
 			return this._loader.load(url).then(result => {
-				debug("completed " + name + ": " + url);
+				logger.debug("completed " + name + ": " + url);
+				logger.time(`loadByName.success.${name}`, new Date - t0);
 				this._handleLoadResult(name, result);
 				this.emitChange();		
 			}, err => {
-				debug("error " + name + ": " + url);
-				debug(err);
+				logger.error("error " + name + ": " + url, err);
+				logger.time(`loadByName.error.${name}`, new Date - t0);
 				this._loadStatuses[name] = BaseStore.LoadState.ERROR;
 				this.emitChange();
 			});
@@ -134,7 +136,7 @@ class BaseStore {
 
 		var childStoreLoadPromises = this._childStoreNames.map(name => {
 			var childStore = this._childStores[name];
-			debug("loading Child Store " + name);
+			logger.debug("loading Child Store " + name);
 			return childStore.loadData()
 		})
 

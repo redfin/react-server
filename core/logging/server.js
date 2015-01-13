@@ -1,23 +1,34 @@
 var winston = require('winston')
 ,   common  = require('./common')
+,   stats   = require('./stats')
 
-var loggers = new winston.Container({});
+var loggers = {};
 
-var getLogger = function(name){
+for (var group in common.config)
+	loggers[group] = new winston.Container({});
+
+var getLoggerForConfig = function(name, group){
+	var config = common.config[group];
 
 	// The `loggers` collection's `get` method auto-adds on miss, and
 	// returns existing on hit.
-	return loggers.get(name, {
+	var logger = loggers[group].get(name, {
 		console: {
 			label     : name,
-			level     : 'debug',// TODO: Base on configuration.
+			level     : config.baseLevel,
 			colorize  : true,   // TODO: Only if isatty.
 			timestamp : false,  // TODO: Want this in production.
-			levels    : common.levels,
-			colors    : common.colors,
 		}
 		// TODO: Email transport for high-level logs in production.
 	});
+
+	logger.setLevels(config.levels);
+
+	winston.addColors(config.colors);
+
+	return logger;
 }
+
+var getLogger = stats.makeGetLogger(getLoggerForConfig);
 
 module.exports = { getLogger };
