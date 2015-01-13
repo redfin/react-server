@@ -34,9 +34,6 @@ module.exports = {
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" }
         ]
     },
-    node: {
-        fs: "empty"
-    },
     plugins: [
         new DedupePlugin(),
         new DefinePlugin({
