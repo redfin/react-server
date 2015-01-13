@@ -39,9 +39,13 @@ module.exports = {
         modulesDirectories: ['node_modules'],
         extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx" ,".bars"]
     },
+    resolveLoader: {
+        root: __dirname
+    },
     module: {
         loaders: [
             // { test: /(\.less)|(\.css)$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader") },
+            { test: /\.jsx?$/, loader: "buildutils/logging-name-loader" },
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" },
 
             // for server-side, we don't need style files

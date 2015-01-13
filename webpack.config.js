@@ -24,8 +24,12 @@ module.exports = {
     resolve: {
         extensions: ["", ".js", ".jsx"]
     },
+    resolveLoader: {
+        root: __dirname
+    },
     module: {
         loaders: [            
+            { test: /\.jsx?$/, loader: "buildutils/logging-name-loader" },
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" }
         ]
     },

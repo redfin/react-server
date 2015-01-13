@@ -1,5 +1,6 @@
 
 var Q = require('q'),
+	logger = require('./logging').getLogger(__LOGGING_NAME__)
 	debug = require('debug')('rf:Loader'),
 	config = require("./config");
 
@@ -110,7 +111,7 @@ module.exports = class Loader {
 		this.context.superagent.get(this._apiServerPrefix() + actualUrl)
 			.end( res => {
 
-				debug("Response Came Back!");
+				logger.info("Response Came Back!");
 
 				// server-side, we cache the response in the dataCache to
 				// present to the frontend
