@@ -1,8 +1,7 @@
 
-var React = require('react'),
+var React = require('react/addons'),
 	debug = require('debug')('triton:ClientController'),
 	RequestContext = require('./context/RequestContext'),
-	AppRoot = React.createFactory(require('./components/AppRoot')),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
 	EventEmitter = require("events").EventEmitter,
@@ -103,10 +102,12 @@ class ClientController extends EventEmitter {
 	_render (page) {
 		debug('React Rendering');
 
-		React.render(AppRoot({
-			childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
-			context: this.context
-		}), this.mountNode, () => {
+		// TODO: deal with promises and arrays of elements -sra.
+		var element = page.getElements();
+		element = React.addons.cloneWithProps(element, { context: this.context });
+		element = <div>{element}</div>;
+
+		React.render(element, this.mountNode, () => {
 			debug('React Rendered');
 			this.emit('render');
 		});
