@@ -7,7 +7,7 @@ var loggers = {};
 for (var group in common.config)
 	loggers[group] = new winston.Container({});
 
-var getLoggerForConfig = function(name, group){
+var getLoggerForConfig = function(group, name, options){
 	var config = common.config[group];
 
 	// The `loggers` collection's `get` method auto-adds on miss, and

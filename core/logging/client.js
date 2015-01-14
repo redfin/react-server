@@ -16,7 +16,7 @@ var loggers = {};
 for (var group in common.config)
 	loggers[group] = {};
 
-var makeLogger = function(name, group){
+var makeLogger = function(group, name, options){
 	var config    = common.config[group]
 	,   nameColor = common.getNameColor(name)
 
@@ -48,9 +48,9 @@ var makeLogger = function(name, group){
 	return logger;
 }
 
-var getLoggerForConfig = function(name, group){
+var getLoggerForConfig = function(group, name, options){
 	return loggers[group][name] || (
-		loggers[group][name] = makeLogger(name, group)
+		loggers[group][name] = makeLogger(group, name, options)
 	);
 }
 
