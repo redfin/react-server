@@ -8,7 +8,14 @@
 /*global window */
 'use strict';
 
-var EVENT_POPSTATE = 'popstate';
+var events = {
+        POPSTATE: 'popstate',
+        // the constant really should be "pushstate" but the router made it "click". added PUSHSTATE 
+        // constant to make naming consistent, CLICK for backwards compat
+        CLICK: "click", 
+        PUSHSTATE: "click",
+        PAGELOAD: "pageload"
+    };
 
 /**
  * This only supports pushState for the browsers with native pushState support.
@@ -33,7 +40,7 @@ History.prototype = {
      */
     on: function (listener) {
         if (this._hasPushState) {
-            this.win.addEventListener(EVENT_POPSTATE, listener);
+            this.win.addEventListener(History.events.POPSTATE, listener);
         }
     },
 
@@ -45,7 +52,7 @@ History.prototype = {
      */
     off: function (listener) {
         if (this._hasPushState) {
-            this.win.removeEventListener(EVENT_POPSTATE, listener);
+            this.win.removeEventListener(History.events.POPSTATE, listener);
         }
     },
 
@@ -91,5 +98,7 @@ History.prototype = {
         }
     }
 };
+
+History.events = events;
 
 module.exports = History;
