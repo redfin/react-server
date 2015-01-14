@@ -220,6 +220,8 @@ function writeBody(req, res, context, start, page) {
 		// reduce is called length - 1 times. we need to call one final time here to make sure we 
 		// chain the final promise.
  		renderElement(res, element, context, elementPromises.length - 1);
+	}).catch((err) => {
+		debug("Error while rendering", err);
 	});
 }
 
