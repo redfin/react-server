@@ -6,7 +6,8 @@ var React = require('react'),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
 	EventEmitter = require("events").EventEmitter,
-	ClientRequest = require("./ClientRequest");
+	ClientRequest = require("./ClientRequest"),
+	History = require('./components/History');
 
 // for dev tools
 window.React = React;
@@ -34,10 +35,23 @@ class ClientController extends EventEmitter {
 		this._previouslyRendered = false;
 	}
 
+	terminate() {
+        this._history.off(this._historyListener);
+        this._historyListener = null;
+        this._history = null;
+	}
+
 	_setupNavigateListener () {
 		var context = this.context; 
 
-		context.onNavigate( (err, page) => {
+	/**
+	 * type is one of 
+	 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
+	 * full page load
+	 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
+	 *    History.events.PAGELOAD: full browser page load, not using History API.
+	 */
+		context.onNavigate( (err, page, path, type) => {
 			debug('Executing navigate action');
 			
 			if (err) {
@@ -71,6 +85,15 @@ class ClientController extends EventEmitter {
 
 			cssHelper.ensureCss(routeName, page);
 
+			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar right
+			// before rendering. 
+			// note that for browsers that do not have pushState, this will result in a window.location change 
+			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
+			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
+	        if (type === History.events.PUSHSTATE && this._history) {
+	            this._history.pushState(null, null, path);
+	        }
+
 			this._render(page);
 
 		});
@@ -79,6 +102,7 @@ class ClientController extends EventEmitter {
 
 	_render (page) {
 		debug('React Rendering');
+
 		React.render(AppRoot({
 			childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
 			context: this.context
@@ -91,7 +115,31 @@ class ClientController extends EventEmitter {
 	init () {
 		var location = window.location;
 		var path = location.pathname + location.search;
+		this._initializeHistoryListener(this.context);
 		this.context.navigate(new ClientRequest(path));
+	}
+
+	/**
+	 * Initializes us to listen to back button events. When the user presses the back button, the history 
+	 * listener will be called and cause a navigate() event.
+	 */
+	_initializeHistoryListener(context) {
+
+        this._historyListener = (e) => {
+            if (context) {
+                var path = this._history.getPath();
+
+                // REDFIN-TODO: this appears to pass some state. Should we figure out how to replicate that?
+                // context.executeAction(navigateAction, {type: History.events.POPSTATE, path: path, params: e.state});
+
+                // pass in "popstate" because this is when a user clicks the back button.
+                context.navigate(new ClientRequest(path), History.events.POPSTATE);
+                
+            }
+        };
+
+        this._history = new History();
+        this._history.on(this._historyListener);
 	}
 
 	_setupLateArrivalHandler () {
