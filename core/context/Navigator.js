@@ -43,7 +43,7 @@ class Navigator extends EventEmitter {
 			if (request.setRoute) {
 				request.setRoute(route);
 			}
-			this.handlePage(pageConstructor, request, this.context.loader);
+			this.handlePage(pageConstructor, request, this.context.loader, type);
 
 		}, err => {
 			console.error("Error resolving page", err);
@@ -51,7 +51,7 @@ class Navigator extends EventEmitter {
 
 	}
 
-	handlePage(pageConstructor, request, loader) {
+	handlePage(pageConstructor, request, loader, type) {
 		// instantiate the page we need to fulfill this request.
 		var page = new pageConstructor();
 
@@ -70,7 +70,7 @@ class Navigator extends EventEmitter {
 				// in this case, we should forward to a new page *without* changing the URL. Since we are already
 				// in an async callback, we should schedule a new handlePage with the new page constructor and return
 				// from this call.
-				setTimeout(() => this.handlePage(handleRouteResult.page, request, loader), 0);
+				setTimeout(() => this.handlePage(handleRouteResult.page, request, loader, type), 0);
 				return;
 			}
 
