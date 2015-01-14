@@ -43,4 +43,35 @@ var config = {
 	},
 };
 
-module.exports = { config };
+// This is global so that we don't wind up with different copies for triton
+// and corvair.
+//
+// The best reference I've found for the `xterm-256color` palette is:
+//
+//   http://www.pixelbeat.org/docs/terminal_colours/#256
+//
+global._getTritonLoggingNameColor || (global._getTritonLoggingNameColor = (function(){
+
+	var colors = [];
+
+	var makeColor = SERVER_SIDE
+		?(r,g,b) => 16 + r*36 + g*6 + b
+		:(r,g,b) => `rgb(${(r*42.5)|0},${(g*42.5)|0},${(b*42.5)|0})`
+
+	for (var r = 1; r < 6; r+=2)
+		for (var g = 1; g < 6; g+=2)
+			for (var b = 1; b < 6; b+=2)
+				if (r != g || g != b)
+					colors.push(makeColor(r,g,b));
+
+	var colorMap = {}
+	return function(name){
+		if (!colorMap[name])
+			colors.push(colorMap[name] = colors.shift());
+		return colorMap[name];
+	}
+})());
+
+var getNameColor = _getTritonLoggingNameColor;
+
+module.exports = { config, getNameColor };

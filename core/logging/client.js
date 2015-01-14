@@ -18,7 +18,7 @@ for (var group in common.config)
 
 var makeLogger = function(name, group){
 	var config    = common.config[group]
-	,   nameColor = getNameColor(name)
+	,   nameColor = common.getNameColor(name)
 
 	var logger = {
 		name,
@@ -47,19 +47,6 @@ var makeLogger = function(name, group){
 
 	return logger;
 }
-
-var getNameColor = (function(){
-	var colors = [
-		'#000080', '#008000', '#008080', '#800000', '#800080', '#808000', '#808080',
-		'#0000FF', '#00FF00', '#00FFFF', '#FF0000', '#FF00FF', '#FFFF00', '#FFFFFF',
-	]
-	var colorMap = {};
-	return function(name){
-		if (!colorMap[name])
-			colors.push(colorMap[name] = colors.shift());
-		return colorMap[name];
-	}
-})();
 
 var getLoggerForConfig = function(name, group){
 	return loggers[group][name] || (
