@@ -1,4 +1,4 @@
-var REPLACE_TOKEN = '__LOGGING_NAME__'
+var REPLACE_TOKEN = /__LOGGING_NAME__/g
 ,   THIS_MODULE   = /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logging-name-loader\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
