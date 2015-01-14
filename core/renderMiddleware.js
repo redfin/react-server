@@ -5,7 +5,8 @@ var debug = require('debug')('rf:renderMiddleware'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
-	ExpressServerRequest = require("./ExpressServerRequest");
+	ExpressServerRequest = require("./ExpressServerRequest"),
+	PageUtil = require("./util/PageUtil");
 
 
 // TODO FIXME ?? 
@@ -199,14 +200,17 @@ function renderStylesheets (pageObject) {
 function writeBodyAndData(req, res, context, start, page) {
 
 	debug("React Rendering");
-	// TODO: deal with promises and arrays of elements -sra.
-	var element = page.getElements();
-	element = React.addons.cloneWithProps(element, { context: context });
-	element = <div>{element}</div>;
+	// TODO: deal with promises of elements -sra.
+	var elements = PageUtil.standardizeElements(page.getElements());
+	elements.forEach((element, index) =>{
+		element = React.addons.cloneWithProps(element, { context: context });
+		res.write(`<div data-triton-root-id=${index}>`);
 
-	var html = React.renderToString(element);
+		var html = React.renderToString(element);
+		res.write(html);
 
-	res.write(html);
+		res.write("</div>");
+	});
 
 	debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
