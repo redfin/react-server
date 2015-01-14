@@ -9,7 +9,7 @@ for (var group in common.config)
 
 var getLoggerForConfig = function(name, group){
 	var config   = common.config[group]
-	,   colorize = getColorize()
+	,   colorize = getColorize(name)
 
 	// The `loggers` collection's `get` method auto-adds on miss, and
 	// returns existing on hit.
@@ -42,19 +42,23 @@ var getColorize = (function(){
 	for (var i = 19; i < 232; i+=11)
 		colors.push(i);
 
+	var colorMap = {};
+	var getNameColor = function(name){
+		if (!colorMap[name])
+			colors.push(colorMap[name] = colors.shift());
+		return colorMap[name];
+	}
+
 	// This function returns a function that colorizes text for the
 	// terminal.  Each time this function is called it returns a function
 	// that produces a new color (from our `colors` list).
-	return function(){
+	return function(name){
 
 		// Only colorize if we're attached to a terminal.
 		if (!process.stdout.isTTY)
 			return text => text;
 
-		var color = colors.shift();
-
-		// In case we wind up with more than `colors.length` loggers.
-		colors.push(color);
+		var color = getNameColor(name)
 
 		return text => [`\x1B[38;5;${color}m`, text, '\x1B[0m'].join('')
 	}
