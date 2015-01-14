@@ -47,13 +47,13 @@ class ClientController extends EventEmitter {
 	_setupNavigateListener () {
 		var context = this.context; 
 
-	/**
-	 * type is one of 
-	 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
-	 * full page load
-	 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
-	 *    History.events.PAGELOAD: full browser page load, not using History API.
-	 */
+		/**
+		 * type is one of 
+		 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
+		 * full page load
+		 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
+		 *    History.events.PAGELOAD: full browser page load, not using History API.
+		 */
 		context.onNavigate( (err, page, path, type) => {
 			debug('Executing navigate action');
 			
@@ -93,9 +93,9 @@ class ClientController extends EventEmitter {
 			// note that for browsers that do not have pushState, this will result in a window.location change 
 			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
 			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
-	        if (type === History.events.PUSHSTATE && this._history) {
-	            this._history.pushState(null, null, path);
-	        }
+			if (type === History.events.PUSHSTATE && this._history) {
+				this._history.pushState(null, null, path);
+			}
 
 			this._render(page);
 
@@ -228,10 +228,7 @@ class ClientController extends EventEmitter {
         this._historyListener = (e) => {
             if (context) {
                 var path = this._history.getPath();
-
-                // REDFIN-TODO: this appears to pass some state. Should we figure out how to replicate that?
-                // context.executeAction(navigateAction, {type: History.events.POPSTATE, path: path, params: e.state});
-
+                
                 // pass in "popstate" because this is when a user clicks the back button.
                 context.navigate(new ClientRequest(path), History.events.POPSTATE);
                 
