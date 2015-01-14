@@ -17,10 +17,10 @@ var config = {
 		levels: LOG_LEVELS,
 		colors: {
 			emergency : 'red',
-			alert     : 'yellow',
+			alert     : 'red',
 			critical  : 'red',
 			error     : 'red',
-			warning   : 'red',
+			warning   : 'yellow',
 			notice    : 'yellow',
 			info      : 'green',
 			debug     : 'blue',
