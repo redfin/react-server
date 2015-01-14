@@ -1,7 +1,6 @@
 
 var debug = require('debug')('rf:renderMiddleware'),
-	React = require('react'),
-	AppRoot = React.createFactory(require('./components/AppRoot')),
+	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
@@ -199,11 +198,13 @@ function renderStylesheets (pageObject) {
 
 function writeBodyAndData(req, res, context, start, page) {
 
-	debug("Rendering AppRoot.");
-	var html = React.renderToString(AppRoot({
-		childComponent: page.getElements(), // TODO: deal with promises and arrays of elements -sra.
-		context: context
-	}));
+	debug("React Rendering");
+	// TODO: deal with promises and arrays of elements -sra.
+	var element = page.getElements();
+	element = React.addons.cloneWithProps(element, { context: context });
+	element = <div>{element}</div>;
+
+	var html = React.renderToString(element);
 
 	res.write(html);
 
