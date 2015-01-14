@@ -12,6 +12,9 @@ var React = require('react/addons'),
 // for dev tools
 window.React = React;
 
+var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
+
+
 class ClientController extends EventEmitter {
 
 	constructor ({routes, dehydratedState, mountNode}) {
@@ -101,10 +104,56 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
-		var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
 
 		// if we were previously rendered on the client, clean up the old divs and 
-		// their ReactComponents
+		// their ReactComponents.
+		this._cleanupPreviousRender();
+
+		// if we are reattaching to server-generated HTML, we should find the root elements that were sent down.
+		// we store them in a temp array indexed by their triton-root-id.
+		var serverRenderedRoots = [];
+		for (var i = 0; i < this.mountNode.children.length; i++) {
+			if (this.mountNode.children[i].hasAttribute(TRITON_DATA_ATTRIBUTE)) {
+				serverRenderedRoots[this.mountNode.children[i].getAttribute(TRITON_DATA_ATTRIBUTE)] = this.mountNode.children[i];
+			}
+		}
+	
+		debug('React Rendering');
+		var elementPromises = PageUtil.standardizeElements(page.getElements());
+
+		var renderElement = (element, index) => {
+			// for each ReactElement that we want to render, either use the server-rendered root element, or 
+			// create a new root element.
+			var root = serverRenderedRoots[index] || this._createTritonRootNode(this.mountNode, index);
+
+			// TODO: get rid of context once continuation-local-storage holds our important context vars.
+			element = React.addons.cloneWithProps(element, { context: this.context });
+			React.render(element, root);
+		};
+
+		// TODO: deal with the timeouts. 
+		// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
+		return elementPromises.reduce((chain, next, index) => {
+			return chain.then((element) => {
+		 		renderElement(element, index - 1);
+				return next;
+			})
+		}).then((element) => {
+			// reduce is called length - 1 times. we need to call one final time here to make sure we 
+			// chain the final promise.
+	 		renderElement(element, elementPromises.length - 1);
+
+			this._previouslyRendered = true;
+			debug('React Rendered');
+			this.emit('render');
+		});
+	}
+
+	/**
+	 * Cleans up a previous React render in the document. Unmounts all the components and destoys the mounting
+	 * DOM node(s) that were created.
+	 */
+	_cleanupPreviousRender() {
 		if (this._previouslyRendered) {
 			debug("Removing previous page's React components");
 			// first, copy the children from a node list to an array so that 
@@ -116,9 +165,11 @@ class ClientController extends EventEmitter {
 				tritonRoots[i] = tritonRootsNL[i];
 			}
 
+			// Now, for each of the roots, unmount the React component and destroy the DOM node.
 			tritonRoots.forEach((tritonRoot) => {
 				if (tritonRoot.hasAttribute(TRITON_DATA_ATTRIBUTE)) {
-					// since this node has a data-triton-root-id, we can assume that we made it.
+					// since this node has a data-triton-root-id, we can assume that we created it and should
+					// destroy it.
 					React.unmountComponentAtNode(tritonRoot);
 					this.mountNode.removeChild(tritonRoot);
 				} else {
@@ -128,39 +179,18 @@ class ClientController extends EventEmitter {
 						"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
 						"cause unpredictable behavior", tritonRoot);
 				}
-			})
-		}
-
-		// if we are reattaching to server-generated HTML, we should find the triton roots that were sent down.
-		// we store them in a temp array indexed by their triton-root-id.
-		var existingTritonRoots = [];
-		for (var i = 0; i < this.mountNode.children.length; i++) {
-			if (this.mountNode.children[i].hasAttribute(TRITON_DATA_ATTRIBUTE)) {
-				existingTritonRoots[this.mountNode.children[i].getAttribute(TRITON_DATA_ATTRIBUTE)] = this.mountNode.children[i];
-			}
-		}
-	
-		// TODO: deal with promises of elements -sra.
-		debug('React Rendering');
-		var elements = PageUtil.standardizeElements(page.getElements());
-		elements.forEach((element, index) => {
-			var root = existingTritonRoots[index];
-			if (!root) {
-				// create a new triton root element for each ReactElement that we want to render.
-				root = document.createElement("div");
-				root.setAttribute(TRITON_DATA_ATTRIBUTE, index);
-				this.mountNode.appendChild(root);
-			}
-			// TODO: replace this once continuation-local-storage holds our important context vars.
-			element = React.addons.cloneWithProps(element, { context: this.context });
-			React.render(element, root, () => {
-				debug('React Rendered');
-				this.emit('render');
 			});
-		});
+		}
+	}
 
-
-		this._previouslyRendered = true;
+	/**
+	 * This method creates a new div to render a ReactElement in to at the end of the mount node.
+	 */
+	_createTritonRootNode(mountNode, index) {
+		var root = document.createElement("div");
+		root.setAttribute(TRITON_DATA_ATTRIBUTE, index);
+		mountNode.appendChild(root);
+		return root;
 	}
 
 	init () {

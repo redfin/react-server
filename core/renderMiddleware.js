@@ -93,8 +93,10 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 	var doRenderCallback = function () {
 		// user data should never be the long pole here.
 		userDataDfd.done(function () {
-			writeBodyAndData(req, res, context, start, page);
-			setupLateArrivals(req, res, context, start);
+			writeBody(req, res, context, start, page).then(() => {
+				writeData(req, res, context, start)
+				setupLateArrivals(req, res, context, start);
+			});
 		});
 	}
 
@@ -197,21 +199,39 @@ function renderStylesheets (pageObject) {
 }
 
 
-function writeBodyAndData(req, res, context, start, page) {
+/**
+ * Writes out the ReactElements to the response. Returns a promise that fulfills when
+ * all the ReactElements have been written out.
+ */
+function writeBody(req, res, context, start, page) {
 
 	debug("React Rendering");
-	// TODO: deal with promises of elements -sra.
-	var elements = PageUtil.standardizeElements(page.getElements());
-	elements.forEach((element, index) =>{
-		element = React.addons.cloneWithProps(element, { context: context });
-		res.write(`<div data-triton-root-id=${index}>`);
+	// standardize to an array of EarlyPromises of ReactElements
+	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-		var html = React.renderToString(element);
-		res.write(html);
-
-		res.write("</div>");
+	// TODO: deal with the timeouts. 
+	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
+	return elementPromises.reduce((chain, next, index) => {
+		return chain.then((element) => {
+	 		renderElement(res, element, context, index - 1);
+			return next;
+		})
+	}).then((element) => {
+		// reduce is called length - 1 times. we need to call one final time here to make sure we 
+		// chain the final promise.
+ 		renderElement(res, element, context, elementPromises.length - 1);
 	});
+}
 
+function renderElement(res, element, context, index) {
+	element = React.addons.cloneWithProps(element, { context: context });
+
+	res.write(`<div data-triton-root-id=${index}>`);
+	res.write(React.renderToString(element));
+	res.write("</div>");
+}
+
+function writeData(req, res, context, start) {
 	debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
