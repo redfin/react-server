@@ -52,18 +52,29 @@ var config = {
 //
 global._getTritonLoggingNameColor || (global._getTritonLoggingNameColor = (function(){
 
-	var colors = [];
-
+	// ANSI escape sequence on the server.
+	// CSS rgb(...) color in the browser.
 	var makeColor = SERVER_SIDE
 		?(r,g,b) => 16 + r*36 + g*6 + b
 		:(r,g,b) => `rgb(${(r*42.5)|0},${(g*42.5)|0},${(b*42.5)|0})`
 
+	// This produces a list of 24 colors that are distant enough from each
+	// other to be visually distinct.  It's also, conveniently, the same
+	// palette client side and server side.
+	var colors = [];
 	for (var r = 1; r < 6; r+=2)
 		for (var g = 1; g < 6; g+=2)
 			for (var b = 1; b < 6; b+=2)
-				if (r != g || g != b)
+				if (r != g || g != b) // No gray.
 					colors.push(makeColor(r,g,b));
 
+	// This assigns colors to module names.  We want the colors to be
+	// consistent between loggers, so we'll stash the assignments in an
+	// object for lookup later.
+	//
+	// Note that this function is dependent on call order, so while the
+	// color palette is consistent between client and server the color
+	// assignments are likely not to be.
 	var colorMap = {}
 	return function(name){
 		if (!colorMap[name])
