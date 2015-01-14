@@ -107,17 +107,15 @@ class ClientController extends EventEmitter {
 
 		// if we were previously rendered on the client, clean up the old divs and 
 		// their ReactComponents.
-		this._cleanupPreviousRender();
+		this._cleanupPreviousRender(this.mountNode);
 
 		// if we are reattaching to server-generated HTML, we should find the root elements that were sent down.
 		// we store them in a temp array indexed by their triton-root-id.
 		var serverRenderedRoots = [];
-		for (var i = 0; i < this.mountNode.children.length; i++) {
-			if (this.mountNode.children[i].hasAttribute(TRITON_DATA_ATTRIBUTE)) {
-				serverRenderedRoots[this.mountNode.children[i].getAttribute(TRITON_DATA_ATTRIBUTE)] = this.mountNode.children[i];
-			}
-		}
-	
+		this._getRootElements(this.mountNode).forEach((rootElement) => {
+			serverRenderedRoots[rootElement.getAttribute(TRITON_DATA_ATTRIBUTE)] = rootElement;
+		});
+
 		debug('React Rendering');
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
@@ -132,7 +130,19 @@ class ClientController extends EventEmitter {
 		};
 
 		// TODO: deal with the timeouts. 
-		// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
+		// I find the control flow for chaining promises impossibly mind-bending, but what I intended was something
+		// like: 
+		// 
+		//		elementPromises.forEach((elementPromise, index) => {
+		//			var element = await elementPromise;
+		//			renderElement(element, index);
+		//		});
+		//		this._previouslyRendered = true;
+		//		this.emit("render");
+		//
+		// if it was using ES7 async/await syntax. I learned how to chain an array of promises in ES5/6
+		// from http://bahmutov.calepin.co/chaining-promises.html , and apparently it looks like the code below. But
+		// if I got something wrong, what I intended was the control flow expressed in this comment.
 		return elementPromises.reduce((chain, next, index) => {
 			return chain.then((element) => {
 		 		renderElement(element, index - 1);
@@ -153,34 +163,43 @@ class ClientController extends EventEmitter {
 	 * Cleans up a previous React render in the document. Unmounts all the components and destoys the mounting
 	 * DOM node(s) that were created.
 	 */
-	_cleanupPreviousRender() {
+	_cleanupPreviousRender(mountNode) {
 		if (this._previouslyRendered) {
 			debug("Removing previous page's React components");
-			// first, copy the children from a node list to an array so that 
-			// we can remove elements from their parent during the loop without modifying
-			// the list we are iterating over.
-			var tritonRootsNL = this.mountNode.children;
-			var tritonRoots = [];
-			for (var i = 0; i < tritonRootsNL.length; i++) {
-				tritonRoots[i] = tritonRootsNL[i];
-			}
 
-			// Now, for each of the roots, unmount the React component and destroy the DOM node.
-			tritonRoots.forEach((tritonRoot) => {
-				if (tritonRoot.hasAttribute(TRITON_DATA_ATTRIBUTE)) {
-					// since this node has a data-triton-root-id, we can assume that we created it and should
-					// destroy it.
-					React.unmountComponentAtNode(tritonRoot);
-					this.mountNode.removeChild(tritonRoot);
-				} else {
-					// it's deeply troubling that there's a div we didn't create, but for now, just warn, and  
-					// don't obliterate the node.
-					console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
-						"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
-						"cause unpredictable behavior", tritonRoot);
-				}
+			this._getRootElements(mountNode).forEach((tritonRoot) => {
+				// since this node has a "data-triton-root-id" attribute, we can assume that we created it and 
+				// should destroy it. Destruction means first unmounting from React and then destroying the DOM node.
+				React.unmountComponentAtNode(tritonRoot);
+				mountNode.removeChild(tritonRoot);
 			});
 		}
+	}
+
+	/**
+	 * Returns an array of all of the root elements that are children of mountNode. The root elements
+	 * should all have a "data-triton-root-id" attribute and be direct children of mountNode.
+	 */
+	_getRootElements(mountNode) {
+		// if children returned an array instead of a NodeList, we could use .filter(), but 
+		// alas, it does not. We could copy it over to an array, but seems easier to just iterate 
+		// over the NodeList.
+		var potentialRoots = mountNode.children;
+		var result = [];
+		for (var i = 0; i < potentialRoots.length; i++) {
+			var potentialRoot = potentialRoots[i];
+			if (potentialRoot.hasAttribute(TRITON_DATA_ATTRIBUTE)) {
+				// since this node has a "data-triton-root-id" attribute, we can assume that we created it.
+				result.push(potentialRoot);
+			} else {
+				// it's deeply troubling that there's a div we didn't create, but for now, just warn, and  
+				// don't obliterate the node.
+				console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
+					"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
+					"cause unpredictable behavior", tritonRoot);
+			}
+		}
+		return result;
 	}
 
 	/**
