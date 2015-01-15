@@ -42,12 +42,25 @@
 						<configuration>
 							<tasks>
 
+								<!-- TODO: this little chunk of JS is copy/pasted in corvair, triton, triton-route-loader. It would be great if it wasn't... -->
+								<script language="javascript">
+									var getenv = java.lang.System.getenv;
+									if (getenv("IS_BAMBOO")) {
+										project.setProperty("npm.registry", "http://localhost:7732");
+									} else if (getenv("JENKINS_URL")) {
+										project.setProperty("npm.registry", "http://builder.redfintest.com:7732");
+									} else {
+										project.setProperty("npm.registry", "http://builder.redfintest.com:7732");
+									}
+								</script>
+								<echo>Using npm registry: ${npm.registry}</echo>
+
 								<echo>Installing project npm dependencies...</echo>
 								<exec
 									dir="${project.basedir}"
 									executable="npm"
 									failonerror="true">
-										<arg line="--registry http://builder.redfintest.com:7732/ install" />
+										<arg line="--registry ${npm.registry} install" />
 								</exec>
 
 								<echo>Building plugin...</echo>
