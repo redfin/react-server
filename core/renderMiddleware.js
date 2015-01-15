@@ -91,42 +91,16 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 	// data
 	writeHeader(req, res, routeName, page);
 
-	var doRenderCallback = function () {
-		// user data should never be the long pole here.
-		userDataDfd.done(function () {
-			writeBody(req, res, context, start, page).then(() => {
-				writeData(req, res, context, start)
-				setupLateArrivals(req, res, context, start);
-			});
+	// user data should never be the long pole here.
+	userDataDfd.done(function () {
+		writeBody(req, res, context, start, page).then(() => {
+			writeData(req, res, context, start)
+			setupLateArrivals(req, res, context, start);
 		});
-	}
+	});
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
-
-	var timeoutExceeded = false;
-
-	// set up a maximum wait time for data loading.
-	// if this timeout fires, we render with whatever we have,
-	// as best as possible
-	var loadWaitHdl = setTimeout(function () {
-		debug("Timeout Exceeeded. Rendering...");
-		timeoutExceeded = true;
-		doRenderCallback();
-	}, DATA_LOAD_WAIT);
-
-	// if we happen to load all data before the timeout is exceeded,
-	// we clear the timeout, and just render. If this fires after the
-	// timeout is exceeded, it's a no-op
-	// use .done(...) to propagate caught exceptions properly
-	var loader = context.loader;
-	loader.whenAllPendingResolve().done(function () {
-		if (!timeoutExceeded) {
-			debug("Data loaded. Rendering...");
-			clearTimeout(loadWaitHdl);
-			doRenderCallback();
-		}
-	});
 
 }
 
@@ -214,6 +188,7 @@ function writeBody(req, res, context, start, page) {
 	// bookkeeping when the timeout happens so we don't double-render anything.
 	var rendered = [];
 
+	// render the elements in sequence when they resolve (i.e. tell us they are ready).
 	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
 	var noTimeoutRenderPromise =  elementPromises.reduce((chain, next, index) => {
 		return chain.then((element) => {
@@ -230,21 +205,25 @@ function writeBody(req, res, context, start, page) {
 		debug("Error while rendering", err);
 	});
 
-	// set a loading timeout after which we will render everything we have completely synchronously.
-	var timeoutRenderDeferred = Q.defer();
-	setTimeout(() => {
+	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,
+	// as best as possible. note that once the timeout fires, we render everything that's left
+	// synchronously.
+	var timeoutRenderPromise = Q.delay(DATA_LOAD_WAIT).then(() => {
+		// if we rendered everything up to the last element already, just return.
+		if (rendered[elementPromises.length - 1]) return;
+
+		debug("Timeout Exceeeded. Rendering...");
 		elementPromises.forEach((promise, index) => {
 			if (!rendered[index]) {
 				renderElement(res, promise.getValue(), context, index);
 				rendered[index] = true;
 			}
 		});
-		timeoutRenderDeferred.resolve();
-	}, DATA_LOAD_WAIT);
+	});
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderDeferred.promise);
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
 }
 
 function renderElement(res, element, context, index) {
