@@ -6,7 +6,8 @@ var debug = require('debug')('rf:renderMiddleware'),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
-	PageUtil = require("./util/PageUtil");
+	PageUtil = require("./util/PageUtil"),
+	PromiseUtil = require("./util/PromiseUtil");
 
 
 // TODO FIXME ?? 
@@ -209,27 +210,49 @@ function writeBody(req, res, context, start, page) {
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-	// TODO: deal with the timeouts. 
+	// a boolean array to keep track of which elements have already been rendered. this is useful
+	// bookkeeping when the timeout happens so we don't double-render anything.
+	var rendered = [];
+
 	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
-	return elementPromises.reduce((chain, next, index) => {
+	var noTimeoutRenderPromise =  elementPromises.reduce((chain, next, index) => {
 		return chain.then((element) => {
-	 		renderElement(res, element, context, index - 1);
+	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
+	 		rendered[index - 1] = true;
 			return next;
 		})
 	}).then((element) => {
 		// reduce is called length - 1 times. we need to call one final time here to make sure we 
 		// chain the final promise.
- 		renderElement(res, element, context, elementPromises.length - 1);
+ 		if (!rendered[elementPromises.length - 1]) renderElement(res, element, context, elementPromises.length - 1);
+ 		rendered[elementPromises.length - 1] = true;
 	}).catch((err) => {
 		debug("Error while rendering", err);
 	});
+
+	// set a loading timeout after which we will render everything we have completely synchronously.
+	var timeoutRenderDeferred = Q.defer();
+	setTimeout(() => {
+		elementPromises.forEach((promise, index) => {
+			if (!rendered[index]) {
+				renderElement(res, promise.getValue(), context, index);
+				rendered[index] = true;
+			}
+		});
+		timeoutRenderDeferred.resolve();
+	}, DATA_LOAD_WAIT);
+
+	// return a promise that resolves when either the async render OR the timeout sync
+	// render happens. 
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderDeferred.promise);
 }
 
 function renderElement(res, element, context, index) {
-	element = React.addons.cloneWithProps(element, { context: context });
-
 	res.write(`<div data-triton-root-id=${index}>`);
-	res.write(React.renderToString(element));
+	if (element !== null) {
+		element = React.addons.cloneWithProps(element, { context: context });
+		res.write(React.renderToString(element));
+	}
 	res.write("</div>");
 }
 

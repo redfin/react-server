@@ -1,4 +1,4 @@
-
+var Q = require("Q");
 
 var PromiseUtil = module.exports = {
 	/** 
@@ -9,7 +9,7 @@ var PromiseUtil = module.exports = {
 	 */
 	early(promise, pendingValue) {
 		// if it's already an EarlyPromise, just return it.
-		if (promise.get) {
+		if (promise && promise.getValue) {
 			return promise;
 		}
 
@@ -23,10 +23,25 @@ var PromiseUtil = module.exports = {
 			error = resolvedError;
 		})
 
-		promise.get = function() { 
+		promise.getValue = function() { 
 			if (null !== error) throw error;
 			return value;
 		};
 		return promise;
+	},
+
+	/**
+	 * Return the value of the first resolved or rejected promise in the arguments array
+	 */
+	race(...promises) {
+		var resultDeferred = Q.defer();
+
+		promises.forEach((promise) => {
+			promise.then(
+				(value) => resultDeferred.resolve(value),
+				(error) => resultDeferred.reject(error));
+		});
+
+		return resultDeferred.promise;
 	}
 }

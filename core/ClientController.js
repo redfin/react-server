@@ -122,6 +122,7 @@ class ClientController extends EventEmitter {
 		var renderElement = (element, index) => {
 			// for each ReactElement that we want to render, either use the server-rendered root element, or 
 			// create a new root element.
+			debug("Rendering root node #" + index);
 			var root = serverRenderedRoots[index] || this._createTritonRootNode(this.mountNode, index);
 
 			// TODO: get rid of context once continuation-local-storage holds our important context vars.
@@ -129,7 +130,6 @@ class ClientController extends EventEmitter {
 			React.render(element, root);
 		};
 
-		// TODO: deal with the timeouts. 
 		// I find the control flow for chaining promises impossibly mind-bending, but what I intended was something
 		// like: 
 		// 
