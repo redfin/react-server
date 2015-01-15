@@ -53,13 +53,25 @@ class ClientController extends EventEmitter {
 		context.onNavigate( (err, page, path, type) => {
 			debug('Executing navigate action');
 			
+			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar 
+			// before rendering. 
+			// note that for browsers that do not have pushState, this will result in a window.location change 
+			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
+			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
+			if (type === History.events.PUSHSTATE && this._history) {
+				this._history.pushState(null, null, path);
+			}
+
 			if (err) {
 				// redirects are sent as errors, so let's handle it if that's the case. 
 				if (err.status && (err.status === 301 || err.status === 302)) {
 					if (!err.redirectUrl) {
 						console.error("A redirect status was sent without a corresponding redirect redirectUrl.", err);
 					} else {
-						setTimeout(() => this.context.navigate(new ClientRequest(err.redirectUrl)), 0);
+						setTimeout(() => {
+							this._history.replaceState(null, null, err.redirectUrl);
+							this.context.navigate(new ClientRequest(err.redirectUrl)); 
+						}, 0);
 					}
 				} else {
 					debug("There was an error:", err);
@@ -83,15 +95,6 @@ class ClientController extends EventEmitter {
 			}
 
 			cssHelper.ensureCss(routeName, page);
-
-			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar right
-			// before rendering. 
-			// note that for browsers that do not have pushState, this will result in a window.location change 
-			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
-			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
-			if (type === History.events.PUSHSTATE && this._history) {
-				this._history.pushState(null, null, path);
-			}
 
 			this._render(page);
 
