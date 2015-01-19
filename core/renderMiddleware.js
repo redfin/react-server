@@ -35,7 +35,7 @@ class Renderer {
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(routes) {
+module.exports = function(appConfig) {
 
 	return function (req, res, next) {
 
@@ -45,7 +45,7 @@ module.exports = function(routes) {
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
-				.setRoutes(routes)
+				.setAppConfig(appConfig)
 				.setLoaderOpts({}) // TODO FIXME
 				.setDefaultXhrHeadersFromRequest(req)
 				.create({

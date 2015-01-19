@@ -7,10 +7,11 @@ var EventEmitter = require('events').EventEmitter,
 
 class Navigator extends EventEmitter {
 
-	constructor (context, routes, applicationStore) {
-		this.router = new Router(routes);
+	constructor (context, appConfig, applicationStore) {
+		this.router = new Router(appConfig.routes);
 		this.context = context;
 		
+		this._globalMixins = appConfig.mixins;
 		this._loading = false;
 		this._currentRoute = null;
 	}
@@ -57,10 +58,9 @@ class Navigator extends EventEmitter {
 		// TODO: follow mixins recursively.
 		// TOOD: also allow mixins to be pulled from the routes.
 		var pageClasses = [];
-		if (pageConstructor.mixins) {
-			pageConstructor.mixins().forEach((mixin) => {pageClasses.push(mixin);});
-		}
-		pageClasses.push(pageConstructor);
+
+		this._addPageMixinsToArray(this._globalMixins, pageClasses);
+		this._addPageMixinsToArray([pageConstructor], pageClasses);
 
 		var pages = pageClasses.map((pageClass) => new pageClass());
 		var page = PageUtil.createPageChain(pages);
@@ -87,6 +87,18 @@ class Navigator extends EventEmitter {
 			console.error("Error while handling route.", err);
 		});
 
+	}
+
+	/** 
+	 * recursively adds the mixins in the pages array to array.
+	 */
+	_addPageMixinsToArray(pages, array) {
+		pages.forEach((page) => {
+			if (page.mixins) {
+				this._addPageMixinsToArray(page.mixins(), array);
+			}
+			array.push(page);
+		});
 	}
 
 	getState () {

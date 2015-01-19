@@ -17,7 +17,7 @@ var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
 
 class ClientController extends EventEmitter {
 
-	constructor ({routes, dehydratedState, mountNode}) {
+	constructor ({appConfig, dehydratedState, mountNode}) {
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
@@ -25,7 +25,7 @@ class ClientController extends EventEmitter {
 		this.config = buildConfig(dehydratedState.Config);
 		this.context = buildContext(
 			dehydratedState.InitialContext,
-			routes
+			appConfig
 		);
 		this.mountNode = mountNode;
 
@@ -270,9 +270,9 @@ function buildConfig(dehydratedConfig) {
 	return config;
 }
 
-function buildContext(dehydratedContext, routes) {
+function buildContext(dehydratedContext, appConfig) {
 	var context = new RequestContext.Builder()
-		.setRoutes(routes)
+		.setAppConfig(appConfig)
 		.create();
 	context.rehydrate(dehydratedContext);
 	return context;

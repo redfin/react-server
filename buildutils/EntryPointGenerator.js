@@ -23,7 +23,7 @@ module.exports = function(routesFilename) {
 		"function require(){return null;};\n" +
 	 	"function __LAZY_REQUIRE__(arg){return arg;};\n" + 
 	 	routes + "\n" +
-	 	"return module.exports;";
+	 	"return module.exports.routes;";
 
 	routes = new Function(routes)();
 	var routeNames = Object.keys(routes);
