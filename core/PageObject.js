@@ -14,7 +14,7 @@ class PageObject {
 	}
 
 	// singular, for now
-	getHeadStylesheet () {
+	getHeadStylesheets () {
 		return "";
 	}
 

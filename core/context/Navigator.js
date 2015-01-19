@@ -2,7 +2,8 @@
 var EventEmitter = require('events').EventEmitter,
 	Router = require('routr'),
 	Q = require('q'),
-	History = require("../components/History");
+	History = require("../components/History"),
+	PageUtil = require("../util/PageUtil");
 
 class Navigator extends EventEmitter {
 
@@ -52,15 +53,21 @@ class Navigator extends EventEmitter {
 	}
 
 	handlePage(pageConstructor, request, loader, type) {
-		// instantiate the page we need to fulfill this request.
-		var page = new pageConstructor();
+		// instantiate the pages we need to fulfill this request.
+		// TODO: follow mixins recursively.
+		// TOOD: also allow mixins to be pulled from the routes.
+		var pageClasses = [];
+		if (pageConstructor.mixins) {
+			pageConstructor.mixins().forEach((mixin) => {pageClasses.push(mixin);});
+		}
+		pageClasses.push(pageConstructor);
+
+		var pages = pageClasses.map((pageClass) => new pageClass());
+		var page = PageUtil.createPageChain(pages);
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
-		// respond. -sra.
-		// note that handleRoute can return a handleRouteResult or a Promise of handleRouteResult. using
-		// Q() to normalize that and make it always be a Promise of handleRouteResult. -sra.
-		var handleRouteValueOrPromise = page.handleRoute ? page.handleRoute(request, loader) : {code: 200};
-		Q(handleRouteValueOrPromise).then(handleRouteResult => {
+		// respond.
+		page.handleRoute(request, loader).then(handleRouteResult => {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
