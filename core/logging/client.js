@@ -21,9 +21,13 @@ var makeLogger = function(group, opts){
 
 	var logger = {
 		name: opts.name,
+		level: config.baseLevel,
 		log: function(){
 			var args  = [].slice.call(arguments)
 			,   level = args.shift()
+
+			if (config.levels[level] < config.levels[this.level])
+				return;
 
 			console.log.apply(
 				console,
@@ -55,4 +59,14 @@ var getLoggerForConfig = function(group, opts){
 
 var getLogger = stats.makeGetLogger(getLoggerForConfig);
 
-module.exports = { getLogger };
+var setLevel = function(group, level){
+
+	// Update level for any future loggers.
+	common.config[group].baseLevel = level;
+
+	// Also need to reconfigure any loggers that are alredy set up.
+	for (var logger in loggers[group])
+		loggers[group][logger].level = level;
+}
+
+module.exports = { getLogger, setLevel };

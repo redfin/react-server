@@ -40,4 +40,14 @@ var colorizeName = function(opts){
 
 var getLogger = stats.makeGetLogger(getLoggerForConfig);
 
-module.exports = { getLogger };
+var setLevel = function(group, level){
+
+	// Update level for any future loggers.
+	common.config[group].baseLevel = level;
+
+	// Also need to reconfigure any loggers that are alredy set up.
+	for (var logger in loggers[group].loggers)
+		loggers[group].loggers[logger].transports.console.level = level;
+}
+
+module.exports = { getLogger, setLevel };

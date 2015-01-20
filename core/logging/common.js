@@ -13,7 +13,7 @@ var LOG_LEVELS = {
 
 var config = {
 	main: {
-		baseLevel: 'debug',
+		baseLevel: 'error',
 		levels: LOG_LEVELS,
 		colors: {
 			emergency : 'red',
@@ -29,7 +29,7 @@ var config = {
 
 	// This config is for an internal logger used by the `time` method.
 	stats: {
-		baseLevel: 'fast',
+		baseLevel: 'slow',
 		levels: {
 			slow: 2,
 			fine: 1,
