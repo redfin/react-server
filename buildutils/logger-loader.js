@@ -1,3 +1,6 @@
+// This pattern matches either of these:
+//   - "__LOGGER__"
+//   - "__LOGGER__({ /* options */ })"
 var REPLACE_TOKEN = /__LOGGER__(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
 ,   THIS_MODULE   = /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logger-loader\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
