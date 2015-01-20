@@ -1,6 +1,6 @@
 
 var React = require('react/addons'),
-	debug = require('debug')('triton:ClientController'),
+	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
@@ -51,7 +51,7 @@ class ClientController extends EventEmitter {
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
 		context.onNavigate( (err, page, path, type) => {
-			debug('Executing navigate action');
+			logger.debug('Executing navigate action');
 			
 			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar 
 			// before rendering. 
@@ -74,8 +74,7 @@ class ClientController extends EventEmitter {
 						}, 0);
 					}
 				} else {
-					debug("There was an error:", err);
-					console.error(err);
+					logger.error("onNavigate error", err);
 				}
 				return;
 			}
@@ -103,7 +102,8 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
-		debug('React Rendering');
+		var t0 = new Date;
+		logger.debug('React Rendering');
 
 		// TODO: deal with promises and arrays of elements -sra.
 		var element = page.getElements();
@@ -111,7 +111,8 @@ class ClientController extends EventEmitter {
 		element = <div>{element}</div>;
 
 		React.render(element, this.mountNode, () => {
-			debug('React Rendered');
+			logger.debug('React Rendered');
+			logger.time('render', new Date - t0);
 			this.emit('render');
 		});
 	}
@@ -160,7 +161,7 @@ class ClientController extends EventEmitter {
 function checkNotEmpty(state, key) {
 	if (typeof state[key] === 'undefined') {
 		var msg = key + ' not defined in dehydrated state';
-		debug(msg)
+		logger.error(msg)
 		throw new Error(msg);
 	}
 }

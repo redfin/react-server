@@ -1,7 +1,6 @@
 
 var Q = require('q'),
 	logger = require('./logging').getLogger(__LOGGER__),
-	debug = require('debug')('rf:Loader'),
 	config = require("./config");
 
 
@@ -49,7 +48,7 @@ module.exports = class Loader {
 
 	rehydrate (state) {
 
-		debug("REHYDRATING LOADER!!");
+		logger.debug("REHYDRATING LOADER!!");
 
 		if (state.options) {
 			this.options = state.options;
@@ -82,7 +81,7 @@ module.exports = class Loader {
 		var actualUrl = this.buildUrl(urlPattern);
 
 		if (this.dataCache[actualUrl]) {
-			debug("HITTING CACHE, OH YEAH. ");
+			logger.debug("HITTING CACHE, OH YEAH. ");
 
 			var cacheEntry = this.dataCache[actualUrl],
 				promise = cacheEntry.dfd.promise;
@@ -147,7 +146,7 @@ module.exports = class Loader {
 		var dataCache = this.dataCache;
 		return promise.then(function (data) {
 			dataCache[actualUrl].requesters -= 1;
-			debug("Decrementing: ", dataCache[actualUrl]);
+			logger.debug("Decrementing: %s", dataCache[actualUrl]);
 			if (dataCache[actualUrl].requesters === 0) {
 				delete dataCache[actualUrl];
 			}
@@ -219,7 +218,7 @@ module.exports = class Loader {
 			dataCache[url].data = data;
 			dataCache[url].dfd.resolve(data);
 		} else {
-			debug("WTF?");
+			logger.debug("WTF?");
 		}
 	}
 
@@ -234,7 +233,7 @@ module.exports = class Loader {
 			// public URL (e.g. http://www.redfin.com)
 			prefix = config().apiServerPrefix;
 		}
-		debug("_apiServerPrefix: " + prefix);
+		logger.debug("_apiServerPrefix: " + prefix);
 		return prefix;
 	}
 

@@ -196,7 +196,9 @@ class BaseStore {
 // assumes the store is passed in on the props as 'store'
 // TODO - is this too restrictive? maybe we do want multiple change handlers for different stores?
 
-var debugCscm = require('debug')('rf:BaseStore.ComponentStoreChangeMixin');
+var loggerCscm = require('../logging').getLogger(__LOGGER__({
+	label: 'ComponentStoreChangeMixin'
+}));
 
 BaseStore.ComponentStoreChangeMixin = {
 	componentDidMount: function () {
@@ -222,7 +224,7 @@ BaseStore.ComponentStoreChangeMixin = {
 		try {
 			this.forceUpdate();
 		} catch (e) {
-			debugCscm("Error occurred during component update: " + e, e);
+			loggerCscm.error("Error occurred during component update", e);
 		}
 	}
 }

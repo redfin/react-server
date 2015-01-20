@@ -1,5 +1,5 @@
 
-var debug = require('debug')('rf:ClientCssHelper');
+var logger = require('../logging').getLogger(__LOGGER__);
 
 var pageCssLinkNode;
 var loadedCss = {};
@@ -21,7 +21,7 @@ var ClientCssHelper = module.exports = {
 		}
 
 		if (pageCssLinkNode === loadedCss[routeName]) {
-			debug("No-op: CSS for " + routeName + " is already in use");
+			logger.debug("No-op: CSS for " + routeName + " is already in use");
 			return;
 		}
 
@@ -36,7 +36,7 @@ var ClientCssHelper = module.exports = {
 			loadedCss[routeName] = styleTag;
 		}
 
-		debug('Updating to CSS for: ' + routeName);
+		logger.debug('Updating to CSS for: ' + routeName);
 		if (pageCssLinkNode) {
 			// remove loaded CSS from the DOM
 			pageCssLinkNode.parentNode.removeChild(pageCssLinkNode);
