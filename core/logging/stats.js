@@ -6,10 +6,9 @@
 //
 // Example:
 //
-//   var logger = require('./logging').getLogger(__LOGGER__, {
-//	fast: 25,
-//	fine: 100,
-//   });
+//   var logger = require('./logging').getLogger(__LOGGER__({
+//           timing: { fast: 25, fine: 100 }
+//   }));
 //
 var DEFAULT_THRESHOLDS = {
 	fast: 100,
@@ -20,21 +19,21 @@ var loggers = {};
 
 // Each logger actually has a second logger attached to it for stats.
 // This helper wires them up.
-var wrapLogger = function(getLoggerForConfig, name, options){
+var wrapLogger = function(getLoggerForConfig, opts){
 
-	var mainLogger  = getLoggerForConfig('main',  name, options)
-	,   statsLogger = getLoggerForConfig('stats', name, options)
+	var mainLogger  = getLoggerForConfig('main',  opts)
+	,   statsLogger = getLoggerForConfig('stats', opts)
 
 	// Copy the options we care about into a new object and fill in the
 	// defaults where necessary.
-	var opts = {};
+	var thresholds = {};
 	for (var k in DEFAULT_THRESHOLDS)
-		opts[k] = (options||{})[k]||DEFAULT_THRESHOLDS[k];
+		thresholds[k] = (opts.timing||{})[k]||DEFAULT_THRESHOLDS[k];
 
 	var classify = ms => {
-		     if (ms <= opts.fast) return 'fast';
-		else if (ms <= opts.fine) return 'fine';
-		else                      return 'slow';
+		     if (ms <= thresholds.fast) return 'fast';
+		else if (ms <= thresholds.fine) return 'fine';
+		else                            return 'slow';
 	}
 
 	// This is the method that's exposed on the primary logger.
@@ -45,8 +44,8 @@ var wrapLogger = function(getLoggerForConfig, name, options){
 	return mainLogger;
 }
 
-var getCombinedLogger = function(getLoggerForConfig, name, options){
-	return loggers[name] || (loggers[name] = wrapLogger(getLoggerForConfig, name, options));
+var getCombinedLogger = function(getLoggerForConfig, opts){
+	return loggers[opts.name] || (loggers[opts.name] = wrapLogger(getLoggerForConfig, opts));
 }
 
 // This is a helper function that takes an internal `getLoggerForConfig`
@@ -55,7 +54,7 @@ var getCombinedLogger = function(getLoggerForConfig, name, options){
 // each of our two loggers and then stitches the stats logger onto the main
 // logger.
 var makeGetLogger = getLoggerForConfig => (
-	(name, options) => getCombinedLogger(getLoggerForConfig, name, options)
+	(opts) => getCombinedLogger(getLoggerForConfig, opts)
 );
 
 module.exports = { makeGetLogger };

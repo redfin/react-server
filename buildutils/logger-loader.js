@@ -1,4 +1,4 @@
-var REPLACE_TOKEN = /__LOGGER__/g
+var REPLACE_TOKEN = /__LOGGER__(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
 ,   THIS_MODULE   = /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logger-loader\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
@@ -6,19 +6,25 @@ module.exports = function(source){
 	return source.replace(REPLACE_TOKEN, loggerSpec.bind(this));
 }
 
-var loggerSpec = function(){
-	var fn = this.resourcePath;
+var loggerSpec = function(fullMatch, optString){
+	var fn   = this.resourcePath
+	,   opts = {}
 
 	if (fn.indexOf(BASE_PATH) != 0)
 		throw("Unable to handle "+REPLACE_TOKEN+" for "+fn);
 
-	return JSON.stringify({
-		name  : getName(fn),
-		color : getColor(fn),
-	});
+	if (optString)
+		// The slash replacement here is so we don't choke on example
+		// loggers in comments.
+		opts = new Function("return "+optString.replace(/^\/\//mg,''))();
+
+	opts.name  = getName  (fn)
+	opts.color = getColor (fn)
+
+	return JSON.stringify(opts);
 }
 
-var getName = function(fn){
+var getName = function(fn, opts){
 	return fn.substring(BASE_PATH.length, fn.length)
 		.replace(/\.jsx?$/, '')
 		.replace(/\//g,'.')

@@ -16,11 +16,11 @@ var loggers = {};
 for (var group in common.config)
 	loggers[group] = {};
 
-var makeLogger = function(group, spec, options){
+var makeLogger = function(group, opts){
 	var config = common.config[group]
 
 	var logger = {
-		name: spec.name,
+		name: opts.name,
 		log: function(){
 			var args  = [].slice.call(arguments)
 			,   level = args.shift()
@@ -28,10 +28,10 @@ var makeLogger = function(group, spec, options){
 			console.log.apply(
 				console,
 				[
-					'%c'+level+'%c: [%c'+spec.name+'%c]',
+					'%c'+level+'%c: [%c'+opts.name+'%c]',
 					'color: '+config.colors[level],
 					'color: black',
-					'color: '+spec.color.client,
+					'color: '+opts.color.client,
 					'color: black',
 				].concat(args)
 			);
@@ -47,9 +47,9 @@ var makeLogger = function(group, spec, options){
 	return logger;
 }
 
-var getLoggerForConfig = function(group, spec, options){
-	return loggers[group][spec.name] || (
-		loggers[group][spec.name] = makeLogger(group, spec, options)
+var getLoggerForConfig = function(group, opts){
+	return loggers[group][opts.name] || (
+		loggers[group][opts.name] = makeLogger(group, opts)
 	);
 }
 

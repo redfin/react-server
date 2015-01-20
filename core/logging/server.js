@@ -7,14 +7,14 @@ var loggers = {};
 for (var group in common.config)
 	loggers[group] = new winston.Container({});
 
-var getLoggerForConfig = function(group, spec, options){
+var getLoggerForConfig = function(group, opts){
 	var config = common.config[group];
 
 	// The `loggers` collection's `get` method auto-adds on miss, and
 	// returns existing on hit.
-	var logger = loggers[group].get(spec.name, {
+	var logger = loggers[group].get(opts.name, {
 		console: {
-			label     : colorizeName(spec),
+			label     : colorizeName(opts),
 			level     : config.baseLevel,
 			colorize  : process.stdout.isTTY,
 			timestamp : false,  // TODO: Want this in production.
@@ -29,13 +29,13 @@ var getLoggerForConfig = function(group, spec, options){
 	return logger;
 }
 
-var colorizeName = function(spec){
+var colorizeName = function(opts){
 
 	// Only colorize if we're attached to a terminal.
 	if (!process.stdout.isTTY)
-		return spec.name;
+		return opts.name;
 
-	return `\x1B[38;5;${spec.color.server}m${spec.name}\x1B[0m`;
+	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
 }
 
 var getLogger = stats.makeGetLogger(getLoggerForConfig);
