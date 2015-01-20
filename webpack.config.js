@@ -26,11 +26,11 @@ module.exports = {
         extensions: ["", ".js", ".jsx"]
     },
     resolveLoader: {
-        root: __dirname // For the logging-name-loader, which is relative.
+        root: __dirname // For the logger-loader, which is relative.
     },
     module: {
         loaders: [            
-            { test: /\.jsx?$/, loader: "buildutils/logging-name-loader" },
+            { test: /\.jsx?$/, loader: "buildutils/logger-loader" },
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" }
         ]
     },

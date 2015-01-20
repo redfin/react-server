@@ -6,7 +6,7 @@
 //
 // Example:
 //
-//   var logger = require('./logging').getLogger(__LOGGING_NAME__, {
+//   var logger = require('./logging').getLogger(__LOGGER__, {
 //	fast: 25,
 //	fine: 100,
 //   });

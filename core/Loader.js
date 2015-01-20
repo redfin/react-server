@@ -1,6 +1,6 @@
 
 var Q = require('q'),
-	logger = require('./logging').getLogger(__LOGGING_NAME__),
+	logger = require('./logging').getLogger(__LOGGER__),
 	debug = require('debug')('rf:Loader'),
 	config = require("./config");
 

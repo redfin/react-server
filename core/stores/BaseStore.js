@@ -6,7 +6,7 @@
  */
 // 'use strict';
 
-var logger = require('../logging').getLogger(__LOGGING_NAME__),
+var logger = require('../logging').getLogger(__LOGGER__),
 	EventEmitter = require('events').EventEmitter,
 	Q = require('q'),
     CHANGE_EVENT = 'change';
