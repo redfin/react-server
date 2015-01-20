@@ -18,16 +18,19 @@ var loggerSpec = function(fullMatch, optString){
 		// loggers in comments.
 		opts = new Function("return "+optString.replace(/^\/\//mg,''))();
 
-	opts.name  = getName  (fn)
-	opts.color = getColor (fn)
+	opts.name  = getName  (fn, opts);
+	opts.color = getColor (fn, opts);
 
 	return JSON.stringify(opts);
 }
 
 var getName = function(fn, opts){
-	return fn.substring(BASE_PATH.length, fn.length)
+	var name = fn.substring(BASE_PATH.length, fn.length)
 		.replace(/\.jsx?$/, '')
 		.replace(/\//g,'.')
+	if (opts.label)
+		name += '.'+opts.label
+	return name;
 }
 
 var getColor = (function(){
