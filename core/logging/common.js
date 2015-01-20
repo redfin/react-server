@@ -31,8 +31,11 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 
 	// This config is for an internal logger used by the `time` method.
 	stats: {
-		baseLevel: 'slow',
+		// TODO: Some day, when slow times are rare, we should set
+		// this to 'slow' in production to surface performance issues.
+		baseLevel: 'none',
 		levels: {
+			none: 3, // Not used.  Disables in production.
 			slow: 2,
 			fine: 1,
 			fast: 0,
