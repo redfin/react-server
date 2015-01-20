@@ -23,7 +23,7 @@
  * Example:
  *
  *   var fooLogger = logging.getLogger(__LOGGER__({ label: "foo" }));
- *   var fooLogger = logging.getLogger(__LOGGER__({ label: "bar" }));
+ *   var barLogger = logging.getLogger(__LOGGER__({ label: "bar" }));
  *
  */
 if (SERVER_SIDE)
