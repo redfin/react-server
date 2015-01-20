@@ -17,6 +17,14 @@
  *
  *   logger.time(`result.${http_status_code}`, time_in_ms);
  *
+ * If you need more than one logger in your module, you can distinguish them
+ * with labels:
+ *
+ * Example:
+ *
+ *   var fooLogger = logging.getLogger(__LOGGER__({ label: "foo" }));
+ *   var fooLogger = logging.getLogger(__LOGGER__({ label: "bar" }));
+ *
  */
 if (SERVER_SIDE)
 	module.exports = require('./logging/server.js');
