@@ -11,10 +11,12 @@
 var common = require('./common')
 ,   stats  = require('./stats')
 
-var loggers = {};
+// These need to be shared across triton and corvair.
+var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
 
-for (var group in common.config)
-	loggers[group] = {};
+if (!Object.keys(loggers).length)
+	for (var group in common.config)
+		loggers[group] = {};
 
 var makeLogger = function(group, opts){
 	var config = common.config[group]

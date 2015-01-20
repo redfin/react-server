@@ -11,7 +11,9 @@ var LOG_LEVELS = {
 	debug     : 0,
 }
 
-var config = {
+// Need these to be shared across triton and corvair (can actually be modified
+// by the logging modules).
+var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 	main: {
 		baseLevel: 'error',
 		levels: LOG_LEVELS,
@@ -41,6 +43,6 @@ var config = {
 			fast: 'green',
 		},
 	},
-};
+}));
 
 module.exports = { config };
