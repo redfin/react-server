@@ -31,6 +31,7 @@ module.exports = {
         "routr",
         "superagent",
         "webpack",
+        "winston",
         "rimraf",
         "fs"
     ],
@@ -38,9 +39,13 @@ module.exports = {
         modulesDirectories: ['node_modules'],
         extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx" ,".bars"]
     },
+    resolveLoader: {
+        root: __dirname // For the logger-loader, which is relative.
+    },
     module: {
         loaders: [
             // { test: /(\.less)|(\.css)$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader") },
+            { test: /\.jsx?$/, loader: "buildutils/logger-loader" },
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" },
 
             // for server-side, we don't need style files

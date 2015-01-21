@@ -19,13 +19,18 @@ module.exports = {
     externals: [
         "react", 
         "react/addons",
-        "superagent"
+        "superagent",
+        "winston"
     ],
     resolve: {
         extensions: ["", ".js", ".jsx"]
     },
+    resolveLoader: {
+        root: __dirname // For the logger-loader, which is relative.
+    },
     module: {
         loaders: [            
+            { test: /\.jsx?$/, loader: "buildutils/logger-loader" },
             { test: /\.jsx?$/, loader: "jsx-loader?harmony" }
         ]
     },

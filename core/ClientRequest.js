@@ -17,6 +17,10 @@ class ClientRequest {
 		return this._url;
 	}
 
+	getRouteParams() {
+		return this._route.params;
+	}
+
 	getMethod() {
 		// I believe that client-side transitions should always be
 		// HTTP GETs -sra.
