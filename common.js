@@ -7,5 +7,6 @@ module.exports = {
 	actions: require('./core/actions'),
 	ObjectGraph: require('./core/util/ObjectGraph'),
 	bundleNameUtil: require("./core/util/bundleNameUtil"),
+	logging: require("./core/logging"),
 	config: require("./core/config")
 }

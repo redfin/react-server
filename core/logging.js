@@ -1,7 +1,7 @@
 /*
  * Include a logger in your module with:
  *
- *   var logger = require('triton/core/logging').getLogger(__LOGGER__);
+ *   var logger = require('triton').logging.getLogger(__LOGGER__);
  *
  * This `logger` has methods for each level specified in logging/common.js.
  *
