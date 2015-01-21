@@ -20,8 +20,6 @@ export R3S_PID="/redfin/r3s/.pid"
 
 export R3S_CONFIGS="/redfin/r3s/conf"
 
-export DEBUG="rf:*"
-
 LOGDIR=/redfin/r3s/logs
 echo "Starting R3S..."
 echo "Logging to: $LOGDIR/r3s.log"

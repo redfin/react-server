@@ -17,7 +17,8 @@
     "debug": "2.1.0",
     "q": "1.0.1",
     "rimraf": "2.2.8",
-    "routr": "0.0.5"
+    "routr": "0.0.5",
+    "winston": "0.8.3"
   },
   "peerDependencies": {
     "react": "0.12.2",
