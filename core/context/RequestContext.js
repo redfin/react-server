@@ -4,7 +4,7 @@ var SuperAgentWrapper = require('../util/SuperAgentWrapper'),
 	Bouncer = require('../util/Bouncer'),
 	ObjectGraph = require('../util/ObjectGraph'),
 	Navigator = require('./Navigator'),
-	RequestGlobals = require('../util/RequestLocalStorage').getGlobals(),
+	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
 	Q = require('q');
 
 // TODO FIXME
@@ -25,6 +25,15 @@ class RequestContext {
 		this.navigator = new Navigator(this, routes);
 
 		this._navigateListeners = [];
+
+		// Kick this off right away, and make the promise available.
+		this.loadUserData();
+
+		RequestLocals().instance = this;
+	}
+
+	static getCurrentRequestContext () {
+		return RequestLocals().instance;
 	}
 
 	loadUserData () {
@@ -61,9 +70,6 @@ class RequestContext {
 		this._bouncer = new Bouncer(userDataResult.bouncerData);
 		this._userData = new ObjectGraph(userDataResult.userData).getRoot();
 
-		// Stash this so AccessLevelUtil can access it.
-		RequestGlobals().g_jsonLogin = userDataResult.g_jsonLogin;
-
 		dfd.resolve(userDataResult);
 	}
 
@@ -77,6 +83,10 @@ class RequestContext {
 
 	getBouncer () {
 		return this._bouncer;
+	}
+
+	getUserDataPromise () {
+		return this._userDataPromise;
 	}
 
 	dehydrate () {

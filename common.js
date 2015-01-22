@@ -7,6 +7,7 @@ module.exports = {
 	actions: require('./core/actions'),
 	ObjectGraph: require('./core/util/ObjectGraph'),
 	RequestLocalStorage: require('./core/util/RequestLocalStorage'),
+	getCurrentRequestContext: require('./core/context/RequestContext').getCurrentRequestContext,
 	bundleNameUtil: require("./core/util/bundleNameUtil"),
 	logging: require("./core/logging"),
 	config: require("./core/config")

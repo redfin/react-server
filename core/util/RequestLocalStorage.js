@@ -1,28 +1,15 @@
 
-/* This module provides access to objects that are scoped to the lifespan of
+/* This module provides access to objects that are scoped to the lifespan of a
  * request.
  *
- * Use `getGlobals` for a globally shared object.
+ * Use `getNamespace` to retrieve a module-level object provider.
  *
- * Use `getLocals` for a module-level object.
+ * Note that `getNamespace` _returns a function_.  It should be called at the
+ * module level.  The function that's returned must be called _for each access_.
  *
- * Note that both of these functions _return functions_.  The first function
- * (`getGlobals` or `getLocals`) should be called once per module.  The
- * function that's returned from this must be called _for each access_.
+ * Example:
  *
- * Example (`getGlobals`):
- *
- *   var RequestGlobals = require('triton').RequestLocalStorage.getGlobals();
- *
- *   var setMyVar = function(){
- *
- *     // Stash a value in _current_ request's globals.
- *     RequestGlobals().g_myVar = 'foo';
- *   }
- *
- * Example (`getLocals`):
- *
- *   var RequestLocals = require('triton').RequestLocalStorage.getLocals();
+ *   var RequestLocals = require('triton').RequestLocalStorage.getNamespace();
  *
  *   var getInstance = function(){
  *
@@ -49,12 +36,10 @@ if (SERVER_SIDE){
 	,   startRequest = () => container = []
 }
 
-var getLocals = (function(){
-	var i = -1;
-	return () => (i++, () => getContainer()[i] || (getContainer()[i] = {}));
-})();
+var namespaces         = 0
+,   getCountNamespaces = () => namespaces
+,   getNamespace       = () => (
+	(i => () => getContainer()[i] || (getContainer()[i] = {}))(namespaces++)
+)
 
-var requestGlobals = getLocals()
-,   getGlobals     = () => requestGlobals
-
-module.exports = { getGlobals, getLocals, startRequest };
+module.exports = { getNamespace, getCountNamespaces, startRequest };

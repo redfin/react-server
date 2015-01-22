@@ -42,6 +42,9 @@ module.exports = function(routes) {
 
 		logger.debug('request: %s', req.path);
 
+		// Just to keep an eye out for leaks.
+		logger.debug('RequestLocalStorage namespaces: %s', RequestLocalStorage.getCountNamespaces());
+
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
 				.setRoutes(routes)
