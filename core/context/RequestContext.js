@@ -4,6 +4,7 @@ var SuperAgentWrapper = require('../util/SuperAgentWrapper'),
 	Bouncer = require('../util/Bouncer'),
 	ObjectGraph = require('../util/ObjectGraph'),
 	Navigator = require('./Navigator'),
+	RequestGlobals = require('../util/RequestLocalStorage').getGlobals(),
 	Q = require('q');
 
 // TODO FIXME
@@ -59,6 +60,9 @@ class RequestContext {
 
 		this._bouncer = new Bouncer(userDataResult.bouncerData);
 		this._userData = new ObjectGraph(userDataResult.userData).getRoot();
+
+		// Stash this so AccessLevelUtil can access it.
+		RequestGlobals().g_jsonLogin = userDataResult.g_jsonLogin;
 
 		dfd.resolve(userDataResult);
 	}

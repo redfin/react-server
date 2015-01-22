@@ -2,6 +2,7 @@
 var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
+	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
@@ -35,7 +36,7 @@ class Renderer {
  */
 module.exports = function(routes) {
 
-	return function (req, res, next) {
+	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
 
 		var start = new Date();
 
@@ -74,7 +75,7 @@ module.exports = function(routes) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	}
+	})}
 }
 
 function beginRender(req, res, start, context, userDataDfd, page) {
