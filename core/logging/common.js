@@ -30,7 +30,7 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 	},
 
 	// This config is for an internal logger used by the `time` method.
-	stats: {
+	time: {
 		// TODO: Some day, when slow times are rare, we should set
 		// this to 'slow' in production to surface performance issues.
 		baseLevel: 'none',
@@ -44,6 +44,24 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 			slow: 'red',
 			fine: 'yellow',
 			fast: 'green',
+		},
+	},
+
+	// This config is for an internal logger used by the `guage` method.
+	guage: {
+		// TODO: Some day, when abnormal values are rare, we should
+		// set this to 'lo' in production to surface issues.
+		baseLevel: 'no',
+		levels: {
+			no: 3, // Not used.  Disables in production.
+			hi: 2,
+			lo: 1,
+			ok: 0,
+		},
+		colors: {
+			hi: 'red',
+			lo: 'red',
+			ok: 'green',
 		},
 	},
 }));

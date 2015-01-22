@@ -10,36 +10,64 @@
 //           timing: { fast: 25, fine: 100 }
 //   }));
 //
-var DEFAULT_THRESHOLDS = {
+var DEFAULT_TIME_THRESHOLDS = {
 	fast: 100,
 	fine: 250,
 }
 
+// This is a subjective classification of guage values into three
+// buckets: "lo", "hi" and "ok".
+//
+// If you're tracking something for which these default thresholds don't make
+// sense, you can override them in your call to `getLogger`.
+//
+// Example:
+//
+//   var logger = require('./logging').getLogger(__LOGGER__({
+//           guage: { lo: 10000, hi: 100000 }
+//   }));
+//
+var DEFAULT_GUAGE_THRESHOLDS = {
+	lo: -1,
+	hi: 101,
+}
+
 var loggers = {};
 
-// Each logger actually has a second logger attached to it for stats.
+// Each logger actually has some secondary loggers attached to it for stats.
 // This helper wires them up.
 var wrapLogger = function(getLoggerForConfig, opts){
 
 	var mainLogger  = getLoggerForConfig('main',  opts)
-	,   statsLogger = getLoggerForConfig('stats', opts)
+	,   timeLogger  = getLoggerForConfig('time',  opts)
+	,   guageLogger = getLoggerForConfig('guage', opts)
 
 	// Copy the options we care about into a new object and fill in the
 	// defaults where necessary.
-	var thresholds = {};
-	for (var k in DEFAULT_THRESHOLDS)
-		thresholds[k] = (opts.timing||{})[k]||DEFAULT_THRESHOLDS[k];
+	var timeThresholds = {};
+	for (var k in DEFAULT_TIME_THRESHOLDS)
+		timeThresholds[k] = (opts.timing||{})[k]||DEFAULT_TIME_THRESHOLDS[k];
 
-	var classify = ms => {
-		     if (ms <= thresholds.fast) return 'fast';
-		else if (ms <= thresholds.fine) return 'fine';
-		else                            return 'slow';
+	var classifyTime = ms => {
+		     if (ms <= timeThresholds.fast) return 'fast';
+		else if (ms <= timeThresholds.fine) return 'fine';
+		else                                return 'slow';
 	}
 
-	// This is the method that's exposed on the primary logger.
-	// It just dispatches to the appropriate log level on the secondary
-	// logger.
-	mainLogger.time = (token, ms) => statsLogger[classify(ms)](token, {ms});
+	var guageThresholds = {};
+	for (var k in DEFAULT_GUAGE_THRESHOLDS)
+		guageThresholds[k] = (opts.guage||{})[k]||DEFAULT_GUAGE_THRESHOLDS[k];
+
+	var classifyGuage = val=> {
+		     if (val <= guageThresholds.lo) return 'lo';
+		else if (val >= guageThresholds.hi) return 'hi';
+		else                                return 'ok';
+	}
+
+	// These are methods that are exposed on the primary logger.
+	// They just dispatch to appropriate log levels on secondary loggers.
+	mainLogger.time  = (token, ms ) => timeLogger [classifyTime (ms )](token, {ms });
+	mainLogger.guage = (token, val) => guageLogger[classifyGuage(val)](token, {val});
 
 	return mainLogger;
 }
