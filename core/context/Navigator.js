@@ -72,6 +72,7 @@ class Navigator extends EventEmitter {
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
 				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, null, request.getUrl(), type);
+				return;
 			}
 			if (handleRouteResult.page) {
 				// in this case, we should forward to a new page *without* changing the URL. Since we are already

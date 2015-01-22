@@ -1,5 +1,5 @@
 
-var debug = require('debug')('rf:ClientCssHelper');
+var logger = require('../logging').getLogger(__LOGGER__);
 
 var pageCssLinkNode;
 var loadedCss = {};
@@ -33,7 +33,7 @@ var ClientCssHelper = module.exports = {
 			// TODO: indexOf is ES5 only; not sure if it's polyfilled.
 			if (-1 === newCss.indexOf(styleSheetUrl)) {
 				// remove the corresponding node from the DOM.
-				debug("ensureCss removing stylesheet: " + styleSheetUrl);
+				logger.debug("Removing stylesheet: " + styleSheetUrl);
 				var node = loadedCss[styleSheetUrl];
 				node.parentNode.removeChild(node);
 				delete loadedCss[styleSheetUrl];
@@ -45,7 +45,7 @@ var ClientCssHelper = module.exports = {
 			if (!loadedCss[styleSheetUrl]) {
 				// this means that the CSS is not currently present in the
 				// document, so we need to add it.
-				debug("ensureCss adding stylesheet: " + styleSheetUrl);
+				logger.debug("Adding stylesheet: " + styleSheetUrl);
 				var styleTag = document.createElement('link');
 				styleTag.rel = 'stylesheet';
 				styleTag.type = 'text/css';
@@ -54,7 +54,7 @@ var ClientCssHelper = module.exports = {
 				loadedCss[styleSheetUrl] = styleTag;
 				document.head.appendChild(styleTag);
 			} else {
-				debug("ensureCss stylesheet already loaded (no-op): " + styleSheetUrl);
+				logger.debug("Stylesheet already loaded (no-op): " + styleSheetUrl);
 			}
 		});
 	}

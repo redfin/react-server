@@ -1,6 +1,6 @@
 
 var React = require('react/addons'),
-	debug = require('debug')('triton:ClientController'),
+	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
@@ -55,19 +55,30 @@ class ClientController extends EventEmitter {
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
 		context.onNavigate( (err, page, path, type) => {
-			debug('Executing navigate action');
+			logger.debug('Executing navigate action');
 			
+			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar 
+			// before rendering. 
+			// note that for browsers that do not have pushState, this will result in a window.location change 
+			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
+			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
+			if (type === History.events.PUSHSTATE && this._history) {
+				this._history.pushState(null, null, path);
+			}
+
 			if (err) {
 				// redirects are sent as errors, so let's handle it if that's the case. 
 				if (err.status && (err.status === 301 || err.status === 302)) {
 					if (!err.redirectUrl) {
 						console.error("A redirect status was sent without a corresponding redirect redirectUrl.", err);
 					} else {
-						setTimeout(() => this.context.navigate(new ClientRequest(err.redirectUrl)), 0);
+						setTimeout(() => {
+							this._history.replaceState(null, null, err.redirectUrl);
+							this.context.navigate(new ClientRequest(err.redirectUrl)); 
+						}, 0);
 					}
 				} else {
-					debug("There was an error:", err);
-					console.error(err);
+					logger.error("onNavigate error", err);
 				}
 				return;
 			}
@@ -88,15 +99,6 @@ class ClientController extends EventEmitter {
 
 			cssHelper.ensureCss(routeName, page);
 
-			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar right
-			// before rendering. 
-			// note that for browsers that do not have pushState, this will result in a window.location change 
-			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
-			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
-			if (type === History.events.PUSHSTATE && this._history) {
-				this._history.pushState(null, null, path);
-			}
-
 			this._render(page);
 
 		});
@@ -104,6 +106,8 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
+		var t0 = new Date;
+		logger.debug('React Rendering');
 
 		// if we were previously rendered on the client, clean up the old divs and 
 		// their ReactComponents.
@@ -116,13 +120,12 @@ class ClientController extends EventEmitter {
 			serverRenderedRoots[rootElement.getAttribute(TRITON_DATA_ATTRIBUTE)] = rootElement;
 		});
 
-		debug('React Rendering');
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
 		var renderElement = (element, index) => {
 			// for each ReactElement that we want to render, either use the server-rendered root element, or 
 			// create a new root element.
-			debug("Rendering root node #" + index);
+			logger.debug("Rendering root node #" + index);
 			var root = serverRenderedRoots[index] || this._createTritonRootNode(this.mountNode, index);
 
 			// TODO: get rid of context once continuation-local-storage holds our important context vars.
@@ -154,10 +157,11 @@ class ClientController extends EventEmitter {
 	 		renderElement(element, elementPromises.length - 1);
 
 			this._previouslyRendered = true;
-			debug('React Rendered');
+			logger.debug('React Rendered');
+			logger.time('render', new Date - t0);
 			this.emit('render');
 		}).catch((err) => {
-			debug("Error while rendering.", err);
+			logger.debug("Error while rendering.", err);
 		});
 	}
 
@@ -167,7 +171,7 @@ class ClientController extends EventEmitter {
 	 */
 	_cleanupPreviousRender(mountNode) {
 		if (this._previouslyRendered) {
-			debug("Removing previous page's React components");
+			logger.debug("Removing previous page's React components");
 
 			this._getRootElements(mountNode).forEach((tritonRoot) => {
 				// since this node has a "data-triton-root-id" attribute, we can assume that we created it and 
@@ -258,7 +262,7 @@ class ClientController extends EventEmitter {
 function checkNotEmpty(state, key) {
 	if (typeof state[key] === 'undefined') {
 		var msg = key + ' not defined in dehydrated state';
-		debug(msg)
+		logger.error(msg)
 		throw new Error(msg);
 	}
 }

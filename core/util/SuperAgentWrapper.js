@@ -1,5 +1,4 @@
-var debug = require('debug')('rf:SuperAgentWrapperPlugin'),
-	superagent = require('superagent');
+var superagent = require('superagent');
 
 
 /**

@@ -1,5 +1,5 @@
 
-var debug = require('debug')('rf:renderMiddleware'),
+var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
@@ -25,7 +25,7 @@ class Renderer {
 	}
 
 	render (handlerResult) {
-		debug("Triggering userData load");
+		logger.debug("Triggering userData load");
 		beginRender(req, res, start, context, this._userDataPromise, handlerResult);
 	}
 
@@ -41,7 +41,7 @@ module.exports = function(appConfig) {
 
 		var start = new Date();
 
-		debug('request: ', req.path);
+		logger.debug('request: %s', req.path);
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
@@ -56,7 +56,7 @@ module.exports = function(appConfig) {
 		context.onNavigate( (err, page) => {
 
 			if (err) {
-				debug("There was an error:", err);
+				logger.error("onNavigate error", err);
 				if (err.status && err.status === 404) {
 					next();
 				} else if (err.status === 301 || err.status === 302) {
@@ -67,7 +67,7 @@ module.exports = function(appConfig) {
 				return;
 			}
 
-			debug('Executing navigate action');
+			logger.debug('Executing navigate action');
 			
 			var userDataPromise = context.loadUserData();
 			beginRender(req, res, start, context, userDataPromise, page);
@@ -83,7 +83,7 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
-	debug("Route Name", routeName);
+	logger.debug("Route Name: %s", routeName);
 
 	// regardless of what happens, write out the header part
 	// TODO: should this include the common.js file? seems like it
@@ -102,11 +102,10 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
-
 }
 
 function writeHeader(req, res, routeName, pageObject) {
-	debug('Sending header');
+	logger.debug('Sending header');
 	res.type('html');
 
 	res.write("<!DOCTYPE html><html><head>");
@@ -180,7 +179,7 @@ function renderStylesheets (pageObject, res) {
  */
 function writeBody(req, res, context, start, page) {
 
-	debug("React Rendering");
+	logger.debug("React Rendering");
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
@@ -202,7 +201,7 @@ function writeBody(req, res, context, start, page) {
  		if (!rendered[elementPromises.length - 1]) renderElement(res, element, context, elementPromises.length - 1);
  		rendered[elementPromises.length - 1] = true;
 	}).catch((err) => {
-		debug("Error while rendering", err);
+		logger.debug("Error while rendering", err);
 	});
 
 	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,
@@ -212,7 +211,7 @@ function writeBody(req, res, context, start, page) {
 		// if we rendered everything up to the last element already, just return.
 		if (rendered[elementPromises.length - 1]) return;
 
-		debug("Timeout Exceeeded. Rendering...");
+		logger.debug("Timeout Exceeeded. Rendering...");
 		elementPromises.forEach((promise, index) => {
 			if (!rendered[index]) {
 				renderElement(res, promise.getValue(), context, index);
@@ -236,7 +235,7 @@ function renderElement(res, element, context, index) {
 }
 
 function writeData(req, res, context, start) {
-	debug('Exposing context state');
+	logger.debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
 
@@ -248,16 +247,22 @@ function writeData(req, res, context, start) {
 
 	res.write(pageFooter);
 
-	debug("Content Written: " + (new Date().getTime() - start.getTime()) + "ms");
+
+	var routeName = context.navigator.getCurrentRoute().name;
+
+	logger.time(`content_written.${routeName}`, new Date - start);
 }
 
 function setupLateArrivals(req, res, context, start) {
 	var loader = context.loader;
 	var notLoaded = loader.getPendingRequests();
+	var routeName = context.navigator.getCurrentRoute().name;
+
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
-			debug("Late arrival: " + pendingRequest.url + ". Arrived " + (new Date().getTime() - start.getTime()) + "ms after page start.");
+			logger.debug("Late arrival: %s", pendingRequest.url)
+			logger.time(`late_arrival.${routeName}`, new Date - start);
 			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
 		})
 	});
@@ -266,7 +271,7 @@ function setupLateArrivals(req, res, context, start) {
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
 	Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
-		debug("All Done: " + (new Date().getTime() - start.getTime()) + "ms");
+		logger.time(`all_done.${routeName}`, new Date - start);
 	});
 }
 
