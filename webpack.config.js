@@ -17,7 +17,6 @@ module.exports = {
         libraryTarget: 'commonjs2'
     },
     externals: [
-        "continuation-local-storage",
         "react", 
         "react/addons",
         "superagent",
