@@ -41,7 +41,7 @@ module.exports = function(appConfig) {
 
 		var start = new Date();
 
-		logger.debug('request: %s', req.path);
+		logger.debug(`Incoming request for ${req.path}`);
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
@@ -80,10 +80,9 @@ module.exports = function(appConfig) {
 }
 
 function beginRender(req, res, start, context, userDataDfd, page) {
+	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
-
-	logger.debug("Route Name: %s", routeName);
 
 	// regardless of what happens, write out the header part
 	// TODO: should this include the common.js file? seems like it
@@ -105,7 +104,7 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 }
 
 function writeHeader(req, res, routeName, pageObject) {
-	logger.debug('Sending header');
+	logger.debug('Starting document header');
 	res.type('html');
 
 	res.write("<!DOCTYPE html><html><head>");
@@ -118,12 +117,15 @@ function writeHeader(req, res, routeName, pageObject) {
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
 		// can close the head and start the body element.
+		logger.debug("Starting body");
+
 		res.write(`</head><body class='route-${routeName}'><div id='content'>`);
 	});
 }
 
 function renderTitle (pageObject, res) {
 	return pageObject.getTitle().then((title) => {
+		logger.debug("Rendering title");
 		res.write(`<title>${title}</title>`);
 	});
 }
@@ -133,6 +135,7 @@ function renderMetaTags (pageObject, res) {
 
 	var metaTagsRendered = Object.keys(metaTags).map(metaName => {
 		return metaTags[metaName].then(metaValue => {
+			logger.debug(`Rendering meta tag "${metaName}"`);
 			// TODO: escaping
 			// TODO: what to do about http-equiv? charset? itemProp?
 			res.write(`<meta name="${metaName}" content="${metaValue}"></meta>`);
@@ -145,6 +148,7 @@ function renderMetaTags (pageObject, res) {
 function renderScripts(pageObject, res) {
 	pageObject.getHeadScriptFiles().forEach( (scriptPath) => {
 		// make sure there's a leading '/'
+		logger.debug("Rendering script");
 		res.write(`<script src="${scriptPath}"></script>`);
 	});
 
@@ -154,6 +158,7 @@ function renderScripts(pageObject, res) {
 
 function renderStylesheets (pageObject, res) {
 	pageObject.getHeadStylesheets().forEach((styleSheet) => {
+		logger.debug("Rendering stylesheet");
 				res.write(`<link rel="stylesheet" type="text/css" href="${styleSheet}" ${ClientCssHelper.PAGE_CSS_NODE_ID}="${styleSheet}">`);
 	});
 
@@ -222,10 +227,11 @@ function writeBody(req, res, context, start, page) {
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise).then(()=> logger.debug("Finished rendering body."));
 }
 
 function renderElement(res, element, context, index) {
+	logger.debug(`Rendering root element #${index}`);
 	res.write(`<div data-triton-root-id=${index}>`);
 	if (element !== null) {
 		element = React.addons.cloneWithProps(element, { context: context });

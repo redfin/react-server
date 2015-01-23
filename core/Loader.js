@@ -79,9 +79,10 @@ module.exports = class Loader {
 	
 	load (urlPattern) {
 		var actualUrl = this.buildUrl(urlPattern);
+		logger.debug(`Loading ${actualUrl}`)
 
 		if (this.dataCache[actualUrl]) {
-			logger.debug("HITTING CACHE, OH YEAH. ");
+			logger.debug(`Returning response from cache for ${actualUrl}`);
 
 			var cacheEntry = this.dataCache[actualUrl],
 				promise = cacheEntry.dfd.promise;
@@ -110,7 +111,7 @@ module.exports = class Loader {
 		this.context.superagent.get(this._apiServerPrefix() + actualUrl)
 			.end( res => {
 
-				logger.debug("Response Came Back!");
+				logger.debug(`Response returned for ${actualUrl}`);
 
 				// server-side, we cache the response in the dataCache to
 				// present to the frontend
@@ -233,7 +234,6 @@ module.exports = class Loader {
 			// public URL (e.g. http://www.redfin.com)
 			prefix = config().apiServerPrefix;
 		}
-		logger.debug("_apiServerPrefix: " + prefix);
 		return prefix;
 	}
 

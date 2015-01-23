@@ -18,84 +18,74 @@ class BaseStore {
 		this._emitter = new EventEmitter();
 
 		this._loader = loader;
-		this._loadResults = {};
-		this._loadStatuses = {};
-		this._urls = {};
-		this._dataLoaderNames = [];
-		this._childStoreNames = [];
-		this._childStores = {};
-		this._isDone = false;
 		this._actionListeners = [];
+
+		// this is a map that keeps track of all of the child stores and 
+		// data requests. it's a map of name => dataObject, where dataObject is 
+		// either {store: ChildStore} or {url: String, result?: String, status: LoadingStatus, loaded?: Promise}
+		this._data = {};
 	}
 
 	addDataUrl(name, url) {
 		this._dupeCheckLoaderName(name);
 
-		this._dataLoaderNames.push(name);
-		this._urls[name] = url;
-		this._loadStatuses[name] = BaseStore.LoadState.NOT_STARTED;
+		this._data[name] = {
+			url,
+			status: BaseStore.LoadState.NOT_STARTED
+		}
 	}
 
 	addChildStore(name, store) {
 		this._dupeCheckLoaderName(name);
 
-		this._childStoreNames.push(name);
-		this._childStores[name] = store;
+		this._data[name] = {
+			store
+		};
 		store.addChangeListener(this.emitChange.bind(this));
 	}
 
 	getLoadStatus(field) {
-		if (this._childStores[field]) {
+		if (this._data[field].store) {
 			throw (field + " is a child store, not a data loader. Check the child store's status");
 		}
-		return this._loadStatuses[field];
+		return this._data[field].status;
 	}
 
 	getIsReady(field) {
 		return this.getLoadStatus(field) === BaseStore.LoadState.DONE;
 	}
 
-	getIsDone() {
-		return this._isDone;
-	}
-
 	get(field) {
-		if (this._childStores[field]) {
-			return this._childStores[field];
-		} else {
-			//TODO - throw if not ready?
-			return this._loadResults[field];	
-		}
+		//TODO - throw if not ready?
+		return this._data[field].store || this._data[field].result;
 	}
 
 	_dupeCheckLoaderName(name) {
-		if (this._urls[name]) {
-			logger.debug("Dataloader already exists with name " +name);
-			throw ("Dataloader already exists with name " +name);
-		} else if (this._childStoreNames[name]) {
-			logger.debug("Child store already exists with name " +name);
-			throw ("Child store already exists with name " +name);
+		if (this._data[name]) {
+			var type = (this._data[name].url) ? "Dataloader" : "Child store";
+			logger.debug(`${type} already exists with name ${name}`);
+			throw (`${type} already exists with name ${name}`);
 		}
 	}
 
 	_handleLoadResult(name, result) {
 		 // TODO should we hold onto the raw result?		 
 		try {
-			this._loadResults[name] = this.processResponseData(name, result);
-			this._loadStatuses[name] = BaseStore.LoadState.DONE;
+			this._data[name].result = this.processResponseData(name, result);
+			this._data[name].status = BaseStore.LoadState.DONE;
 		} catch(err) {
-			this._loadResults[name] = result;
-			this._loadStatuses[name] = BaseStore.LoadState.ERROR;
+			this._data[name].result = result;
+			this._data[name].status = BaseStore.LoadState.ERROR;
 			logger.error('Failed _handleLoadResult', err);
 			throw err;
 		}		
 	}
 
 	_loadByName(name) {
-		var url = this._urls[name];
+		var url = this._data[name].url;
 		var t0 = new Date;
 		logger.debug("requesting " + name + ": " + url);
-		this._loadStatuses[name] = BaseStore.LoadState.LOADING;
+		this._data[name].status = BaseStore.LoadState.LOADING;
 
 		var cachedResult = this._loader.checkLoaded(url); 
 		if (cachedResult) {
@@ -112,35 +102,35 @@ class BaseStore {
 			}, err => {
 				logger.error("error " + name + ": " + url, err);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
-				this._loadStatuses[name] = BaseStore.LoadState.ERROR;
+				this._data[name].status = BaseStore.LoadState.ERROR;
 				this.emitChange();
 			});
 		}
 	}
 
 	loadData () {
-		if (this._dataLoaderNames.length < 1 && this._childStoreNames.length < 1) {
+		if (this._data.length < 1) {
 			throw ("Can't load data with 0 URLs and 0 child stores");
 		}
-		var nullUrls = this._dataLoaderNames.filter(name => {
-			return (name === null || name === undefined || !this._urls[name])
+		var nullUrls = Object.keys(this._data).filter(name => {
+			return (name === null || name === undefined || (!this._data[name].url && !this._data[name].store));
 		});		
 		if (nullUrls.length > 0) {
-			throw ("Can't load data from null or undefined urls. urls=" + this._urls);			
+			throw ("Can't load data from null or undefined urls. urls=" + this._data.filter(data => !data.store).map(data => data.url));
 		}
 
 		// kick off requests and store the promises
-		var loadPromises = this._dataLoaderNames.map(name => {
-			return this._loadByName(name);
-		}).filter(promise=>{return promise !== null});
-
-		var childStoreLoadPromises = this._childStoreNames.map(name => {
-			var childStore = this._childStores[name];
-			logger.debug("loading Child Store " + name);
-			return childStore.loadData()
-		})
-
-		loadPromises = loadPromises.concat(childStoreLoadPromises);
+		var loadPromises = Object.keys(this._data).map(name => {
+			var promise;
+			if (this._data[name].store) {
+				logger.debug("loading Child Store " + name);
+				promise = this._data[name].store.loadData();
+			} else {
+				promise = this._loadByName(name);
+			}
+			this._data[name].promise = promise;
+			return promise;
+		}).filter(promise=>{return promise !== null;});
 
 		this.emitChange();
 		// should we just use Q.all?
@@ -148,7 +138,6 @@ class BaseStore {
 		var dfd = Q.defer();
 		// we don't return the result of Q.allSettled so we can hide the loadResults from the caller.
 		Q.allSettled(loadPromises).then( (results) => {
-			this._isDone = true;
 			// TODO emitChange here?
 			dfd.resolve();
 		});
@@ -170,8 +159,9 @@ class BaseStore {
 	removeAllActionListeners () {
 		this._actionListeners.forEach( hdl => hdl.remove() );
 		this._actionListeners = [];
-		this._childStoreNames.forEach( storeName => {
-			this._childStores[storeName].removeAllActionListeners();
+		Object.keys(this._data).forEach( storeName => {
+			var store = this._data[storeName].store;
+			if (store) store.removeAllActionListeners();
 		})
 	}
 
