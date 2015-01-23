@@ -41,7 +41,7 @@ module.exports = function(routes) {
 
 		var start = new Date();
 
-		logger.debug('request: %s', req.path);
+		logger.debug('request: ' + req.path);
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
@@ -83,7 +83,7 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
-	logger.debug("Route Name: %s", routeName);
+	logger.debug("Route Name: " + routeName);
 
 	// regardless of what happens, write out the header part
 	// TODO: should this include the common.js file? seems like it
@@ -261,7 +261,7 @@ function setupLateArrivals(req, res, context, start) {
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
-			logger.debug("Late arrival: %s", pendingRequest.url)
+			logger.debug("Late arrival: " + pendingRequest.url)
 			logger.time(`late_arrival.${routeName}`, new Date - start);
 			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
 		})

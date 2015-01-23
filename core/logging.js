@@ -7,7 +7,7 @@
  *
  * Example:
  *
- *   logger.debug("result: %s", result);
+ *   logger.debug(`result: ${result}`);
  *
  * It *also* has a `time` method for timing named metrics.  Metric names
  * should be dot-separated and be few in number (i.e. don't include object
