@@ -47,8 +47,8 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 		},
 	},
 
-	// This config is for an internal logger used by the `guage` method.
-	guage: {
+	// This config is for an internal logger used by the `gauge` method.
+	gauge: {
 		// TODO: Some day, when abnormal values are rare, we should
 		// set this to 'lo' in production to surface issues.
 		baseLevel: 'no',

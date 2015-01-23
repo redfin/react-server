@@ -15,7 +15,7 @@ var DEFAULT_TIME_THRESHOLDS = {
 	fine: 250,
 }
 
-// This is a subjective classification of guage values into three
+// This is a subjective classification of gauge values into three
 // buckets: "lo", "hi" and "ok".
 //
 // If you're tracking something for which these default thresholds don't make
@@ -24,10 +24,10 @@ var DEFAULT_TIME_THRESHOLDS = {
 // Example:
 //
 //   var logger = require('./logging').getLogger(__LOGGER__({
-//           guage: { lo: 10000, hi: 100000 }
+//           gauge: { lo: 10000, hi: 100000 }
 //   }));
 //
-var DEFAULT_GUAGE_THRESHOLDS = {
+var DEFAULT_GAUGE_THRESHOLDS = {
 	lo: -1,
 	hi: 101,
 }
@@ -40,7 +40,7 @@ var wrapLogger = function(getLoggerForConfig, opts){
 
 	var mainLogger  = getLoggerForConfig('main',  opts)
 	,   timeLogger  = getLoggerForConfig('time',  opts)
-	,   guageLogger = getLoggerForConfig('guage', opts)
+	,   gaugeLogger = getLoggerForConfig('gauge', opts)
 
 	// Copy the options we care about into a new object and fill in the
 	// defaults where necessary.
@@ -54,20 +54,20 @@ var wrapLogger = function(getLoggerForConfig, opts){
 		else                                return 'slow';
 	}
 
-	var guageThresholds = {};
-	for (var k in DEFAULT_GUAGE_THRESHOLDS)
-		guageThresholds[k] = (opts.guage||{})[k]||DEFAULT_GUAGE_THRESHOLDS[k];
+	var gaugeThresholds = {};
+	for (var k in DEFAULT_GAUGE_THRESHOLDS)
+		gaugeThresholds[k] = (opts.gauge||{})[k]||DEFAULT_GAUGE_THRESHOLDS[k];
 
 	var classifyGuage = val=> {
-		     if (val <= guageThresholds.lo) return 'lo';
-		else if (val >= guageThresholds.hi) return 'hi';
+		     if (val <= gaugeThresholds.lo) return 'lo';
+		else if (val >= gaugeThresholds.hi) return 'hi';
 		else                                return 'ok';
 	}
 
 	// These are methods that are exposed on the primary logger.
 	// They just dispatch to appropriate log levels on secondary loggers.
 	mainLogger.time  = (token, ms ) => timeLogger [classifyTime (ms )](token, {ms });
-	mainLogger.guage = (token, val) => guageLogger[classifyGuage(val)](token, {val});
+	mainLogger.gauge = (token, val) => gaugeLogger[classifyGuage(val)](token, {val});
 
 	return mainLogger;
 }
