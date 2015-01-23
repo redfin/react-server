@@ -68,7 +68,7 @@ class MetaTag {
 function warnDefaultImplementation (instance, functionName) {
 	if (process.env.NODE_ENV !== "production") {
 		var logger = require('./logging').getLogger(__LOGGER__);
-		logger.warning("PageObject implementor doesn't override %s", functionName, instance);
+		logger.warning("PageObject implementor doesn't override " + functionName, instance);
 	}
 }
 
