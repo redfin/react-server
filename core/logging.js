@@ -17,6 +17,12 @@
  *
  *   logger.time(`result.${http_status_code}`, time_in_ms);
  *
+ * It *also* has a `gauge` method for tracking integer values.
+ *
+ * Example:
+ *
+ *   logger.gauge("response_size_in_bytes", size_in_bytes);
+ *
  * If you need more than one logger in your module, you can distinguish them
  * with labels:
  *

@@ -1,5 +1,5 @@
 
-var logger = require('./logging').getLogger(__LOGGER__),
+var logger = require('./logging').getLogger(__LOGGER__({gauge:{hi:1}})),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
@@ -271,6 +271,7 @@ function setupLateArrivals(req, res, context, start) {
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
 	Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
+		logger.gauge(`count_late_arrivals.${routeName}`, notLoaded.length);
 		logger.time(`all_done.${routeName}`, new Date - start);
 	});
 }
