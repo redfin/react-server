@@ -89,14 +89,15 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 	// TODO: should this include the common.js file? seems like it
 	// would give it a chance to download and parse while we're loading
 	// data
-	writeHeader(req, res, routeName, page);
-
-	// user data should never be the long pole here.
-	userDataDfd.done(function () {
-		writeBody(req, res, context, start, page).then(() => {
-			writeData(req, res, context, start)
-			setupLateArrivals(req, res, context, start);
+	writeHeader(req, res, routeName, page).then(() => {
+		// user data should never be the long pole here.
+		userDataDfd.done(function () {
+			writeBody(req, res, context, start, page).then(() => {
+				writeData(req, res, context, start)
+				setupLateArrivals(req, res, context, start);
+			});
 		});
+
 	});
 
 	// TODO: we probably want a "we're not waiting any longer for this"
@@ -107,69 +108,68 @@ function writeHeader(req, res, routeName, pageObject) {
 	logger.debug('Sending header');
 	res.type('html');
 
-	var pageHeader = "<!DOCTYPE html><html><head>"
-		// TODO: we should allow title to be a deferred
-		+ renderTitle(pageObject) + "\n"
-		+ renderStylesheets(pageObject) + "\n"
-		+ renderScripts(pageObject) + "\n"
-		+ renderMetaTags(pageObject) + "\n"
-		+ "</head><body class='route-" + routeName + "'><div id='content'>";
-	res.write(pageHeader);
+	res.write("<!DOCTYPE html><html><head>");
+	
+	return Q.all([
+		renderTitle(pageObject, res),
+		renderStylesheets(pageObject, res),
+		renderScripts(pageObject, res),
+		renderMetaTags(pageObject, res)
+	]).then(() => {
+		// once we have finished rendering all of the pieces of the head element, we 
+		// can close the head and start the body element.
+		res.write(`</head><body class='route-${routeName}'><div id='content'>`);
+	});
 }
 
-function renderTitle (pageObject) {
-	if (!pageObject.getTitle) return "";
-
-	return "<title>" + (pageObject.getTitle() || "") + "</title>";
+function renderTitle (pageObject, res) {
+	return pageObject.getTitle().then((title) => {
+		res.write(`<title>${title}</title>`);
+	});
 }
 
-function renderMetaTags (pageObject) {
-	var metaTags = [ {charset: 'utf-8'} ];
+function renderMetaTags (pageObject, res) {
+	var metaTags = pageObject.getMetaTags();
 
+	var metaTagsRendered = Object.keys(metaTags).map(metaName => {
+		return metaTags[metaName].then(metaValue => {
+			// TODO: escaping
+			// TODO: what to do about http-equiv? charset? itemProp?
+			res.write(`<meta name="${metaName}" content="${metaValue}"></meta>`);
+		});
+	});
 
-	if (pageObject.getMetaTags) {
-		var pageMetaTags = pageObject.getMetaTags();
-		if (pageMetaTags.length > 0) {
-			metaTags = metaTags.concat(pageMetaTags);
-		}
-	}
-
-	return metaTags.map( tagData => {
-		// TODO: escaping
-		var tag = '<meta ';
-		tag += Object.keys(tagData).map( metaAttrName => {
-			return metaAttrName + '="' + tagData[metaAttrName] + '"';
-		}).join(' ');
-		tag += '>';
-		return tag;
-	}).join("\n");
+	return Q.all(metaTagsRendered);
 }
 
-function renderScripts(pageObject) {
-	if (!pageObject.getHeadScriptFiles) return "";
-
-	// default script
-	var scripts = pageObject.getHeadScriptFiles();
-	if (scripts && !Array.isArray(scripts)) {
-		scripts = [scripts];
-	}
-
-	return scripts.map( (scriptPath) => {
+function renderScripts(pageObject, res) {
+	pageObject.getHeadScriptFiles().forEach( (scriptPath) => {
 		// make sure there's a leading '/'
-		return '<script src="' + scriptPath +'"></script>'
-	}).join("\n");
+		res.write(`<script src="${scriptPath}"></script>`);
+	});
 
-
+	// resolve immediately.
+	return Q("");
 }
 
-function renderStylesheets (pageObject) {
-	if (!pageObject.getHeadStylesheet) return "";
+function renderStylesheets (pageObject, res) {
+	pageObject.getHeadStylesheets().forEach((styleSheet) => {
+				res.write(`<link rel="stylesheet" type="text/css" href="${styleSheet}" ${ClientCssHelper.PAGE_CSS_NODE_ID}="${styleSheet}">`);
+	});
 
-	var stylesheet = pageObject.getHeadStylesheet();
-	if (!stylesheet) {
-		return "";
-	}
-	return '<link rel="stylesheet" type="text/css" href="' + stylesheet + '" id="'+ ClientCssHelper.PAGE_CSS_NODE_ID + '">' 
+	// resolve immediately.
+	return Q("");
+
+	// implementation for async included below for if/when we switch over.
+	// var styleSheetsRendered = [];
+	// pageObject.getHeadStylesheets().forEach((styleSheetPromise) => {
+	// 	styleSheetsRendered.push(
+	// 		styleSheetPromise.then((stylesheet) => {
+	// 			res.write(`<link rel="stylesheet" type="text/css" href="${stylesheet}" id="${ClientCssHelper.PAGE_CSS_NODE_ID}">`);
+	// 		});
+	// 	);
+	// });
+	// return Q.all(styleSheetsRendered);
 }
 
 
@@ -211,7 +211,7 @@ function writeBody(req, res, context, start, page) {
 		// if we rendered everything up to the last element already, just return.
 		if (rendered[elementPromises.length - 1]) return;
 
-		debug("Timeout Exceeeded. Rendering...");
+		logger.debug("Timeout Exceeeded. Rendering...");
 		elementPromises.forEach((promise, index) => {
 			if (!rendered[index]) {
 				renderElement(res, promise.getValue(), context, index);
