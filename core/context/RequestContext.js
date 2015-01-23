@@ -11,7 +11,7 @@ var REFERRER_DOMAIN = "http://node.redfintest.com";
 
 class RequestContext {
 
-	constructor (appConfig, loaderOpts, defaultHeaders, extraOpts) {
+	constructor (routes, loaderOpts, defaultHeaders, extraOpts) {
 
 		// don't include headers client-side (browser has them already)
 		if (!SERVER_SIDE || !defaultHeaders) {
@@ -21,7 +21,7 @@ class RequestContext {
 
 		this.loader = new Loader(this /*context */, loaderOpts);
 
-		this.navigator = new Navigator(this, appConfig);
+		this.navigator = new Navigator(this, routes);
 
 		this._navigateListeners = [];
 	}
@@ -102,8 +102,8 @@ class RequestContextBuilder {
 		this.loaderOpts = {};
 	}
 
-	setAppConfig(appConfig) {
-		this.appConfig = appConfig;
+	setRoutes(routes) {
+		this.routes = routes;
 		return this;
 	}
 
@@ -124,7 +124,7 @@ class RequestContextBuilder {
 
 	create (extraOpts) {
 
-		return new RequestContext(this.appConfig, this.loaderOpts, this.defaultHeaders, extraOpts);
+		return new RequestContext(this.routes, this.loaderOpts, this.defaultHeaders, extraOpts);
 	}
 
 }

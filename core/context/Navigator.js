@@ -7,11 +7,11 @@ var EventEmitter = require('events').EventEmitter,
 
 class Navigator extends EventEmitter {
 
-	constructor (context, appConfig, applicationStore) {
-		this.router = new Router(appConfig.routes);
+	constructor (context, routes, applicationStore) {
+		this.router = new Router(routes.routes);
 		this.context = context;
 		
-		this._globalMixins = appConfig.mixins;
+		this._globalMiddleware = routes.middleware;
 		this._loading = false;
 		this._currentRoute = null;
 	}
@@ -55,12 +55,10 @@ class Navigator extends EventEmitter {
 
 	handlePage(pageConstructor, request, loader, type) {
 		// instantiate the pages we need to fulfill this request.
-		// TODO: follow mixins recursively.
-		// TOOD: also allow mixins to be pulled from the routes.
 		var pageClasses = [];
 
-		this._addPageMixinsToArray(this._globalMixins, pageClasses);
-		this._addPageMixinsToArray([pageConstructor], pageClasses);
+		this._addPageMiddlewareToArray(this._globalMiddleware, pageClasses);
+		this._addPageMiddlewareToArray([pageConstructor], pageClasses);
 
 		var pages = pageClasses.map((pageClass) => new pageClass());
 		var page = PageUtil.createPageChain(pages);
@@ -91,12 +89,12 @@ class Navigator extends EventEmitter {
 	}
 
 	/** 
-	 * recursively adds the mixins in the pages array to array.
+	 * recursively adds the middleware in the pages array to array.
 	 */
-	_addPageMixinsToArray(pages, array) {
+	_addPageMiddlewareToArray(pages, array) {
 		pages.forEach((page) => {
-			if (page.mixins) {
-				this._addPageMixinsToArray(page.mixins(), array);
+			if (page.middleware) {
+				this._addPageMiddlewareToArray(page.middleware(), array);
 			}
 			array.push(page);
 		});
