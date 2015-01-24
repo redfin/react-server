@@ -122,7 +122,11 @@ class ClientController extends EventEmitter {
 
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
+		var newRenderedElements = [];
 		var renderElement = (element, index) => {
+			// if someone already rendered this element, let's not!
+			if (newRenderedElements[index]) return;
+
 			// for each ReactElement that we want to render, either use the server-rendered root element, or 
 			// create a new root element.
 			logger.debug("Rendering root node #" + index);
@@ -130,8 +134,23 @@ class ClientController extends EventEmitter {
 
 			// TODO: get rid of context once continuation-local-storage holds our important context vars.
 			element = React.addons.cloneWithProps(element, { context: this.context });
-			React.render(element, root);
+			newRenderedElements[index] = React.render(element, root);
+			if (index === elementPromises.length - 1) {
+				logger.debug('React Rendered');
+				logger.time('render', new Date - t0);
+				this.emit("render");
+			}
 		};
+
+		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
+		// this lets us render when the server timed out.
+		// TODO: should we ONLY do this when the server times out?
+		this.context.loader.whenCacheDepleted().then(() => {
+			logger.debug("Loader cache depleted; rendering elements.");
+			elementPromises.forEach((elementEarlyPromise, index) => {
+				renderElement(elementEarlyPromise.getValue(), index);
+			});
+		});
 
 		// I find the control flow for chaining promises impossibly mind-bending, but what I intended was something
 		// like: 
@@ -157,11 +176,8 @@ class ClientController extends EventEmitter {
 	 		renderElement(element, elementPromises.length - 1);
 
 			this._previouslyRendered = true;
-			logger.debug('React Rendered');
-			logger.time('render', new Date - t0);
-			this.emit('render');
 		}).catch((err) => {
-			logger.debug("Error while rendering.", err);
+			logger.debug(`Error while rendering. ${err}`);
 		});
 	}
 

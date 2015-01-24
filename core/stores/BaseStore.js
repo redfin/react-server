@@ -9,6 +9,8 @@
 var logger = require('../logging').getLogger(__LOGGER__),
 	EventEmitter = require('events').EventEmitter,
 	Q = require('q'),
+	React = require("react/addons")
+	PromiseUtil = require("../util/PromiseUtil");
     CHANGE_EVENT = 'change';
 
 
@@ -44,6 +46,11 @@ class BaseStore {
 		store.addChangeListener(this.emitChange.bind(this));
 	}
 
+	getNames() {
+		// TODO: defensive copy?
+		return Object.keys(this._data);
+	}
+
 	getLoadStatus(field) {
 		if (this._data[field].store) {
 			throw (field + " is a child store, not a data loader. Check the child store's status");
@@ -59,6 +66,78 @@ class BaseStore {
 		//TODO - throw if not ready?
 		return this._data[field].store || this._data[field].result;
 	}
+
+	/**
+	 * whenAll() : Promise
+	 * whenAll returns a Promise that resolves when all the current loading resources (and their
+	 * dependents) load.
+	 */
+	whenAll() {
+
+		// the goal here is to wait for all of the currently outstanding requests,
+		// then when they come back to wait for any NEW outstanding requests.
+		var waitForAllExcept = (alreadyLoaded) => {
+			// which names should we wait for in this round?
+			var waitForNames = [];
+			Object.keys(this._data).forEach((name) => {
+				if (!alreadyLoaded[name]) {
+					waitForNames.push(name);
+				}
+			});
+
+			// if there's nothing left to wait for, return a resolved promise.
+			if (waitForNames.length === 0) {
+				// we're done, return a resolved promise.
+				return Q(null);
+			}
+
+			// otherwise, return a promise of waiting for the rest of the outstanding requests.
+			return this.when(waitForNames).then(() => {
+				waitForNames.forEach((name) => alreadyLoaded[name] = true);
+				return waitForAllExcept(alreadyLoaded);
+			});
+		}
+
+		return waitForAllExcept({});
+
+	} 
+
+	// TODO: how to wait on data that has not yet been added to BaseStore?
+	when(names) {
+		var promises = [];
+		names.map((name) => {
+			if (this._data[name].promise) {
+				promises.push(this._data[name].promise);
+			}
+		});
+
+		return Q.all(promises).then((data) => {
+			logger.debug("when resolved.");
+			return data;
+		});
+	} 
+
+	elementWhen(names, element, pendingElement) {
+		pendingElement = pendingElement || element;
+
+		return PromiseUtil.early(this.when(names).then(() => {
+			return <BaseStore.Component store={this} names={names}>{element}</BaseStore.Component>;
+		}), () => {
+			return <BaseStore.Component store={this} names={names}>{pendingElement}</BaseStore.Component>;
+		});
+	}
+
+	elementWhenAll(element, pendingElement) {
+		pendingElement = pendingElement || element;
+
+		return PromiseUtil.early(this.whenAll().then(() => {
+			return <BaseStore.Component store={this}>{element}</BaseStore.Component>;
+		}), () => {
+			return <BaseStore.Component store={this}>{pendingElement}</BaseStore.Component>;
+		});
+	}
+
+
 
 	_dupeCheckLoaderName(name) {
 		if (this._data[name]) {
@@ -218,6 +297,30 @@ BaseStore.ComponentStoreChangeMixin = {
 		}
 	}
 }
+
+// this helper component takes in a BaseStore as this.props.store and passes along the properties to 
+// the child components.
+BaseStore.Component = React.createClass({
+	mixins: [BaseStore.ComponentStoreChangeMixin],
+
+	render: function() {
+		var child = React.Children.only(this.props.children);
+		// TODO: take this line out when context is moved to local storage.
+		child = React.addons.cloneWithProps(child, {context: this.props.context});
+
+		var names = this.props.names || this.props.store.getNames();
+
+		return this._addPropsToElement(child, names);
+
+	},
+
+	_addPropsToElement(element, names) {
+		var propsToMixin = {};
+		names.forEach((name) => {propsToMixin[name] = this.props.store.get(name);});
+
+		return React.addons.cloneWithProps(element, propsToMixin);
+	}
+});
 
 BaseStore.LoadState = {
 	NOT_STARTED: {},
