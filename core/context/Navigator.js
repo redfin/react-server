@@ -2,14 +2,16 @@
 var EventEmitter = require('events').EventEmitter,
 	Router = require('routr'),
 	Q = require('q'),
-	History = require("../components/History");
+	History = require("../components/History"),
+	PageUtil = require("../util/PageUtil");
 
 class Navigator extends EventEmitter {
 
 	constructor (context, routes, applicationStore) {
-		this.router = new Router(routes);
+		this.router = new Router(routes.routes);
 		this.context = context;
 		
+		this._globalMiddleware = routes.middleware;
 		this._loading = false;
 		this._currentRoute = null;
 	}
@@ -52,15 +54,18 @@ class Navigator extends EventEmitter {
 	}
 
 	handlePage(pageConstructor, request, loader, type) {
-		// instantiate the page we need to fulfill this request.
-		var page = new pageConstructor();
+		// instantiate the pages we need to fulfill this request.
+		var pageClasses = [];
+
+		this._addPageMiddlewareToArray(this._globalMiddleware, pageClasses);
+		this._addPageMiddlewareToArray([pageConstructor], pageClasses);
+
+		var pages = pageClasses.map((pageClass) => new pageClass());
+		var page = PageUtil.createPageChain(pages);
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
-		// respond. -sra.
-		// note that handleRoute can return a handleRouteResult or a Promise of handleRouteResult. using
-		// Q() to normalize that and make it always be a Promise of handleRouteResult. -sra.
-		var handleRouteValueOrPromise = page.handleRoute ? page.handleRoute(request, loader) : {code: 200};
-		Q(handleRouteValueOrPromise).then(handleRouteResult => {
+		// respond.
+		page.handleRoute(request, loader).then(handleRouteResult => {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
@@ -81,6 +86,18 @@ class Navigator extends EventEmitter {
 			console.error("Error while handling route.", err);
 		});
 
+	}
+
+	/** 
+	 * recursively adds the middleware in the pages array to array.
+	 */
+	_addPageMiddlewareToArray(pages, array) {
+		pages.forEach((page) => {
+			if (page.middleware) {
+				this._addPageMiddlewareToArray(page.middleware(), array);
+			}
+			array.push(page);
+		});
 	}
 
 	getState () {

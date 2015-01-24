@@ -1,12 +1,14 @@
 
-var logger = require('./logging').getLogger(__LOGGER__),
+var logger = require('./logging').getLogger(__LOGGER__({gauge:{hi:1}})),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
-	ExpressServerRequest = require("./ExpressServerRequest");
+	ExpressServerRequest = require("./ExpressServerRequest"),
+	PageUtil = require("./util/PageUtil"),
+	PromiseUtil = require("./util/PromiseUtil");
 
 
 // TODO FIXME ?? 
@@ -40,7 +42,7 @@ module.exports = function(routes) {
 
 		var start = new Date();
 
-		logger.debug('request: %s', req.path);
+		logger.debug('request: ' + req.path);
 
 		// Just to keep an eye out for leaks.
 		logger.debug('RequestLocalStorage namespaces: %s', RequestLocalStorage.getCountNamespaces());
@@ -85,133 +87,158 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
-	logger.debug("Route Name: %s", routeName);
+	logger.debug("Route Name: " + routeName);
 
 	// regardless of what happens, write out the header part
 	// TODO: should this include the common.js file? seems like it
 	// would give it a chance to download and parse while we're loading
 	// data
-	writeHeader(req, res, routeName, page);
-
-	var doRenderCallback = function () {
+	writeHeader(req, res, routeName, page).then(() => {
 		// user data should never be the long pole here.
 		userDataDfd.done(function () {
-			writeBodyAndData(req, res, context, start, page);
-			setupLateArrivals(req, res, context, start);
+			writeBody(req, res, context, start, page).then(() => {
+				writeData(req, res, context, start)
+				setupLateArrivals(req, res, context, start);
+			});
 		});
-	}
+
+	});
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
-
-	var timeoutExceeded = false;
-
-	// set up a maximum wait time for data loading.
-	// if this timeout fires, we render with whatever we have,
-	// as best as possible
-	var loadWaitHdl = setTimeout(function () {
-		logger.debug("Timeout Exceeeded. Rendering...");
-		timeoutExceeded = true;
-		doRenderCallback();
-	}, DATA_LOAD_WAIT);
-
-	// if we happen to load all data before the timeout is exceeded,
-	// we clear the timeout, and just render. If this fires after the
-	// timeout is exceeded, it's a no-op
-	// use .done(...) to propagate caught exceptions properly
-	var loader = context.loader;
-	loader.whenAllPendingResolve().done(function () {
-		if (!timeoutExceeded) {
-			logger.debug("Data loaded. Rendering...");
-			clearTimeout(loadWaitHdl);
-			doRenderCallback();
-		}
-	});
-
 }
 
 function writeHeader(req, res, routeName, pageObject) {
 	logger.debug('Sending header');
 	res.type('html');
 
-	var pageHeader = "<!DOCTYPE html><html><head>"
-		// TODO: we should allow title to be a deferred
-		+ renderTitle(pageObject) + "\n"
-		+ renderStylesheets(pageObject) + "\n"
-		+ renderScripts(pageObject) + "\n"
-		+ renderMetaTags(pageObject) + "\n"
-		+ "</head><body class='route-" + routeName + "'><div id='content'>";
-	res.write(pageHeader);
+	res.write("<!DOCTYPE html><html><head>");
+	
+	return Q.all([
+		renderTitle(pageObject, res),
+		renderStylesheets(pageObject, res),
+		renderScripts(pageObject, res),
+		renderMetaTags(pageObject, res)
+	]).then(() => {
+		// once we have finished rendering all of the pieces of the head element, we 
+		// can close the head and start the body element.
+		res.write(`</head><body class='route-${routeName}'><div id='content'>`);
+	});
 }
 
-function renderTitle (pageObject) {
-	if (!pageObject.getTitle) return "";
-
-	return "<title>" + (pageObject.getTitle() || "") + "</title>";
+function renderTitle (pageObject, res) {
+	return pageObject.getTitle().then((title) => {
+		res.write(`<title>${title}</title>`);
+	});
 }
 
-function renderMetaTags (pageObject) {
-	var metaTags = [ {charset: 'utf-8'} ];
+function renderMetaTags (pageObject, res) {
+	var metaTags = pageObject.getMetaTags();
 
+	var metaTagsRendered = Object.keys(metaTags).map(metaName => {
+		return metaTags[metaName].then(metaValue => {
+			// TODO: escaping
+			// TODO: what to do about http-equiv? charset? itemProp?
+			res.write(`<meta name="${metaName}" content="${metaValue}"></meta>`);
+		});
+	});
 
-	if (pageObject.getMetaTags) {
-		var pageMetaTags = pageObject.getMetaTags();
-		if (pageMetaTags.length > 0) {
-			metaTags = metaTags.concat(pageMetaTags);
-		}
-	}
-
-	return metaTags.map( tagData => {
-		// TODO: escaping
-		var tag = '<meta ';
-		tag += Object.keys(tagData).map( metaAttrName => {
-			return metaAttrName + '="' + tagData[metaAttrName] + '"';
-		}).join(' ');
-		tag += '>';
-		return tag;
-	}).join("\n");
+	return Q.all(metaTagsRendered);
 }
 
-function renderScripts(pageObject) {
-	if (!pageObject.getHeadScriptFiles) return "";
-
-	// default script
-	var scripts = pageObject.getHeadScriptFiles();
-	if (scripts && !Array.isArray(scripts)) {
-		scripts = [scripts];
-	}
-
-	return scripts.map( (scriptPath) => {
+function renderScripts(pageObject, res) {
+	pageObject.getHeadScriptFiles().forEach( (scriptPath) => {
 		// make sure there's a leading '/'
-		return '<script src="' + scriptPath +'"></script>'
-	}).join("\n");
+		res.write(`<script src="${scriptPath}"></script>`);
+	});
 
-
+	// resolve immediately.
+	return Q("");
 }
 
-function renderStylesheets (pageObject) {
-	if (!pageObject.getHeadStylesheet) return "";
+function renderStylesheets (pageObject, res) {
+	pageObject.getHeadStylesheets().forEach((styleSheet) => {
+				res.write(`<link rel="stylesheet" type="text/css" href="${styleSheet}" ${ClientCssHelper.PAGE_CSS_NODE_ID}="${styleSheet}">`);
+	});
 
-	var stylesheet = pageObject.getHeadStylesheet();
-	if (!stylesheet) {
-		return "";
-	}
-	return '<link rel="stylesheet" type="text/css" href="' + stylesheet + '" id="'+ ClientCssHelper.PAGE_CSS_NODE_ID + '">' 
+	// resolve immediately.
+	return Q("");
+
+	// implementation for async included below for if/when we switch over.
+	// var styleSheetsRendered = [];
+	// pageObject.getHeadStylesheets().forEach((styleSheetPromise) => {
+	// 	styleSheetsRendered.push(
+	// 		styleSheetPromise.then((stylesheet) => {
+	// 			res.write(`<link rel="stylesheet" type="text/css" href="${stylesheet}" id="${ClientCssHelper.PAGE_CSS_NODE_ID}">`);
+	// 		});
+	// 	);
+	// });
+	// return Q.all(styleSheetsRendered);
 }
 
 
-function writeBodyAndData(req, res, context, start, page) {
+/**
+ * Writes out the ReactElements to the response. Returns a promise that fulfills when
+ * all the ReactElements have been written out.
+ */
+function writeBody(req, res, context, start, page) {
 
 	logger.debug("React Rendering");
-	// TODO: deal with promises and arrays of elements -sra.
-	var element = page.getElements();
-	element = React.addons.cloneWithProps(element, { context: context });
-	element = <div>{element}</div>;
+	// standardize to an array of EarlyPromises of ReactElements
+	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-	var html = React.renderToString(element);
+	// a boolean array to keep track of which elements have already been rendered. this is useful
+	// bookkeeping when the timeout happens so we don't double-render anything.
+	var rendered = [];
 
-	res.write(html);
+	// render the elements in sequence when they resolve (i.e. tell us they are ready).
+	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
+	var noTimeoutRenderPromise =  elementPromises.reduce((chain, next, index) => {
+		return chain.then((element) => {
+	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
+	 		rendered[index - 1] = true;
+			return next;
+		})
+	}).then((element) => {
+		// reduce is called length - 1 times. we need to call one final time here to make sure we 
+		// chain the final promise.
+ 		if (!rendered[elementPromises.length - 1]) renderElement(res, element, context, elementPromises.length - 1);
+ 		rendered[elementPromises.length - 1] = true;
+	}).catch((err) => {
+		logger.debug("Error while rendering", err);
+	});
 
+	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,
+	// as best as possible. note that once the timeout fires, we render everything that's left
+	// synchronously.
+	var timeoutRenderPromise = Q.delay(DATA_LOAD_WAIT).then(() => {
+		// if we rendered everything up to the last element already, just return.
+		if (rendered[elementPromises.length - 1]) return;
+
+		logger.debug("Timeout Exceeeded. Rendering...");
+		elementPromises.forEach((promise, index) => {
+			if (!rendered[index]) {
+				renderElement(res, promise.getValue(), context, index);
+				rendered[index] = true;
+			}
+		});
+	});
+
+	// return a promise that resolves when either the async render OR the timeout sync
+	// render happens. 
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
+}
+
+function renderElement(res, element, context, index) {
+	res.write(`<div data-triton-root-id=${index}>`);
+	if (element !== null) {
+		element = React.addons.cloneWithProps(element, { context: context });
+		res.write(React.renderToString(element));
+	}
+	res.write("</div>");
+}
+
+function writeData(req, res, context, start) {
 	logger.debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
@@ -238,7 +265,7 @@ function setupLateArrivals(req, res, context, start) {
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
-			logger.debug("Late arrival: %s", pendingRequest.url)
+			logger.debug("Late arrival: " + pendingRequest.url)
 			logger.time(`late_arrival.${routeName}`, new Date - start);
 			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
 		})
@@ -248,6 +275,7 @@ function setupLateArrivals(req, res, context, start) {
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
 	Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
+		logger.gauge(`count_late_arrivals.${routeName}`, notLoaded.length);
 		logger.time(`all_done.${routeName}`, new Date - start);
 	});
 }
