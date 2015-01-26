@@ -113,7 +113,8 @@ function writeHeader(req, res, routeName, pageObject) {
 	return Q.all([
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
-		renderScripts(pageObject, res),
+		renderSystemScripts(pageObject, res),
+		renderUserScripts(pageObject, res),
 		renderMetaTags(pageObject, res)
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
@@ -142,8 +143,18 @@ function renderMetaTags (pageObject, res) {
 	return Q.all(metaTagsRendered);
 }
 
-function renderScripts(pageObject, res) {
-	pageObject.getHeadScriptFiles().forEach( (scriptPath) => {
+function renderUserScripts(pageObject, res) {
+	return renderScripts(pageObject.getUserScriptFiles());
+}
+
+function renderSystemScripts(pageObject, res) {
+	return renderScripts(pageObject.getSystemScriptFiles());	
+}
+
+function renderScripts(scripts, res) {
+	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
+	// immediately.
+	scripts.forEach( (scriptPath) => {
 		// make sure there's a leading '/'
 		res.write(`<script src="${scriptPath}"></script>`);
 	});
