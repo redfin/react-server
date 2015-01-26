@@ -30,6 +30,36 @@ var PageUtil = module.exports = {
 		return returnValue;
 	},
 
+	standardizeScripts(scripts) {
+		var result = PageUtil.makeArray(scripts);
+
+		return result.map((script) => {
+			if (script.href || script.text) {
+				if (!script.type) script.type = "text/javascript";
+				return script;
+			}
+
+			// if the answer was a string, let's make a script object
+			return {href:script, type:"text/javascript"};
+		})
+	},
+
+	standardizeStyles(styles) {
+		var result = PageUtil.makeArray(styles);
+
+		return result.map((style) => {
+			if (style.href || style.text) {
+				if (!style.type) style.type = "text/css";
+				if (!style.media) style.media = "";
+
+				return style;
+			}
+
+			// if the answer was a string, let's make a script object
+			return {href:style, type:"text/css", media:""};
+		})
+	},
+
 	/**
 	 * Given an array of page instances, return an object that implements the page interface. This returned object's
 	 * methods delegate to the first page in the pages array, passing the second page's implementation as the next
@@ -40,9 +70,9 @@ var PageUtil = module.exports = {
 		return {
 			handleRoute: PageUtil.createObjectFunctionChain(pages, "handleRoute", 2, () => ({code:200}), Q),
 			getTitle: PageUtil.createObjectFunctionChain(pages, "getTitle", 0, () => "", Q), 
-			getUserScriptFiles: PageUtil.createObjectFunctionChain(pages, "getUserScriptFiles", 0, () => [], PageUtil.makeArray),
-			getSystemScriptFiles: PageUtil.createObjectFunctionChain(pages, "getSystemScriptFiles", 0, () => [], PageUtil.makeArray),
-			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.makeArray),
+			getUserScriptFiles: PageUtil.createObjectFunctionChain(pages, "getUserScriptFiles", 0, () => [], PageUtil.standardizeScripts),
+			getSystemScriptFiles: PageUtil.createObjectFunctionChain(pages, "getSystemScriptFiles", 0, () => [], PageUtil.standardizeScripts),
+			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.standardizeStyles),
 			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  ({"Content-Type": "text/html; charset=utf-8"}), PageUtil.standardizeMetaTags),
 			getCanonicalUrl: PageUtil.createObjectFunctionChain(pages, "getCanonicalUrl", 0, () => "", Q),
 			getElements: PageUtil.createObjectFunctionChain(pages, "getElements", 0, () => [], PageUtil.standardizeElements)

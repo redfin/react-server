@@ -144,19 +144,25 @@ function renderMetaTags (pageObject, res) {
 }
 
 function renderUserScripts(pageObject, res) {
-	return renderScripts(pageObject.getUserScriptFiles());
+	return renderScripts(pageObject.getUserScriptFiles(), res);
 }
 
 function renderSystemScripts(pageObject, res) {
-	return renderScripts(pageObject.getSystemScriptFiles());	
+	return renderScripts(pageObject.getSystemScriptFiles(), res);	
 }
 
 function renderScripts(scripts, res) {
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
 	// immediately.
-	scripts.forEach( (scriptPath) => {
+	scripts.forEach( (script) => {
 		// make sure there's a leading '/'
-		res.write(`<script src="${scriptPath}"></script>`);
+		if (script.href) {
+			res.write(`<script src="${script.href}" type="${script.type}"></script>`);
+		} else if (script.text) {
+			res.write(`<script type="${script.type}">${script.text}</script>`);
+		} else {
+			throw new Error("Script cannot be rendered because it has neither an href nor a text attribute: " + script);
+		}
 	});
 
 	// resolve immediately.
@@ -165,7 +171,13 @@ function renderScripts(scripts, res) {
 
 function renderStylesheets (pageObject, res) {
 	pageObject.getHeadStylesheets().forEach((styleSheet) => {
-				res.write(`<link rel="stylesheet" type="text/css" href="${styleSheet}" ${ClientCssHelper.PAGE_CSS_NODE_ID}="${styleSheet}">`);
+		if (styleSheet.href) {
+			res.write(`<link rel="stylesheet" type="${styleSheet.type}" media="${styleSheet.media}" href="${styleSheet.href}" ${ClientCssHelper.PAGE_CSS_NODE_ID}>`);
+		} else if (styleSheet.text) {
+			res.write(`<style type="${styleSheet.type}" media="${styleSheet.media}" ${ClientCssHelper.PAGE_CSS_NODE_ID}>${styleSheet.text}</style>`);
+		} else {
+			throw new Error("Style cannot be rendered because it has neither an href nor a text attribute: " + styleSheet);
+		}
 	});
 
 	// resolve immediately.

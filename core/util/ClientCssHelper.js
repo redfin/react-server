@@ -14,10 +14,15 @@ var ClientCssHelper = module.exports = {
 		}
 		// for each css node in the head that the Triton server wrote to the response, note it down in the cache, so that
 		// we can remove it on a page to page transition.
-		var serverWrittenLinkNodes = document.querySelectorAll(`link[${ClientCssHelper.PAGE_CSS_NODE_ID}]`, document.head);
+		var serverWrittenLinkNodes = document.querySelectorAll(`link[${ClientCssHelper.PAGE_CSS_NODE_ID}],style[${ClientCssHelper.PAGE_CSS_NODE_ID}]`, document.head);
 		for (var i = 0; i < serverWrittenLinkNodes.length; i++) {
-			var cssUrl = serverWrittenLinkNodes[i].getAttribute(ClientCssHelper.PAGE_CSS_NODE_ID);
-			loadedCss[cssUrl] = serverWrittenLinkNodes[i];
+			var key, styleNode = serverWrittenLinkNodes[i];
+			if (styleNode.href) {
+				key = styleNode.href;
+			} else {
+				key = styleNode.innerHTML;
+			}
+			loadedCss[key] = styleNode;
 		}
 	},
 
@@ -28,34 +33,51 @@ var ClientCssHelper = module.exports = {
 
 		var newCss = pageObject.getHeadStylesheets();
 
+		var newCssByKey = {};
+		newCss.forEach((style) => newCssByKey[this._keyFromStyleSheet(style)] = style);
+
 		// first, remove the unneeded CSS link elements.
-		Object.keys(loadedCss).forEach(styleSheetUrl => {
-			// TODO: indexOf is ES5 only; not sure if it's polyfilled.
-			if (-1 === newCss.indexOf(styleSheetUrl)) {
+		Object.keys(loadedCss).forEach(loadedCssKey => {
+
+			if (!newCssByKey[loadedCssKey]) {
 				// remove the corresponding node from the DOM.
-				logger.debug("Removing stylesheet: " + styleSheetUrl);
-				var node = loadedCss[styleSheetUrl];
+				logger.debug("Removing stylesheet: " + loadedCssKey);
+				var node = loadedCss[loadedCssKey];
 				node.parentNode.removeChild(node);
-				delete loadedCss[styleSheetUrl];
+				delete loadedCss[loadedCssKey];
 			}
 		});
 
 		// next add the style URLs that weren't already loaded.
-		newCss.forEach((styleSheetUrl) => {
-			if (!loadedCss[styleSheetUrl]) {
+		Object.keys(newCssByKey).forEach(newCssKey => {
+			if(!loadedCss[newCssKey]) {
 				// this means that the CSS is not currently present in the
 				// document, so we need to add it.
-				logger.debug("Adding stylesheet: " + styleSheetUrl);
-				var styleTag = document.createElement('link');
-				styleTag.rel = 'stylesheet';
-				styleTag.type = 'text/css';
+				logger.debug("Adding stylesheet: " + newCssKey);
 
-				styleTag.href = styleSheetUrl;
-				loadedCss[styleSheetUrl] = styleTag;
+				var style = newCssByKey[newCssKey];
+				var styleTag;
+
+				if (style.href) {
+					styleTag = document.createElement('link');
+					styleTag.rel = 'stylesheet';
+					styleTag.href = style.href;
+				} else {
+					styleTag = document.createElement('style');
+					styleTag.innerHTML = style.text;
+				}
+				styleTag.type = style.type;
+				styleTag.media = style.media;
+				
+				loadedCss[newCssKey] = styleTag;
 				document.head.appendChild(styleTag);
 			} else {
-				logger.debug("Stylesheet already loaded (no-op): " + styleSheetUrl);
+				logger.debug(`Stylesheet already loaded (no-op): ${newCssKey}`);
 			}
 		});
+	},
+
+	_keyFromStyleSheet: function(style) {
+		return style.href || style.text;
 	}
 }
