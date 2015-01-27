@@ -68,7 +68,7 @@ SuperAgentWrapper.prototype.post = function (url, data, fn){
 
 SuperAgentWrapper.prototype.put = function (url, data, fn){
   	if ('function' == typeof data) fn = data, data = null;
-	var req = superagent.patch.put(this, url, data);
+	var req = superagent.put.call(this, url, data);
 	req.set(this.defaultHeaders);
 	if (fn) req.end(fn);
 	return req;
