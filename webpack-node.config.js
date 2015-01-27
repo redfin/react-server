@@ -23,6 +23,7 @@ module.exports = {
         ///^[A-Za-z\-0-9]+$/,
         "body-parser",
         "bundle-loader",
+        "continuation-local-storage",
         "debug",
         "q",
         "react",

@@ -2,6 +2,7 @@
 var logger = require('./logging').getLogger(__LOGGER__({gauge:{hi:1}})),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
+	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
@@ -37,11 +38,14 @@ class Renderer {
  */
 module.exports = function(routes) {
 
-	return function (req, res, next) {
+	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
 
 		var start = new Date();
 
 		logger.debug('request: ' + req.path);
+
+		// Just to keep an eye out for leaks.
+		logger.debug('RequestLocalStorage namespaces: %s', RequestLocalStorage.getCountNamespaces());
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
@@ -76,7 +80,7 @@ module.exports = function(routes) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	}
+	})}
 }
 
 function beginRender(req, res, start, context, userDataDfd, page) {

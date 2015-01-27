@@ -2,6 +2,7 @@
 var React = require('react/addons'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
+	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
 	EventEmitter = require("events").EventEmitter,
@@ -21,6 +22,8 @@ class ClientController extends EventEmitter {
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
+
+		RequestLocalStorage.startRequest();
 
 		this.config = buildConfig(dehydratedState.Config);
 		this.context = buildContext(
