@@ -133,11 +133,24 @@ function renderTitle (pageObject, res) {
 function renderMetaTags (pageObject, res) {
 	var metaTags = pageObject.getMetaTags();
 
-	var metaTagsRendered = Object.keys(metaTags).map(metaName => {
-		return metaTags[metaName].then(metaValue => {
+	var metaTagsRendered = metaTags.map(metaTagPromise => {
+		return metaTagPromise.then(metaTag => {
 			// TODO: escaping
-			// TODO: what to do about http-equiv? charset? itemProp?
-			res.write(`<meta name="${metaName}" content="${metaValue}"></meta>`);
+			if ((metaTag.name && metaTag.httpEquiv) || (metaTag.name && metaTag.charset) || (metaTag.charset && metaTag.httpEquiv)) {
+				throw new Error("Meta tag cannot have more than one of name, httpEquiv, and charset", metaTag);
+			}
+
+			if ((metaTag.name && !metaTag.content) || (metaTag.httpEquiv && !metaTag.content)) {
+				throw new Error("Meta tag has name or httpEquiv but does not have content", metaTag);
+			}
+			res.write(`<meta`);
+
+			if (metaTag.name) res.write(` name="${metaTag.name}"`);
+			if (metaTag.httpEquiv) res.write(` http-equiv="${metaTag.httpEquiv}"`);
+			if (metaTag.charset) res.write(` charset="${metaTag.charset}"`);
+			if (metaTag.content) res.write(` content="${metaTag.content}"`);
+
+			res.write(`>`)
 		});
 	});
 

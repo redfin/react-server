@@ -22,12 +22,11 @@ var PageUtil = module.exports = {
 	},
 
 	standardizeMetaTags(metaTags) {
-		var returnValue = {}
-		Object.keys(metaTags).forEach((key) => {
-			returnValue[key] = Q(metaTags[key]);
-		});
+		var result = PageUtil.makeArray(metaTags);
 
-		return returnValue;
+		return result.map(metaTag => {
+			return Q(metaTag);
+		});
 	},
 
 	standardizeScripts(scripts) {
@@ -73,7 +72,7 @@ var PageUtil = module.exports = {
 			getUserScriptFiles: PageUtil.createObjectFunctionChain(pages, "getUserScriptFiles", 0, () => [], PageUtil.standardizeScripts),
 			getSystemScriptFiles: PageUtil.createObjectFunctionChain(pages, "getSystemScriptFiles", 0, () => [], PageUtil.standardizeScripts),
 			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.standardizeStyles),
-			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  ({"Content-Type": "text/html; charset=utf-8"}), PageUtil.standardizeMetaTags),
+			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  [], PageUtil.standardizeMetaTags),
 			getCanonicalUrl: PageUtil.createObjectFunctionChain(pages, "getCanonicalUrl", 0, () => "", Q),
 			getBase: PageUtil.createObjectFunctionChain(pages, "getBase", 0, () => null, Q),
 			getElements: PageUtil.createObjectFunctionChain(pages, "getElements", 0, () => [], PageUtil.standardizeElements)
