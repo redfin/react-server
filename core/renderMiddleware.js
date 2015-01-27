@@ -147,6 +147,8 @@ function renderMetaTags (pageObject, res) {
 			if ((metaTag.name && !metaTag.content) || (metaTag.httpEquiv && !metaTag.content)) {
 				throw new Error("Meta tag has name or httpEquiv but does not have content", metaTag);
 			}
+
+			if (metaTag.noscript) res.write(`<noscript>`);
 			res.write(`<meta`);
 
 			if (metaTag.name) res.write(` name="${metaTag.name}"`);
@@ -155,6 +157,7 @@ function renderMetaTags (pageObject, res) {
 			if (metaTag.content) res.write(` content="${metaTag.content}"`);
 
 			res.write(`>`)
+			if (metaTag.noscript) res.write(`</noscript>`);
 		});
 	});
 
