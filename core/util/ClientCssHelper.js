@@ -14,7 +14,7 @@ var ClientCssHelper = module.exports = {
 		}
 		// for each css node in the head that the Triton server wrote to the response, note it down in the cache, so that
 		// we can remove it on a page to page transition.
-		var serverWrittenLinkNodes = document.querySelectorAll(`link[${ClientCssHelper.PAGE_CSS_NODE_ID}],style[${ClientCssHelper.PAGE_CSS_NODE_ID}]`, document.head);
+		var serverWrittenLinkNodes = document.head.querySelectorAll(`link[${ClientCssHelper.PAGE_CSS_NODE_ID}],style[${ClientCssHelper.PAGE_CSS_NODE_ID}]`);
 		for (var i = 0; i < serverWrittenLinkNodes.length; i++) {
 			var key, styleNode = serverWrittenLinkNodes[i];
 			if (styleNode.href) {
@@ -68,7 +68,7 @@ var ClientCssHelper = module.exports = {
 				}
 				styleTag.type = style.type;
 				styleTag.media = style.media;
-				
+
 				loadedCss[newCssKey] = styleTag;
 				document.head.appendChild(styleTag);
 			} else {

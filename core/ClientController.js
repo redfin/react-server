@@ -90,11 +90,30 @@ class ClientController extends EventEmitter {
 			} else {
 				// getTitle can return a String or a Promise of String. we wrap with Q here
 				// to normalize the result to promise of String.
-				Q(page.getTitle()).then(newTitle => {
+				page.getTitle().then(newTitle => {
 					if (newTitle && newTitle !== document.title) {
 						document.title = newTitle;
 					}
 				}).catch(err => console.error("Error while setting the document title", err));
+
+				// render the base tag.
+				page.getBase().then(base => {
+					var currentBaseTag = document.head.querySelector("head base");
+					if (base === null) {
+						// get rid of the current base tag.
+						if (currentBaseTag) currentBaseTag.parentNode.removeChild(currentBaseTag);
+					} else {
+						// we need a base tag. add one if it's not there yet. 
+						if (!currentBaseTag) {
+							currentBaseTag = document.createElement("base");
+							document.head.appendChild(currentBaseTag);
+						}
+						currentBaseTag.href = base.href;
+						if (base.target) currentBaseTag.target = base.target;
+					}
+
+				});
+
 			}
 
 			cssHelper.ensureCss(routeName, page);
@@ -104,6 +123,8 @@ class ClientController extends EventEmitter {
 		});
 
 	}
+
+
 
 	_render (page) {
 		var t0 = new Date;

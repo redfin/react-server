@@ -115,7 +115,8 @@ function writeHeader(req, res, routeName, pageObject) {
 		renderStylesheets(pageObject, res),
 		renderSystemScripts(pageObject, res),
 		renderUserScripts(pageObject, res),
-		renderMetaTags(pageObject, res)
+		renderMetaTags(pageObject, res),
+		renderBaseTag(pageObject, res)
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
 		// can close the head and start the body element.
@@ -141,6 +142,18 @@ function renderMetaTags (pageObject, res) {
 	});
 
 	return Q.all(metaTagsRendered);
+}
+
+function renderBaseTag(pageObject, res) {
+	return pageObject.getBase().then((base) => {
+		if (base !== null) {
+			res.write(`<base href=${base.href}`);
+			if (base.target) {
+				res.write(` target=${base.target}`);
+			}
+			res.write(`>`);
+		}
+	});
 }
 
 function renderUserScripts(pageObject, res) {

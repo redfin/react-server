@@ -75,6 +75,7 @@ var PageUtil = module.exports = {
 			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.standardizeStyles),
 			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  ({"Content-Type": "text/html; charset=utf-8"}), PageUtil.standardizeMetaTags),
 			getCanonicalUrl: PageUtil.createObjectFunctionChain(pages, "getCanonicalUrl", 0, () => "", Q),
+			getBase: PageUtil.createObjectFunctionChain(pages, "getBase", 0, () => null, Q),
 			getElements: PageUtil.createObjectFunctionChain(pages, "getElements", 0, () => [], PageUtil.standardizeElements)
 
 		}
