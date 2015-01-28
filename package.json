@@ -11,6 +11,7 @@
     "debug": "node-debug -p 9000 ./start.js"
   },
   "dependencies": {
+    "continuation-local-storage": "3.1.2",
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",
     "cookie": "0.1.2",

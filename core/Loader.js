@@ -154,7 +154,7 @@ module.exports = class Loader {
 		var dataCache = this.dataCache;
 		return promise.then(function (data) {
 			dataCache[actualUrl].requesters -= 1;
-			logger.debug("Decrementing: %s", dataCache[actualUrl]);
+			logger.debug("Decrementing: " + dataCache[actualUrl]);
 			if (dataCache[actualUrl].requesters === 0) {
 				delete dataCache[actualUrl];
 			}

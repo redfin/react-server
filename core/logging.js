@@ -7,7 +7,7 @@
  *
  * Example:
  *
- *   logger.debug("result: %s", result);
+ *   logger.debug(`result: ${result}`);
  *
  * It *also* has a `time` method for timing named metrics.  Metric names
  * should be dot-separated and be few in number (i.e. don't include object
@@ -16,6 +16,12 @@
  * Example:
  *
  *   logger.time(`result.${http_status_code}`, time_in_ms);
+ *
+ * It *also* has a `gauge` method for tracking integer values.
+ *
+ * Example:
+ *
+ *   logger.gauge("response_size_in_bytes", size_in_bytes);
  *
  * If you need more than one logger in your module, you can distinguish them
  * with labels:

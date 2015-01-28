@@ -1,7 +1,8 @@
 
-var logger = require('./logging').getLogger(__LOGGER__),
+var logger = require('./logging').getLogger(__LOGGER__({gauge:{hi:1}})),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
+	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
@@ -35,17 +36,20 @@ class Renderer {
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(appConfig) {
+module.exports = function(routes) {
 
-	return function (req, res, next) {
+	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
 
 		var start = new Date();
 
 		logger.debug(`Incoming request for ${req.path}`);
 
+		// Just to keep an eye out for leaks.
+		logger.debug('RequestLocalStorage namespaces: %s', RequestLocalStorage.getCountNamespaces());
+
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
-				.setAppConfig(appConfig)
+				.setRoutes(routes)
 				.setLoaderOpts({}) // TODO FIXME
 				.setDefaultXhrHeadersFromRequest(req)
 				.create({
@@ -76,13 +80,15 @@ module.exports = function(appConfig) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	}
+	})}
 }
 
 function beginRender(req, res, start, context, userDataDfd, page) {
 	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
+
+	logger.debug("Route Name: " + routeName);
 
 	// regardless of what happens, write out the header part
 	// TODO: should this include the common.js file? seems like it
@@ -267,7 +273,7 @@ function setupLateArrivals(req, res, context, start) {
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
-			logger.debug("Late arrival: %s", pendingRequest.url)
+			logger.debug("Late arrival: " + pendingRequest.url)
 			logger.time(`late_arrival.${routeName}`, new Date - start);
 			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
 		})
@@ -277,6 +283,7 @@ function setupLateArrivals(req, res, context, start) {
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
 	Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
+		logger.gauge(`count_late_arrivals.${routeName}`, notLoaded.length);
 		logger.time(`all_done.${routeName}`, new Date - start);
 	});
 }
