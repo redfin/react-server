@@ -117,8 +117,10 @@ function writeHeader(req, res, routeName, pageObject) {
 	return Q.all([
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
-		renderScripts(pageObject, res),
-		renderMetaTags(pageObject, res)
+		renderScripts(pageObject.getScripts(), res),
+		renderScripts(pageObject.getSystemScripts(), res),
+		renderMetaTags(pageObject, res),
+		renderBaseTag(pageObject, res)
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
 		// can close the head and start the body element.
@@ -135,21 +137,57 @@ function renderTitle (pageObject, res) {
 function renderMetaTags (pageObject, res) {
 	var metaTags = pageObject.getMetaTags();
 
-	var metaTagsRendered = Object.keys(metaTags).map(metaName => {
-		return metaTags[metaName].then(metaValue => {
+	var metaTagsRendered = metaTags.map(metaTagPromise => {
+		return metaTagPromise.then(metaTag => {
 			// TODO: escaping
-			// TODO: what to do about http-equiv? charset? itemProp?
-			res.write(`<meta name="${metaName}" content="${metaValue}"></meta>`);
+			if ((metaTag.name && metaTag.httpEquiv) || (metaTag.name && metaTag.charset) || (metaTag.charset && metaTag.httpEquiv)) {
+				throw new Error("Meta tag cannot have more than one of name, httpEquiv, and charset", metaTag);
+			}
+
+			if ((metaTag.name && !metaTag.content) || (metaTag.httpEquiv && !metaTag.content)) {
+				throw new Error("Meta tag has name or httpEquiv but does not have content", metaTag);
+			}
+
+			if (metaTag.noscript) res.write(`<noscript>`);
+			res.write(`<meta`);
+
+			if (metaTag.name) res.write(` name="${metaTag.name}"`);
+			if (metaTag.httpEquiv) res.write(` http-equiv="${metaTag.httpEquiv}"`);
+			if (metaTag.charset) res.write(` charset="${metaTag.charset}"`);
+			if (metaTag.content) res.write(` content="${metaTag.content}"`);
+
+			res.write(`>`)
+			if (metaTag.noscript) res.write(`</noscript>`);
 		});
 	});
 
 	return Q.all(metaTagsRendered);
 }
 
-function renderScripts(pageObject, res) {
-	pageObject.getHeadScriptFiles().forEach( (scriptPath) => {
+function renderBaseTag(pageObject, res) {
+	return pageObject.getBase().then((base) => {
+		if (base !== null) {
+			res.write(`<base href=${base.href}`);
+			if (base.target) {
+				res.write(` target=${base.target}`);
+			}
+			res.write(`>`);
+		}
+	});
+}
+
+function renderScripts(scripts, res) {
+	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
+	// immediately.
+	scripts.forEach( (script) => {
 		// make sure there's a leading '/'
-		res.write(`<script src="${scriptPath}"></script>`);
+		if (script.href) {
+			res.write(`<script src="${script.href}" type="${script.type}"></script>`);
+		} else if (script.text) {
+			res.write(`<script type="${script.type}">${script.text}</script>`);
+		} else {
+			throw new Error("Script cannot be rendered because it has neither an href nor a text attribute: " + script);
+		}
 	});
 
 	// resolve immediately.
@@ -158,7 +196,13 @@ function renderScripts(pageObject, res) {
 
 function renderStylesheets (pageObject, res) {
 	pageObject.getHeadStylesheets().forEach((styleSheet) => {
-				res.write(`<link rel="stylesheet" type="text/css" href="${styleSheet}" ${ClientCssHelper.PAGE_CSS_NODE_ID}="${styleSheet}">`);
+		if (styleSheet.href) {
+			res.write(`<link rel="stylesheet" type="${styleSheet.type}" media="${styleSheet.media}" href="${styleSheet.href}" ${ClientCssHelper.PAGE_CSS_NODE_ID}>`);
+		} else if (styleSheet.text) {
+			res.write(`<style type="${styleSheet.type}" media="${styleSheet.media}" ${ClientCssHelper.PAGE_CSS_NODE_ID}>${styleSheet.text}</style>`);
+		} else {
+			throw new Error("Style cannot be rendered because it has neither an href nor a text attribute: " + styleSheet);
+		}
 	});
 
 	// resolve immediately.
