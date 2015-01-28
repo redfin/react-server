@@ -69,8 +69,8 @@ var PageUtil = module.exports = {
 		return {
 			handleRoute: PageUtil.createObjectFunctionChain(pages, "handleRoute", 2, () => ({code:200}), Q),
 			getTitle: PageUtil.createObjectFunctionChain(pages, "getTitle", 0, () => "", Q), 
-			getUserScriptFiles: PageUtil.createObjectFunctionChain(pages, "getUserScriptFiles", 0, () => [], PageUtil.standardizeScripts),
-			getSystemScriptFiles: PageUtil.createObjectFunctionChain(pages, "getSystemScriptFiles", 0, () => [], PageUtil.standardizeScripts),
+			getScripts: PageUtil.createObjectFunctionChain(pages, "getScripts", 0, () => [], PageUtil.standardizeScripts),
+			getSystemScripts: PageUtil.createObjectFunctionChain(pages, "getSystemScripts", 0, () => [], PageUtil.standardizeScripts),
 			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.standardizeStyles),
 			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  [], PageUtil.standardizeMetaTags),
 			getCanonicalUrl: PageUtil.createObjectFunctionChain(pages, "getCanonicalUrl", 0, () => "", Q),

@@ -117,8 +117,8 @@ function writeHeader(req, res, routeName, pageObject) {
 	return Q.all([
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
-		renderSystemScripts(pageObject, res),
-		renderUserScripts(pageObject, res),
+		renderScripts(pageObject.getScripts(), res),
+		renderScripts(pageObject.getSystemScripts(), res),
 		renderMetaTags(pageObject, res),
 		renderBaseTag(pageObject, res)
 	]).then(() => {
@@ -174,14 +174,6 @@ function renderBaseTag(pageObject, res) {
 			res.write(`>`);
 		}
 	});
-}
-
-function renderUserScripts(pageObject, res) {
-	return renderScripts(pageObject.getUserScriptFiles(), res);
-}
-
-function renderSystemScripts(pageObject, res) {
-	return renderScripts(pageObject.getSystemScriptFiles(), res);	
 }
 
 function renderScripts(scripts, res) {
