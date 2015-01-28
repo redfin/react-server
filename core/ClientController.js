@@ -205,7 +205,7 @@ class ClientController extends EventEmitter {
 				// don't obliterate the node.
 				console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
 					"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
-					"cause unpredictable behavior", tritonRoot);
+					"cause unpredictable behavior", potentialRoot);
 			}
 		}
 		return result;

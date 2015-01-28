@@ -1,7 +1,6 @@
 
 var SuperAgentWrapper = require('../util/SuperAgentWrapper'),
 	Loader = require("../Loader"),
-	Bouncer = require('../util/Bouncer'),
 	ObjectGraph = require('../util/ObjectGraph'),
 	Navigator = require('./Navigator'),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
@@ -67,7 +66,6 @@ class RequestContext {
 
 		var userDataResult = apiResult.payload;
 
-		this._bouncer = new Bouncer(userDataResult.bouncerData);
 		this._userData = new ObjectGraph(userDataResult.userData).getRoot();
 
 		dfd.resolve(userDataResult);
@@ -79,10 +77,6 @@ class RequestContext {
 
 	navigate (request, type) {
 		this.navigator.navigate(request, type);
-	}
-
-	getBouncer () {
-		return this._bouncer;
 	}
 
 	getUserDataPromise () {
