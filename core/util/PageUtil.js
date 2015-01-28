@@ -22,12 +22,41 @@ var PageUtil = module.exports = {
 	},
 
 	standardizeMetaTags(metaTags) {
-		var returnValue = {}
-		Object.keys(metaTags).forEach((key) => {
-			returnValue[key] = Q(metaTags[key]);
-		});
+		var result = PageUtil.makeArray(metaTags);
 
-		return returnValue;
+		return result.map(metaTag => {
+			return Q(metaTag);
+		});
+	},
+
+	standardizeScripts(scripts) {
+		var result = PageUtil.makeArray(scripts);
+
+		return result.map((script) => {
+			if (script.href || script.text) {
+				if (!script.type) script.type = "text/javascript";
+				return script;
+			}
+
+			// if the answer was a string, let's make a script object
+			return {href:script, type:"text/javascript"};
+		})
+	},
+
+	standardizeStyles(styles) {
+		var result = PageUtil.makeArray(styles);
+
+		return result.map((style) => {
+			if (style.href || style.text) {
+				if (!style.type) style.type = "text/css";
+				if (!style.media) style.media = "";
+
+				return style;
+			}
+
+			// if the answer was a string, let's make a script object
+			return {href:style, type:"text/css", media:""};
+		})
 	},
 
 	/**
@@ -40,11 +69,12 @@ var PageUtil = module.exports = {
 		return {
 			handleRoute: PageUtil.createObjectFunctionChain(pages, "handleRoute", 2, () => ({code:200}), Q),
 			getTitle: PageUtil.createObjectFunctionChain(pages, "getTitle", 0, () => "", Q), 
-			getHeadScriptFiles: PageUtil.createObjectFunctionChain(pages, "getHeadScriptFiles", 0, () => [], PageUtil.makeArray),
-			getSystemScriptFiles: PageUtil.createObjectFunctionChain(pages, "getSystemScriptFiles", 0, () => [], PageUtil.makeArray),
-			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.makeArray),
-			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  ({"Content-Type": "text/html; charset=utf-8"}), PageUtil.standardizeMetaTags),
+			getScripts: PageUtil.createObjectFunctionChain(pages, "getScripts", 0, () => [], PageUtil.standardizeScripts),
+			getSystemScripts: PageUtil.createObjectFunctionChain(pages, "getSystemScripts", 0, () => [], PageUtil.standardizeScripts),
+			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.standardizeStyles),
+			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  [], PageUtil.standardizeMetaTags),
 			getCanonicalUrl: PageUtil.createObjectFunctionChain(pages, "getCanonicalUrl", 0, () => "", Q),
+			getBase: PageUtil.createObjectFunctionChain(pages, "getBase", 0, () => null, Q),
 			getElements: PageUtil.createObjectFunctionChain(pages, "getElements", 0, () => [], PageUtil.standardizeElements)
 
 		}
