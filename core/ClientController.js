@@ -91,13 +91,14 @@ class ClientController extends EventEmitter {
 			if (!this._previouslyRendered) {
 				cssHelper.registerPageLoad(routeName);
 			} else {
-				// getTitle can return a String or a Promise of String. we wrap with Q here
-				// to normalize the result to promise of String.
-				Q(page.getTitle()).then(newTitle => {
-					if (newTitle && newTitle !== document.title) {
-						document.title = newTitle;
-					}
-				}).catch(err => console.error("Error while setting the document title", err));
+				// render the document title.
+				this._renderTitle(page);
+
+				// render the base tag.
+				this._renderBase(page);
+
+				this._renderMetaTags(page);
+
 			}
 
 			cssHelper.ensureCss(routeName, page);
@@ -106,6 +107,60 @@ class ClientController extends EventEmitter {
 
 		});
 
+	}
+
+	_renderTitle(page) {
+		page.getTitle().then(newTitle => {
+			if (newTitle && newTitle !== document.title) {
+				document.title = newTitle;
+			}
+		}).catch(err => console.error("Error while setting the document title", err));
+	}
+
+	_renderBase(page) {
+		page.getBase().then(base => {
+			var currentBaseTag = document.head.querySelector("head base");
+			if (base === null) {
+				// get rid of the current base tag.
+				if (currentBaseTag) currentBaseTag.parentNode.removeChild(currentBaseTag);
+			} else {
+				// we need a base tag. add one if it's not there yet. 
+				if (!currentBaseTag) {
+					currentBaseTag = document.createElement("base");
+					document.head.appendChild(currentBaseTag);
+				}
+				currentBaseTag.href = base.href;
+				if (base.target) currentBaseTag.target = base.target;
+			}
+
+		});
+	}
+
+	_renderMetaTags(page) {
+		// first, remove all the current meta tags.
+		var currentMetaTags = document.head.querySelectorAll("meta");
+		for (var i = 0; i < currentMetaTags.length; i++) {
+			currentMetaTags[i].parentNode.removeChild(currentMetaTags[i]);
+		}
+
+		// now add all the meta tags for the new page.
+		page.getMetaTags().forEach((metaTagPromise) => {
+			metaTagPromise.then((metaTag) => {
+				var parent = document.head;
+				if (metaTag.noscript) {
+					var noscript = document.createElement("noscript");
+					parent.appendChild(noscript);
+					parent = noscript;
+				}
+
+				var meta = document.createElement("meta");
+				["name", "httpEquiv", "charset", "content"].forEach((name) => {
+					if (metaTag[name]) meta[name] = metaTag[name];
+				});
+
+				parent.appendChild(meta);
+			});
+		});
 	}
 
 	_render (page) {
