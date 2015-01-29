@@ -75,6 +75,10 @@ class RequestContext {
 		this.navigator.on('navigateDone', callback);
 	}
 
+	onNavigateStart (callback) {
+		this.navigator.on('navigateStart', callback);
+	}
+
 	navigate (request, type) {
 		this.navigator.navigate(request, type);
 	}

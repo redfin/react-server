@@ -50,6 +50,8 @@ class ClientController extends EventEmitter {
 	_setupNavigateListener () {
 		var context = this.context; 
 
+		context.onNavigateStart(RequestLocalStorage.startRequest);
+
 		/**
 		 * type is one of 
 		 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
