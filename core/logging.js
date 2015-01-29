@@ -17,6 +17,14 @@
  *
  *   logger.time(`result.${http_status_code}`, time_in_ms);
  *
+ * Another way to log timings is with a `timer` object.
+ *
+ * Example:
+ *
+ *   var timer = logger.timer('some_work');
+ *
+ *   some_work().then(timer.done);
+ *
  * It *also* has a `gauge` method for tracking integer values.
  *
  * Example:
