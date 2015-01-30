@@ -23,7 +23,7 @@
  *
  *   var timer = logger.timer('some_work');
  *
- *   some_work().then(timer.done);
+ *   some_work().then(timer.stop);
  *
  * It *also* has a `gauge` method for tracking integer values.
  *

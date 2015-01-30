@@ -72,7 +72,7 @@ var wrapLogger = function(getLoggerForConfig, opts){
 	// This is just a convenience wrapper around the `time` method.
 	mainLogger.timer = (token) => {
 		var t0 = new Date
-		return { done: () => mainLogger.time(token, new Date - t0) };
+		return { stop: () => mainLogger.time(token, new Date - t0) };
 	}
 
 	return mainLogger;
