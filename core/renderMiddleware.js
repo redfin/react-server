@@ -256,10 +256,18 @@ function writeBody(req, res, context, start, page) {
 		logger.debug("Error while rendering", err);
 	});
 
+	// Some time has already elapsed since the request started.
+	// Note that you can override `DATA_LOAD_WAIT` with a
+	// `?_debug_data_load_wait={ms}` query string parameter.
+	var totalWait     = req.query._debug_data_load_wait || DATA_LOAD_WAIT
+	,   timeRemaining = totalWait - (new Date - start)
+
+	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
+
 	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,
 	// as best as possible. note that once the timeout fires, we render everything that's left
 	// synchronously.
-	var timeoutRenderPromise = Q.delay(DATA_LOAD_WAIT).then(() => {
+	var timeoutRenderPromise = Q.delay(timeRemaining).then(() => {
 		// if we rendered everything up to the last element already, just return.
 		if (rendered[elementPromises.length - 1]) return;
 
