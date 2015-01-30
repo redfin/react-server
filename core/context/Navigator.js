@@ -1,5 +1,6 @@
 
 var EventEmitter = require('events').EventEmitter,
+	logger = require('../logging').getLogger(__LOGGER__),
 	Router = require('routr'),
 	Q = require('q'),
 	History = require("../components/History"),
@@ -26,6 +27,7 @@ class Navigator extends EventEmitter {
 	 * Default is History.events.PAGELOAD.
 	 */
 	navigate (request, type) {
+		logger.debug(`Navigating to ${request.getUrl()}`);
 		type = type || History.events.PAGELOAD;
 
 		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl(), type:type}});
@@ -35,6 +37,7 @@ class Navigator extends EventEmitter {
 			}, 0);
 			return;
 		}
+		logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
 
 		this.startRoute(route);
 		this.emit('navigateStart', route);

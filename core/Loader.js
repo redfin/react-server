@@ -48,7 +48,7 @@ module.exports = class Loader {
 
 	rehydrate (state) {
 
-		logger.debug("REHYDRATING LOADER!!");
+		logger.debug("Rehydrating HTTP loader.");
 
 		if (state.options) {
 			this.options = state.options;
@@ -71,6 +71,9 @@ module.exports = class Loader {
 				//setTimeout(function () {
 					dfd.resolve(cacheEntry.data);
 				//}, 0);
+				logger.debug(`Rehydrating resolved url to cache: ${url}`);
+			} else {
+				logger.debug(`Rehydrating pending url to cache without data: ${url}`);
 			}
 			
 		});
@@ -79,9 +82,14 @@ module.exports = class Loader {
 	
 	load (urlPattern) {
 		var actualUrl = this.buildUrl(urlPattern);
+		logger.debug(`Loading ${actualUrl}`)
 
 		if (this.dataCache[actualUrl]) {
-			logger.debug("HITTING CACHE, OH YEAH. ");
+			if (this.dataCache[actualUrl].loaded) {
+				logger.debug(`Returning response from cache for ${actualUrl}`);
+			} else {
+				logger.debug(`Returning promise of late arrival for ${actualUrl}`);
+			}
 
 			var cacheEntry = this.dataCache[actualUrl],
 				promise = cacheEntry.dfd.promise;
@@ -110,7 +118,7 @@ module.exports = class Loader {
 		this.context.superagent.get(this._apiServerPrefix() + actualUrl)
 			.end( res => {
 
-				logger.debug("Response Came Back!");
+				logger.debug(`Response returned for ${actualUrl}`);
 
 				// server-side, we cache the response in the dataCache to
 				// present to the frontend
@@ -151,6 +159,7 @@ module.exports = class Loader {
 				delete dataCache[actualUrl];
 			}
 
+			this._checkCacheDepleted();
 			// since we're adding to the original promise chain,
 			// we need to pass the data through
 			return data;
@@ -173,12 +182,13 @@ module.exports = class Loader {
 
 		if (cached && cached.data) {
 			return {
-				getData: function () {
+				getData: () => {
 					// sort of a synchronous promise thing
 					cached.requesters -= 1;
 					if (cached.requesters === 0) {
 						delete dataCache[actualUrl];
 					}
+					this._checkCacheDepleted();
 					return cached.data;
 				}
 			};
@@ -211,7 +221,33 @@ module.exports = class Loader {
 		return Q.allSettled(promises);
 	}
 
+	/** 
+	 * Fires when the cache has been completely depleted, which is used as a signal to render when there was a timeout on the server.
+	 */
+	whenCacheDepleted () {
+		this.whenCacheDepletedDfd = this.whenCacheDepletedDfd || Q.defer();
+
+		this._checkCacheDepleted();
+
+		return this.whenCacheDepletedDfd.promise;
+	}
+
+	_checkCacheDepleted() {
+		logger.debug("_checkCacheDepleted");
+		if (this.whenCacheDepletedDfd) {
+			var totalRequestersPending = 0;
+			Object.keys(this.dataCache).forEach((name) => {
+				if (this.dataCache[name].loaded) {
+					totalRequestersPending += this.dataCache[name].requesters;
+				}
+			});
+			logger.debug(`Checking for depleted cache, with ${totalRequestersPending} requesters left`);
+			if (totalRequestersPending === 0) this.whenCacheDepletedDfd.resolve();
+		}
+	}
+
 	lateArrival (url, data) {
+		logger.debug(`Late arrival for ${url}`);
 		var dataCache = this.dataCache;
 		if (dataCache[url]) {
 			dataCache[url].loaded = true;
@@ -233,7 +269,6 @@ module.exports = class Loader {
 			// public URL (e.g. http://www.redfin.com)
 			prefix = config().apiServerPrefix;
 		}
-		logger.debug("_apiServerPrefix: " + prefix);
 		return prefix;
 	}
 

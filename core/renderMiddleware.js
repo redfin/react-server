@@ -42,7 +42,7 @@ module.exports = function(routes) {
 
 		var start = new Date();
 
-		logger.debug('request: ' + req.path);
+		logger.debug(`Incoming request for ${req.path}`);
 
 		// Just to keep an eye out for leaks.
 		logger.debug('RequestLocalStorage namespaces: %s', RequestLocalStorage.getCountNamespaces());
@@ -84,6 +84,7 @@ module.exports = function(routes) {
 }
 
 function beginRender(req, res, start, context, userDataDfd, page) {
+	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -109,7 +110,7 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 }
 
 function writeHeader(req, res, routeName, pageObject) {
-	logger.debug('Sending header');
+	logger.debug('Starting document header');
 	res.type('html');
 
 	res.write("<!DOCTYPE html><html><head>");
@@ -124,12 +125,15 @@ function writeHeader(req, res, routeName, pageObject) {
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
 		// can close the head and start the body element.
+		logger.debug("Starting body");
+
 		res.write(`</head><body class='route-${routeName}'><div id='content'>`);
 	});
 }
 
 function renderTitle (pageObject, res) {
 	return pageObject.getTitle().then((title) => {
+		logger.debug("Rendering title");
 		res.write(`<title>${title}</title>`);
 	});
 }
@@ -270,10 +274,11 @@ function writeBody(req, res, context, start, page) {
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise).then(()=> logger.debug("Finished rendering body."));
 }
 
 function renderElement(res, element, context, index) {
+	logger.debug(`Rendering root element #${index}`);
 	res.write(`<div data-triton-root-id=${index}>`);
 	if (element !== null) {
 		element = React.addons.cloneWithProps(element, { context: context });
