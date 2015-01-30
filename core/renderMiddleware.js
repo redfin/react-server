@@ -77,6 +77,9 @@ function beginRender(req, res, start, context, page) {
 	// TODO: should this include the common.js file? seems like it
 	// would give it a chance to download and parse while we're loading
 	// data
+	//
+	// Each of these functions has the same signature and returns a
+	// promise, so we can chain them up with a promise reduction.
 	[
 		Q(),
 		writeHeader,
