@@ -241,17 +241,12 @@ function writeBody(req, res, context, start, page) {
 
 	// render the elements in sequence when they resolve (i.e. tell us they are ready).
 	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
-	var noTimeoutRenderPromise =  elementPromises.reduce((chain, next, index) => {
+	var noTimeoutRenderPromise =  elementPromises.concat(Q()).reduce((chain, next, index) => {
 		return chain.then((element) => {
 	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
 	 		rendered[index - 1] = true;
 			return next;
 		})
-	}).then((element) => {
-		// reduce is called length - 1 times. we need to call one final time here to make sure we 
-		// chain the final promise.
- 		if (!rendered[elementPromises.length - 1]) renderElement(res, element, context, elementPromises.length - 1);
- 		rendered[elementPromises.length - 1] = true;
 	}).catch((err) => {
 		logger.debug("Error while rendering", err);
 	});
