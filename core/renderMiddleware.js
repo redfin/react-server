@@ -40,6 +40,10 @@ module.exports = function(routes) {
 					// TODO: context opts?
 				});
 
+		// This is the default.
+		// Can be overridden by the page or middleware.
+		context.setDataLoadWait(DATA_LOAD_WAIT)
+
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
@@ -248,7 +252,7 @@ function writeBody(req, res, context, start, page) {
 	// Some time has already elapsed since the request started.
 	// Note that you can override `DATA_LOAD_WAIT` with a
 	// `?_debug_data_load_wait={ms}` query string parameter.
-	var totalWait     = req.query._debug_data_load_wait || DATA_LOAD_WAIT
+	var totalWait     = req.query._debug_data_load_wait || context.getDataLoadWait()
 	,   timeRemaining = totalWait - (new Date - start)
 
 	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
