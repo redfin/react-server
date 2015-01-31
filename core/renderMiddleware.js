@@ -214,8 +214,8 @@ function startBody(req, res, context, start, page) {
 
 	return page.getBodyClasses().then((classes) => {
 		logger.debug("Starting body");
-		classes[`route-${routeName}`] = true;
-		res.write(`<body class='${Object.keys(classes).join(' ')}'><div id='content'>`);
+		classes.push(`route-${routeName}`)
+		res.write(`<body class='${classes.join(' ')}'><div id='content'>`);
 	})
 }
 

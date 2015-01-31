@@ -106,8 +106,8 @@ class ClientController extends EventEmitter {
 			cssHelper.ensureCss(routeName, page);
 
 			page.getBodyClasses().then((classes) => {
-				classes[`route-${routeName}`] = true;
-				document.body.className = Object.keys(classes).join(' ');
+				classes.push(`route-${routeName}`);
+				document.body.className = classes.join(' ');
 			}).then(() => this._render(page))
 
 		});
