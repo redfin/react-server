@@ -253,7 +253,7 @@ function writeBody(req, res, context, start, page) {
  		if (!rendered[elementPromises.length - 1]) renderElement(res, element, context, elementPromises.length - 1);
  		rendered[elementPromises.length - 1] = true;
 	}).catch((err) => {
-		logger.debug("Error while rendering", err);
+		logger.error("Error while rendering without timeout", err.stack);
 	});
 
 	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,

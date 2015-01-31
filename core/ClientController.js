@@ -235,7 +235,7 @@ class ClientController extends EventEmitter {
 
 			this._previouslyRendered = true;
 		}).catch((err) => {
-			logger.debug(`Error while rendering. ${err}`);
+			logger.error("Error while rendering.", err.stack);
 		});
 	}
 
