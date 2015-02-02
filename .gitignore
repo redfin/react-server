@@ -2,3 +2,4 @@ node_modules
 target
 target-node
 target-entrypoints
+build

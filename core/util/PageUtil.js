@@ -98,11 +98,15 @@ var PageUtil = module.exports = {
 		var functionsToChain = [];
 		objects.forEach((object) => {
 			if (object[functionName]) {
-				functionsToChain.push(() => standardizeReturnValue(object[functionName].apply(object, arguments)));
+				functionsToChain.push(function() { 
+					return standardizeReturnValue(object[functionName].apply(object, arguments));
+				});
 			}
 		});
 		// the innermost implementation calls the default implementation and standardizes the result.
-		functionsToChain.push(() => standardizeReturnValue(defaultImpl.apply(null, arguments)));
+		functionsToChain.push(function() { 
+			return standardizeReturnValue(defaultImpl.apply(null, arguments));
+		});
 
 		// now we have an array of pure functions to chain.
 		return PageUtil.createFunctionChain(functionsToChain, argumentCount);

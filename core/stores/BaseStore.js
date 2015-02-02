@@ -9,8 +9,8 @@
 var logger = require('../logging').getLogger(__LOGGER__),
 	EventEmitter = require('events').EventEmitter,
 	Q = require('q'),
-	React = require("react/addons")
-	PromiseUtil = require("../util/PromiseUtil");
+	React = require("react/addons"),
+	PromiseUtil = require("../util/PromiseUtil"),
     CHANGE_EVENT = 'change';
 
 
