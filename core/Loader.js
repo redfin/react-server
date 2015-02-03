@@ -211,7 +211,14 @@ module.exports = class Loader {
 
 	getAllRequests() {
 		return Object.keys(this.dataCache)
-			.map(url => ({url: url, entry: this.dataCache[url]}));
+			.map(
+				url => (
+					{
+						url   : url,
+						entry : this.dataCache[url],
+					}
+				)
+			);
 	}
 
 	whenAllPendingResolve () {
