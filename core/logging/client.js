@@ -10,6 +10,7 @@
 
 var common = require('./common')
 ,   stats  = require('./stats')
+,	colorForString = require("./colorForString");
 
 // These need to be shared across triton and corvair.
 var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
@@ -37,7 +38,7 @@ var makeLogger = function(group, opts){
 					'%c'+level+'%c: [%c'+opts.name+'%c]',
 					'color: '+config.colors[level],
 					'color: black',
-					'color: '+opts.color.client,
+					'color: '+ colorForString(opts.name).client,
 					'color: black',
 				].concat(args)
 			);

@@ -29,6 +29,7 @@
   "devDependencies": {
     "gulp": "3.8.10",
     "gulp-6to5": "3.0.0",
+    "gulp-foreach": "0.1.0",
     "gulp-jshint": "1.9.0",
     "gulp-replace": "0.5.2",
     "gulp-substituter": "0.3.0",

@@ -1,6 +1,7 @@
 var winston = require('winston')
 ,   common  = require('./common')
 ,   stats   = require('./stats')
+,	colorForString = require("./colorForString");
 
 // These need to be shared across triton and corvair.
 var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
@@ -16,7 +17,7 @@ var getLoggerForConfig = function(group, opts){
 	// returns existing on hit.
 	var logger = loggers[group].get(opts.name, {
 		console: {
-			label     : colorizeName(opts),
+			label     : colorizeName(opts.name),
 			level     : config.baseLevel,
 			colorize  : process.stdout.isTTY,
 			timestamp : false,  // TODO: Want this in production.
@@ -31,13 +32,15 @@ var getLoggerForConfig = function(group, opts){
 	return logger;
 }
 
-var colorizeName = function(opts){
+// takes in a server color, which is a simple int
+var colorizeName = function(name){
 
+	var color = colorForString(name).server;
 	// Only colorize if we're attached to a terminal.
 	if (!process.stdout.isTTY)
-		return opts.name;
+		return name;
 
-	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
+	return `\x1B[38;5;${color}m${name}\x1B[0m`;
 }
 
 var getLogger = stats.makeGetLogger(getLoggerForConfig);

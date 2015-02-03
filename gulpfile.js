@@ -1,16 +1,35 @@
 
 
 var gulp = require("gulp"),
-   es6to5 = require("gulp-6to5"),
-   replace = require("gulp-replace"),
+	es6to5 = require("gulp-6to5"),
+	replace = require("gulp-replace"),
 //   jasmine = require("gulp-jasmine"),
-   rename = require("gulp-rename");
+	forEach = require("gulp-foreach"),
+	rename = require("gulp-rename");
 
-
+require('gulp-foreach')
 function transpile(serverSide) {
 	return gulp.src(["core/**/*.js", "core/**/*.jsx"])
+		.pipe(forEach(function(stream, file){
+			return stream
+				.pipe(replace(/__LOGGER__(?:\(\s*(\{[\s\S]*?\})\s*\))?/g, function (match, optionString) {
+					optionString = optionString || "";
+					// The slash replacement here is so we don't choke on example
+					// loggers in comments. We can't just use eval because the first line of the match generally
+					// does not have a // before it, so it's not valid JS.
+					optionString = optionString.replace(/^\/\//mg,'');
+
+					// optionString now represents an expression that should be run to make an options object.
+					var options = optionString ? new Function("return "+optionString)() : {};
+
+					// we use dots instead of slashes because statsd likes dots as separators. we also attempt to 
+					// strip the last segment, assuming it's a file extension.
+					if (!options.name) options.name = "triton." + file.relative.replace("/", ".").replace(/\.[^\.]*$/, "") + (options.label ? "." + options.label : "");
+
+					return JSON.stringify(options);
+			}));
+		}))
 		.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
-		.pipe(replace(/__LOGGER__(?:\([^)]*\))?/g, "{name:'foo', color:{server:61,client:'rgb(42,42,127)'}}"))
 		.pipe(es6to5())
 		.pipe(rename(function (path) {
 			path.extname = ".js";
@@ -50,6 +69,4 @@ gulp.task('watch', function () {
 
 // todo: where should tests go?
 
-// todo: fix logger
-
-// todo: what to do about root JS files
+// todo: add clean
