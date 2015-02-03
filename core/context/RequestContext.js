@@ -32,6 +32,15 @@ class RequestContext {
 		return RequestLocals().instance;
 	}
 
+	setDataLoadWait (ms) {
+		this.dataLoadWait = ms
+		return this
+	}
+
+	getDataLoadWait (ms) {
+		return this.dataLoadWait
+	}
+
 	onNavigate (callback) {
 		this.navigator.on('navigateDone', callback);
 	}
