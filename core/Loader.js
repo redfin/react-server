@@ -206,18 +206,16 @@ module.exports = class Loader {
 	}
 
 	getPendingRequests () {
-		var dataCache = this.dataCache;
+		return this.getAllRequests().filter(req => !req.entry.loaded);
+	}
 
-		return Object.keys(dataCache)
-			.filter( url => !dataCache[url].loaded )
-			.map( url => {
-				return {url: url, entry: dataCache[url] }
-			});
+	getAllRequests() {
+		return Object.keys(this.dataCache)
+			.map(url => ({url: url, entry: this.dataCache[url]}));
 	}
 
 	whenAllPendingResolve () {
-		var promises = Object.keys(this.dataCache)
-			.map( url => this.dataCache[url].dfd.promise );
+		var promises = this.getAllRequests().map(req => req.entry.promise);
 		return Q.allSettled(promises);
 	}
 

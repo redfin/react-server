@@ -1,5 +1,5 @@
 
-var logger = require('./logging').getLogger(__LOGGER__({gauge:{hi:1}})),
+var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -29,7 +29,7 @@ module.exports = function(routes) {
 		logger.debug(`Incoming request for ${req.path}`);
 
 		// Just to keep an eye out for leaks.
-		logger.debug('RequestLocalStorage namespaces: %s', RequestLocalStorage.getCountNamespaces());
+		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
@@ -312,6 +312,7 @@ function writeData(req, res, context, start) {
 
 function setupLateArrivals(req, res, context, start) {
 	var loader = context.loader;
+	var allRequests = loader.getAllRequests();
 	var notLoaded = loader.getPendingRequests();
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -328,7 +329,8 @@ function setupLateArrivals(req, res, context, start) {
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
 	Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
-		logger.gauge(`count_late_arrivals.${routeName}`, notLoaded.length);
+		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
+		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
 		logger.time(`all_done.${routeName}`, new Date - start);
 	});
 }
