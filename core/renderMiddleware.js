@@ -77,6 +77,8 @@ function beginRender(req, res, start, context, page) {
 
 	logger.debug("Route Name: " + routeName);
 
+	var renderTimer = logger.timer("renderFunction");
+
 	// regardless of what happens, write out the header part
 	// TODO: should this include the common.js file? seems like it
 	// would give it a chance to download and parse while we're loading
@@ -91,9 +93,10 @@ function beginRender(req, res, start, context, page) {
 		writeBody,
 		writeData,
 		setupLateArrivals,
-	].reduce((chain, func) => chain.then(
-		() => func(req, res, context, start, page)
-	)).catch(err => logger.error("Error in beginRender chain", err.stack));
+	].reduce((chain, func) => chain
+		.then(() => func(req, res, context, start, page))
+		.then(() => renderTimer.tick(func.name))
+	).catch(err => logger.error("Error in beginRender chain", err.stack));
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
