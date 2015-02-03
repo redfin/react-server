@@ -2,13 +2,18 @@
 // performance buckets: "fast", "fine" and "slow".
 //
 // If you're timing something for which these default thresholds don't make
-// sense, you can override them in your call to `getLogger`.
+// sense, you can override them either in your call to `getLogger` or in your
+// call to `time` or `timer` itself.
 //
 // Example:
 //
 //   var logger = require('./logging').getLogger(__LOGGER__({
 //           timing: { fast: 25, fine: 100 }
 //   }));
+//
+//   logger.time("something", millseconds, { fast: 50 });
+//
+//   var timer = logger.timer("somethingElse", { fine: 250 });
 //
 var DEFAULT_TIME_THRESHOLDS = {
 	fast: 100,
@@ -19,13 +24,16 @@ var DEFAULT_TIME_THRESHOLDS = {
 // buckets: "lo", "hi" and "ok".
 //
 // If you're tracking something for which these default thresholds don't make
-// sense, you can override them in your call to `getLogger`.
+// sense, you can override them in your call to `getLogger` or in your call to
+// `gauge` iteself.
 //
 // Example:
 //
 //   var logger = require('./logging').getLogger(__LOGGER__({
 //           gauge: { lo: 10000, hi: 100000 }
 //   }));
+//
+//   logger.gauge("something", value, { hi: 1000000 });
 //
 var DEFAULT_GAUGE_THRESHOLDS = {
 	lo: -1,
