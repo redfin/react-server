@@ -71,8 +71,33 @@ var wrapLogger = function(getLoggerForConfig, opts){
 
 	// This is just a convenience wrapper around the `time` method.
 	mainLogger.timer = (token) => {
-		var t0 = new Date
-		return { stop: () => mainLogger.time(token, new Date - t0) };
+
+		var t0 = new Date // For use by `timer.stop`.
+		,   tt = t0       // For use by `timer.tick`.
+		,   nt = 0        // Number of times `tick` has been called.
+
+		return {
+
+			// The `stop` method logs the total elapsed time since
+			// timer creation.
+			stop: () => mainLogger.time(token, new Date - t0),
+
+			// The `tick` method logs the time elapsed since the
+			// last call to `tick` (or since timer creation).  A
+			// tick may be named.  If a name is not passed in the
+			// number of times `tick` has been called on this
+			// timer will be used.  Don't mix named and un-named
+			// ticks.
+			tick: (name) => {
+				var now = new Date
+
+				name || (name = `tick_${nt++}`);
+
+				mainLogger.time(`${token}.${name}`, now-tt);
+
+				tt = now;
+			},
+		};
 	}
 
 	return mainLogger;
