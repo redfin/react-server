@@ -38,39 +38,19 @@ var loggers = {};
 // This helper wires them up.
 var wrapLogger = function(getLoggerForConfig, opts){
 
-	var mainLogger  = getLoggerForConfig('main',  opts)
-	,   timeLogger  = getLoggerForConfig('time',  opts)
-	,   gaugeLogger = getLoggerForConfig('gauge', opts)
-
-	// Copy the options we care about into a new object and fill in the
-	// defaults where necessary.
-	var timeThresholds = {};
-	for (var k in DEFAULT_TIME_THRESHOLDS)
-		timeThresholds[k] = (opts.timing||{})[k]||DEFAULT_TIME_THRESHOLDS[k];
-
-	var classifyTime = ms => {
-		     if (ms <= timeThresholds.fast) return 'fast';
-		else if (ms <= timeThresholds.fine) return 'fine';
-		else                                return 'slow';
-	}
-
-	var gaugeThresholds = {};
-	for (var k in DEFAULT_GAUGE_THRESHOLDS)
-		gaugeThresholds[k] = (opts.gauge||{})[k]||DEFAULT_GAUGE_THRESHOLDS[k];
-
-	var classifyGuage = val=> {
-		     if (val <= gaugeThresholds.lo) return 'lo';
-		else if (val >= gaugeThresholds.hi) return 'hi';
-		else                                return 'ok';
-	}
+	var mainLogger    = getLoggerForConfig('main',  opts)
+	,   timeLogger    = getLoggerForConfig('time',  opts)
+	,   gaugeLogger   = getLoggerForConfig('gauge', opts)
+	,   classifyTime  = makeTimeClassifier(opts)
+	,   classifyGauge = makeGaugeClassifier(opts)
 
 	// These are methods that are exposed on the primary logger.
 	// They just dispatch to appropriate log levels on secondary loggers.
-	mainLogger.time  = (token, ms ) => timeLogger [classifyTime (ms )](token, {ms });
-	mainLogger.gauge = (token, val) => gaugeLogger[classifyGuage(val)](token, {val});
+	mainLogger.time  = (token, ms,  opts) => timeLogger [classifyTime (ms,  opts)](token, {ms });
+	mainLogger.gauge = (token, val, opts) => gaugeLogger[classifyGauge(val, opts)](token, {val});
 
 	// This is just a convenience wrapper around the `time` method.
-	mainLogger.timer = (token) => {
+	mainLogger.timer = (token, opts) => {
 
 		var t0 = new Date // For use by `timer.stop`.
 		,   tt = t0       // For use by `timer.tick`.
@@ -80,7 +60,7 @@ var wrapLogger = function(getLoggerForConfig, opts){
 
 			// The `stop` method logs the total elapsed time since
 			// timer creation.
-			stop: () => mainLogger.time(token, new Date - t0),
+			stop: () => mainLogger.time(token, new Date - t0, opts),
 
 			// The `tick` method logs the time elapsed since the
 			// last call to `tick` (or since timer creation).  A
@@ -93,7 +73,7 @@ var wrapLogger = function(getLoggerForConfig, opts){
 
 				name || (name = `tick_${nt++}`);
 
-				mainLogger.time(`${token}.${name}`, now-tt);
+				mainLogger.time(`${token}.${name}`, now-tt, opts);
 
 				tt = now;
 			},
@@ -101,6 +81,35 @@ var wrapLogger = function(getLoggerForConfig, opts){
 	}
 
 	return mainLogger;
+}
+
+// This is used for classifying `time` and `gauge` values.
+var makeThresholdsSieve = (options, defaults) => {
+	return (key, overrides) => {
+		// Sure would be nice to have Array.prototype.find here.
+		if ((overrides||{})[key] !== void 0) return overrides[key];
+		if ((options  ||{})[key] !== void 0) return options  [key];
+		return defaults[key];
+	}
+}
+
+var makeTimeClassifier = opts => {
+	var thresholds = makeThresholdsSieve(opts.timing, DEFAULT_TIME_THRESHOLDS);
+	return (ms, o) => {
+		     if (ms <= thresholds('fast', o)) return 'fast';
+		else if (ms <= thresholds('fine', o)) return 'fine';
+		else                                  return 'slow';
+	}
+}
+
+var makeGaugeClassifier = opts => {
+	var thresholds = makeThresholdsSieve(opts.gauge, DEFAULT_GAUGE_THRESHOLDS);
+	return (val, o) => {
+		     if (val <= thresholds('lo', o)) return 'lo';
+		else if (val >= thresholds('hi', o)) return 'hi';
+		else                                 return 'ok';
+	}
+
 }
 
 var getCombinedLogger = function(getLoggerForConfig, opts){
