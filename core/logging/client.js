@@ -46,9 +46,11 @@ var makeLogger = function(group, opts){
 	}
 
 	Object.keys(config.levels).forEach(level => {
-		logger[level] = () => logger.log.apply(
-			logger, [level].concat([].slice.call(arguments))
-		);
+		logger[level] = function() {
+			 logger.log.apply(
+				logger, [level].concat([].slice.call(arguments))
+			);
+		}
 	});
 
 	return logger;
