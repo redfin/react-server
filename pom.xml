@@ -11,7 +11,7 @@
 	<name>Triton Route Loader</name>
 	<version>1.0-SNAPSHOT</version>
 	<properties>
-		<webpack.bin>./node_modules/webpack/bin/webpack.js</webpack.bin>
+		<gulp.bin>./node_modules/gulp/bin/gulp.js</gulp.bin>
 	</properties>
 	<build>
 		<plugins>
@@ -66,9 +66,9 @@
 								<echo>Building plugin...</echo>
 								<exec
 									dir="${project.basedir}"
-									executable="${webpack.bin}"
+									executable="${gulp.bin}"
 									failonerror="true">
-										<arg line="--bail --config webpack.config.js" />
+										<arg line="build" />
 								</exec>
 							</tasks>
 						</configuration>

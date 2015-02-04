@@ -6,19 +6,32 @@
  * file client-side, if it isn't already loaded.
  */
 
+var replace = require("gulp-replace");
+
 var REPLACE_REGEXP = /__LAZY_REQUIRE__\(['"]([^)]+)['"]\)/g;
 var fs = require('fs');
-var hydratedRouteFunctionTemplate = require("./HydratedRouteFunctionTemplate.bars");
 
-module.exports = function (source) {
-	this.cacheable && this.cacheable();
-	source = source.replace(REPLACE_REGEXP, doReplace);
-
-	return source;
+module.exports = function () {
+	return replace(REPLACE_REGEXP, doReplace);
 }
 
 function doReplace(match /* whole match */, fileName) {	
-	// we replace /*fileName*/ with the actual string containing the filename. 
-	return hydratedRouteFunctionTemplate({fileName:fileName});
+	// we replace fileName with the actual string containing the filename. 
+	return `
+		function () {
+		var Q = require('q');
+		var dfd = Q.defer();
+		if (SERVER_SIDE) {
+			var component = require("${fileName}"); 
+			dfd.resolve(component);
+		} else {
+			require.ensure([], function (require) {
+				var component = require("${fileName}"); 
+				dfd.resolve(component);
+			});
+		}
+		return dfd.promise;
+	}`;
 }
+
 
