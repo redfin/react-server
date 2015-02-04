@@ -30,6 +30,8 @@ if (SERVER_SIDE){
 	,   getContainer = () => cls.get(key)
 	,   startRequest = (start) => { cls.run(() => {cls.set(key, []); start()}) }
 
+	// Make sure our Q promises play well with continuation local storage.
+	require('cls-q')(cls);
 } else {
 	var container    = []
 	,   getContainer = () => container
