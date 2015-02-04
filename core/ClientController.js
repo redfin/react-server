@@ -50,6 +50,8 @@ class ClientController extends EventEmitter {
 	_setupNavigateListener () {
 		var context = this.context; 
 
+		context.onNavigateStart(RequestLocalStorage.startRequest);
+
 		/**
 		 * type is one of 
 		 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
@@ -103,7 +105,10 @@ class ClientController extends EventEmitter {
 
 			cssHelper.ensureCss(routeName, page);
 
-			this._render(page);
+			page.getBodyClasses().then((classes) => {
+				classes.push(`route-${routeName}`);
+				document.body.className = classes.join(' ');
+			}).then(() => this._render(page))
 
 		});
 

@@ -25,9 +25,6 @@ class RequestContext {
 
 		this._navigateListeners = [];
 
-		// Kick this off right away, and make the promise available.
-		this.loadUserData();
-
 		RequestLocals().instance = this;
 	}
 
@@ -35,52 +32,25 @@ class RequestContext {
 		return RequestLocals().instance;
 	}
 
-	loadUserData () {
-		if (this._userDataPromise) {
-			return this._userDataPromise
-		}
-		
-		var dfd = Q.defer();
-		this._userDataPromise = dfd.promise;
-
-		this.loader
-			.load('/stingray/reactLdp/userData')
-			.done( apiResult => {
-				this._resolveUserDataRequest(apiResult, dfd)
-			});
-
-		return this._userDataPromise;
+	setDataLoadWait (ms) {
+		this.dataLoadWait = ms
+		return this
 	}
 
-	_resolveUserDataRequest (apiResult, dfd) {
-		// TODO: what is the equivalent here
-		// if (!res.ok) {
-		// 	dfd.reject({ message: 'Error', status: res.status, text: res.text });
-		// 	return;
-		// }
-
-		if (apiResult.resultCode) {
-			dfd.reject({ message: apiResult.errorMessage });
-			return;
-		}
-
-		var userDataResult = apiResult.payload;
-
-		this._userData = new ObjectGraph(userDataResult.userData).getRoot();
-
-		dfd.resolve(userDataResult);
+	getDataLoadWait (ms) {
+		return this.dataLoadWait
 	}
 
 	onNavigate (callback) {
 		this.navigator.on('navigateDone', callback);
 	}
 
-	navigate (request, type) {
-		this.navigator.navigate(request, type);
+	onNavigateStart (callback) {
+		this.navigator.on('navigateStart', callback);
 	}
 
-	getUserDataPromise () {
-		return this._userDataPromise;
+	navigate (request, type) {
+		this.navigator.navigate(request, type);
 	}
 
 	dehydrate () {
@@ -91,14 +61,6 @@ class RequestContext {
 
 	rehydrate (state) {
 		this.loader.rehydrate(state.loader);
-		var loaded = this.loader.checkLoaded('/stingray/reactLdp/userData');
-		if (loaded) {
-			var dfd = Q.defer();
-			this._userDataPromise = dfd.promise;
-			this._resolveUserDataRequest(loaded.getData(), dfd);
-		} else {
-			this.loadUserData();
-		}
 	}
 
 }
