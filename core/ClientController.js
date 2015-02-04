@@ -50,6 +50,8 @@ class ClientController extends EventEmitter {
 	_setupNavigateListener () {
 		var context = this.context; 
 
+		context.onNavigateStart(RequestLocalStorage.startRequest);
+
 		/**
 		 * type is one of 
 		 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
@@ -103,7 +105,10 @@ class ClientController extends EventEmitter {
 
 			cssHelper.ensureCss(routeName, page);
 
-			this._render(page);
+			page.getBodyClasses().then((classes) => {
+				classes.push(`route-${routeName}`);
+				document.body.className = classes.join(' ');
+			}).then(() => this._render(page))
 
 		});
 
@@ -276,7 +281,7 @@ class ClientController extends EventEmitter {
 				// don't obliterate the node.
 				console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
 					"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
-					"cause unpredictable behavior", tritonRoot);
+					"cause unpredictable behavior", potentialRoot);
 			}
 		}
 		return result;

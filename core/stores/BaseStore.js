@@ -31,18 +31,18 @@ class BaseStore {
 	addDataUrl(name, url) {
 		this._dupeCheckLoaderName(name);
 
-		this._data[name] = {
+		this._data[name] = this._attachNotStartedDfd({
 			url,
 			status: BaseStore.LoadState.NOT_STARTED
-		}
+		})
 	}
 
 	addChildStore(name, store) {
 		this._dupeCheckLoaderName(name);
 
-		this._data[name] = {
+		this._data[name] = this._attachNotStartedDfd({
 			store
-		};
+		});
 		store.addChangeListener(this.emitChange.bind(this));
 	}
 
@@ -137,7 +137,15 @@ class BaseStore {
 		});
 	}
 
+	_attachNotStartedDfd(item) {
 
+		// Need to have a promise attached from the get-go so callers
+		// of the `when...()` methods have something to wait for.
+		item.notStartedDfd = Q.defer();
+		item.promise = item.notStartedDfd.promise;
+
+		return item;
+	}
 
 	_dupeCheckLoaderName(name) {
 		if (this._data[name]) {
@@ -207,7 +215,19 @@ class BaseStore {
 			} else {
 				promise = this._loadByName(name);
 			}
-			this._data[name].promise = promise;
+
+			if (promise) {
+
+				// Any calls to `when...()` methods before we
+				// started loading will be waiting for the
+				// initial promise that was attached to the
+				// `_data` member at creation time.  We'll
+				// chain _that_ promise up with our new
+				// promise so everyone's happy.
+				this._data[name].promise = promise
+					.then(() => this._data[name].notStartedDfd.resolve())
+			}
+
 			return promise;
 		}).filter(promise=>{return promise !== null;});
 

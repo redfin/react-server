@@ -17,22 +17,6 @@ var logger = require('./logging').getLogger(__LOGGER__({gauge:{hi:1}})),
 
 var DATA_LOAD_WAIT = 250;
 
-class Renderer {
-
-	constructor (context) {
-		this.context = context;
-		this.router = context.router;
-		this._userDataPromise = context.loadUserData();
-	}
-
-	render (handlerResult) {
-		logger.debug("Triggering userData load");
-		beginRender(req, res, start, context, this._userDataPromise, handlerResult);
-	}
-
-}
-
-
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
@@ -56,6 +40,10 @@ module.exports = function(routes) {
 					// TODO: context opts?
 				});
 
+		// This is the default.
+		// Can be overridden by the page or middleware.
+		context.setDataLoadWait(DATA_LOAD_WAIT)
+
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
@@ -73,8 +61,7 @@ module.exports = function(routes) {
 
 			logger.debug('Executing navigate action');
 			
-			var userDataPromise = context.loadUserData();
-			beginRender(req, res, start, context, userDataPromise, page);
+			beginRender(req, res, start, context, page);
 
 		});
 
@@ -83,7 +70,7 @@ module.exports = function(routes) {
 	})}
 }
 
-function beginRender(req, res, start, context, userDataDfd, page) {
+function beginRender(req, res, start, context, page) {
 	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
@@ -94,22 +81,25 @@ function beginRender(req, res, start, context, userDataDfd, page) {
 	// TODO: should this include the common.js file? seems like it
 	// would give it a chance to download and parse while we're loading
 	// data
-	writeHeader(req, res, routeName, page).then(() => {
-		// user data should never be the long pole here.
-		userDataDfd.done(function () {
-			writeBody(req, res, context, start, page).then(() => {
-				writeData(req, res, context, start)
-				setupLateArrivals(req, res, context, start);
-			});
-		});
-
-	});
+	//
+	// Each of these functions has the same signature and returns a
+	// promise, so we can chain them up with a promise reduction.
+	[
+		Q(), // This is just a NOOP lead-in to prime the reduction.
+		writeHeader,
+		startBody,
+		writeBody,
+		writeData,
+		setupLateArrivals,
+	].reduce((chain, func) => chain.then(
+		() => func(req, res, context, start, page)
+	)).catch(err => logger.error("Error in beginRender chain", err.stack));
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
 }
 
-function writeHeader(req, res, routeName, pageObject) {
+function writeHeader(req, res, context, start, pageObject) {
 	logger.debug('Starting document header');
 	res.type('html');
 
@@ -125,9 +115,7 @@ function writeHeader(req, res, routeName, pageObject) {
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
 		// can close the head and start the body element.
-		logger.debug("Starting body");
-
-		res.write(`</head><body class='route-${routeName}'><div id='content'>`);
+		res.write(`</head>`);
 	});
 }
 
@@ -224,6 +212,16 @@ function renderStylesheets (pageObject, res) {
 	// return Q.all(styleSheetsRendered);
 }
 
+function startBody(req, res, context, start, page) {
+
+	var routeName = context.navigator.getCurrentRoute().name
+
+	return page.getBodyClasses().then((classes) => {
+		logger.debug("Starting body");
+		classes.push(`route-${routeName}`)
+		res.write(`<body class='${classes.join(' ')}'><div id='content'>`);
+	})
+}
 
 /**
  * Writes out the ReactElements to the response. Returns a promise that fulfills when
@@ -241,25 +239,28 @@ function writeBody(req, res, context, start, page) {
 
 	// render the elements in sequence when they resolve (i.e. tell us they are ready).
 	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
-	var noTimeoutRenderPromise =  elementPromises.reduce((chain, next, index) => {
+	var noTimeoutRenderPromise =  elementPromises.concat(Q()).reduce((chain, next, index) => {
 		return chain.then((element) => {
 	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
 	 		rendered[index - 1] = true;
 			return next;
 		})
-	}).then((element) => {
-		// reduce is called length - 1 times. we need to call one final time here to make sure we 
-		// chain the final promise.
- 		if (!rendered[elementPromises.length - 1]) renderElement(res, element, context, elementPromises.length - 1);
- 		rendered[elementPromises.length - 1] = true;
 	}).catch((err) => {
 		logger.error("Error while rendering without timeout", err.stack);
 	});
 
+	// Some time has already elapsed since the request started.
+	// Note that you can override `DATA_LOAD_WAIT` with a
+	// `?_debug_data_load_wait={ms}` query string parameter.
+	var totalWait     = req.query._debug_data_load_wait || context.getDataLoadWait()
+	,   timeRemaining = totalWait - (new Date - start)
+
+	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
+
 	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,
 	// as best as possible. note that once the timeout fires, we render everything that's left
 	// synchronously.
-	var timeoutRenderPromise = Q.delay(DATA_LOAD_WAIT).then(() => {
+	var timeoutRenderPromise = Q.delay(timeRemaining).then(() => {
 		// if we rendered everything up to the last element already, just return.
 		if (rendered[elementPromises.length - 1]) return;
 
