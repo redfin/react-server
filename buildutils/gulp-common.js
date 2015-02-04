@@ -15,7 +15,7 @@ var ecmaScriptTransforms = [
 	"es6.spread",
 	"es6.templateLiterals",
 	// "es6.unicodeRegex", 
-	"es7.objectSpread",
+	"es7.objectRestSpread",
 	// "es7.abstractReferences",
 	// "es7.comprehensions",
 	// "es7.exponentiationOperator",
