@@ -176,16 +176,19 @@ class BaseStore {
 
 		var cachedResult = this._loader.checkLoaded(url); 
 		if (cachedResult) {
-			this._handleLoadResult(name, cachedResult.getData());
+			var data = cachedResult.getData();
+			this._handleLoadResult(name, data);
 			// returning null is OK because we filter out nulls in loadData,
 			// and Q.allSettled with an empty array is resolved immediately
-			return null;
+			this.emitChange();
+			return Q(data);
 		} else {
 			return this._loader.load(url).then(result => {
 				logger.debug("completed " + name + ": " + url);
 				logger.time(`loadByName.success.${name}`, new Date - t0);
 				this._handleLoadResult(name, result);
-				this.emitChange();		
+				this.emitChange();
+				return result;	
 			}, err => {
 				logger.error("error " + name + ": " + url, err);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
@@ -225,7 +228,10 @@ class BaseStore {
 				// chain _that_ promise up with our new
 				// promise so everyone's happy.
 				this._data[name].promise = promise
-					.then(() => this._data[name].notStartedDfd.resolve())
+					.then((data) => {
+						this._data[name].notStartedDfd.resolve();
+						return data;
+					});
 			}
 
 			return promise;
