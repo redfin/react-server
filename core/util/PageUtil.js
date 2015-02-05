@@ -14,8 +14,13 @@ var Q = require("q"),
 //
 // Note that each of these methods also receives an additional argument,
 // which is the next implementation of the method in the call chain.
-//     - Middleware implementations _should_ call this.
+//     - Middleware implementations _should_ call this in most cases.*
 //     - Page implementations _may_ call this (it will be the default implementation).
+//
+// * Consider carefully before deciding not to call `next()` in middleware.
+// Other middleware (and the page itself) may exhibit undefined behavior if a
+// given method is not called.  Generally, only skip calling `next()` for
+// short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
 	handleRoute        : [2, () => ({code: 200}), Q],
