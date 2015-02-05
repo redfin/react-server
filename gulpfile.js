@@ -4,7 +4,7 @@ var gulp = require("gulp"),
 	rename = require("gulp-rename"),
 	sourcemaps = require("gulp-sourcemaps"),
 	common = require("./buildutils/gulp-common"),
-	logging = require("./buildutils/gulp-logging");
+	logging = require("./buildutils/logger-loader");
 
 var src = ["core/**/*.js", "core/**/*.jsx"];
 
