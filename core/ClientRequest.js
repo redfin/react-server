@@ -40,12 +40,12 @@ class ClientRequest {
 	}
 
 	getCookie(name) {
-		return getCookies()[name];
+		return this.getCookies()[name];
 	}
 
 	getCookies() {
 
-		return cookie(document.cookie);
+		return cookie.parse(document.cookie);
 	}
 
 	getBody() {

@@ -249,7 +249,7 @@ function writeBody(req, res, context, start, page) {
 			return next;
 		})
 	}).catch((err) => {
-		logger.debug("Error while rendering", err);
+		logger.error("Error while rendering without timeout", err.stack);
 	});
 
 	// Some time has already elapsed since the request started.
