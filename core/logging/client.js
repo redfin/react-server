@@ -45,6 +45,9 @@ var makeLogger = function(group, opts){
 	}
 
 	Object.keys(config.levels).forEach(level => {
+		// note that this has to be an ES-5 style function and cannot be an arrow function  
+		// because arguments doesn't bind to the arrow function's arguments; it would bind 
+		// to makeLogger's arguments.
 		logger[level] = function(){
 			logger.log.apply(logger, [level].concat([].slice.call(arguments)));
 		}
