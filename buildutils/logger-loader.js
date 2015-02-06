@@ -1,3 +1,6 @@
+var replace = require("gulp-replace")
+,   forEach = require("gulp-foreach")
+
 // This pattern matches either of these:
 //   - "__LOGGER__"
 //   - "__LOGGER__({ /* options */ })"
@@ -5,12 +8,14 @@ var REPLACE_TOKEN = /__LOGGER__(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
 ,   THIS_MODULE   = /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logger-loader\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
-module.exports = function(source){
-	return source.replace(REPLACE_TOKEN, loggerSpec.bind(this));
+module.exports = function(){
+	return forEach(function(stream, file){
+		return stream.pipe(replace(REPLACE_TOKEN, loggerSpec.bind(file)));
+	})
 }
 
 var loggerSpec = function(fullMatch, optString){
-	var fn   = this.resourcePath
+	var fn   = this.path
 	,   opts = {}
 
 	if (fn.indexOf(BASE_PATH) != 0)

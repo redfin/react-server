@@ -1,5 +1,6 @@
 var fs = require('fs'),
 	rimraf = require("rimraf"),
+	mkdirp = require("mkdirp"),
 	bundleNameUtil = require('../core/util/bundleNameUtil');
 
 function cleanTargetDir() {
@@ -47,7 +48,8 @@ module.exports = function(routesFilename) {
 			"\tepHelper.initialize(component);\n" +
 			"}";
 
-		var outFileName = "./target-entrypoints/" + routeName + "Entry__generated.js";
+		mkdirp.sync("./target/client/generated-entrypoints");
+		var outFileName = "./target/client/generated-entrypoints/" + routeName + "Entry__generated.js";
 
 	 	fs.writeFileSync(outFileName, entryPointCode);
 
