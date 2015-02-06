@@ -172,6 +172,9 @@ function renderBaseTag(pageObject, res) {
 }
 
 function renderScriptsSync(scripts, res) {
+
+	logger.warn("Loading scripts synchronously.  Check `type` attributes.");
+
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
 	// immediately.
 	scripts.forEach( (script) => {
