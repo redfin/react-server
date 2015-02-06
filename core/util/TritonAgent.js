@@ -92,6 +92,7 @@ module.exports = makeRequest;
 makeRequest.get = function (url, data, fn) {
 	var req = makeRequest('GET', url);
 	if ('function' == typeof data) fn = data, data = null;
+	if (data) req.query(data);
 	if (fn) req.end(fn);
 	return req;
 }
