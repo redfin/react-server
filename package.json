@@ -29,8 +29,12 @@
     "superagent": "^0.21.0"
   },
   "devDependencies": {
+    "express": "4.11.2",
+    "express-state": "1.2.0",
     "gulp": "3.8.10",
     "gulp-6to5": "3.0.0",
+    "gulp-filter": "2.0.0",
+    "gulp-jasmine": "2.0.0",
     "gulp-jshint": "1.9.0",
     "gulp-rename": "1.2.0",
     "gulp-replace": "0.5.2",
@@ -42,6 +46,7 @@
     "jsx-loader": "0.12.2",
     "path-to-regexp": "1.0.1",
     "react-tools": "0.12.2",
-    "webpack": "1.4.13"
+    "webpack": "1.4.13",
+    "zombie": "2.5.1"
   }
 }
