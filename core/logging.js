@@ -9,6 +9,18 @@
  *
  *   logger.debug(`result: ${result}`);
  *
+ * Standard log-level methods accept an additional argument, which can be an
+ * arbitrary data structure.  For logging exceptions it can be useful to put
+ * the error's `stack` property in this position.
+ *
+ * Example:
+ *
+ *   try {
+ *       some_work();
+ *   } catch (err) {
+ *       logger.error("Error calling some_work()", err.stack);
+ *   }
+ *
  * It *also* has a `time` method for timing named metrics.  Metric names
  * should be dot-separated and be few in number (i.e. don't include object
  * IDs or other variables with many potential values).
