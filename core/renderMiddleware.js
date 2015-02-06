@@ -215,7 +215,7 @@ function renderScriptsAsync(scripts, res) {
 		RLS().didLoadLAB = true;
 	}
 
-	// The assignment to `window.redLAB` here is so we maintain a single
+	// The assignment to `window._tLAB` here is so we maintain a single
 	// LAB chain through all of our calls to `renderScriptsAsync`.
 	//
 	// You can think of a LAB chain as being similar to a promise chain.
@@ -228,9 +228,9 @@ function renderScriptsAsync(scripts, res) {
 	// can wind up with _out of order_ execution.
 	//
 	// We want everything to be executed in order, so we maintain one
-	// master chain for the page.  This chain is `window.redLAB`.
+	// master chain for the page.  This chain is `window._tLAB`.
 	//
-	res.write("<script>window.redLAB=(window.redLAB||$LAB)");
+	res.write("<script>window._tLAB=(window._tLAB||$LAB)");
 
 	scripts.forEach(script => {
 
