@@ -214,6 +214,19 @@ function renderScriptsAsync(scripts, res) {
 
 	// The assignment to `window.redLAB` here is so we maintain a single
 	// LAB chain through all of our calls to `renderScriptsAsync`.
+	//
+	// You can think of a LAB chain as being similar to a promise chain.
+	// The output of `$LAB.script()` or `$LAB.wait()` is an object that
+	// itself has `script()` and `wait()` methods.  So long as the output
+	// of each call is used as the input for the next call our code (both
+	// async loaded scripts and inline JS) will be executed _in order_.
+	//
+	// If we start a _new_ chain directly from `$LAB` (the root chain), we
+	// can wind up with _out of order_ execution.
+	//
+	// We want everything to be executed in order, so we maintain one
+	// master chain for the page.  This chain is `window.redLAB`.
+	//
 	res.write("<script>window.redLAB=(window.redLAB||$LAB)");
 
 	scripts.forEach(script => {
