@@ -4,6 +4,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
+	LABString = require('./util/LABString'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
@@ -199,16 +200,13 @@ function renderScriptsAsync(scripts, res) {
 	// Lazily load LAB the first time we spit out async scripts.
 	if (!RLS().didLoadLAB){
 
-		// TODO: Serve this from _our_ CDN.
-		var LAB = 'https://cdnjs.cloudflare.com/ajax/libs/labjs/2.0.3/LAB.min.js';
-
 		// Don't need "type" in <script> tags anymore.
 		//
 		// http://www.w3.org/TR/html/scripting-1.html#the-script-element
 		//
 		// > The default, which is used if the attribute is absent, is "text/javascript".
 		//
-		res.write(`<script src="${LAB}"></script>`);
+		res.write(`<script>${LABString}</script>`);
 
 		// We always want scripts to be executed in order.
 		res.write("<script>$LAB.setOptions({AlwaysPreserveOrder:true});</script>");
