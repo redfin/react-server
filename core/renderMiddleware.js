@@ -3,6 +3,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
+	RLS = RequestLocalStorage.getNamespace(),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
@@ -111,8 +112,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	return Q.all([
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
-		renderScripts(pageObject.getScripts(), res),
-		renderScripts(pageObject.getSystemScripts(), res),
+		renderScripts(pageObject, res),
 		renderMetaTags(pageObject, res),
 		renderBaseTag(pageObject, res)
 	]).then(() => {
@@ -171,7 +171,7 @@ function renderBaseTag(pageObject, res) {
 	});
 }
 
-function renderScripts(scripts, res) {
+function renderScriptsSync(scripts, res) {
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
 	// immediately.
 	scripts.forEach( (script) => {
@@ -184,6 +184,88 @@ function renderScripts(scripts, res) {
 			throw new Error("Script cannot be rendered because it has neither an href nor a text attribute: " + script);
 		}
 	});
+}
+
+function renderScriptsAsync(scripts, res) {
+
+	// Nothing to do if there are no scripts.
+	if (!scripts.length) return;
+
+	// Lazily load LAB the first time we spit out async scripts.
+	if (!RLS().didLoadLAB){
+
+		// TODO: Serve this from _our_ CDN.
+		var LAB = 'https://cdnjs.cloudflare.com/ajax/libs/labjs/2.0.3/LAB.min.js';
+
+		// Don't need "type" in <script> tags anymore.
+		//
+		// http://www.w3.org/TR/html/scripting-1.html#the-script-element
+		//
+		// > The default, which is used if the attribute is absent, is "text/javascript".
+		//
+		res.write(`<script src="${LAB}"></script>`);
+
+		// We always want scripts to be executed in order.
+		res.write("<script>$LAB.setOptions({AlwaysPreserveOrder:true});</script>");
+
+		// Only need to do this part once.
+		RLS().didLoadLAB = true;
+	}
+
+	// The assignment to `window.redLAB` here is so we maintain a single
+	// LAB chain through all of our calls to `renderScriptsAsync`.
+	res.write("<script>window.redLAB=(window.redLAB||$LAB)");
+
+	scripts.forEach(script => {
+
+		if (script.href) {
+
+			res.write(`.script("${script.href}")`);
+
+		} else if (script.text) {
+
+			// The try/catch dance here is so exceptions get their
+			// own time slice and can't mess with execution of the
+			// LAB chain.
+			//
+			// The binding to `this` is so enclosed references to
+			// `this` correctly get the `window` object (despite
+			// being in a strict context).
+			//
+			res.write(`.wait(function(){"use strict";try{${
+				script.text
+			}}catch(e){setTimeout(function(){throw(e)},1)}}.bind(this))`);
+
+		} else {
+
+			throw new Error("Script needs either `href` or `text`: " + script);
+		}
+	});
+
+	res.write(";</script>");
+}
+
+function renderScripts(pageObject, res) {
+
+	// Want to gather these into one list of scripts, because we care if
+	// there are any non-JS scripts in the whole bunch.
+	var scripts = pageObject.getScripts().concat(pageObject.getSystemScripts());
+
+	var thereIsAtLeastOneNonJSScript = scripts.filter(
+		script => script.type && script.type != "text/javascript"
+	).length;
+
+	if (thereIsAtLeastOneNonJSScript){
+
+		// If there are non-JS scripts we can't use LAB for async
+		// loading.  We still want to preserve script execution order,
+		// so we'll cut over to all-synchronous loading.
+		renderScriptsSync(scripts, res);
+	} else {
+
+		// Otherwise, we can do async script loading.
+		renderScriptsAsync(scripts, res);
+	}
 
 	// resolve immediately.
 	return Q("");
@@ -299,11 +381,13 @@ function writeData(req, res, context, start) {
 
 	res.write("</div>"); // <div id="content">
 
-	var pageFooter = ""
-		+ "<script> " + res.locals.state + "; window.rfBootstrap();</script>";
-
-	res.write(pageFooter);
-
+	// Using naked `rfBootstrap()` instead of `window.rfBootstrap()`
+	// because the browser's error message if it isn't defined is more
+	// helpful this way.  With `window.rfBootstrap()` the error is just
+	// "undefined is not a function".
+	renderScriptsAsync([{
+		text: `${res.locals.state};rfBootstrap();`
+	}], res);
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -321,7 +405,13 @@ function setupLateArrivals(req, res, context, start) {
 		pendingRequest.entry.dfd.promise.then( data => {
 			logger.debug("Late arrival: " + pendingRequest.url)
 			logger.time(`late_arrival.${routeName}`, new Date - start);
-			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
+			renderScriptsAsync([{
+				text: `__lateArrival(${
+					JSON.stringify(pendingRequest.url)
+				}, ${
+					JSON.stringify(data)
+				});`
+			}], res);
 		})
 	});
 
