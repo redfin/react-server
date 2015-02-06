@@ -148,8 +148,6 @@ makeRequest.cache = function () {
 	// TODO: why doesn't this work in the browser!?
 	var cache = RLS().cache;
 	if (!cache) {
-		debugger;
-		console.log("Making new cache!");
 		cache = RLS().cache = new RequestDataCache();
 	}
 	return cache;
@@ -180,9 +178,10 @@ class CacheEntry {
 		this.url = url;
 		this.requesters = 0;
 		this.dfd = Q.defer();
-		this.dfd.promise.fin/*ally*/( () => console.log(`Dfd resolved: ${url}`) );
+		this.dfd.promise.fin/*ally*/( () => logger.debug(`Data resolved for: ${url}`) );
 		this.loaded = false;
 		this.res = undefined;
+		this.err = undefined;
 	}
 
 	dehydrate () {

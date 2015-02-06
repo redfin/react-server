@@ -8,7 +8,8 @@ var React = require('react/addons'),
 	EventEmitter = require("events").EventEmitter,
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
-	PageUtil = require("./util/PageUtil");
+	PageUtil = require("./util/PageUtil"),
+	TritonAgent = require('./util/TritonAgent');
 
 // for dev tools
 window.React = React;
@@ -208,7 +209,7 @@ class ClientController extends EventEmitter {
 		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
 		// this lets us render when the server timed out.
 		// TODO: should we ONLY do this when the server times out?
-		this.context.loader.whenCacheDepleted().then(() => {
+		TritonAgent.cache().whenCacheDepleted().then(() => {
 			logger.debug("Loader cache depleted; rendering elements.");
 			elementPromises.forEach((elementEarlyPromise, index) => {
 				renderElement(elementEarlyPromise.getValue(), index);
@@ -330,9 +331,9 @@ class ClientController extends EventEmitter {
 		window.__lateArrival = this.lateArrival.bind(this);
 	}
 
-	lateArrival (url, data) {
+	lateArrival (url, res) {
 		this._initialRenderDfd.promise.done( () => {
-			this.context.loader.lateArrival(url, data);
+			TritonAgent.cache().lateArrival(url, res);
 		});
 	}
 

@@ -8,7 +8,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
 	PageUtil = require("./util/PageUtil"),
-	PromiseUtil = require("./util/PromiseUtil");
+	PromiseUtil = require("./util/PromiseUtil"),
+	TritonAgent = require('./util/TritonAgent');
 
 
 // TODO FIXME ?? 
@@ -34,7 +35,6 @@ module.exports = function(routes) {
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
 				.setRoutes(routes)
-				.setLoaderOpts({}) // TODO FIXME
 				.setDefaultXhrHeadersFromRequest(req)
 				.create({
 					// TODO: context opts?
@@ -311,18 +311,19 @@ function writeData(req, res, context, start) {
 }
 
 function setupLateArrivals(req, res, context, start) {
-	var loader = context.loader;
-	var allRequests = loader.getAllRequests();
-	var notLoaded = loader.getPendingRequests();
+	var allRequests = TritonAgent.cache().getAllRequests();
+	var notLoaded = TritonAgent.cache().getPendingRequests();
 	var routeName = context.navigator.getCurrentRoute().name;
 
 
 	notLoaded.forEach( pendingRequest => {
-		pendingRequest.entry.dfd.promise.then( data => {
+		pendingRequest.entry.whenDataReadyInternal().then( dataRes => {
 			logger.debug("Late arrival: " + pendingRequest.url)
 			logger.time(`late_arrival.${routeName}`, new Date - start);
-			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
-		})
+			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(dataRes) + ");</script>");
+		}).catch( err => {
+			logger.error("An error occurred writing late arrivals", err.stack);
+		}); // TODO: handle errors
 	});
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
