@@ -173,6 +173,8 @@ function renderBaseTag(pageObject, res) {
 
 function renderScriptsSync(scripts, res) {
 
+	// We should only need to render scripts synchronously if we have a
+	// non-JS script somewhere in the mix.
 	logger.warn("Loading scripts synchronously.  Check `type` attributes.");
 
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
