@@ -265,7 +265,7 @@ function renderScripts(pageObject, res) {
 
 	// Want to gather these into one list of scripts, because we care if
 	// there are any non-JS scripts in the whole bunch.
-	var scripts = pageObject.getScripts().concat(pageObject.getSystemScripts());
+	var scripts = pageObject.getSystemScripts().concat(pageObject.getScripts());
 
 	var thereIsAtLeastOneNonJSScript = scripts.filter(
 		script => script.type && script.type != "text/javascript"
