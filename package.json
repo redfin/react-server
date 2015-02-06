@@ -12,6 +12,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "cls-q": "1.1.0",
+    "continuation-local-storage": "3.1.2",
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",
     "continuation-local-storage": "3.1.2",

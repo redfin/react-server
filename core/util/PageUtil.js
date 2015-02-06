@@ -1,63 +1,99 @@
 var Q = require("q"), 
 	PromiseUtil = require("./PromiseUtil");
 
+// This data structure defines the page interface.
+//
+// Each item represents a method that page objects (and middleware) may override.
+//
+// The keys here are method names.
+//
+// The values are tuples containing:
+//   - Number of arguments to the method.
+//   - Default implementation of the method.
+//   - Normalization function applied to method output.
+//
+// Note that each of these methods also receives an additional argument,
+// which is the next implementation of the method in the call chain.
+//     - Middleware implementations _should_ call this in most cases.*
+//     - Page implementations _may_ call this (it will be the default implementation).
+//
+// * Consider carefully before deciding not to call `next()` in middleware.
+// Other middleware (and the page itself) may exhibit undefined behavior if a
+// given method is not called.  Generally, only skip calling `next()` for
+// short-circuit responses (e.g. a redirect from `handleRoute`).
+//
+var PAGE_METHODS = {
+	handleRoute        : [2, () => ({code: 200}), Q],
+	getTitle           : [0, () => "", Q],
+	getScripts         : [0, () => [], standardizeScripts],
+	getSystemScripts   : [0, () => [], standardizeScripts],
+	getHeadStylesheets : [0, () => [], standardizeStyles],
+	getMetaTags        : [0, () => [], standardizeMetaTags],
+	getCanonicalUrl    : [0, () => "", Q],
+	getBase            : [0, () => null, Q],
+	getBodyClasses     : [0, () => [], Q],
+	getElements        : [0, () => [], standardizeElements],
+};
+
+// These `standardize*` functions show what will happen to the output of your
+// page methods.
+//
+// For middleware authors: Be aware that these standardization functions will
+// have been applied to the output of `next()` before you get access to it.
+//
+// These functions are also exposed via `PageUtil.standardize*`.
+
+/**
+ * This method takes in anything returned from a Page.getElements call and
+ * returns the elements in a standardized format: an array of EarlyPromises of
+ * ReactElements.
+ */
+function standardizeElements(elements) {
+
+	// The return value could be a single element or an array.
+	// First, let's make sure that it's an array.
+	// Then, ensure that all elements are EarlyPromises.
+	return PageUtil
+		.makeArray(elements)
+		.map(element => PromiseUtil.early(Q(element)));
+}
+
+function standardizeMetaTags(metaTags) {
+	return PageUtil.makeArray(metaTags).map(metaTag => Q(metaTag));
+}
+
+function standardizeScripts(scripts) {
+	return PageUtil.makeArray(scripts).map((script) => {
+		if (script.href || script.text) {
+			if (!script.type) script.type = "text/javascript";
+			return script;
+		}
+
+		// if the answer was a string, let's make a script object
+		return {href:script, type:"text/javascript"};
+	})
+}
+
+function standardizeStyles(styles) {
+	return PageUtil.makeArray(styles).map((style) => {
+		if (style.href || style.text) {
+			if (!style.type) style.type = "text/css";
+			if (!style.media) style.media = "";
+
+			return style;
+		}
+
+		// if the answer was a string, let's make a script object
+		return {href:style, type:"text/css", media:""};
+	})
+}
+
+
 var PageUtil = module.exports = {
-	/**
-	 * This method takes in anything returns from a Page.getElements call and returns the 
-	 * elements in a standardized format: an array of EarlyPromises of ReactElements.
-	 */
-	standardizeElements(elements) {
-		var result = elements;
-
-		// the return value could be a single element or an array. first, let's
-		// make sure that it's an array.
-		result = PageUtil.makeArray(result);
-
-		// next, ensure that all elements are EarlyPromises.
-		result = result.map((element) => {
-			return PromiseUtil.early(Q(element));
-		});
-
-		return result;
-	},
-
-	standardizeMetaTags(metaTags) {
-		var result = PageUtil.makeArray(metaTags);
-
-		return result.map(metaTag => {
-			return Q(metaTag);
-		});
-	},
-
-	standardizeScripts(scripts) {
-		var result = PageUtil.makeArray(scripts);
-
-		return result.map((script) => {
-			if (script.href || script.text) {
-				if (!script.type) script.type = "text/javascript";
-				return script;
-			}
-
-			// if the answer was a string, let's make a script object
-			return {href:script, type:"text/javascript"};
-		})
-	},
-
-	standardizeStyles(styles) {
-		var result = PageUtil.makeArray(styles);
-
-		return result.map((style) => {
-			if (style.href || style.text) {
-				if (!style.type) style.type = "text/css";
-				if (!style.media) style.media = "";
-
-				return style;
-			}
-
-			// if the answer was a string, let's make a script object
-			return {href:style, type:"text/css", media:""};
-		})
-	},
+	standardizeElements,
+	standardizeMetaTags,
+	standardizeScripts,
+	standardizeStyles,
 
 	/**
 	 * Given an array of page instances, return an object that implements the page interface. This returned object's
@@ -65,20 +101,13 @@ var PageUtil = module.exports = {
 	 * variable (and the second page's implementation gets the third page's next, and so on). 
 	 */
 	createPageChain(pages) {
-
-		return {
-			handleRoute: PageUtil.createObjectFunctionChain(pages, "handleRoute", 2, () => ({code:200}), Q),
-			getTitle: PageUtil.createObjectFunctionChain(pages, "getTitle", 0, () => "", Q), 
-			getScripts: PageUtil.createObjectFunctionChain(pages, "getScripts", 0, () => [], PageUtil.standardizeScripts),
-			getSystemScripts: PageUtil.createObjectFunctionChain(pages, "getSystemScripts", 0, () => [], PageUtil.standardizeScripts),
-			getHeadStylesheets: PageUtil.createObjectFunctionChain(pages, "getHeadStylesheets", 0, () => [], PageUtil.standardizeStyles),
-			getMetaTags: PageUtil.createObjectFunctionChain(pages, "getMetaTags", 0, () =>  [], PageUtil.standardizeMetaTags),
-			getCanonicalUrl: PageUtil.createObjectFunctionChain(pages, "getCanonicalUrl", 0, () => "", Q),
-			getBase: PageUtil.createObjectFunctionChain(pages, "getBase", 0, () => null, Q),
-			getBodyClasses: PageUtil.createObjectFunctionChain(pages, "getBodyClasses", 0, () => ([]), Q),
-			getElements: PageUtil.createObjectFunctionChain(pages, "getElements", 0, () => [], PageUtil.standardizeElements)
-
-		}
+		var chain  = {}
+		,   create = PageUtil.createObjectFunctionChain.bind(PageUtil, pages)
+		Object.keys(PAGE_METHODS).forEach(method => {
+			chain[method] = create
+				.apply(null, [method].concat(PAGE_METHODS[method]));
+		});
+		return chain;
 	},
 
 	/**

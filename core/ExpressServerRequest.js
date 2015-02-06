@@ -37,7 +37,7 @@ class ExpressServerRequest {
 	}
 
 	getCookie(name) {
-		return getCookies()[name];
+		return this.getCookies()[name];
 	}
 
 	getCookies() {
@@ -45,7 +45,7 @@ class ExpressServerRequest {
 	}
 
 	getBody() {
-		console.error("ExpressServerRequest.getBody not implemented.");
+		throw new Error("ExpressServerRequest.getBody not implemented.");
 	}
 
 }
