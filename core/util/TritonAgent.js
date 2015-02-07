@@ -139,7 +139,6 @@ makeRequest.put = function (url, data, fn){
 
 makeRequest.cache = function () {
 
-	// TODO: why doesn't this work in the browser!?
 	var cache = RLS().cache;
 	if (!cache) {
 		cache = RLS().cache = new RequestDataCache();
