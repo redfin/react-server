@@ -4,8 +4,11 @@ var replace = require("gulp-replace")
 // This pattern matches either of these:
 //   - "__LOGGER__"
 //   - "__LOGGER__({ /* options */ })"
-var REPLACE_TOKEN = /__LOGGER__(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
-,   THIS_MODULE   = /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logger-loader\.js$/
+var isWindows = ('win32' === process.platform)
+,   REPLACE_TOKEN = /__LOGGER__(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
+,   THIS_MODULE   = isWindows
+						? /(?:[^\\]+\\node_modules\\)?triton\\buildutils\\logger-loader\.js$/
+						: /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logger-loader\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
 module.exports = function(){
