@@ -48,10 +48,20 @@ class ClientController extends EventEmitter {
         this._history = null;
 	}
 
+	_startRequest() {
+
+		// If this is a secondary request (client transition) within a
+		// session, then we'll get a fresh RequestLocalStorage
+		// container.
+		if (this._previouslyRendered){
+			RequestLocalStorage.startRequest();
+		}
+	}
+
 	_setupNavigateListener () {
 		var context = this.context; 
 
-		context.onNavigateStart(RequestLocalStorage.startRequest);
+		context.onNavigateStart(this._startRequest.bind(this));
 
 		/**
 		 * type is one of 
