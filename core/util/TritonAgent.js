@@ -352,11 +352,11 @@ class RequestDataCache {
 	 * Get (optionally creating if necessary) the entry for the given
 	 * URL from the cache.
 	 *
-	 * @param createIfMissing boolean default true
+	 * @param createIfMissing boolean default false
 	 */
 	entry (url, createIfMissing) {
 		if (typeof createIfMissing === 'undefined') {
-			createIfMissing = true;
+			createIfMissing = false;
 		}
 		logger.debug(`Getting cache entry for ${url}`)
 
