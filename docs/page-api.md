@@ -2,10 +2,13 @@
 A binding of URL paths to a Page class that can render the results for those URLs.
 
 `path: String | RegEx | [ String | RegEx ]`
+
 * A string or regex that will be tested against the path of the URL to determine if this route applies.
 
 `method, optional: String | [String]`
+
 * The HTTP method(s) that are acceptable.
+
 * Default: “get”
 
 `page: Page`
@@ -37,6 +40,7 @@ Every method in this API takes in a `next` argument as the last argument in the 
 `constructor()`
 
 `static middleware() : [Page classes]`
+
 * An array of page classes that should be used as mixins for this page. See Middleware section below to see what these are for.
 
 `handleRoute(request:Request, loader:Loader, next: Function), optional: {code?: int, location?: String, page?:Page} | Promise({code?: int, location?: String, page?:Page})`
@@ -116,17 +120,25 @@ Every method in this API takes in a `next` argument as the last argument in the 
 ### TO BE IMPLEMENTED IN VERSION 2
 
 `getLinks(next:Function): Link | Promise(Link) | [Link | Promise(Link)]`
+
 * **NOT YET IMPLEMENTED**
+
 * RECOMMENDATION: v2, sigh.
 
 `getCanonicalUrl(next: Function), optional: String | Promise(String)`
+
 * **NOT YET IMPLEMENTED**
+
 * A string (or promise thereof) that is the canonical URL for this webpage
+
 * RECOMMENDATION: v2, or maybe just drop
+
 * Default: no canonical URL header added.
 
 `getHttpHeaders(next:Function): HttpHeader | Promise(HttpHeader) | [HttpHeader | Promise(HttpHeader)]`
+
 * **NOT YET IMPLEMENTED**
+
 * The set of HTTP headers that should be sent back from this page. HAS NO EFFECT WHEN A PAGE IS TRANSITIONED TO ON THE CLIENT.
 
 * RECOMMENDATION: v2, sigh.
