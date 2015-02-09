@@ -218,6 +218,14 @@ function renderScriptsAsync(scripts, res) {
 	// The assignment to `window._tLAB` here is so we maintain a single
 	// LAB chain through all of our calls to `renderScriptsAsync`.
 	//
+	// Each call to this function emits output that looks something like:
+	//
+	//   window._tLAB=(window._tLAB||$LAB).script(...).wait(...) ...
+	//
+	// The result is that `window._tLAB` winds up holding the final state
+	// of the LAB chain after each call, so that same LAB chain can be
+	// appended to in the _next_ call (if there is one).
+	//
 	// You can think of a LAB chain as being similar to a promise chain.
 	// The output of `$LAB.script()` or `$LAB.wait()` is an object that
 	// itself has `script()` and `wait()` methods.  So long as the output
