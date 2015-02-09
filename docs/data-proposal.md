@@ -81,9 +81,30 @@ The only change I would propose is just aliasing `TritonData.createActions` to `
 
 ## Stores
 
-### `TritonData.createStore({init?: Function(): void}) : Store`
+### `TritonData.createStoreFactory({init?: Function(): void}) : Store`
 
-Creates a Store instance. If an `init` function exists, then it will be called when `createStore` is called. Stores are event emitters, so they can be listened to using normal Event Emitter listener code.
+Creates a Store constructor function for creating instances. If an `init` function exists, then it will be called when  the constructor function is called, and it will be passed the arguments that were sent to the constructor function.
+
+```
+// in MyStore.js
+module.exports = TritonData.createStoreFactory({
+  init: function(constructorArg) {
+    console.log("My constructor arg: " + constructorArg);
+  }
+});
+
+// in MyPage.js
+
+var MyStore = require("./MyStore");
+
+module.exports = class MyPage {
+  handleRoute(request) {
+    this.store = MyStore("foo"); // console: "My constructor arg: foo"
+  }
+};
+```
+
+Stores are event emitters, so they can be listened to using normal Event Emitter listener code.
 
 ### `Store.state`
 The Store instance will have a `this.state` object, representing its current State. Like React, `this.state` should be considered to be an immutable, and attributes of `this.state` should _never_ be set. Stores are, however, free to read attributes from the state.
