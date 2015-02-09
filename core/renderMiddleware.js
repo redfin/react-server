@@ -197,48 +197,59 @@ function renderScriptsAsync(scripts, res) {
 	// Nothing to do if there are no scripts.
 	if (!scripts.length) return;
 
+	// Don't need "type" in <script> tags anymore.
+	//
+	// http://www.w3.org/TR/html/scripting-1.html#the-script-element
+	//
+	// > The default, which is used if the attribute is absent, is "text/javascript".
+	//
+	res.write("<script>");
+
 	// Lazily load LAB the first time we spit out async scripts.
 	if (!RLS().didLoadLAB){
 
-		// Don't need "type" in <script> tags anymore.
-		//
-		// http://www.w3.org/TR/html/scripting-1.html#the-script-element
-		//
-		// > The default, which is used if the attribute is absent, is "text/javascript".
-		//
-		res.write(`<script>${LABString}</script>`);
+		// This is the full implementation of LABjs.
+		res.write(LABString);
 
 		// We always want scripts to be executed in order.
-		res.write("<script>$LAB.setOptions({AlwaysPreserveOrder:true});</script>");
+		res.write("$LAB.setOptions({AlwaysPreserveOrder:true});");
+
+		// We'll use this to store state between calls (see below).
+		res.write("window._tLAB=$LAB")
 
 		// Only need to do this part once.
 		RLS().didLoadLAB = true;
-	}
+	} else {
 
-	// The assignment to `window._tLAB` here is so we maintain a single
-	// LAB chain through all of our calls to `renderScriptsAsync`.
-	//
-	// Each call to this function emits output that looks something like:
-	//
-	//   window._tLAB=(window._tLAB||$LAB).script(...).wait(...) ...
-	//
-	// The result is that `window._tLAB` winds up holding the final state
-	// of the LAB chain after each call, so that same LAB chain can be
-	// appended to in the _next_ call (if there is one).
-	//
-	// You can think of a LAB chain as being similar to a promise chain.
-	// The output of `$LAB.script()` or `$LAB.wait()` is an object that
-	// itself has `script()` and `wait()` methods.  So long as the output
-	// of each call is used as the input for the next call our code (both
-	// async loaded scripts and inline JS) will be executed _in order_.
-	//
-	// If we start a _new_ chain directly from `$LAB` (the root chain), we
-	// can wind up with _out of order_ execution.
-	//
-	// We want everything to be executed in order, so we maintain one
-	// master chain for the page.  This chain is `window._tLAB`.
-	//
-	res.write("<script>window._tLAB=(window._tLAB||$LAB)");
+		// The assignment to `_tLAB` here is so we maintain a single
+		// LAB chain through all of our calls to `renderScriptsAsync`.
+		//
+		// Each call to this function emits output that looks
+		// something like:
+		//
+		//   _tLAB=_tLAB.script(...).wait(...) ...
+		//
+		// The result is that `window._tLAB` winds up holding the
+		// final state of the LAB chain after each call, so that same
+		// LAB chain can be appended to in the _next_ call (if there
+		// is one).
+		//
+		// You can think of a LAB chain as being similar to a promise
+		// chain.  The output of `$LAB.script()` or `$LAB.wait()` is
+		// an object that itself has `script()` and `wait()` methods.
+		// So long as the output of each call is used as the input for
+		// the next call our code (both async loaded scripts and
+		// inline JS) will be executed _in order_.
+		//
+		// If we start a _new_ chain directly from `$LAB` (the root
+		// chain), we can wind up with _out of order_ execution.
+		//
+		// We want everything to be executed in order, so we maintain
+		// one master chain for the page.  This chain is
+		// `window._tLAB`.
+		//
+		res.write("_tLAB=_tLAB");
+	}
 
 	scripts.forEach(script => {
 
