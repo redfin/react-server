@@ -425,7 +425,7 @@ function setupLateArrivals(req, res, context, start) {
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
-			logger.time(`late_arrival.${routeName}`, new Date - start);
+			logger.time(`lateArrival.${routeName}`, new Date - start);
 			renderScriptsAsync([{
 				text: `__lateArrival(${
 					JSON.stringify(pendingRequest.url)
@@ -442,7 +442,7 @@ function setupLateArrivals(req, res, context, start) {
 		res.end("</body></html>");
 		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
-		logger.time(`all_done.${routeName}`, new Date - start);
+		logger.time(`allDone.${routeName}`, new Date - start);
 	});
 }
 
