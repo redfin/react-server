@@ -61,8 +61,6 @@ module.exports = function(routes) {
 				return;
 			}
 
-			logger.debug('Executing navigate action');
-			
 			beginRender(req, res, start, context, page);
 
 		});
@@ -73,7 +71,6 @@ module.exports = function(routes) {
 }
 
 function beginRender(req, res, start, context, page) {
-	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -105,7 +102,6 @@ function beginRender(req, res, start, context, page) {
 }
 
 function writeHeader(req, res, context, start, pageObject) {
-	logger.debug('Starting document header');
 	res.type('html');
 
 	res.write("<!DOCTYPE html><html><head>");
@@ -125,7 +121,6 @@ function writeHeader(req, res, context, start, pageObject) {
 
 function renderTitle (pageObject, res) {
 	return pageObject.getTitle().then((title) => {
-		logger.debug("Rendering title");
 		res.write(`<title>${title}</title>`);
 	});
 }
@@ -337,7 +332,6 @@ function startBody(req, res, context, start, page) {
 	var routeName = context.navigator.getCurrentRoute().name
 
 	return page.getBodyClasses().then((classes) => {
-		logger.debug("Starting body");
 		classes.push(`route-${routeName}`)
 		res.write(`<body class='${classes.join(' ')}'><div id='content'>`);
 	})
@@ -349,7 +343,6 @@ function startBody(req, res, context, start, page) {
  */
 function writeBody(req, res, context, start, page) {
 
-	logger.debug("React Rendering");
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
@@ -395,11 +388,10 @@ function writeBody(req, res, context, start, page) {
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise).then(()=> logger.debug("Finished rendering body."));
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
 }
 
 function renderElement(res, element, context, index) {
-	logger.debug(`Rendering root element #${index}`);
 	res.write(`<div data-triton-root-id=${index}>`);
 	if (element !== null) {
 		element = React.addons.cloneWithProps(element, { context: context });
@@ -409,7 +401,6 @@ function renderElement(res, element, context, index) {
 }
 
 function writeData(req, res, context, start) {
-	logger.debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
 
@@ -423,10 +414,6 @@ function writeData(req, res, context, start) {
 	renderScriptsAsync([{
 		text: `${res.locals.state};rfBootstrap();`
 	}], res);
-
-	var routeName = context.navigator.getCurrentRoute().name;
-
-	logger.time(`content_written.${routeName}`, new Date - start);
 }
 
 function setupLateArrivals(req, res, context, start) {
@@ -438,7 +425,6 @@ function setupLateArrivals(req, res, context, start) {
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.dfd.promise.then( data => {
-			logger.debug("Late arrival: " + pendingRequest.url)
 			logger.time(`late_arrival.${routeName}`, new Date - start);
 			renderScriptsAsync([{
 				text: `__lateArrival(${
