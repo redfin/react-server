@@ -12,7 +12,7 @@ var makeLogger = function(group, opts){
 		timestamp : false,  // TODO: Want this in production.
 	});
 
-	var logger = common.loggers[group][opts.name] = new (winston.Logger)({
+	var logger = new (winston.Logger)({
 		transports: [
 			fileTransport,
 		]
