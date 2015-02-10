@@ -41,6 +41,15 @@ class RequestContext {
 		return this.dataLoadWait
 	}
 
+	setServerStash (stash) {
+		this.serverStash = stash;
+		return this;
+	}
+
+	getServerStash () {
+		return this.serverStash;
+	}
+
 	onNavigate (callback) {
 		this.navigator.on('navigateDone', callback);
 	}

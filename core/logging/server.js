@@ -76,4 +76,7 @@ setColorize(process.stdout.isTTY);
 // Just the default.
 setTimestamp(true);
 
-module.exports = { getLogger, setLevel, setColorize, setTimestamp };
+module.exports = {
+	getLogger, setLevel, setColorize, setTimestamp,
+	disown: common.disown,
+};

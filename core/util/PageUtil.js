@@ -33,6 +33,7 @@ var PAGE_METHODS = {
 	getBase            : [0, () => null, Q],
 	getBodyClasses     : [0, () => [], Q],
 	getElements        : [0, () => [], standardizeElements],
+	handleComplete     : [0, () => null, Q],
 };
 
 // These `standardize*` functions show what will happen to the output of your
