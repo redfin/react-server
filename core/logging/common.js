@@ -1,3 +1,5 @@
+var stats = require('./stats')
+
 // These are the primary log levels.
 // Your logger object has a method for each of these.
 var LOG_LEVELS = {
@@ -66,4 +68,39 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 	},
 }));
 
-module.exports = { config };
+// These need to be shared across triton and corvair, too.
+var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
+
+// We may have loggers with the same name in different groups, so we'll give
+// each group its own container.
+if (!Object.keys(loggers).length)
+	for (var group in config)
+		loggers[group] = {};
+
+// This is just a cache.
+// Don't want to instantiate a given logger more than once.
+var getLoggerForConfig = makeLogger => {
+	return function(group, opts){
+		return loggers[group][opts.name] || (
+			loggers[group][opts.name] = makeLogger(group, opts)
+		);
+	}
+}
+
+// This is a helper function that takes an internal `makeLogger`
+// function and produces a public `getLogger` function.  The produced
+// `getLogger` function calls the provided `makeLogger` function for
+// each of our two loggers and then stitches the stats logger onto the main
+// logger.
+var makeGetLogger = makeLogger => (
+	(opts) => stats.getCombinedLogger(getLoggerForConfig(makeLogger), opts)
+);
+
+// Just a handy helper for iteration.
+var forEachLogger = callback => Object.keys(config).forEach(group => {
+	Object.keys(loggers[group]).forEach(logger => {
+		callback(loggers[group][logger], group);
+	});
+});
+
+module.exports = { config, loggers, makeGetLogger, forEachLogger };

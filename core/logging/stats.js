@@ -124,13 +124,4 @@ var getCombinedLogger = function(getLoggerForConfig, opts){
 	return loggers[opts.name] || (loggers[opts.name] = wrapLogger(getLoggerForConfig, opts));
 }
 
-// This is a helper function that takes an internal `getLoggerForConfig`
-// function and produces a public `getLogger` function.  The produced
-// `getLogger` function calls the provided `getLoggerForConfig` function for
-// each of our two loggers and then stitches the stats logger onto the main
-// logger.
-var makeGetLogger = getLoggerForConfig => (
-	(opts) => getCombinedLogger(getLoggerForConfig, opts)
-);
-
-module.exports = { makeGetLogger };
+module.exports = { getCombinedLogger };
