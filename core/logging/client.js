@@ -55,9 +55,10 @@ var setLevel = function(group, level){
 	// Update level for any future loggers.
 	common.config[group].baseLevel = level;
 
-	// Also need to reconfigure any loggers that are alredy set up.
-	for (var logger in common.loggers[group])
-		common.loggers[group][logger].level = level;
+	common.forEachLogger((logger, loggerGroup) => {
+		if (loggerGroup == group)
+			logger.level = level;
+	});
 }
 
 module.exports = { getLogger, setLevel };

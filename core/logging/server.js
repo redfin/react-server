@@ -47,22 +47,18 @@ var setLevel = function(group, level){
 	// Update level for any future loggers.
 	common.config[group].baseLevel = level;
 
-	// Also need to reconfigure any loggers that are alredy set up.
-	for (var logger in common.loggers[group])
-		common.loggers[group][logger].transports.file.level = level;
+	common.forEachLogger((logger, loggerGroup) => {
+		if (loggerGroup == group)
+			logger.transports.file.level = level;
+	});
 }
 
 var setColorize = function(bool){
 
 	global.COLORIZE_TRITON_LOG_OUTPUT = bool;
 
-	Object.keys(common.config).forEach(group => {
-
-		// Update any loggers that are alredy set up.
-		for (var logger in common.loggers[group])
-			common.loggers[group][logger].updateColorize();
-
-	});
+	// Update any loggers that are alredy set up.
+	common.forEachLogger(logger => logger.updateColorize());
 }
 
 // Default is only if we're directly attached to a terminal.

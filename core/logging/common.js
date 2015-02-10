@@ -96,4 +96,11 @@ var makeGetLogger = makeLogger => (
 	(opts) => stats.getCombinedLogger(getLoggerForConfig(makeLogger), opts)
 );
 
-module.exports = { config, loggers, makeGetLogger };
+// Just a handy helper for iteration.
+var forEachLogger = callback => Object.keys(config).forEach(group => {
+	Object.keys(loggers[group]).forEach(logger => {
+		callback(loggers[group][logger], group);
+	});
+});
+
+module.exports = { config, loggers, makeGetLogger, forEachLogger };
