@@ -9,7 +9,7 @@ var makeLogger = function(group, opts){
 		level     : config.baseLevel,
 		stream    : process.stdout,
 		json      : false,
-		timestamp : false,  // TODO: Want this in production.
+		timestamp : TIMESTAMP_TRITON_LOG_OUTPUT,
 	});
 
 	var logger = new (winston.Logger)({
@@ -53,6 +53,14 @@ var setLevel = function(group, level){
 	});
 }
 
+var setTimestamp = function(bool){
+
+	global.TIMESTAMP_TRITON_LOG_OUTPUT = bool;
+
+	// Update any loggers that are alredy set up.
+	common.forEachLogger(logger => logger.transports.file.timestamp = bool);
+}
+
 var setColorize = function(bool){
 
 	global.COLORIZE_TRITON_LOG_OUTPUT = bool;
@@ -65,4 +73,7 @@ var setColorize = function(bool){
 // Can be overridden (This `setColorize` function is exported).
 setColorize(process.stdout.isTTY);
 
-module.exports = { getLogger, setLevel, setColorize };
+// Just the default.
+setTimestamp(true);
+
+module.exports = { getLogger, setLevel, setColorize, setTimestamp };
