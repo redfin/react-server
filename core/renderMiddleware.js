@@ -9,6 +9,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
+	expressState = require('express-state'),
+	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
 	PromiseUtil = require("./util/PromiseUtil");
 
@@ -22,9 +24,17 @@ var DATA_LOAD_WAIT = 250;
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(routes) {
+module.exports = function(server, routes) {
+	expressState.extend(server);
 
-	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
+	// parse cookies into req.cookies property
+	server.use(cookieParser());
+
+	// sets the namespace that data will be exposed into client-side
+	// TODO: express-state doesn't do much for us until we're using a templating library
+	server.set('state namespace', '__tritonState');
+
+	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
 
 		var start = new Date();
 
@@ -69,8 +79,9 @@ module.exports = function(routes) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	})}
+	})});
 }
+
 
 function beginRender(req, res, start, context, page) {
 	logger.debug(`Starting server render of ${req.path}`);

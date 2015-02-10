@@ -23,16 +23,11 @@ var startTritonServer = (routes, port, cb) => {
 		};
 	});
 
-	var middleware = renderMiddleware(routesForTriton);
 	var server = express();
 	process.env.R3S_CONFIGS = process.cwd() + "/target/config/dev"
 
-	expressState.extend(server);
-	// sets the namespace that data will be exposed into client-side
-	// TODO: express-state doesn't do much for us until we're using a templating library
-	server.set('state namespace', 'RF');
 
-	server.use(middleware);
+	renderMiddleware(server, routesForTriton);
 	var httpServer = http.createServer(server);
 	httpServer.listen(port, () => cb(httpServer));
 };
