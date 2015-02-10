@@ -7,25 +7,29 @@ var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
 
 if (!Object.keys(loggers).length)
 	for (var group in common.config)
-		loggers[group] = new winston.Container({});
+		loggers[group] = {};
 
-var getLoggerForConfig = function(group, opts){
+var makeLogger = function(group, opts){
 	var config = common.config[group];
 
-	// The `loggers` collection's `get` method auto-adds on miss, and
-	// returns existing on hit.
-	var logger = loggers[group].get(opts.name, {
-		console: {
-			level     : config.baseLevel,
-			timestamp : false,  // TODO: Want this in production.
-		}
-		// TODO: Email transport for high-level logs in production.
+	var fileTransport = new (winston.transports.File)({
+		name      : 'file',
+		level     : config.baseLevel,
+		stream    : process.stdout,
+		json      : false,
+		timestamp : false,  // TODO: Want this in production.
+	});
+
+	var logger = loggers[group][opts.name] = new (winston.Logger)({
+		transports: [
+			fileTransport,
+		]
 	});
 
 	// Need to be able to refresh this.
 	(logger.updateColorize = function(){
-		logger.transports.console.label = colorizeName(opts);
-		logger.transports.console.colorize = COLORIZE_TRITON_LOG_OUTPUT;
+		logger.transports.file.label = colorizeName(opts);
+		logger.transports.file.colorize = COLORIZE_TRITON_LOG_OUTPUT;
 	})();
 
 	logger.setLevels(config.levels);
@@ -33,6 +37,12 @@ var getLoggerForConfig = function(group, opts){
 	winston.addColors(config.colors);
 
 	return logger;
+}
+
+var getLoggerForConfig = function(group, opts){
+	return loggers[group][opts.name] || (
+		loggers[group][opts.name] = makeLogger(group, opts)
+	);
 }
 
 var colorizeName = function(opts){
@@ -52,8 +62,8 @@ var setLevel = function(group, level){
 	common.config[group].baseLevel = level;
 
 	// Also need to reconfigure any loggers that are alredy set up.
-	for (var logger in loggers[group].loggers)
-		loggers[group].loggers[logger].transports.console.level = level;
+	for (var logger in loggers[group])
+		loggers[group][logger].transports.file.level = level;
 }
 
 var setColorize = function(bool){
@@ -63,8 +73,8 @@ var setColorize = function(bool){
 	Object.keys(common.config).forEach(group => {
 
 		// Update any loggers that are alredy set up.
-		for (var logger in loggers[group].loggers)
-			loggers[group].loggers[logger].updateColorize();
+		for (var logger in loggers[group])
+			loggers[group][logger].updateColorize();
 
 	});
 }
