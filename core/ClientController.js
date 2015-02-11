@@ -18,7 +18,8 @@ var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
 
 class ClientController extends EventEmitter {
 
-	constructor ({routes, dehydratedState, mountNode}) {
+	constructor ({routes}) {
+		var dehydratedState = window.__tritonState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
@@ -30,7 +31,7 @@ class ClientController extends EventEmitter {
 			dehydratedState.InitialContext,
 			routes
 		);
-		this.mountNode = mountNode;
+		this.mountNode = document.getElementById('content');
 		this.onClientStart = routes.onClientStart;
 
 		var irDfd = this._initialRenderDfd = Q.defer();
