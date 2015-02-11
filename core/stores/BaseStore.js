@@ -181,29 +181,20 @@ class BaseStore {
 			// and Q.allSettled with an empty array is resolved immediately
 			return null;
 		} else {
-			var dfd = Q.defer();
-
-			TritonAgent.get(url).end( (err, res) => {
-
-				if (err) {
-					logger.error("error " + name + ": " + url, err);
-					logger.time(`loadByName.error.${name}`, new Date - t0);
-					this._data[name].status = BaseStore.LoadState.ERROR;
-					this.emitChange();
-
-					// TODO: reject?
-					dfd.resolve();
-					return;
-				}
-
+			return TritonAgent.get(url).then(res => {
 				logger.debug("completed " + name + ": " + url);
 				logger.time(`loadByName.success.${name}`, new Date - t0);
 				this._handleLoadResult(name, res.body);
 				this.emitChange();
-				dfd.resolve();	
-			});
+				return res;
+			}, err => {
+				logger.error("error " + name + ": " + url, err);
+				logger.time(`loadByName.error.${name}`, new Date - t0);
+				this._data[name].status = BaseStore.LoadState.ERROR;
+				this.emitChange();
 
-			return dfd.promise;
+				return err;
+			});
 		}
 	}
 

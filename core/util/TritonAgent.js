@@ -64,15 +64,31 @@ Request.prototype.end = function (fn) {
 		});
 	}
 
-	entry.whenDataReady().then( (res) => {
-		fn(null, res);
-	}, (err) => {
-		fn(err);
-	});
+	entry.whenDataReady().nodeify(fn);
 
 	return this;
 }
 
+/**
+ * Convenience method to treat the request as then-able (promise-like).
+ * This is shorthand for the simple case. If you want access to the full
+ * power of the underlying promise library, use `Request.asPromise()`
+ */
+Request.prototype.then = function (/*arguments*/) {
+	var dfd = this.asPromise();
+	return dfd.then.apply(dfd, arguments);
+};
+
+/**
+ * Convenience method wrapping `.end()` and returning a promise
+ * that is resolved if the request is successful, and rejected if
+ * the request results in an error.
+ */
+Request.prototype.asPromise = function () {
+	var dfd = Q.defer();
+	this.end(dfd.makeNodeResolver());
+	return dfd.promise;
+}
 
 // wrapper for superagent
 function makeRequest (method, url) {
