@@ -21,7 +21,9 @@ Object.keys(superagent.Request.prototype)
 	.forEach( propName => {
 		var originalProp = superagent.Request.prototype[propName];
 		if (typeof originalProp === 'function') {
-			Request.prototype[propName] = () => originalProp.apply(this._req, arguments);
+			Request.prototype[propName] = function () {
+				return originalProp.apply(this._req, arguments);
+			}
 		} else {
 			Request.prototype[propName] = originalProp;
 		}
