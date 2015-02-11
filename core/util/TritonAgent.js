@@ -187,7 +187,6 @@ class CacheEntry {
 		this.url = url;
 		this.requesters = 0;
 		this.dfd = Q.defer();
-		this.dfd.promise.fin/*ally*/( () => logger.debug(`Data resolved for: ${url}`) );
 		this.loaded = false;
 		this.res = undefined;
 		this.err = undefined;
