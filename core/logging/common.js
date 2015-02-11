@@ -99,13 +99,8 @@ var makeGetLogger = makeLogger => (
 // Just a handy helper for iteration.
 var forEachLogger = callback => Object.keys(config).forEach(group => {
 	Object.keys(loggers[group]).forEach(logger => {
-		if (!loggers[group][logger].disowned){
-			callback(loggers[group][logger], group);
-		}
+		callback(loggers[group][logger], group);
 	});
 });
 
-// Someone else decided _they_ want to manage this one.
-var disown = logger => logger.disowned = true;
-
-module.exports = { config, loggers, makeGetLogger, forEachLogger, disown };
+module.exports = { config, loggers, makeGetLogger, forEachLogger };
