@@ -13,7 +13,7 @@ var Link = module.exports = React.createClass({
 
 	render: function () {
 		return (
-			<a href={'/r3s' + this.props.path} onClick={this._onClick}>{this.props.children}</a>
+			<a href={this.props.path} onClick={this._onClick}>{this.props.children}</a>
 		);
 	},
 
@@ -25,7 +25,7 @@ var Link = module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			this.props.context.navigate(new ClientRequest('/r3s' + this.props.path), History.events.PUSHSTATE);	
+			this.props.context.navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);	
 		} else {
 			// do normal browser navigate
 		}

@@ -95,6 +95,7 @@ class Navigator extends EventEmitter {
 	 * recursively adds the middleware in the pages array to array.
 	 */
 	_addPageMiddlewareToArray(pages, array) {
+		if (!pages) return;
 		pages.forEach((page) => {
 			if (page.middleware) {
 				this._addPageMiddlewareToArray(page.middleware(), array);

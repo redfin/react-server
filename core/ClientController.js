@@ -19,7 +19,8 @@ var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
 
 class ClientController extends EventEmitter {
 
-	constructor ({routes, dehydratedState, mountNode}) {
+	constructor ({routes}) {
+		var dehydratedState = window.__tritonState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
@@ -31,7 +32,8 @@ class ClientController extends EventEmitter {
 			dehydratedState.InitialContext,
 			routes
 		);
-		this.mountNode = mountNode;
+		this.mountNode = document.getElementById('content');
+		this.onClientStart = routes.onClientStart;
 
 		var irDfd = this._initialRenderDfd = Q.defer();
 		this.once('render', irDfd.resolve.bind(irDfd));
@@ -309,6 +311,17 @@ class ClientController extends EventEmitter {
 	}
 
 	init () {
+		if (this.onClientStart) this.onClientStart(this.config);
+
+		var unloadHandler = () => {this.terminate();};
+
+		if (window && window.addEventListener) {
+		    window.addEventListener("unload", unloadHandler);
+		}
+		else if (window && window.attachEvent) {
+		    window.attachEvent("onunload", unloadHandler);
+		}
+
 		var location = window.location;
 		var path = location.pathname + location.search;
 		this._initializeHistoryListener(this.context);

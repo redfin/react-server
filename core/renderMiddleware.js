@@ -9,6 +9,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
+	expressState = require('express-state'),
+	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
 	PromiseUtil = require("./util/PromiseUtil"),
 	TritonAgent = require('./util/TritonAgent');
@@ -23,9 +25,18 @@ var DATA_LOAD_WAIT = 250;
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(routes) {
+module.exports = function(server, routes) {
 
-	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
+	expressState.extend(server);
+
+	// parse cookies into req.cookies property
+	server.use(cookieParser());
+
+	// sets the namespace that data will be exposed into client-side
+	// TODO: express-state doesn't do much for us until we're using a templating library
+	server.set('state namespace', '__tritonState');
+
+	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
 
 		var start = new Date();
 		var startHR = process.hrtime();
@@ -71,8 +82,9 @@ module.exports = function(routes) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	})}
+	})});
 }
+
 
 function beginRender(req, res, start, context, page) {
 
@@ -181,6 +193,8 @@ function renderScriptsSync(scripts, res) {
 	// immediately.
 	scripts.forEach( (script) => {
 		// make sure there's a leading '/'
+		if (!script.type) script.type = "text/javascript";
+
 		if (script.href) {
 			res.write(`<script src="${script.href}" type="${script.type}"></script>`);
 		} else if (script.text) {
