@@ -105,6 +105,7 @@ var startTritonServer = (routes, cb) => {
 
 		server.use('/rollups', express.static(testTempDir));
 
+		delete require.cache[require.resolve(testTempDir + "/routes")]
 		renderMiddleware(server, require(testTempDir + "/routes"));
 		var httpServer = http.createServer(server);
 		httpServer.listen(PORT, () => cb(httpServer));

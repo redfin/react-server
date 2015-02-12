@@ -1,7 +1,5 @@
 var helper = require("../tritonHelper");
 
-
-
 describe("A basic page", function() {
 
 	helper.startTritonBeforeEach({
