@@ -15,74 +15,8 @@ function getBrowser(opts) {
 	return browser;
 }
 
-// var createRoutesFile = (routes, filename, cb) => {
-// 	// first we convert our simple routes format to a triton routes file.
-// 	var routesForTriton = `module.exports = {
-// 		middleware: [require("../client/spec/test-runtime/ScriptsMiddleware")],
-// 		routes: {`;
-
-// 	Object.keys(routes).forEach((url, index) => {
-// 		routesForTriton += `
-// 			route${index}: {
-// 				path: ["${url}"],
-// 				method: 'get',
-// 				page: function () {
-// 					return {
-// 						done: function (cb) {
-// 							cb(require("../client/spec/${routes[url]}"));
-// 						}
-// 					};
-// 				}				
-// 			},`;
-// 	});
-
-// 	routesForTriton += `}};`;
-// 	fs.writeFileSync("./target/test-temp/routes.js", routesForTriton);
-// }
-
-
-var buildClientCode = function(routes, cb) {
-	mkdirp('./target/test-temp', function (err) {
-	    if (err) {
-	    	console.error(err);
-	    } else {
-	    	fs.writeFileSync("./target/test-temp/routes.js", routes);
-	    	fs.writeFileSync("./target/test-temp/entrypoint.js", `
-				var ClientController = require("triton").ClientController;
-
-				window.rfBootstrap = function () {
-					var controller = new ClientController({
-						routes: require("./routes.js")
-					});
-					
-					controller.init();
-				};`
-			);
-
-	    	webpack({
-	    		context: process.cwd() + "/target/test-temp",
-	    		entry: "./entrypoint.js",
-	    		output: {
-	    			path: process.cwd() + "/target/test-temp/",
-	    			filename: "rollup.js"
-	    		},
-	    		resolve: {
-	    			alias: {
-	    				"triton": process.cwd()  // this works because package.json points it at /target/client/client.js
-	    			}
-	    		}
-	    	}, function(err, stats) {
-			    if(err) throw new Error("Error during webpack build.", err);
-			    cb();
-			});
-	    }
-	});
-}
-
-// starts a simple, one page triton server.
-// routes is of the form {url: page}
-var startTritonServer = (routes, port, cb) => {
-	// first let's make a simple routes file with just one page
+var createRoutesFile = (routes) => {
+	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
 			middleware: [require("../client/spec/test-runtime/ScriptsMiddleware")],
 			routes: {`;
@@ -102,6 +36,8 @@ var startTritonServer = (routes, port, cb) => {
 			},`;
 	});
 
+	// make sure we add a route for a page that will let us do client-side
+	// transitions.
 	routesForTriton += `
 		transitionPage: {
 			path: ["/__transition"],
@@ -114,8 +50,49 @@ var startTritonServer = (routes, port, cb) => {
 				};
 			}
 		}}};`;
+	mkdirp.sync("./target/test-temp");
+	fs.writeFileSync("./target/test-temp/routes.js", routesForTriton);
+}
 
-	buildClientCode(routesForTriton, () => {
+
+var buildClientCode = function(cb) {
+	mkdirp.sync('./target/test-temp');
+	fs.writeFileSync("./target/test-temp/entrypoint.js", `
+		var ClientController = require("triton").ClientController;
+
+		window.rfBootstrap = function () {
+			var controller = new ClientController({
+				routes: require("./routes.js")
+			});
+			
+			controller.init();
+		};`
+	);
+
+	webpack({
+		context: process.cwd() + "/target/test-temp",
+		entry: "./entrypoint.js",
+		output: {
+			path: process.cwd() + "/target/test-temp/",
+			filename: "rollup.js"
+		},
+		resolve: {
+			alias: {
+				"triton": process.cwd()  // this works because package.json points it at /target/client/client.js
+			}
+		}
+	}, function(err, stats) {
+	    if(err) throw new Error("Error during webpack build.", err);
+	    cb();
+	});
+}
+
+// starts a simple, one page triton server.
+// routes is of the form {url: page}
+var startTritonServer = (routes, port, cb) => {
+
+	createRoutesFile(routes);
+	buildClientCode(() => {
 		var server = express();
 		process.env.R3S_CONFIGS = process.cwd() + "/target/config/dev"
 
