@@ -28,6 +28,7 @@ module.exports = function(routes) {
 	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
 
 		var start = new Date();
+		var startHR = process.hrtime();
 
 		logger.debug(`Incoming request for ${req.path}`);
 
@@ -45,6 +46,9 @@ module.exports = function(routes) {
 		// This is the default.
 		// Can be overridden by the page or middleware.
 		context.setDataLoadWait(DATA_LOAD_WAIT)
+
+		// Need this stuff in corvair for logging.
+		context.setServerStash({ req, res, start, startHR });
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
@@ -416,7 +420,7 @@ function writeData(req, res, context, start) {
 	}], res);
 }
 
-function setupLateArrivals(req, res, context, start) {
+function setupLateArrivals(req, res, context, start, page) {
 	var allRequests = TritonAgent.cache().getAllRequests();
 	var notLoaded = TritonAgent.cache().getPendingRequests();
 	var routeName = context.navigator.getCurrentRoute().name;
@@ -443,6 +447,7 @@ function setupLateArrivals(req, res, context, start) {
 		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
 		logger.time(`allDone.${routeName}`, new Date - start);
+		page.handleComplete();
 	});
 }
 
