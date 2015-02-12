@@ -228,9 +228,34 @@ class CacheEntry {
 
 	setResponse (res) {
 		// TODO: store superagent response? or body? or payload?
-		this.res = this._copyResponseData(res);
+
+		if (SERVER_SIDE){
+
+			// Pull out the pieces of the response we care about.
+			// This would be a NOOP client-side, so we'll skip it.
+			res = this._trimResponseData(res);
+		}
+
+		// Stash away a reference to the response.
+		this.res    = res;
 		this.loaded = true;
-		this.dfd.resolve(this.res);
+
+		if (SERVER_SIDE){
+
+			// Deep copy.
+			//
+			// Leave ourselves with a clean copy of the original
+			// response regardless of what mutation might happen
+			// once stores get ahold of it.
+			//
+			// This is important to ensure that we provide the same
+			// data from the cache when we wake up in the browser
+			// as we initially provide on the server.
+			//
+			res = JSON.parse(JSON.stringify(res));
+		}
+
+		this.dfd.resolve(res);
 	}
 
 	setError (err) {
@@ -283,9 +308,9 @@ class CacheEntry {
 		});
 	}
 
-	// create a copy of the data on the superagent response suitable
-	// for writing as JSON
-	_copyResponseData (res) {
+	// Pull out the properties of the superagent response that we care
+	// about and produce an object that's suitable for writing as JSON.
+	_trimResponseData (res) {
 		var result = {};
 		[
 			"body",
