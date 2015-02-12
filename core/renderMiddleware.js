@@ -25,6 +25,7 @@ var DATA_LOAD_WAIT = 250;
  * renderMiddleware entrypoint. Called by express for every request.
  */
 module.exports = function(server, routes) {
+
 	expressState.extend(server);
 
 	// parse cookies into req.cookies property
@@ -193,6 +194,8 @@ function renderScriptsSync(scripts, res) {
 	// immediately.
 	scripts.forEach( (script) => {
 		// make sure there's a leading '/'
+		if (!script.type) script.type = "text/javascript";
+
 		if (script.href) {
 			res.write(`<script src="${script.href}" type="${script.type}"></script>`);
 		} else if (script.text) {

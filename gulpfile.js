@@ -42,7 +42,7 @@ gulp.task('watch', function () {
    gulp.watch(src, ["build"]);
 });
 
-gulp.task("test", ["compileServer"], function() {
+gulp.task("test", ["compileServer", "compileClient"], function() {
 	return gulp.src("target/server/spec/**/*[Ss]pec.js")
 		.pipe(jasmine());
 });
