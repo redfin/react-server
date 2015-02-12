@@ -23,7 +23,7 @@ var Q = require("q"),
 // short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
-	handleRoute        : [2, () => ({code: 200}), Q],
+	handleRoute        : [1, () => ({code: 200}), Q],
 	getTitle           : [0, () => "", Q],
 	getScripts         : [0, () => [], standardizeScripts],
 	getSystemScripts   : [0, () => [], standardizeScripts],

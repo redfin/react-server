@@ -1,25 +1,25 @@
 
-var SuperAgentWrapper = require('../util/SuperAgentWrapper'),
-	Loader = require("../Loader"),
-	ObjectGraph = require('../util/ObjectGraph'),
+var ObjectGraph = require('../util/ObjectGraph'),
 	Navigator = require('./Navigator'),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
-	Q = require('q');
+	Q = require('q'),
+	TritonAgent = require('../util/TritonAgent');
 
 // TODO FIXME
 var REFERRER_DOMAIN = "http://node.redfintest.com";
 
 class RequestContext {
 
-	constructor (routes, loaderOpts, defaultHeaders, extraOpts) {
+	constructor (routes, defaultHeaders, extraOpts) {
 
 		// don't include headers client-side (browser has them already)
 		if (!SERVER_SIDE || !defaultHeaders) {
 			defaultHeaders = {};
 		}
-		this.superagent = new SuperAgentWrapper(defaultHeaders);
 
-		this.loader = new Loader(this /*context */, loaderOpts);
+		if (SERVER_SIDE && defaultHeaders) {
+			TritonAgent.defaultHeaders(defaultHeaders);
+		}
 
 		this.navigator = new Navigator(this, routes);
 
@@ -55,12 +55,12 @@ class RequestContext {
 
 	dehydrate () {
 		return {
-			loader: this.loader.dehydrate()
+			'TritonAgent.cache': TritonAgent.cache().dehydrate()
 		}
 	}
 
 	rehydrate (state) {
-		this.loader.rehydrate(state.loader);
+		TritonAgent.cache().rehydrate(state['TritonAgent.cache']);
 	}
 
 }
@@ -69,7 +69,6 @@ class RequestContextBuilder {
 
 	constructor () {
 		this.defaultHeaders = {};
-		this.loaderOpts = {};
 	}
 
 	setRoutes(routes) {
@@ -87,14 +86,9 @@ class RequestContextBuilder {
 		return this;
 	}
 
-	setLoaderOpts (loaderOpts) {
-		this.loaderOpts = loaderOpts || {};
-		return this;
-	}
-
 	create (extraOpts) {
 
-		return new RequestContext(this.routes, this.loaderOpts, this.defaultHeaders, extraOpts);
+		return new RequestContext(this.routes, this.defaultHeaders, extraOpts);
 	}
 
 }
