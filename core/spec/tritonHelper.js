@@ -90,8 +90,8 @@ var buildClientCode = (tempDir, cb) => {
 	});
 }
 
-// starts a simple, one page triton server.
-// routes is of the form {url: page}
+// starts a simple triton server.
+// routes is of the form {url: pathToPageCode}
 var startTritonServer = (routes, port, cb) => {
 
 	var testTempDir = __dirname + "/../../test-temp";
@@ -114,18 +114,32 @@ var stopTritonServer = (server, done) => {
 	server.close(done);
 };
 
+// vists the url `url` with port `port`, and calls `cb` with the browser's window
+// object after the page has completely downloaded from the server but before any client
+// JavaScript has run. note that this is useful for examining the structure of the
+// server-generated HTML via `window.document`, but it is not generally useful to do 
+// much else with the window object, as no JavaScript has run on the client (i.e.
+// React will not be present, and nothing will be interactive.).
 var getServerWindow = (url, port, cb) => {
 	var browser = getBrowser({runScripts:false});
 
 	browser.visit(`http://localhost:${port}${url}`).then(() => cb(browser.window));
 }
 
+// vists the url `url` with port `port`, and calls `cb` with the browser's window
+// object after the page has completely downloaded from the server and all client
+// JavaScript has run. at this point, the page will have re-rendered, and 
+// it will be interactive.
 var getClientWindow = (url, port, cb) => {
 	var browser = getBrowser();
 
 	browser.visit(`http://localhost:${port}${url}`).then(() => cb(browser.window));
 }
 
+// vists the url `url` with port `port` via a client-side transition, and calls `cb` 
+// with the browser's window object after the page has completely run all client
+// JavaScript. at this point, the page will have transitioned and rendered, and 
+// it will be interactive.
 var getTransitionWindow = (url, port, cb) => {
 	var browser = getBrowser();
 
@@ -137,14 +151,27 @@ var getTransitionWindow = (url, port, cb) => {
 	});
 }
 
+// vists the url `url` with port `port`, and calls `cb` with the browser's document
+// object after the page has completely downloaded from the server but before any client
+// JavaScript has run. this is the right method to use to run assertions on the server-
+// generated HTML.
 var getServerDocument = (url, port, cb) => {
 	getServerWindow(url, port, (window) => cb(window.document));
 }
 
+// vists the url `url` with port `port`, and calls `cb` with the browser's document
+// object after the page has completely downloaded from the server and all client
+// JavaScript has run. this is the right method to use to run assertions on the HTML
+// after client-side rendering has completed.
 var getClientDocument = (url, port, cb) => {
 	getClientWindow(url, port, (window) => cb(window.document));
 }
 
+
+// vists the url `url` with port `port` via a client-side transition, and calls `cb` 
+// with the browser's document object after the page has completely run all client
+// JavaScript. this is the right method to use to run assertions on the HTML
+// after a client-side transition has completed.
 var getTransitionDocument = (url, port, cb) => {
 	getTransitionWindow(url, port, (window) => cb(window.document));
 }
