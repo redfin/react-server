@@ -15,7 +15,7 @@ function getBrowser(opts) {
 	return browser;
 }
 
-var createRoutesFile = (routes) => {
+var writeRoutesFile = (routes, tempDir) => {
 	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
 			middleware: [require("../client/spec/test-runtime/ScriptsMiddleware")],
@@ -50,14 +50,13 @@ var createRoutesFile = (routes) => {
 				};
 			}
 		}}};`;
-	mkdirp.sync("./target/test-temp");
-	fs.writeFileSync("./target/test-temp/routes.js", routesForTriton);
+	mkdirp.sync(tempDir);
+	fs.writeFileSync(tempDir + "/routes.js", routesForTriton);
 }
 
-
-var buildClientCode = function(cb) {
-	mkdirp.sync('./target/test-temp');
-	fs.writeFileSync("./target/test-temp/entrypoint.js", `
+var writeEntrypointFile = (tempDir) => {
+	mkdirp.sync(tempDir);
+	fs.writeFileSync(tempDir + "/entrypoint.js", `
 		var ClientController = require("triton").ClientController;
 
 		window.rfBootstrap = function () {
@@ -67,13 +66,17 @@ var buildClientCode = function(cb) {
 			
 			controller.init();
 		};`
-	);
+	);	
+}
+
+
+var buildClientCode = (tempDir, cb) => {
 
 	webpack({
-		context: process.cwd() + "/target/test-temp",
+		context: tempDir,
 		entry: "./entrypoint.js",
 		output: {
-			path: process.cwd() + "/target/test-temp/",
+			path: tempDir,
 			filename: "rollup.js"
 		},
 		resolve: {
@@ -91,14 +94,16 @@ var buildClientCode = function(cb) {
 // routes is of the form {url: page}
 var startTritonServer = (routes, port, cb) => {
 
-	createRoutesFile(routes);
-	buildClientCode(() => {
+	var testTempDir = __dirname + "/../../test-temp";
+	writeRoutesFile(routes, testTempDir);
+	writeEntrypointFile(testTempDir);
+	buildClientCode(testTempDir, () => {
 		var server = express();
 		process.env.R3S_CONFIGS = process.cwd() + "/target/config/dev"
 
-		server.use('/rollups', express.static(process.cwd() + "/target/test-temp"));
+		server.use('/rollups', express.static(testTempDir));
 
-		renderMiddleware(server, require("../../test-temp/routes"));
+		renderMiddleware(server, require(testTempDir + "/routes"));
 		var httpServer = http.createServer(server);
 		httpServer.listen(port, () => cb(httpServer));
 
