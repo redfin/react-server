@@ -11,15 +11,15 @@ var logger = require('../logging').getLogger(__LOGGER__),
 	Q = require('q'),
 	React = require("react/addons"),
 	PromiseUtil = require("../util/PromiseUtil"),
+	TritonAgent = require('../util/TritonAgent'),
     CHANGE_EVENT = 'change';
 
 
 class BaseStore {
 
-	constructor (loader) {
+	constructor () {
 		this._emitter = new EventEmitter();
 
-		this._loader = loader;
 		this._actionListeners = [];
 
 		// this is a map that keeps track of all of the child stores and 
@@ -174,23 +174,26 @@ class BaseStore {
 		logger.debug("requesting " + name + ": " + url);
 		this._data[name].status = BaseStore.LoadState.LOADING;
 
-		var cachedResult = this._loader.checkLoaded(url); 
+		var cachedResult = TritonAgent.cache().checkLoaded(url); 
 		if (cachedResult) {
-			this._handleLoadResult(name, cachedResult.getData());
+			this._handleLoadResult(name, cachedResult.getData().body);
 			// returning null is OK because we filter out nulls in loadData,
 			// and Q.allSettled with an empty array is resolved immediately
 			return null;
 		} else {
-			return this._loader.load(url).then(result => {
+			return TritonAgent.get(url).then(res => {
 				logger.debug("completed " + name + ": " + url);
 				logger.time(`loadByName.success.${name}`, new Date - t0);
-				this._handleLoadResult(name, result);
-				this.emitChange();		
+				this._handleLoadResult(name, res.body);
+				this.emitChange();
+				return res;
 			}, err => {
 				logger.error("error " + name + ": " + url, err);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
 				this._data[name].status = BaseStore.LoadState.ERROR;
 				this.emitChange();
+
+				return err;
 			});
 		}
 	}
