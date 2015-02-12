@@ -1,4 +1,5 @@
-var cookie = require("cookie");
+var cookie = require("cookie"),
+	decode = require("querystring/decode");
 
 /**
  * This class implements the Triton Request API for client-side transitions.
@@ -15,6 +16,14 @@ class ClientRequest {
 
 	getUrl() {
 		return this._url;
+	}
+
+	getQuery() {
+		var indexOfQuestion = this._url.indexOf("?");
+		if (-1 === indexOfQuestion) {
+			return {};
+		}
+		return decode(this._url.substring(indexOfQuestion + 1));
 	}
 
 	getRouteParams() {

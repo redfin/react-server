@@ -102,7 +102,18 @@ var startTritonServer = (routes, port, cb) => {
 			},`;
 	});
 
-	routesForTriton += `}};`;
+	routesForTriton += `
+		transitionPage: {
+			path: ["/__transition"],
+			method: "get",
+			page: function() {
+				return {
+					done: function(cb) {
+						cb(require("../client/spec/test-runtime/TransitionPage"));
+					}
+				};
+			}
+		}}};`;
 
 	buildClientCode(routesForTriton, () => {
 		var server = express();
@@ -136,8 +147,12 @@ var getClientWindow = (url, port, cb) => {
 var getTransitionWindow = (url, port, cb) => {
 	var browser = getBrowser();
 
-	// TODO: make this transition from another page.
-	browser.visit(`http://localhost:${port}${url}`).then(() => cb(browser.window));
+	// go to the transition page and click the link.
+	browser.visit(`http://localhost:${port}/__transition?url=${url}`).then(() => {
+		browser.clickLink("Click me", () => {
+			cb(browser.window);
+		});
+	});
 }
 
 var getServerDocument = (url, port, cb) => {
