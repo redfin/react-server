@@ -9,5 +9,6 @@ module.exports = {
 	getCurrentRequestContext: require('./context/RequestContext').getCurrentRequestContext,
 	bundleNameUtil: require("./util/bundleNameUtil"),
 	logging: require("./logging"),
-	config: require("./config")
+	config: require("./config"),
+	TritonAgent: require('./util/TritonAgent')
 }
