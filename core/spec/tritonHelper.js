@@ -105,6 +105,10 @@ var startTritonServer = (routes, cb) => {
 
 		server.use('/rollups', express.static(testTempDir));
 
+		// we may have changed the routes file since the last test run, so the old 
+		// routes file may be in the require cache. this code may not be ideal in node
+		// (mucking with the require cache); if it causes problems, we should change the code
+		// to add a hash to the end of the module name.
 		delete require.cache[require.resolve(testTempDir + "/routes")]
 		renderMiddleware(server, require(testTempDir + "/routes"));
 		var httpServer = http.createServer(server);
@@ -117,67 +121,66 @@ var stopTritonServer = (server, done) => {
 	server.close(done);
 };
 
-// vists the url `url` and calls `cb` with the browser's window
-// object after the page has completely downloaded from the server but before any client
-// JavaScript has run. note that this is useful for examining the structure of the
-// server-generated HTML via `window.document`, but it is not generally useful to do 
-// much else with the window object, as no JavaScript has run on the client (i.e.
-// React will not be present, and nothing will be interactive.).
-var getServerWindow = (url, cb) => {
+var getServerBrowser = (url, cb) => {
 	var browser = getBrowser({runScripts:false});
 
-	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser.window));
+	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser));
 }
 
-// vists the url `url` and calls `cb` with the browser's window
-// object after the page has completely downloaded from the server and all client
-// JavaScript has run. at this point, the page will have re-rendered, and 
-// it will be interactive.
-var getClientWindow = (url, cb) => {
+var getClientBrowser = (url, cb) => {
 	var browser = getBrowser();
+	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser));
+};
 
-	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser.window));
-}
-
-// vists the url `url` via a client-side transition, and calls `cb` 
-// with the browser's window object after the page has completely run all client
-// JavaScript. at this point, the page will have transitioned and rendered, and 
-// it will be interactive.
-var getTransitionWindow = (url, cb) => {
+var getTransitionBrowser = (url, cb) => {
 	var browser = getBrowser();
-
 	// go to the transition page and click the link.
 	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).then(() => {
 		browser.clickLink("Click me", () => {
 			cb(browser.window);
 		});
 	});
+
 }
+
+// vists the url `url` and calls `cb` with the browser's window
+// object after the page has completely downloaded from the server but before any client
+// JavaScript has run. note that this is useful for examining the structure of the
+// server-generated HTML via `window.document`, but it is not generally useful to do 
+// much else with the window object, as no JavaScript has run on the client (i.e.
+// React will not be present, and nothing will be interactive.).
+var getServerWindow = (url, cb) => { getServerBrowser(url, (browser) => cb(browser.window)); }
+
+// vists the url `url` and calls `cb` with the browser's window
+// object after the page has completely downloaded from the server and all client
+// JavaScript has run. at this point, the page will have re-rendered, and 
+// it will be interactive.
+var getClientWindow = (url, cb) => { getClientBrowser(url, (browser) => cb(browser.window)); };
+
+// vists the url `url` via a client-side transition, and calls `cb` 
+// with the browser's window object after the page has completely run all client
+// JavaScript. at this point, the page will have transitioned and rendered, and 
+// it will be interactive.
+var getTransitionWindow = (url, cb) => { getTransitionBrowser(url, (browser) => cb(browser.window)); };
 
 // vists the url `url` and calls `cb` with the browser's document
 // object after the page has completely downloaded from the server but before any client
 // JavaScript has run. this is the right method to use to run assertions on the server-
 // generated HTML.
-var getServerDocument = (url, cb) => {
-	getServerWindow(url, (window) => cb(window.document));
-}
+var getServerDocument = (url, cb) => { getServerWindow(url, (window) => cb(window.document)); };
 
 // vists the url `url` and calls `cb` with the browser's document
 // object after the page has completely downloaded from the server and all client
 // JavaScript has run. this is the right method to use to run assertions on the HTML
 // after client-side rendering has completed.
-var getClientDocument = (url, cb) => {
-	getClientWindow(url, (window) => cb(window.document));
-}
+var getClientDocument = (url, cb) => { getClientWindow(url, (window) => cb(window.document)); };
 
 
 // vists the url `url` via a client-side transition, and calls `cb` 
 // with the browser's document object after the page has completely run all client
 // JavaScript. this is the right method to use to run assertions on the HTML
 // after a client-side transition has completed.
-var getTransitionDocument = (url, cb) => {
-	getTransitionWindow(url, (window) => cb(window.document));
-}
+var getTransitionDocument = (url, cb) => { getTransitionWindow(url, (window) => cb(window.document)); };
 
 // used to test the JS internals of a page both on client load and on page-to-page
 // transition. this does NOT test server load, since JS doesn't run on that. if you just
@@ -267,6 +270,9 @@ module.exports = {
 	getClientDocument,
 	getTransitionDocument,
 	testWithDocument,
+	// getServerBrowser,  <-- not exposed because it's generally not useful to get window when client JS hasn't run.
+	getClientBrowser,
+	getTransitionBrowser,
 	// getServerWindow,  <-- not exposed because it's generally not useful to get window when client JS hasn't run.
 	getClientWindow,
 	getTransitionWindow,
