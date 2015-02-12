@@ -1,13 +1,13 @@
-var helper = require("./tritonHelper");
+var helper = require("../tritonHelper");
 
 
 
 describe("A basic page", function() {
 
 	helper.startTritonBeforeEach({
-		"/hello": "./HelloWorldPage", 
-		"/goodbye": "./GoodbyeWorldPage",
-		"/multi": "./MultiElementPage"
+		"/hello": "./simpleRender/HelloWorldPage", 
+		"/goodbye": "./simpleRender/GoodbyeWorldPage",
+		"/multi": "./simpleRender/MultiElementPage"
 	});
 
 	helper.teardownTritonAfterEach();
