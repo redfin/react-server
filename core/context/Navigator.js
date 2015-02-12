@@ -48,7 +48,7 @@ class Navigator extends EventEmitter {
 			if (request.setRoute) {
 				request.setRoute(route);
 			}
-			this.handlePage(pageConstructor, request, this.context.loader, type);
+			this.handlePage(pageConstructor, request, type);
 
 		}, err => {
 			console.error("Error resolving page", err);
@@ -56,7 +56,7 @@ class Navigator extends EventEmitter {
 
 	}
 
-	handlePage(pageConstructor, request, loader, type) {
+	handlePage(pageConstructor, request, type) {
 		// instantiate the pages we need to fulfill this request.
 		var pageClasses = [];
 
@@ -68,7 +68,7 @@ class Navigator extends EventEmitter {
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
 		// respond.
-		page.handleRoute(request, loader).then(handleRouteResult => {
+		page.handleRoute(request).then(handleRouteResult => {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
@@ -79,7 +79,7 @@ class Navigator extends EventEmitter {
 				// in this case, we should forward to a new page *without* changing the URL. Since we are already
 				// in an async callback, we should schedule a new handlePage with the new page constructor and return
 				// from this call.
-				setTimeout(() => this.handlePage(handleRouteResult.page, request, loader, type), 0);
+				setTimeout(() => this.handlePage(handleRouteResult.page, request, type), 0);
 				return;
 			}
 

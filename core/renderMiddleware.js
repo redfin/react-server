@@ -12,7 +12,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	expressState = require('express-state'),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
-	PromiseUtil = require("./util/PromiseUtil");
+	PromiseUtil = require("./util/PromiseUtil"),
+	TritonAgent = require('./util/TritonAgent');
 
 
 // TODO FIXME ?? 
@@ -47,7 +48,6 @@ module.exports = function(server, routes) {
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
 				.setRoutes(routes)
-				.setLoaderOpts({}) // TODO FIXME
 				.setDefaultXhrHeadersFromRequest(req)
 				.create({
 					// TODO: context opts?
@@ -72,8 +72,6 @@ module.exports = function(server, routes) {
 				return;
 			}
 
-			logger.debug('Executing navigate action');
-			
 			beginRender(req, res, start, context, page);
 
 		});
@@ -85,7 +83,6 @@ module.exports = function(server, routes) {
 
 
 function beginRender(req, res, start, context, page) {
-	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -117,7 +114,6 @@ function beginRender(req, res, start, context, page) {
 }
 
 function writeHeader(req, res, context, start, pageObject) {
-	logger.debug('Starting document header');
 	res.type('html');
 
 	res.write("<!DOCTYPE html><html><head>");
@@ -137,7 +133,6 @@ function writeHeader(req, res, context, start, pageObject) {
 
 function renderTitle (pageObject, res) {
 	return pageObject.getTitle().then((title) => {
-		logger.debug("Rendering title");
 		res.write(`<title>${title}</title>`);
 	});
 }
@@ -351,7 +346,6 @@ function startBody(req, res, context, start, page) {
 	var routeName = context.navigator.getCurrentRoute().name
 
 	return page.getBodyClasses().then((classes) => {
-		logger.debug("Starting body");
 		classes.push(`route-${routeName}`)
 		res.write(`<body class='${classes.join(' ')}'><div id='content'>`);
 	})
@@ -363,7 +357,6 @@ function startBody(req, res, context, start, page) {
  */
 function writeBody(req, res, context, start, page) {
 
-	logger.debug("React Rendering");
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
@@ -409,11 +402,10 @@ function writeBody(req, res, context, start, page) {
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise).then(()=> logger.debug("Finished rendering body."));
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
 }
 
 function renderElement(res, element, context, index) {
-	logger.debug(`Rendering root element #${index}`);
 	res.write(`<div data-triton-root-id=${index}>`);
 	if (element !== null) {
 		element = React.addons.cloneWithProps(element, { context: context });
@@ -423,7 +415,6 @@ function renderElement(res, element, context, index) {
 }
 
 function writeData(req, res, context, start) {
-	logger.debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
 
@@ -437,22 +428,16 @@ function writeData(req, res, context, start) {
 	renderScriptsAsync([{
 		text: `${res.locals.state};rfBootstrap();`
 	}], res);
-
-	var routeName = context.navigator.getCurrentRoute().name;
-
-	logger.time(`content_written.${routeName}`, new Date - start);
 }
 
 function setupLateArrivals(req, res, context, start) {
-	var loader = context.loader;
-	var allRequests = loader.getAllRequests();
-	var notLoaded = loader.getPendingRequests();
+	var allRequests = TritonAgent.cache().getAllRequests();
+	var notLoaded = TritonAgent.cache().getPendingRequests();
 	var routeName = context.navigator.getCurrentRoute().name;
 
 
 	notLoaded.forEach( pendingRequest => {
-		pendingRequest.entry.dfd.promise.then( data => {
-			logger.debug("Late arrival: " + pendingRequest.url)
+		pendingRequest.entry.whenDataReadyInternal().then( data => {
 			logger.time(`late_arrival.${routeName}`, new Date - start);
 			renderScriptsAsync([{
 				text: `__lateArrival(${
@@ -461,6 +446,7 @@ function setupLateArrivals(req, res, context, start) {
 					JSON.stringify(data)
 				});`
 			}], res);
+
 		})
 	});
 
@@ -470,7 +456,7 @@ function setupLateArrivals(req, res, context, start) {
 		res.end("</body></html>");
 		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
-		logger.time(`all_done.${routeName}`, new Date - start);
+		logger.time(`allDone.${routeName}`, new Date - start);
 	});
 }
 

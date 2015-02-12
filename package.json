@@ -22,6 +22,7 @@
     "gulp-foreach": "0.1.0",
     "mkdirp": "0.5.0",
     "q": "1.0.1",
+    "q": "1.1.2",
     "querystring": "0.2.0",
     "rimraf": "2.2.8",
     "routr": "0.0.5",
