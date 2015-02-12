@@ -7,6 +7,8 @@ var renderMiddleware = require("../renderMiddleware"),
 	webpack = require("webpack"),
 	Browser = require('zombie');
 
+var PORT = process.env.PORT || 8769;
+
 var servers = []; 
 
 function getBrowser(opts) {
@@ -92,7 +94,7 @@ var buildClientCode = (tempDir, cb) => {
 
 // starts a simple triton server.
 // routes is of the form {url: pathToPageCode}
-var startTritonServer = (routes, port, cb) => {
+var startTritonServer = (routes, cb) => {
 
 	var testTempDir = __dirname + "/../../test-temp";
 	writeRoutesFile(routes, testTempDir);
@@ -105,7 +107,7 @@ var startTritonServer = (routes, port, cb) => {
 
 		renderMiddleware(server, require(testTempDir + "/routes"));
 		var httpServer = http.createServer(server);
-		httpServer.listen(port, () => cb(httpServer));
+		httpServer.listen(PORT, () => cb(httpServer));
 
 	});
 };
@@ -114,80 +116,91 @@ var stopTritonServer = (server, done) => {
 	server.close(done);
 };
 
-// vists the url `url` with port `port`, and calls `cb` with the browser's window
+// vists the url `url` and calls `cb` with the browser's window
 // object after the page has completely downloaded from the server but before any client
 // JavaScript has run. note that this is useful for examining the structure of the
 // server-generated HTML via `window.document`, but it is not generally useful to do 
 // much else with the window object, as no JavaScript has run on the client (i.e.
 // React will not be present, and nothing will be interactive.).
-var getServerWindow = (url, port, cb) => {
+var getServerWindow = (url, cb) => {
 	var browser = getBrowser({runScripts:false});
 
-	browser.visit(`http://localhost:${port}${url}`).then(() => cb(browser.window));
+	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser.window));
 }
 
-// vists the url `url` with port `port`, and calls `cb` with the browser's window
+// vists the url `url` and calls `cb` with the browser's window
 // object after the page has completely downloaded from the server and all client
 // JavaScript has run. at this point, the page will have re-rendered, and 
 // it will be interactive.
-var getClientWindow = (url, port, cb) => {
+var getClientWindow = (url, cb) => {
 	var browser = getBrowser();
 
-	browser.visit(`http://localhost:${port}${url}`).then(() => cb(browser.window));
+	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser.window));
 }
 
-// vists the url `url` with port `port` via a client-side transition, and calls `cb` 
+// vists the url `url` via a client-side transition, and calls `cb` 
 // with the browser's window object after the page has completely run all client
 // JavaScript. at this point, the page will have transitioned and rendered, and 
 // it will be interactive.
-var getTransitionWindow = (url, port, cb) => {
+var getTransitionWindow = (url, cb) => {
 	var browser = getBrowser();
 
 	// go to the transition page and click the link.
-	browser.visit(`http://localhost:${port}/__transition?url=${url}`).then(() => {
+	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).then(() => {
 		browser.clickLink("Click me", () => {
 			cb(browser.window);
 		});
 	});
 }
 
-// vists the url `url` with port `port`, and calls `cb` with the browser's document
+// vists the url `url` and calls `cb` with the browser's document
 // object after the page has completely downloaded from the server but before any client
 // JavaScript has run. this is the right method to use to run assertions on the server-
 // generated HTML.
-var getServerDocument = (url, port, cb) => {
-	getServerWindow(url, port, (window) => cb(window.document));
+var getServerDocument = (url, cb) => {
+	getServerWindow(url, (window) => cb(window.document));
 }
 
-// vists the url `url` with port `port`, and calls `cb` with the browser's document
+// vists the url `url` and calls `cb` with the browser's document
 // object after the page has completely downloaded from the server and all client
 // JavaScript has run. this is the right method to use to run assertions on the HTML
 // after client-side rendering has completed.
-var getClientDocument = (url, port, cb) => {
-	getClientWindow(url, port, (window) => cb(window.document));
+var getClientDocument = (url, cb) => {
+	getClientWindow(url, (window) => cb(window.document));
 }
 
 
-// vists the url `url` with port `port` via a client-side transition, and calls `cb` 
+// vists the url `url` via a client-side transition, and calls `cb` 
 // with the browser's document object after the page has completely run all client
 // JavaScript. this is the right method to use to run assertions on the HTML
 // after a client-side transition has completed.
-var getTransitionDocument = (url, port, cb) => {
-	getTransitionWindow(url, port, (window) => cb(window.document));
+var getTransitionDocument = (url, cb) => {
+	getTransitionWindow(url, (window) => cb(window.document));
 }
 
 // used to test the JS internals of a page both on client load and on page-to-page
 // transition. this does NOT test server load, since JS doesn't run on that. if you just
 // want to test document structure, including server generated documents, use testWithDocument.
-var testWithWindow = (url, port, testFn) => {
+// testFn's first argument will be the window object. if it takes a second argument, it will be
+// a done callback for async tests.
+var testWithWindow = (url, testFn) => {
+	var callback = (document, done) => {
+		if (testFn.length >= 2) {
+			testFn(document, done);
+		} else {
+			// the client doesn't want the done function, so we should call it.
+			testFn(document);
+			done();
+		}
+	}
 	it ("on client", function(done) {
-		getClientWindow(url, port, (window) => {
-			testFn(window, done);
+		getClientWindow(url, (window) => {
+			callback(window, done);
 		});
 	});
 	it ("on transition", function(done) {
-		getTransitionWindow(url, port, (window) => {
-			testFn(window, done);
+		getTransitionWindow(url, (window) => {
+			callback(window, done);
 		});
 	});
 
@@ -197,20 +210,31 @@ var testWithWindow = (url, port, testFn) => {
 // this method creates three Jasmine tests. this method should not test anything that is 
 // dependent on the page JS running. if you want to test the internal state of the JS, use
 // testWithWindow.
-var testWithDocument = (url, port, testFn) => {
-	it ("on server", function(done) {
-		getServerDocument(url, port, (document) => {
+// testFn's first argument will be the document object. if it takes a second argument, it will be
+// a done callback for async tests.
+var testWithDocument = (url, testFn) => {
+	var callback = (document, done) => {
+		if (testFn.length >= 2) {
 			testFn(document, done);
+		} else {
+			// the client doesn't want the done function, so we should call it.
+			testFn(document);
+			done();
+		}
+	}
+	it ("on server", function(done) {
+		getServerDocument(url, (document) => {
+			callback(document, done);
 		});
 	});
 	it ("on client", function(done) {
-		getClientDocument(url, port, (document) => {
-			testFn(document, done);
+		getClientDocument(url, (document) => {
+			callback(document, done);
 		});
 	});
 	it ("on transition", function(done) {
-		getTransitionDocument(url, port, (document) => {
-			testFn(document, done);
+		getTransitionDocument(url, (document) => {
+			callback(document, done);
 		});
 	});
 
@@ -218,9 +242,9 @@ var testWithDocument = (url, port, testFn) => {
 
 // convenience function to start a triton server before each test. make sure to 
 // call teardownTritonAfterEach so that the server is stopped.
-var startTritonBeforeEach = (routes, port) => {
+var startTritonBeforeEach = (routes) => {
 	beforeEach((done) => {
-		startTritonServer(routes, port, s => {
+		startTritonServer(routes, s => {
 			servers.push(s); 
 			done();
 		});
