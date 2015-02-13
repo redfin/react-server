@@ -2,10 +2,7 @@ var helper = require("../tritonHelper");
 
 describe("A page with async elements", () => {
 
-	helper.startTritonBeforeAll({
-		"/asyncElement": "./asyncRender/AsyncElementPage", 
-		"/serverTimeoutElement": "./asyncRender/ServerTimeoutElementPage",
-	});
+	helper.startTritonBeforeAll(["./asyncRender/AsyncElementPage", "./asyncRender/ServerTimeoutElementPage"]);
 
 	helper.stopTritonAfterAll();
 

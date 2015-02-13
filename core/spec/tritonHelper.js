@@ -5,6 +5,7 @@ var renderMiddleware = require("../renderMiddleware"),
 	fs = require("fs"),
 	mkdirp = require("mkdirp"),
 	webpack = require("webpack"),
+	path = require("path"),
 	Browser = require('zombie');
 
 var PORT = process.env.PORT || 8769;
@@ -92,9 +93,32 @@ var buildClientCode = (tempDir, cb) => {
 	});
 }
 
+// this is a helper function that takes in an array of files to make routes for.
+// it will emit a routes map suitable for handing to startTritonServer where 
+// all the page classes will be automatically assigned a URL. the URL will be
+// the file name (stripped of directories), first letter lower-cased, and 
+// "Page" removed from the end if it is there. Examples (in the format class name
+// to URL:
+//
+// "./SomeTestPage" ==> "/someTest"
+// "./someDir/SomeTestInDirPage" ==> "/someTestInDir"
+// "./foo/BarPagelet" ==> "/barPagelet"  <-- note does not *end* with "Page"
+var routesArrayToMap = (routesArray) => {
+	var result = {};
+	routesArray.forEach((file) => {
+		var fileName = path.basename(file);
+		if (fileName.length >=4 && fileName.substr(-4) === "Page") fileName = fileName.substr(0, fileName.length - 4);
+		if (fileName.length > 0) fileName = fileName.substr(0, 1).toLowerCase() + fileName.substr(1);
+		result["/" + fileName] = file;
+	});
+	return result;
+}
+
 // starts a simple triton server.
-// routes is of the form {url: pathToPageCode}
+// routes is of the form {url: pathToPageCode} or [pathToPageCode]
 var startTritonServer = (routes, cb) => {
+	// if we got an array, normalize it to a map of URLs to file paths.
+	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
 	var testTempDir = __dirname + "/../../test-temp";
 	writeRoutesFile(routes, testTempDir);
@@ -236,7 +260,7 @@ var testWithDocument = (url, testFn) => {
 			callback(document, done);
 		});
 	});
-	it ("on transition", function(done) {
+	it ("on client transition", function(done) {
 		getTransitionDocument(url, (document) => {
 			callback(document, done);
 		});

@@ -2,13 +2,13 @@ var helper = require("../tritonHelper");
 
 describe("A page with a title", () => {
 
-	helper.startTritonBeforeAll({
-		"/simpleTitle": "./title/SimpleTitlePage",
-		"/unicodeTitle": "./title/UnicodeTitlePage",
-		"/nullTitle": "./title/NullTitlePage",
-		"/asyncTitle": "./title/AsyncTitlePage",
-		"/asyncServerTimeoutTitle": "./title/AsyncServerTimeoutTitlePage",
-	});
+	helper.startTritonBeforeAll([
+		"./title/SimpleTitlePage",
+		"./title/UnicodeTitlePage",
+		"./title/NullTitlePage",
+		"./title/AsyncTitlePage",
+		"./title/AsyncServerTimeoutTitlePage",
+	]);
 
 	helper.stopTritonAfterAll();
 
