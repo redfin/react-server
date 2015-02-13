@@ -460,6 +460,7 @@ function setupLateArrivals(req, res, context, start, page) {
 		res.end("</body></html>");
 		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
+		logger.gauge(`bytesWritten.${routeName}`,req.socket.bytesWritten, {hi: 1<<16});
 		logger.time(`allDone.${routeName}`, new Date - start);
 		page.handleComplete();
 	});
