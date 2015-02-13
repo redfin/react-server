@@ -176,19 +176,19 @@ class BaseStore {
 
 		var cachedResult = TritonAgent.cache().checkLoaded(url); 
 		if (cachedResult) {
-			var data = cachedResult.getData();
-			this._handleLoadResult(name, data.body);
+			var res = cachedResult.getData();
+			this._handleLoadResult(name, res.body);
 			// returning null is OK because we filter out nulls in loadData,
 			// and Q.allSettled with an empty array is resolved immediately
 			this.emitChange();
-			return Q(data);
+			return Q(res.body);
 		} else {
 			return TritonAgent.get(url).then(res => {
 				logger.debug("completed " + name + ": " + url);
 				logger.time(`loadByName.success.${name}`, new Date - t0);
 				this._handleLoadResult(name, res.body);
 				this.emitChange();
-				return res;
+				return res.body;
 			}, err => {
 				logger.error("error " + name + ": " + url, err.stack);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
