@@ -163,7 +163,7 @@ class BaseStore {
 		} catch(err) {
 			this._data[name].result = result;
 			this._data[name].status = BaseStore.LoadState.ERROR;
-			logger.error('Failed _handleLoadResult', err);
+			logger.error('Failed _handleLoadResult', err.stack);
 			throw err;
 		}		
 	}
@@ -190,7 +190,7 @@ class BaseStore {
 				this.emitChange();
 				return res;
 			}, err => {
-				logger.error("error " + name + ": " + url, err);
+				logger.error("error " + name + ": " + url, err.stack);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
 				this._data[name].status = BaseStore.LoadState.ERROR;
 				this.emitChange();
@@ -321,7 +321,7 @@ BaseStore.ComponentStoreChangeMixin = {
 		try {
 			this.forceUpdate();
 		} catch (e) {
-			loggerCscm.error("Error occurred during component update", e);
+			loggerCscm.error("Error occurred during component update", e.stack);
 		}
 	}
 }
