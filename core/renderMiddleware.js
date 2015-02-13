@@ -22,6 +22,9 @@ var logger = require('./logging').getLogger(__LOGGER__),
 
 var DATA_LOAD_WAIT = 250;
 
+// We'll use this for keeping track of request concurrency per worker.
+var ACTIVE_REQUESTS = 0;
+
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
@@ -37,6 +40,7 @@ module.exports = function(server, routes) {
 	server.set('state namespace', '__tritonState');
 
 	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
+		ACTIVE_REQUESTS++;
 
 		var start = new Date();
 		var startHR = process.hrtime();
@@ -73,6 +77,7 @@ module.exports = function(server, routes) {
 				} else {
 					next(err);
 				}
+				logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
 				return;
 			}
 
@@ -460,6 +465,9 @@ function setupLateArrivals(req, res, context, start, page) {
 		res.end("</body></html>");
 		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
+		logger.gauge(`bytesRead.${routeName}`,req.socket.bytesRead, {hi: 1<<12});
+		logger.gauge(`bytesWritten.${routeName}`,req.socket.bytesWritten, {hi: 1<<18});
+		logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
 		logger.time(`allDone.${routeName}`, new Date - start);
 		page.handleComplete();
 	});
