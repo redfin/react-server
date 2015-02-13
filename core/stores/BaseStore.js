@@ -163,7 +163,7 @@ class BaseStore {
 		} catch(err) {
 			this._data[name].result = result;
 			this._data[name].status = BaseStore.LoadState.ERROR;
-			logger.error('Failed _handleLoadResult', err);
+			logger.error('Failed _handleLoadResult', err.stack);
 			throw err;
 		}		
 	}
@@ -176,19 +176,21 @@ class BaseStore {
 
 		var cachedResult = TritonAgent.cache().checkLoaded(url); 
 		if (cachedResult) {
-			this._handleLoadResult(name, cachedResult.getData().body);
+			var res = cachedResult.getData();
+			this._handleLoadResult(name, res.body);
 			// returning null is OK because we filter out nulls in loadData,
 			// and Q.allSettled with an empty array is resolved immediately
-			return null;
+			this.emitChange();
+			return Q(res.body);
 		} else {
 			return TritonAgent.get(url).then(res => {
 				logger.debug("completed " + name + ": " + url);
 				logger.time(`loadByName.success.${name}`, new Date - t0);
 				this._handleLoadResult(name, res.body);
 				this.emitChange();
-				return res;
+				return res.body;
 			}, err => {
-				logger.error("error " + name + ": " + url, err);
+				logger.error("error " + name + ": " + url, err.stack);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
 				this._data[name].status = BaseStore.LoadState.ERROR;
 				this.emitChange();
@@ -228,7 +230,10 @@ class BaseStore {
 				// chain _that_ promise up with our new
 				// promise so everyone's happy.
 				this._data[name].promise = promise
-					.then(() => this._data[name].notStartedDfd.resolve())
+					.then((data) => {
+						this._data[name].notStartedDfd.resolve();
+						return data;
+					});
 			}
 
 			return promise;
@@ -316,7 +321,7 @@ BaseStore.ComponentStoreChangeMixin = {
 		try {
 			this.forceUpdate();
 		} catch (e) {
-			loggerCscm.error("Error occurred during component update", e);
+			loggerCscm.error("Error occurred during component update", e.stack);
 		}
 	}
 }
