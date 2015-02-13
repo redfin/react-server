@@ -102,13 +102,33 @@ var PageUtil = module.exports = {
 	 * variable (and the second page's implementation gets the third page's next, and so on). 
 	 */
 	createPageChain(pages) {
-		var chain  = {}
-		,   create = PageUtil.createObjectFunctionChain.bind(PageUtil, pages)
-		Object.keys(PAGE_METHODS).forEach(method => {
-			chain[method] = create
-				.apply(null, [method].concat(PAGE_METHODS[method]));
-		});
-		return chain;
+
+		// This will be our return value.  It will be a mapping of
+		// method names on page objects to chained function calls.
+		var pageChain = {};
+
+		for (var method in PAGE_METHODS){
+
+			if (PAGE_METHODS.hasOwnProperty(method)){
+
+				var [
+					argumentCount,
+					defaultImpl,
+					standardizeReturnValue
+				] = PAGE_METHODS[method];
+
+				pageChain[method] = PageUtil
+					.createObjectFunctionChain(
+						pages,
+						method,
+						argumentCount,
+						defaultImpl,
+						standardizeReturnValue
+					);
+			}
+		}
+
+		return pageChain;
 	},
 
 	/**
