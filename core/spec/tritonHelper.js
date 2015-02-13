@@ -18,6 +18,8 @@ function getBrowser(opts) {
 	return browser;
 }
 
+var getPort = () => PORT;
+
 var writeRoutesFile = (routes, tempDir) => {
 	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
@@ -306,6 +308,7 @@ var stopTritonAfterAll = () => {
 }
 
 module.exports = {
+	getPort,
 	startTritonServer, 
 	stopTritonServer, 
 	getServerDocument,

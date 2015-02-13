@@ -65,7 +65,7 @@ module.exports = function(server, routes) {
 		context.onNavigate( (err, page) => {
 
 			if (err) {
-				logger.error("onNavigate error", err);
+				logger.log("onNavigate received a non-2xx HTTP code", err);
 				if (err.status && err.status === 404) {
 					next();
 				} else if (err.status === 301 || err.status === 302) {

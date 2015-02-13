@@ -63,7 +63,12 @@ class Navigator extends EventEmitter {
 		this._addPageMiddlewareToArray(this._globalMiddleware, pageClasses);
 		this._addPageMiddlewareToArray([pageConstructor], pageClasses);
 
-		var pages = pageClasses.map((pageClass) => new pageClass());
+		var pages = pageClasses.map((pageClass) => {
+			if (Object.getOwnPropertyNames(pageClass).length === 0) {
+				throw new Error("Tried to instantiate a page or middleware class that was an empty object. Did you forget to assign a class to module.exports?");
+			}
+			return new pageClass();
+		});
 		var page = PageUtil.createPageChain(pages);
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
