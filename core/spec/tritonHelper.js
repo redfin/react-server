@@ -244,23 +244,41 @@ var testWithDocument = (url, testFn) => {
 
 }
 
-// convenience function to start a triton server before each test. make sure to 
-// call teardownTritonAfterEach so that the server is stopped.
-var startTritonBeforeEach = (routes) => {
-	beforeEach((done) => {
+var testSetupFn = (routes) => {
+	return (done) => {
 		startTritonServer(routes, s => {
 			servers.push(s); 
 			done();
 		});
-	});
+	}
+}
+
+var testTeardownFn = (done) => {
+	stopTritonServer(servers.pop(), done);
+};
+
+// convenience function to start a triton server before each test. make sure to 
+// call stopTritonAfterEach so that the server is stopped.
+var startTritonBeforeEach = (routes) => {
+	beforeEach(testSetupFn(routes));
+}
+
+// convenience function to start a triton server before all the tests. make sure to 
+// call stopTritonAfterEach so that the server is stopped.
+var startTritonBeforeAll = (routes) => {
+	beforeAll(testSetupFn(routes));
 }
 
 // convenience function to stop a triton server after each test. to be paired
 // with startTritonBeforeEach.
-var teardownTritonAfterEach = () => {
-	afterEach((done) => {
-		stopTritonServer(servers.pop(), done);
-	});
+var stopTritonAfterEach = () => {
+	afterEach(testTeardownFn);
+}
+
+// convenience function to stop a triton server after all the tests. to be paired
+// with startTritonBeforeAll.
+var stopTritonAfterAll = () => {
+	afterAll(testTeardownFn);
 }
 
 module.exports = {
@@ -278,5 +296,7 @@ module.exports = {
 	getTransitionWindow,
 	testWithWindow,
 	startTritonBeforeEach,
-	teardownTritonAfterEach
+	stopTritonAfterEach,
+	startTritonBeforeAll,
+	stopTritonAfterAll
 };
