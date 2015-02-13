@@ -1,8 +1,8 @@
 var helper = require("../tritonHelper");
 
-describe("A page with a title", function() {
+describe("A page with a title", () => {
 
-	helper.startTritonBeforeEach({
+	helper.startTritonBeforeAll({
 		"/simpleTitle": "./title/SimpleTitlePage",
 		"/unicodeTitle": "./title/UnicodeTitlePage",
 		"/nullTitle": "./title/NullTitlePage",
@@ -10,7 +10,7 @@ describe("A page with a title", function() {
 		"/asyncServerTimeoutTitle": "./title/AsyncServerTimeoutTitlePage",
 	});
 
-	helper.teardownTritonAfterEach();
+	helper.stopTritonAfterAll();
 
 	describe("has a title", () => {
 		helper.testWithDocument("/simpleTitle", (document) =>{
