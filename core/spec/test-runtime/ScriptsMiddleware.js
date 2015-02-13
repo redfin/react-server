@@ -1,7 +1,7 @@
 class ScriptMiddleware {
 
 	getScripts(next) {
-		return ["//localhost:8769/rollups/rollup.js"];
+		return ["/rollups/rollup.js"];
 	}
 }
 
