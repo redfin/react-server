@@ -1,15 +1,15 @@
-var helper = require("../tritonHelper"), 
+var helper = require("../specRuntime/testHelper"), 
 	Browser = require("zombie");
 
 describe("A redirect page", () => {
 
-	helper.startTritonBeforeAll([
+	helper.startServerBeforeAll([
 		"./redirectForward/TemporaryRedirectPage", 
 		"./redirectForward/PermanentRedirectPage",
 		"./redirectForward/FinalPage", 
 	]);
 
-	helper.stopTritonAfterAll();
+	helper.stopServerAfterAll();
 
 	describe("redirects temporarily to the right page", () => {
 		helper.testWithDocument("/temporaryRedirect", (document) => {
@@ -60,12 +60,12 @@ describe("A redirect page", () => {
 
 describe("A forward page", () => {
 
-	helper.startTritonBeforeAll([
+	helper.startServerBeforeAll([
 		"./redirectForward/FinalPage", 
 		"./redirectForward/ForwardPage", 
 	]);
 
-	helper.stopTritonAfterAll();
+	helper.stopServerAfterAll();
 
 	describe("does NOT change its URL", () => {
 		helper.testWithDocument("/forward", (document) => {

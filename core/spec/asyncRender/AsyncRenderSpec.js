@@ -1,10 +1,10 @@
-var helper = require("../tritonHelper");
+var helper = require("../specRuntime/testHelper");
 
 describe("A page with async elements", () => {
 
-	helper.startTritonBeforeAll(["./asyncRender/AsyncElementPage", "./asyncRender/ServerTimeoutElementPage"]);
+	helper.startServerBeforeAll(["./asyncRender/AsyncElementPage", "./asyncRender/ServerTimeoutElementPage"]);
 
-	helper.stopTritonAfterAll();
+	helper.stopServerAfterAll();
 
 	describe("can render", () => {
 		helper.testWithDocument("/asyncElement", (document) => {

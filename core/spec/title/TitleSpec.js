@@ -1,8 +1,8 @@
-var helper = require("../tritonHelper");
+var helper = require("../specRuntime/testHelper");
 
 describe("A page with a title", () => {
 
-	helper.startTritonBeforeAll([
+	helper.startServerBeforeAll([
 		"./title/SimpleTitlePage",
 		"./title/UnicodeTitlePage",
 		"./title/NullTitlePage",
@@ -10,7 +10,7 @@ describe("A page with a title", () => {
 		"./title/AsyncServerTimeoutTitlePage",
 	]);
 
-	helper.stopTritonAfterAll();
+	helper.stopServerAfterAll();
 
 	describe("has a title", () => {
 		helper.testWithDocument("/simpleTitle", (document) =>{
