@@ -3,7 +3,9 @@ var ObjectGraph = require('../util/ObjectGraph'),
 	Navigator = require('./Navigator'),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
 	Q = require('q'),
-	TritonAgent = require('../util/TritonAgent');
+	TritonAgent = require('../util/TritonAgent'),
+	config = require('../config'),
+	logger = require('../logging').getLogger(__LOGGER__);
 
 // TODO FIXME
 var REFERRER_DOMAIN = "http://node.redfintest.com";
@@ -18,8 +20,19 @@ class RequestContext {
 		}
 
 		if (SERVER_SIDE && defaultHeaders) {
-			TritonAgent.defaultHeaders(defaultHeaders);
+			// stored in RequestLocalStorage
+			TritonAgent.plugRequest(function (dataRequest) {
+				dataRequest.set(defaultHeaders);
+			});
 		}
+		
+		var apiServerPrefix = SERVER_SIDE
+				? config().internal.apiServerPrefix
+				: config().apiServerPrefix;
+		logger.debug(`Using API server prefix: ${apiServerPrefix}`);
+		TritonAgent.plugRequest(function (dataRequest) {
+			dataRequest.setUrlPrefix(apiServerPrefix);
+		});
 
 		this.navigator = new Navigator(this, routes);
 
