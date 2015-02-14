@@ -1,4 +1,4 @@
-var renderMiddleware = require("../renderMiddleware"),
+var renderMiddleware = require("../../renderMiddleware"),
 	express = require("express"),
 	expressState = require('express-state'),
 	http = require("http"),
@@ -23,7 +23,7 @@ var getPort = () => PORT;
 var writeRoutesFile = (routes, tempDir) => {
 	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
-			middleware: [require("../client/spec/test-runtime/ScriptsMiddleware")],
+			middleware: [require("../../client/spec/specRuntime/ScriptsMiddleware")],
 			routes: {`;
 
 	Object.keys(routes).forEach((url, index) => {
@@ -34,7 +34,7 @@ var writeRoutesFile = (routes, tempDir) => {
 				page: function () {
 					return {
 						done: function (cb) {
-							cb(require("../client/spec/${routes[url]}"));
+							cb(require("../../client/spec/${routes[url]}"));
 						}
 					};
 				}				
@@ -50,7 +50,7 @@ var writeRoutesFile = (routes, tempDir) => {
 			page: function() {
 				return {
 					done: function(cb) {
-						cb(require("../client/spec/test-runtime/TransitionPage"));
+						cb(require("../../client/spec/specRuntime/TransitionPage"));
 					}
 				};
 			}
@@ -163,7 +163,7 @@ var getTransitionBrowser = (url, cb) => {
 	// go to the transition page and click the link.
 	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).then(() => {
 		browser.clickLink("Click me", () => {
-			cb(browser.window);
+			cb(browser);
 		});
 	});
 
@@ -284,26 +284,26 @@ var testTeardownFn = (done) => {
 };
 
 // convenience function to start a triton server before each test. make sure to 
-// call stopTritonAfterEach so that the server is stopped.
-var startTritonBeforeEach = (routes) => {
+// call stopServerAfterEach so that the server is stopped.
+var startServerBeforeEach = (routes) => {
 	beforeEach(testSetupFn(routes));
 }
 
 // convenience function to start a triton server before all the tests. make sure to 
-// call stopTritonAfterEach so that the server is stopped.
-var startTritonBeforeAll = (routes) => {
+// call stopServerAfterEach so that the server is stopped.
+var startServerBeforeAll = (routes) => {
 	beforeAll(testSetupFn(routes));
 }
 
 // convenience function to stop a triton server after each test. to be paired
-// with startTritonBeforeEach.
-var stopTritonAfterEach = () => {
+// with startServerBeforeEach.
+var stopServerAfterEach = () => {
 	afterEach(testTeardownFn);
 }
 
 // convenience function to stop a triton server after all the tests. to be paired
-// with startTritonBeforeAll.
-var stopTritonAfterAll = () => {
+// with startServerBeforeAll.
+var stopServerAfterAll = () => {
 	afterAll(testTeardownFn);
 }
 
@@ -315,15 +315,15 @@ module.exports = {
 	getClientDocument,
 	getTransitionDocument,
 	testWithDocument,
-	// getServerBrowser,  <-- not exposed because it's generally not useful to get window when client JS hasn't run.
+	getServerBrowser,
 	getClientBrowser,
 	getTransitionBrowser,
 	// getServerWindow,  <-- not exposed because it's generally not useful to get window when client JS hasn't run.
 	getClientWindow,
 	getTransitionWindow,
 	testWithWindow,
-	startTritonBeforeEach,
-	stopTritonAfterEach,
-	startTritonBeforeAll,
-	stopTritonAfterAll
+	startServerBeforeEach,
+	stopServerAfterEach,
+	startServerBeforeAll,
+	stopServerAfterAll
 };

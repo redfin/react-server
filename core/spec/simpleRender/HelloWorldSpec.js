@@ -1,14 +1,14 @@
-var helper = require("../tritonHelper");
+var helper = require("../specRuntime/testHelper");
 
 describe("A basic page", () => {
 
-	helper.startTritonBeforeAll([
+	helper.startServerBeforeAll([
 		"./simpleRender/HelloWorldPage", 
 		"./simpleRender/GoodbyeWorldPage", 
 		"./simpleRender/MultiElementPage"
 	]);
 
-	helper.stopTritonAfterAll();
+	helper.stopServerAfterAll();
 
 	describe("can say 'Hello, world!'", () => {
 		helper.testWithDocument("/helloWorld", (document) =>{
