@@ -18,7 +18,10 @@ class RequestContext {
 		}
 
 		if (SERVER_SIDE && defaultHeaders) {
-			TritonAgent.defaultHeaders(defaultHeaders);
+			// stored in RequestLocalStorage
+			TritonAgent.plugRequest(function (dataRequest) {
+				dataRequest.set(defaultHeaders);
+			});
 		}
 
 		this.navigator = new Navigator(this, routes);

@@ -15,9 +15,10 @@ function Request(req) {
 }
 
 // mix in properties from superagent.Request,
-// but skip the 'end' method -- we'll do that manaully
+// but skip the 'end' method -- we'll do that manually
+// skip 'use' as well -- we'll expose our own plugin API
 Object.keys(superagent.Request.prototype)
-	.filter( propName => propName !== 'end' )
+	.filter( propName => !(propName === 'end' || propName === 'use') )
 	.forEach( propName => {
 		var originalProp = superagent.Request.prototype[propName];
 		if (typeof originalProp === 'function') {
@@ -92,17 +93,27 @@ Request.prototype.asPromise = function () {
 	return dfd.promise;
 }
 
+/**
+ * Overriding superagent use() function to give a more descriptive
+ * error message than just not including it altogether.
+ */
+Request.prototype.use = function () {
+	throw `use() function is superseded by plugRequest(...)`;
+}
+
+
 // wrapper for superagent
 function makeRequest (method, url) {
 	var req = superagent.apply(null, arguments);
-	
-	// add default headers to request (if necessary)
-	var defaultHeaders = makeRequest.defaultHeaders();
-	if (defaultHeaders) {
-		req.set(defaultHeaders);
-	}
+	req = new Request(req);
 
-	return new Request(req);
+	// run any registered plugins
+	var plugins = makeRequest.requestPlugins();
+	plugins.forEach(function (pluginFunc) {
+		pluginFunc.apply(null, [req]);
+	})
+
+	return req;
 }
 module.exports = makeRequest;
 
@@ -153,8 +164,9 @@ makeRequest.put = function (url, data, fn){
 	return req;
 };
 
-
-
+/**
+ * Exposes the TritonAgent request data cache from RequestLocalStorage.
+ */
 makeRequest.cache = function () {
 
 	var cache = RLS().cache;
@@ -164,20 +176,33 @@ makeRequest.cache = function () {
 	return cache;
 }
 
-/**
- * Get or set the default headers for TritonAgent's http requests.
- * If `headers` is specified, set them; else, return them.
- */
-makeRequest.defaultHeaders = function (headers) {
-	if (SERVER_SIDE) {
-		if (typeof headers === 'undefined') {
-			return RLS().defaultHeaders;
-		}
-		RLS().defaultHeaders = headers;
-	} else {
-		logger.warning("Attempted to set defaultHeaders in TritonAgent on the client");
+makeRequest.requestPlugins = function () {
+	var plugins = RLS().requestPlugins;
+	if (!plugins) {
+		plugins = RLS().requestPlugins = [];
 	}
+	return plugins;
 }
+
+/**
+ * Adds a plugin function that can be used to modify the Request
+ * object post-instantiation, but before the request is actually
+ * triggered.
+ *
+ * The callback function will take the Request instanceo as a parameter:
+ * ```
+ * var defaultHeaders = { ... };
+ * TritonAgent.plugRequest(function (request) {
+ *     // e.g.
+ *     request.set(defaultHeaders)
+ * })
+ * ```
+ */
+makeRequest.plugRequest = function (pluginFunc) {
+	var rlsPlugins = makeRequest.requestPlugins();
+	rlsPlugins.push(pluginFunc);
+}
+
 
 /**
  * An entry in the RequestDataCache
