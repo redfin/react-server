@@ -12,13 +12,14 @@ var superagent = require('superagent'),
 function Request(req) {
 	logger.debug("Making wrapped request");
 	this._req = req;
+	this._urlPrefix = undefined;
 }
 
 // mix in properties from superagent.Request,
 // but skip the 'end' method -- we'll do that manually
 // skip 'use' as well -- we'll expose our own plugin API
 Object.keys(superagent.Request.prototype)
-	.filter( propName => !(propName === 'end' || propName === 'use') )
+	.filter( propName => !(propName === 'end' || propName === 'use' || propName === 'url') )
 	.forEach( propName => {
 		var originalProp = superagent.Request.prototype[propName];
 		if (typeof originalProp === 'function') {
@@ -48,7 +49,7 @@ Request.prototype.end = function (fn) {
 		return superagentRequestEnd.apply(this._req, arguments);
 	}
 
-	var url = this._req.url;
+	var url = buildUrl(this._req.url);
 
 	// get cache entry for url if exists; if server-side, create one if it doesn't already exist
 	var entry = makeRequest.cache().entry(url, SERVER_SIDE /* createIfMissing */);
@@ -70,6 +71,13 @@ Request.prototype.end = function (fn) {
 	entry.whenDataReady().nodeify(fn);
 
 	return this;
+}
+
+function buildUrl(urlFragment) {
+	if (this._urlPrefix) {
+		return urlPrefix + urlFragment;
+	}
+	return urlFragment;
 }
 
 /**
@@ -99,6 +107,14 @@ Request.prototype.asPromise = function () {
  */
 Request.prototype.use = function () {
 	throw `use() function is superseded by plugRequest(...)`;
+}
+
+/**
+ * Set the prefix used for relative URLs
+ */
+Request.prototype.setUrlPrefix = function (urlPrefix) {
+	this._urlPrefix = urlPrefix;
+	return this;
 }
 
 

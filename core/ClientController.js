@@ -28,12 +28,16 @@ class ClientController extends EventEmitter {
 		RequestLocalStorage.startRequest();
 
 		this.config = buildConfig(dehydratedState.Config);
+
+		if (routes.onClientConfigLoaded) {
+			routes.onClientConfigLoaded.call(this);
+		}
+
 		this.context = buildContext(
 			dehydratedState.InitialContext,
 			routes
 		);
 		this.mountNode = document.getElementById('content');
-		this.onClientStart = routes.onClientStart;
 
 		var irDfd = this._initialRenderDfd = Q.defer();
 		this.once('render', irDfd.resolve.bind(irDfd));
@@ -311,7 +315,6 @@ class ClientController extends EventEmitter {
 	}
 
 	init () {
-		if (this.onClientStart) this.onClientStart(this.config);
 
 		var unloadHandler = () => {this.terminate();};
 
