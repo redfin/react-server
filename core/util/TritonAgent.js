@@ -5,31 +5,60 @@ var superagent = require('superagent'),
 	Q = require('q');
 
 /**
- * Wrapper around superagent.Request. Passes through function calls
- * to the wrapped request, except for end() which it enhances with
- * caching for server-side requests.
+ * Implements a subset of superagent's API. Packages up arguments
+ * to pass to superagent under the hood.
  */
-function Request(req) {
-	logger.debug("Making wrapped request");
-	this._req = req;
-	this._urlPrefix = undefined;
+function Request(method, urlPath) {
+	this.method = method;
+	this.urlPath = urlPath;
+	this._queryParams = {};
+	this._postParams = {};
+	this._headers = {};
+	this._timeout = null;
+	this._type = null;
 }
 
-// mix in properties from superagent.Request,
-// but skip the 'end' method -- we'll do that manually
-// skip 'use' as well -- we'll expose our own plugin API
+// we implement a subset of superagent's API. for the other methods,
+// for now, we'll just throw an exception if they're called. By default,
+// all methods throw exceptions, and we override some below
 Object.keys(superagent.Request.prototype)
-	.filter( propName => !(propName === 'end' || propName === 'use' || propName === 'url') )
 	.forEach( propName => {
 		var originalProp = superagent.Request.prototype[propName];
 		if (typeof originalProp === 'function') {
 			Request.prototype[propName] = function () {
-				return originalProp.apply(this._req, arguments);
+				throw new Error(`${propName}() from superagent's API isn't implemented yet.`);
 			}
-		} else {
-			Request.prototype[propName] = originalProp;
 		}
 	});
+
+Request.prototype.query = function (queryParams) {
+	mixin(this._queryParams, queryParams);
+	return this;
+}
+
+Request.prototype.send = function (postParams) {
+	mixin(this._postParams, postParams);
+	return this;
+}
+
+Request.prototype.set = function (headers) {
+	mixin(this._headers, headers);
+	return this;
+}
+
+function mixin (to, from) {
+	Object.keys(from).forEach( headerName => to[headerName] = from[headerName] );
+}
+
+Request.prototype.timeout = function (timeout) {
+	this._timeout = timeout;
+	return this;
+}
+
+Request.prototype.type = function (type) {
+	this._type = type;
+	return this;
+}
 
 /**
  * Wrap superagent's end() method to create an entry in a request-local
@@ -45,21 +74,27 @@ Request.prototype.end = function (fn) {
 	}
 
 	// only do caching for responses for GET requests for now
-	if (this._req.method !== 'GET') {
-		return superagentRequestEnd.apply(this._req, arguments);
+	if (this.method !== 'GET') {
+		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
 	}
 
-	var url = buildUrl(this._req.url);
+	var urlPath = this.urlPath;
 
-	// get cache entry for url if exists; if server-side, create one if it doesn't already exist
-	var entry = makeRequest.cache().entry(url, SERVER_SIDE /* createIfMissing */);
+	// get cache entry for url if exists; if server-side, create one if it doesn't already exist.
+	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
+	// with host (which can vary between client and server) is not usable. The URL path (without the
+	// host) works fine though.
+	var entry = makeRequest.cache().entry(urlPath, SERVER_SIDE /* createIfMissing */);
 	if (!SERVER_SIDE && !entry) {
-		return superagentRequestEnd.apply(this._req, arguments);
+		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
+		// be fine?
+		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
 	}
 
 	// no previous requesters? fire the request
 	if (entry.requesters === 0) {
-		superagentRequestEnd.call(this._req, function (err, res) {
+		// update URL if we're actually making the call
+		superagentRequestEnd.call(this._buildSuperagentRequest(), function (err, res) {
 			if (err) {
 				entry.setError(err);
 				return;
@@ -73,11 +108,30 @@ Request.prototype.end = function (fn) {
 	return this;
 }
 
-function buildUrl(urlFragment) {
-	if (this._urlPrefix) {
-		return urlPrefix + urlFragment;
+Request.prototype._buildSuperagentRequest = function () {
+	var req = superagent(this.method, this._buildUrl());
+
+	if (this._type) {
+		req.type(this._type);
 	}
-	return urlFragment;
+
+	req.set(this._headers)
+		.query(this._queryParams)
+		.send(this._postParams)
+
+	if (this._timeout) {
+		req.timeout(this._timeout);
+	}
+
+	return req;
+}
+
+Request.prototype._buildUrl = function () {
+	// only modify relative paths
+	if (this._urlPrefix && this.urlPath.charAt(0) === '/') {
+		return this._urlPrefix + this.urlPath;
+	}
+	return this.urlPath;
 }
 
 /**
@@ -120,8 +174,7 @@ Request.prototype.setUrlPrefix = function (urlPrefix) {
 
 // wrapper for superagent
 function makeRequest (method, url) {
-	var req = superagent.apply(null, arguments);
-	req = new Request(req);
+	var req = new Request(method, url);
 
 	// run any registered plugins
 	var plugins = makeRequest.requestPlugins();
