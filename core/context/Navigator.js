@@ -92,7 +92,7 @@ class Navigator extends EventEmitter {
 			this.emit('navigateDone', null, page, request.getUrl(), type);
 		}).catch(err => {
 			logger.error("Error while handling route.", err.stack);
-			this.emit('navigateDone', {status: 500}, null, request.getUrl(), type);
+			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type);
 		});
 
 	}

@@ -78,6 +78,7 @@ module.exports = function(server, routes) {
 					next(err);
 				}
 				logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
+				if (page) setTimeout(page.handleComplete, 0);
 				return;
 			}
 
