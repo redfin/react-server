@@ -12,19 +12,7 @@ var REFERRER_DOMAIN = "http://node.redfintest.com";
 
 class RequestContext {
 
-	constructor (routes, defaultHeaders, extraOpts) {
-
-		// don't include headers client-side (browser has them already)
-		if (!SERVER_SIDE || !defaultHeaders) {
-			defaultHeaders = {};
-		}
-
-		if (SERVER_SIDE && defaultHeaders) {
-			// stored in RequestLocalStorage
-			TritonAgent.plugRequest(function (dataRequest) {
-				dataRequest.set(defaultHeaders);
-			});
-		}
+	constructor (routes, extraOpts) {
 		
 		var apiServerPrefix = SERVER_SIDE
 				? config().internal.apiServerPrefix
@@ -90,7 +78,6 @@ class RequestContext {
 class RequestContextBuilder {
 
 	constructor () {
-		this.defaultHeaders = {};
 	}
 
 	setRoutes(routes) {
@@ -99,23 +86,12 @@ class RequestContextBuilder {
 	}
 
 	setDefaultXhrHeadersFromRequest (req) {
-		var defaultHeaders = {};
-		if (req) {
-			// Only want to set this if it's present.  Newer
-			// versions of node (rightly) dislike empty header
-			// values.
-			if (req.get('cookie')){
-				defaultHeaders['Cookie'] = req.get('cookie');
-			}
-			defaultHeaders['Referer'] = REFERRER_DOMAIN;
-		}
-		this.defaultHeaders = defaultHeaders;
 		return this;
 	}
 
 	create (extraOpts) {
 
-		return new RequestContext(this.routes, this.defaultHeaders, extraOpts);
+		return new RequestContext(this.routes, extraOpts);
 	}
 
 }
