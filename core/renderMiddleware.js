@@ -113,6 +113,7 @@ function beginRender(req, res, start, context, page) {
 		writeBody,
 		writeData,
 		setupLateArrivals,
+		logRequestStats,
 	].reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
@@ -440,14 +441,11 @@ function writeData(req, res, context, start) {
 }
 
 function setupLateArrivals(req, res, context, start, page) {
-	var allRequests = TritonAgent.cache().getAllRequests();
 	var notLoaded = TritonAgent.cache().getPendingRequests();
-	var routeName = context.navigator.getCurrentRoute().name;
-
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.whenDataReadyInternal().then( data => {
-			logger.time(`late_arrival.${routeName}`, new Date - start);
+			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
 				text: `__lateArrival(${
 					JSON.stringify(pendingRequest.url)
@@ -463,14 +461,22 @@ function setupLateArrivals(req, res, context, start, page) {
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
 	Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
-		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
-		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
-		logger.gauge(`bytesRead.${routeName}`,req.socket.bytesRead, {hi: 1<<12});
-		logger.gauge(`bytesWritten.${routeName}`,req.socket.bytesWritten, {hi: 1<<18});
-		logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
-		logger.time(`allDone.${routeName}`, new Date - start);
 		page.handleComplete();
 	});
+}
+
+function logRequestStats(req, res, context, start){
+	var allRequests = TritonAgent.cache().getAllRequests()
+	,   notLoaded   = TritonAgent.cache().getPendingRequests()
+
+	logger.gauge("countTotalRequests", allRequests.length);
+	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
+	logger.gauge("bytesRead", req.socket.bytesRead, {hi: 1<<12});
+	logger.gauge("bytesWritten", req.socket.bytesWritten, {hi: 1<<18});
+	logger.gauge("concurentRequests", ACTIVE_REQUESTS--);
+	logger.time("totalRequestTime", new Date - start);
+
+	return Q();
 }
 
 function getNonInternalConfigs() {
