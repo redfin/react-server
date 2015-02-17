@@ -91,7 +91,7 @@ class Navigator extends EventEmitter {
 			this.finishRoute();
 			this.emit('navigateDone', null, page, request.getUrl(), type);
 		}).catch(err => {
-			console.error("Error while handling route.", err.stack);
+			logger.error("Error while handling route.", err.stack);
 		});
 
 	}
