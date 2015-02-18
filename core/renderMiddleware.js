@@ -77,8 +77,7 @@ module.exports = function(server, routes) {
 				} else {
 					next(err);
 				}
-				logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
-				if (page) setTimeout(page.handleComplete, 0);
+				handleResponseComplete(page);
 				return;
 			}
 
@@ -91,6 +90,10 @@ module.exports = function(server, routes) {
 	})});
 }
 
+function handleResponseComplete(page) {
+	logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
+	if (page) setTimeout(page.handleComplete, 0);
+}
 
 function beginRender(req, res, start, context, page) {
 
@@ -117,7 +120,14 @@ function beginRender(req, res, start, context, page) {
 	].reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
-	).catch(err => logger.error("Error in beginRender chain", err.stack));
+	).catch(err => {
+		logger.error("Error in beginRender chain", err.stack)
+
+		// Bummer.
+		res.status(500).end();
+
+		handleResponseComplete(page);
+	});
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
@@ -468,9 +478,8 @@ function setupLateArrivals(req, res, context, start, page) {
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
 		logger.gauge(`bytesRead.${routeName}`,req.socket.bytesRead, {hi: 1<<12});
 		logger.gauge(`bytesWritten.${routeName}`,req.socket.bytesWritten, {hi: 1<<18});
-		logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
 		logger.time(`allDone.${routeName}`, new Date - start);
-		page.handleComplete();
+		handleResponseComplete(page);
 	});
 }
 
