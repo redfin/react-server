@@ -91,8 +91,26 @@ module.exports = function(server, routes) {
 }
 
 function handleResponseComplete(page) {
+
+	// All intentional response completion should funnel through this
+	// function.  If this gauge starts climbing gradually that's an
+	// indication that we have some _unintentional_ response completion
+	// going on that we should deal with.
 	logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
-	if (page) setTimeout(page.handleComplete, 0);
+
+	// If this was an error response other server middleware might change
+	// the response code or send more data (e.g. a nice 404 page), so
+	// we'll defer our call to `handleComplete()` until that's done.
+	//
+	// If error handling middleware is not synchronous we should use
+	// something like `on-finished` to hook into the real response end.
+	//
+	// Note that if the navigator couldn't even map the request to a page,
+	// we won't be able to log our request here.
+	//
+	if (page) {
+		setTimeout(page.handleComplete, 0);
+	}
 }
 
 function renderPage(req, res, start, context, page) {
