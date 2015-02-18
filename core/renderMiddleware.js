@@ -81,7 +81,7 @@ module.exports = function(server, routes) {
 				return;
 			}
 
-			beginRender(req, res, start, context, page);
+			renderPage(req, res, start, context, page);
 
 		});
 
@@ -95,7 +95,7 @@ function handleResponseComplete(page) {
 	if (page) setTimeout(page.handleComplete, 0);
 }
 
-function beginRender(req, res, start, context, page) {
+function renderPage(req, res, start, context, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -121,7 +121,7 @@ function beginRender(req, res, start, context, page) {
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
 	).catch(err => {
-		logger.error("Error in beginRender chain", err.stack)
+		logger.error("Error in renderPage chain", err.stack)
 
 		// Bummer.
 		res.status(500).end();
