@@ -13,14 +13,6 @@ var REFERRER_DOMAIN = "http://node.redfintest.com";
 class RequestContext {
 
 	constructor (routes, extraOpts) {
-		
-		var apiServerPrefix = SERVER_SIDE
-				? config().internal.apiServerPrefix
-				: config().apiServerPrefix;
-		logger.debug(`Using API server prefix: ${apiServerPrefix}`);
-		TritonAgent.plugRequest(function (dataRequest) {
-			dataRequest.setUrlPrefix(apiServerPrefix);
-		});
 
 		this.navigator = new Navigator(this, routes);
 
