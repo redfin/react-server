@@ -101,7 +101,12 @@ class RequestContextBuilder {
 	setDefaultXhrHeadersFromRequest (req) {
 		var defaultHeaders = {};
 		if (req) {
-			defaultHeaders['Cookie'] = req.get('cookie');
+			// Only want to set this if it's present.  Newer
+			// versions of node (rightly) dislike empty header
+			// values.
+			if (req.get('cookie')){
+				defaultHeaders['Cookie'] = req.get('cookie');
+			}
 			defaultHeaders['Referer'] = REFERRER_DOMAIN;
 		}
 		this.defaultHeaders = defaultHeaders;
