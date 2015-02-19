@@ -48,9 +48,9 @@
 									if (getenv("IS_BAMBOO")) {
 										project.setProperty("npm.registry", "http://localhost:7732");
 									} else if (getenv("JENKINS_URL")) {
-										project.setProperty("npm.registry", "http://builder.redfintest.com:7732");
+										project.setProperty("npm.registry", "http://qa-compile-3.redfintest.com:7732");
 									} else {
-										project.setProperty("npm.registry", "http://builder.redfintest.com:7732");
+										project.setProperty("npm.registry", "http://qa-compile-3.redfintest.com:7732");
 									}
 								</script>
 								<echo>Using npm registry: ${npm.registry}</echo>
