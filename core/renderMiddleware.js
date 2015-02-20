@@ -459,7 +459,7 @@ function setupLateArrivals(req, res, context, start, page) {
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
-	Q.allSettled(promises).then(function () {
+	return Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
 		page.handleComplete();
 	});
