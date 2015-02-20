@@ -10,6 +10,7 @@ class TritonData {
 				this._childListeners = {};
 				this._childStores = {};
 				this._whenDeferreds = {};
+				this._pendingValues = {};
 
 				this.__tritonIsStore = true;
 
@@ -38,6 +39,20 @@ class TritonData {
 					})
 					return result;
 				});
+			}
+
+			whenResolved() {
+				var pendingValuesPromises = Object.keys(this._pendingValues).map((key) => this._pendingValues[key]);
+				// base case; we're not waiting for any values.
+				if (pendingValuesPromises.length === 0) {
+					return Q(this.state);
+				} else {
+					// recursive case: wait for all the currently pending values, then call
+					// whenResolved again in case more pending values have been added.
+					return Q.all(pendingValuesPromises).then(() => {
+						return this.whenResolved();
+					});
+				}
 			}
 
 			setState(newState) {
@@ -71,8 +86,10 @@ class TritonData {
 					} else if (newValue.then) {
 						// the value is a Promise (or a thenable, at the very least), which means that 
 						// we don't update state immediately, but only when the promise resolves.
+						this._pendingValues[key] = newValue;
 						newValue.then((value) => {
 							this._setSingleNameValue(key, value);
+							delete this._pendingValues[key];
 							this.emit("change");
 						});
 					} else {
@@ -90,7 +107,10 @@ class TritonData {
 			_setSingleNameValue(name, value) {
 				this.state[name] = value;
 				// if a when was waiting for this name, notify it.
-				if (this._whenDeferreds[name]) this._whenDeferreds[name].resolve();
+				if (this._whenDeferreds[name]) {
+					this._whenDeferreds[name].resolve();
+					delete this._whenDeferreds[name];
+				}
 			}
 		}
 
