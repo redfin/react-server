@@ -1,0 +1,578 @@
+var superagent = require('superagent'),
+	RLS = require('./RequestLocalStorage').getNamespace(),
+	logger = require('../logging').getLogger(__LOGGER__),
+	config = require("../config"),
+	Q = require('q');
+
+/**
+ * Implements a subset of superagent's API. Packages up arguments
+ * to pass to superagent under the hood.
+ */
+function Request(method, urlPath) {
+	this.method = method;
+	this.urlPath = urlPath;
+	this._queryParams = {};
+	this._postParams = {};
+	this._headers = {};
+	this._timeout = null;
+	this._type = null;
+}
+
+// we implement a subset of superagent's API. for the other methods,
+// for now, we'll just throw an exception if they're called. By default,
+// all methods throw exceptions, and we override some below
+Object.keys(superagent.Request.prototype)
+	.forEach( propName => {
+		var originalProp = superagent.Request.prototype[propName];
+		if (typeof originalProp === 'function') {
+			Request.prototype[propName] = function () {
+				throw new Error(`${propName}() from superagent's API isn't implemented yet.`);
+			}
+		}
+	});
+
+Request.prototype.query = function (queryParams) {
+	mixin(this._queryParams, queryParams);
+	return this;
+}
+
+Request.prototype.send = function (postParams) {
+	mixin(this._postParams, postParams);
+	return this;
+}
+
+Request.prototype.set = function (headers) {
+	mixin(this._headers, headers);
+	return this;
+}
+
+function mixin (to, from) {
+	Object.keys(from).forEach( headerName => to[headerName] = from[headerName] );
+}
+
+Request.prototype.timeout = function (timeout) {
+	this._timeout = timeout;
+	return this;
+}
+
+Request.prototype.type = function (type) {
+	this._type = type;
+	return this;
+}
+
+/**
+ * Wrap superagent's end() method to create an entry in a request-local
+ * data cache that will be serialized to the client and replayed in the
+ * browser.
+ */
+Request.prototype.end = function (fn) {
+	var superagentRequestEnd = superagent.Request.prototype.end;
+
+	// TODO: support both (err, res) and (res) function signatures
+	if (fn.length !== 2) {
+		throw `Callback passed to end() must be the two-arg version: (err, res)`;
+	}
+
+	// only do caching for responses for GET requests for now
+	if (this.method !== 'GET') {
+		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
+	}
+
+	var urlPath = this.urlPath;
+
+	// get cache entry for url if exists; if server-side, create one if it doesn't already exist.
+	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
+	// with host (which can vary between client and server) is not usable. The URL path (without the
+	// host) works fine though.
+	var entry = makeRequest.cache().entry(urlPath, SERVER_SIDE /* createIfMissing */);
+	if (!SERVER_SIDE && !entry) {
+		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
+		// be fine?
+		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
+	}
+
+	// no previous requesters? fire the request
+	if (entry.requesters === 0) {
+		// update URL if we're actually making the call
+		superagentRequestEnd.call(this._buildSuperagentRequest(), function (err, res) {
+			if (err) {
+				entry.setError(err);
+				return;
+			}
+			entry.setResponse(res);
+		});
+	}
+
+	entry.whenDataReady().nodeify(fn);
+
+	return this;
+}
+
+Request.prototype._buildSuperagentRequest = function () {
+	var req = superagent(this.method, this._buildUrl());
+
+	if (this._type) {
+		req.type(this._type);
+	}
+
+	req.set(this._headers)
+		.query(this._queryParams)
+		.send(this._postParams)
+
+	if (this._timeout) {
+		req.timeout(this._timeout);
+	}
+
+	return req;
+}
+
+Request.prototype._buildUrl = function () {
+	// only modify relative paths
+	if (this._urlPrefix && this.urlPath.charAt(0) === '/') {
+		return this._urlPrefix + this.urlPath;
+	}
+	return this.urlPath;
+}
+
+/**
+ * Convenience method to treat the request as then-able (promise-like).
+ * This is shorthand for the simple case. If you want access to the full
+ * power of the underlying promise library, use `Request.asPromise()`
+ */
+Request.prototype.then = function (/*arguments*/) {
+	var dfd = this.asPromise();
+	return dfd.then.apply(dfd, arguments);
+};
+
+/**
+ * Convenience method wrapping `.end()` and returning a promise
+ * that is resolved if the request is successful, and rejected if
+ * the request results in an error.
+ */
+Request.prototype.asPromise = function () {
+	var dfd = Q.defer();
+	this.end(dfd.makeNodeResolver());
+	return dfd.promise;
+}
+
+/**
+ * Overriding superagent use() function to give a more descriptive
+ * error message than just not including it altogether.
+ */
+Request.prototype.use = function () {
+	throw `use() function is superseded by plugRequest(...)`;
+}
+
+/**
+ * Set the prefix used for relative URLs
+ */
+Request.prototype.setUrlPrefix = function (urlPrefix) {
+	this._urlPrefix = urlPrefix;
+	return this;
+}
+
+
+// wrapper for superagent
+function makeRequest (method, url) {
+	var req = new Request(method, url);
+
+	// run any registered plugins
+	var plugins = makeRequest.requestPlugins();
+	plugins.forEach(function (pluginFunc) {
+		pluginFunc.apply(null, [req]);
+	})
+
+	return req;
+}
+module.exports = makeRequest;
+
+
+makeRequest.get = function (url, data, fn) {
+	var req = makeRequest('GET', url);
+	if ('function' == typeof data) fn = data, data = null;
+	if (data) req.query(data);
+	if (fn) req.end(fn);
+	return req;
+}
+
+makeRequest.head = function (url, data, fn){
+	var req = makeRequest('HEAD', url);
+	if ('function' == typeof data) fn = data, data = null;
+	if (data) req.send(data);
+	if (fn) req.end(fn);
+	return req;
+};
+
+makeRequest.del = function (url, fn){
+	var req = makeRequest('DELETE', url);
+	if (fn) req.end(fn);
+	return req;
+};
+
+makeRequest.patch = function (url, data, fn){
+	var req = makeRequest('PATCH', url);
+	if ('function' == typeof data) fn = data, data = null;
+	if (data) req.send(data);
+	if (fn) req.end(fn);
+	return req;
+};
+
+makeRequest.post = function (url, data, fn){
+	var req = makeRequest('POST', url);
+	if ('function' == typeof data) fn = data, data = null;
+	if (data) req.send(data);
+	if (fn) req.end(fn);
+	return req;
+};
+
+makeRequest.put = function (url, data, fn){
+	var req = makeRequest('PUT', url);
+	if ('function' == typeof data) fn = data, data = null;
+	if (data) req.send(data);
+	if (fn) req.end(fn);
+	return req;
+};
+
+/**
+ * Exposes the TritonAgent request data cache from RequestLocalStorage.
+ */
+makeRequest.cache = function () {
+
+	var cache = RLS().cache;
+	if (!cache) {
+		cache = RLS().cache = new RequestDataCache();
+	}
+	return cache;
+}
+
+makeRequest.requestPlugins = function () {
+	var plugins = RLS().requestPlugins;
+	if (!plugins) {
+		plugins = RLS().requestPlugins = [];
+	}
+	return plugins;
+}
+
+/**
+ * Adds a plugin function that can be used to modify the Request
+ * object post-instantiation, but before the request is actually
+ * triggered.
+ *
+ * The callback function will take the Request instanceo as a parameter:
+ * ```
+ * var defaultHeaders = { ... };
+ * TritonAgent.plugRequest(function (request) {
+ *     // e.g.
+ *     request.set(defaultHeaders)
+ * })
+ * ```
+ */
+makeRequest.plugRequest = function (pluginFunc) {
+	var rlsPlugins = makeRequest.requestPlugins();
+	rlsPlugins.push(pluginFunc);
+}
+
+
+/**
+ * An entry in the RequestDataCache
+ */
+class CacheEntry {
+
+	constructor (cache, url) {
+		this.cache = cache;
+		this.url = url;
+		this.requesters = 0;
+		this.dfd = Q.defer();
+		this.loaded = false;
+		this.res = undefined;
+		this.err = undefined;
+	}
+
+	dehydrate () {
+		return {
+			url: this.url,
+			requesters: this.requesters,
+			loaded: this.loaded,
+			res: this.res,
+			err: this.err // TODO: does this do something reasonable for Error objects?
+		};
+	}
+
+	rehydrate (state) {
+		this.url = state.url;
+		this.requesters = state.requesters;
+		this.loaded = state.loaded;
+		this.res = state.res;
+		this.err = state.err;
+		
+		// TODO FIXME: these won't work if the response from the server was an error
+
+		if (this.loaded) {
+			// call setResponse to resolve the deferred
+			if (this.res) {
+				this.setResponse(this.res);
+			} else if (this.err) {
+				this.setError(this.err);
+			}
+			logger.debug(`Rehydrating resolved url to cache: ${this.url}`);
+		} else {
+			logger.debug(`Rehydrating pending url to cache without data: ${this.url}`);
+		}
+	}
+
+	setResponse (res) {
+		// TODO: store superagent response? or body? or payload?
+
+		if (SERVER_SIDE){
+
+			// Pull out the pieces of the response we care about.
+			// This would be a NOOP client-side, so we'll skip it.
+			res = this._trimResponseData(res);
+		}
+
+		// Stash away a reference to the response.
+		this.res    = res;
+		this.loaded = true;
+
+		if (SERVER_SIDE){
+
+			// Deep copy.
+			//
+			// Leave ourselves with a clean copy of the original
+			// response regardless of what mutation might happen
+			// once stores get ahold of it.
+			//
+			// This is important to ensure that we provide the same
+			// data from the cache when we wake up in the browser
+			// as we initially provide on the server.
+			//
+			res = JSON.parse(JSON.stringify(res));
+		}
+
+		this.dfd.resolve(res);
+	}
+
+	setError (err) {
+		this.err = err;
+		this.loaded = true;
+		this.dfd.reject(this.err);
+	}
+
+	whenDataReady () {
+		if (SERVER_SIDE) {
+			// server-side, we increment the number of requesters
+			// we expect to retrieve the data on the frontend
+			this.requesters += 1;
+			return this.dfd.promise;
+		} else {
+			// client-side, whenever someone retrieves data from the cache,
+			// we decrement the number of retrievals expected, and when we
+			// hit zero, remove the cache entry. 
+			return this._requesterDecrementingPromise(this.dfd.promise);
+		}
+	}
+
+	// for internal (triton middleware) calls
+	whenDataReadyInternal () {
+		return this.dfd.promise;
+	}
+
+	decrementRequesters () {
+		logger.debug("Decrementing: " + this.url);
+		this.requesters -= 1;
+			
+		if (this.requesters === 0) {
+			delete this.cache.dataCache[this.url];
+		}
+
+		this.cache.checkCacheDepleted();
+	}
+
+	/**
+	 * Chain a promise with another promise that decrements
+	 * the number of expected requesters.
+	 */
+	_requesterDecrementingPromise (promise) {
+		// regardless of whether we're resolved with a 'res' or 'err',
+		// we want to decrement requests. the appropriate 'success' or 'error'
+		// callback will be executed on whatever is chained after this method
+		return promise.fin( resOrErr => {
+			this.decrementRequesters();		
+			return resOrErr;
+		});
+	}
+
+	// Pull out the properties of the superagent response that we care
+	// about and produce an object that's suitable for writing as JSON.
+	_trimResponseData (res) {
+		var result = {};
+		[
+			"body",
+			"text",
+			/*'files'*/ // TODO
+			"header",
+			"status",
+			"statusType",
+			"info",
+			"ok",
+			"clientError",
+			"serverError",
+			"error",
+
+			"accepted",
+			"noContent",
+			"badRequest",
+			"unauthorized",
+			"notAcceptable",
+			"notFound",
+			"forbidden"
+		].forEach( prop => {
+			result[prop] = res[prop];
+		});
+
+		return result;
+	}
+
+}
+
+
+/**
+ * Cache of responses to API requests made server-side that will be
+ * serialized as part of the initial page request and replayed in the
+ * browser.
+ */
+class RequestDataCache {
+
+	constructor () {
+		this.dataCache = {};
+	}
+
+	dehydrate () {
+
+		var out = {};
+		
+		out.dataCache = {};
+
+		var dataCache = this.dataCache;
+		Object.keys(dataCache).forEach(function (url) {
+			var result = dataCache[url];
+			out.dataCache[url] = result.dehydrate();
+		});
+
+		return out;
+	}
+
+	rehydrate (state) {
+
+		logger.debug("Rehydrating RequestDataCache");
+
+		// clear state
+		var dataCache = this.dataCache = {};
+
+		Object.keys(state.dataCache).forEach( (url) => {
+			var cacheEntry = dataCache[url] = new CacheEntry(this, url);
+			cacheEntry.rehydrate(state.dataCache[url]);
+		});
+
+	}
+
+	/**
+	 * Get (optionally creating if necessary) the entry for the given
+	 * URL from the cache.
+	 *
+	 * @param createIfMissing boolean default false
+	 */
+	entry (url, createIfMissing) {
+		if (typeof createIfMissing === 'undefined') {
+			createIfMissing = false;
+		}
+		logger.debug(`Getting cache entry for ${url}`)
+
+		var cacheEntry = this.dataCache[url];
+		if (!cacheEntry && createIfMissing) {
+			cacheEntry = this.dataCache[url] = new CacheEntry(this, url);
+		}
+
+		return cacheEntry;
+	}
+
+	/**
+	 * Synchronously check if data is loaded already.
+	 * Returns an object with a getData() function, to
+	 * make it possible to check for the existence of a URL
+	 * in the cache, but not actually retrieve if (if desired).
+	 * Calling getData() will retrieve the data from the cache
+	 * and decrement the number of requesters
+	 */
+	checkLoaded (url) {
+		var cached = this.dataCache[url];
+
+		if (cached && cached.res) {
+			return {
+				getData: () => {
+					// sort of a synchronous promise thing
+					cached.decrementRequesters();
+					return cached.res;
+				}
+			};
+		}
+		return null;
+	}
+
+	getPendingRequests () {
+		return this.getAllRequests().filter(req => !req.entry.loaded);
+	}
+
+	getAllRequests() {
+		return Object.keys(this.dataCache)
+			.map(
+				url => (
+					{
+						url   : url,
+						entry : this.dataCache[url],
+					}
+				)
+			);
+	}
+
+	whenAllPendingResolve () {
+		var promises = this.getAllRequests().map(req => req.entry.promise);
+		return Q.allSettled(promises);
+	}
+
+	/** 
+	 * Fires when the cache has been completely depleted, which is used as a signal to render when there was a timeout on the server.
+	 */
+	whenCacheDepleted () {
+		this.whenCacheDepletedDfd = this.whenCacheDepletedDfd || Q.defer();
+
+		this.checkCacheDepleted();
+
+		return this.whenCacheDepletedDfd.promise;
+	}
+
+	checkCacheDepleted() {
+		logger.debug("_checkCacheDepleted");
+		if (this.whenCacheDepletedDfd) {
+			var totalRequestersPending = 0;
+			Object.keys(this.dataCache).forEach((name) => {
+				if (this.dataCache[name].loaded) {
+					totalRequestersPending += this.dataCache[name].requesters;
+				}
+			});
+			logger.debug(`Checking for depleted cache, with ${totalRequestersPending} requesters left`);
+			if (totalRequestersPending === 0) this.whenCacheDepletedDfd.resolve();
+		}
+	}
+
+	lateArrival (url, res) {
+		logger.debug(`Late arrival for ${url}`);
+		var dataCache = this.dataCache;
+		if (dataCache[url]) {
+			dataCache[url].setResponse(res);
+		} else {
+			logger.debug("WTF?");
+		}
+	}
+
+}

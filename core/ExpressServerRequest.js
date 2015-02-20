@@ -16,6 +16,10 @@ class ExpressServerRequest {
 		return this._wrappedRequest.url;
 	}
 
+	getQuery() {
+		return this._wrappedRequest.query;
+	}
+
 	getRouteParams() {
 		return this._route.params;
 	}

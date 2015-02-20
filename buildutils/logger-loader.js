@@ -36,9 +36,12 @@ var loggerSpec = function(fullMatch, optString){
 }
 
 var getName = function(fn, opts){
+	var slashPattern = isWindows
+		?/\\/g
+		:/\//g
 	var name = fn.substring(BASE_PATH.length, fn.length)
 		.replace(/\.jsx?$/, '')
-		.replace(/\//g,'.')
+		.replace(slashPattern,'.')
 	if (opts.label)
 		name += '.'+opts.label
 	return name;

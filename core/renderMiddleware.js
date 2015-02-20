@@ -3,12 +3,17 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react/addons'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
+	RLS = RequestLocalStorage.getNamespace(),
+	LABString = require('./util/LABString'),
 	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
+	expressState = require('express-state'),
+	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
-	PromiseUtil = require("./util/PromiseUtil");
+	PromiseUtil = require("./util/PromiseUtil"),
+	TritonAgent = require('./util/TritonAgent');
 
 
 // TODO FIXME ?? 
@@ -17,14 +22,28 @@ var logger = require('./logging').getLogger(__LOGGER__),
 
 var DATA_LOAD_WAIT = 250;
 
+// We'll use this for keeping track of request concurrency per worker.
+var ACTIVE_REQUESTS = 0;
+
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(routes) {
+module.exports = function(server, routes) {
 
-	return function (req, res, next) { RequestLocalStorage.startRequest(() => {
+	expressState.extend(server);
+
+	// parse cookies into req.cookies property
+	server.use(cookieParser());
+
+	// sets the namespace that data will be exposed into client-side
+	// TODO: express-state doesn't do much for us until we're using a templating library
+	server.set('state namespace', '__tritonState');
+
+	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
+		ACTIVE_REQUESTS++;
 
 		var start = new Date();
+		var startHR = process.hrtime();
 
 		logger.debug(`Incoming request for ${req.path}`);
 
@@ -34,7 +53,6 @@ module.exports = function(routes) {
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
 				.setRoutes(routes)
-				.setLoaderOpts({}) // TODO FIXME
 				.setDefaultXhrHeadersFromRequest(req)
 				.create({
 					// TODO: context opts?
@@ -44,11 +62,14 @@ module.exports = function(routes) {
 		// Can be overridden by the page or middleware.
 		context.setDataLoadWait(DATA_LOAD_WAIT)
 
+		// Need this stuff in corvair for logging.
+		context.setServerStash({ req, res, start, startHR });
+
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
 			if (err) {
-				logger.error("onNavigate error", err);
+				logger.log("onNavigate received a non-2xx HTTP code", err);
 				if (err.status && err.status === 404) {
 					next();
 				} else if (err.status === 301 || err.status === 302) {
@@ -56,22 +77,21 @@ module.exports = function(routes) {
 				} else {
 					next(err);
 				}
+				logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
 				return;
 			}
 
-			logger.debug('Executing navigate action');
-			
 			beginRender(req, res, start, context, page);
 
 		});
 
 		context.navigate(new ExpressServerRequest(req));
 
-	})}
+	})});
 }
 
+
 function beginRender(req, res, start, context, page) {
-	logger.debug(`Starting server render of ${req.path}`);
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -103,7 +123,6 @@ function beginRender(req, res, start, context, page) {
 }
 
 function writeHeader(req, res, context, start, pageObject) {
-	logger.debug('Starting document header');
 	res.type('html');
 
 	res.write("<!DOCTYPE html><html><head>");
@@ -111,8 +130,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	return Q.all([
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
-		renderScripts(pageObject.getScripts(), res),
-		renderScripts(pageObject.getSystemScripts(), res),
+		renderScripts(pageObject, res),
 		renderMetaTags(pageObject, res),
 		renderBaseTag(pageObject, res)
 	]).then(() => {
@@ -124,7 +142,6 @@ function writeHeader(req, res, context, start, pageObject) {
 
 function renderTitle (pageObject, res) {
 	return pageObject.getTitle().then((title) => {
-		logger.debug("Rendering title");
 		res.write(`<title>${title}</title>`);
 	});
 }
@@ -171,11 +188,18 @@ function renderBaseTag(pageObject, res) {
 	});
 }
 
-function renderScripts(scripts, res) {
+function renderScriptsSync(scripts, res) {
+
+	// We should only need to render scripts synchronously if we have a
+	// non-JS script somewhere in the mix.
+	logger.warn("Loading scripts synchronously.  Check `type` attributes.");
+
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
 	// immediately.
 	scripts.forEach( (script) => {
 		// make sure there's a leading '/'
+		if (!script.type) script.type = "text/javascript";
+
 		if (script.href) {
 			res.write(`<script src="${script.href}" type="${script.type}"></script>`);
 		} else if (script.text) {
@@ -184,6 +208,117 @@ function renderScripts(scripts, res) {
 			throw new Error("Script cannot be rendered because it has neither an href nor a text attribute: " + script);
 		}
 	});
+}
+
+function renderScriptsAsync(scripts, res) {
+
+	// Nothing to do if there are no scripts.
+	if (!scripts.length) return;
+
+	// Don't need "type" in <script> tags anymore.
+	//
+	// http://www.w3.org/TR/html/scripting-1.html#the-script-element
+	//
+	// > The default, which is used if the attribute is absent, is "text/javascript".
+	//
+	res.write("<script>");
+
+	// Lazily load LAB the first time we spit out async scripts.
+	if (!RLS().didLoadLAB){
+
+		// This is the full implementation of LABjs.
+		res.write(LABString);
+
+		// We always want scripts to be executed in order.
+		res.write("$LAB.setOptions({AlwaysPreserveOrder:true});");
+
+		// We'll use this to store state between calls (see below).
+		res.write("window._tLAB=$LAB")
+
+		// Only need to do this part once.
+		RLS().didLoadLAB = true;
+	} else {
+
+		// The assignment to `_tLAB` here is so we maintain a single
+		// LAB chain through all of our calls to `renderScriptsAsync`.
+		//
+		// Each call to this function emits output that looks
+		// something like:
+		//
+		//   _tLAB=_tLAB.script(...).wait(...) ...
+		//
+		// The result is that `window._tLAB` winds up holding the
+		// final state of the LAB chain after each call, so that same
+		// LAB chain can be appended to in the _next_ call (if there
+		// is one).
+		//
+		// You can think of a LAB chain as being similar to a promise
+		// chain.  The output of `$LAB.script()` or `$LAB.wait()` is
+		// an object that itself has `script()` and `wait()` methods.
+		// So long as the output of each call is used as the input for
+		// the next call our code (both async loaded scripts and
+		// inline JS) will be executed _in order_.
+		//
+		// If we start a _new_ chain directly from `$LAB` (the root
+		// chain), we can wind up with _out of order_ execution.
+		//
+		// We want everything to be executed in order, so we maintain
+		// one master chain for the page.  This chain is
+		// `window._tLAB`.
+		//
+		res.write("_tLAB=_tLAB");
+	}
+
+	scripts.forEach(script => {
+
+		if (script.href) {
+
+			res.write(`.script("${script.href}")`);
+
+		} else if (script.text) {
+
+			// The try/catch dance here is so exceptions get their
+			// own time slice and can't mess with execution of the
+			// LAB chain.
+			//
+			// The binding to `this` is so enclosed references to
+			// `this` correctly get the `window` object (despite
+			// being in a strict context).
+			//
+			res.write(`.wait(function(){"use strict";try{${
+				script.text
+			}}catch(e){setTimeout(function(){throw(e)},1)}}.bind(this))`);
+
+		} else {
+
+			throw new Error("Script needs either `href` or `text`: " + script);
+		}
+	});
+
+	res.write(";</script>");
+}
+
+function renderScripts(pageObject, res) {
+
+	// Want to gather these into one list of scripts, because we care if
+	// there are any non-JS scripts in the whole bunch.
+	var scripts = pageObject.getSystemScripts().concat(pageObject.getScripts());
+
+	var thereIsAtLeastOneNonJSScript = scripts.filter(
+		script => script.type && script.type != "text/javascript"
+	).length;
+
+	if (thereIsAtLeastOneNonJSScript){
+
+		// If there are non-JS scripts we can't use LAB for async
+		// loading.  We still want to preserve script execution order,
+		// so we'll cut over to all-synchronous loading.
+		renderScriptsSync(scripts, res);
+	} else {
+
+		// Otherwise, we can do async script loading.
+		renderScriptsAsync(scripts, res);
+	}
 
 	// resolve immediately.
 	return Q("");
@@ -220,7 +355,6 @@ function startBody(req, res, context, start, page) {
 	var routeName = context.navigator.getCurrentRoute().name
 
 	return page.getBodyClasses().then((classes) => {
-		logger.debug("Starting body");
 		classes.push(`route-${routeName}`)
 		res.write(`<body class='${classes.join(' ')}'><div id='content'>`);
 	})
@@ -232,7 +366,6 @@ function startBody(req, res, context, start, page) {
  */
 function writeBody(req, res, context, start, page) {
 
-	logger.debug("React Rendering");
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
@@ -278,11 +411,10 @@ function writeBody(req, res, context, start, page) {
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise).then(()=> logger.debug("Finished rendering body."));
+	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
 }
 
 function renderElement(res, element, context, index) {
-	logger.debug(`Rendering root element #${index}`);
 	res.write(`<div data-triton-root-id=${index}>`);
 	if (element !== null) {
 		element = React.addons.cloneWithProps(element, { context: context });
@@ -292,36 +424,38 @@ function renderElement(res, element, context, index) {
 }
 
 function writeData(req, res, context, start) {
-	logger.debug('Exposing context state');
 	res.expose(context.dehydrate(), 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
 
 
 	res.write("</div>"); // <div id="content">
 
-	var pageFooter = ""
-		+ "<script> " + res.locals.state + "; window.rfBootstrap();</script>";
-
-	res.write(pageFooter);
-
-
-	var routeName = context.navigator.getCurrentRoute().name;
-
-	logger.time(`content_written.${routeName}`, new Date - start);
+	// Using naked `rfBootstrap()` instead of `window.rfBootstrap()`
+	// because the browser's error message if it isn't defined is more
+	// helpful this way.  With `window.rfBootstrap()` the error is just
+	// "undefined is not a function".
+	renderScriptsAsync([{
+		text: `${res.locals.state};rfBootstrap();`
+	}], res);
 }
 
-function setupLateArrivals(req, res, context, start) {
-	var loader = context.loader;
-	var allRequests = loader.getAllRequests();
-	var notLoaded = loader.getPendingRequests();
+function setupLateArrivals(req, res, context, start, page) {
+	var allRequests = TritonAgent.cache().getAllRequests();
+	var notLoaded = TritonAgent.cache().getPendingRequests();
 	var routeName = context.navigator.getCurrentRoute().name;
 
 
 	notLoaded.forEach( pendingRequest => {
-		pendingRequest.entry.dfd.promise.then( data => {
-			logger.debug("Late arrival: " + pendingRequest.url)
+		pendingRequest.entry.whenDataReadyInternal().then( data => {
 			logger.time(`late_arrival.${routeName}`, new Date - start);
-			res.write("<script>__lateArrival(\"" + pendingRequest.url + "\", " + JSON.stringify(data) + ");</script>");
+			renderScriptsAsync([{
+				text: `__lateArrival(${
+					JSON.stringify(pendingRequest.url)
+				}, ${
+					JSON.stringify(data)
+				});`
+			}], res);
+
 		})
 	});
 
@@ -331,7 +465,11 @@ function setupLateArrivals(req, res, context, start) {
 		res.end("</body></html>");
 		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
 		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
-		logger.time(`all_done.${routeName}`, new Date - start);
+		logger.gauge(`bytesRead.${routeName}`,req.socket.bytesRead, {hi: 1<<12});
+		logger.gauge(`bytesWritten.${routeName}`,req.socket.bytesWritten, {hi: 1<<18});
+		logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
+		logger.time(`allDone.${routeName}`, new Date - start);
+		page.handleComplete();
 	});
 }
 
