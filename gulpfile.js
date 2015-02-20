@@ -6,7 +6,8 @@ var gulp = require("gulp"),
 	filter = require("gulp-filter"),
 	jasmine = require("gulp-jasmine"),
 	common = require("./buildutils/gulp-common"),
-	logging = require("./buildutils/logger-loader");
+	logging = require("./buildutils/logger-loader"),
+	istanbul = require('gulp-istanbul');
 
 var src = ["core/**/*", "core/**/*"];
 
@@ -40,6 +41,22 @@ gulp.task("build", ["compile"]);
 
 gulp.task('watch', function () {
    gulp.watch(src, ["build"]);
+});
+
+gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
+	gulp.src(['target/server/**/*.js', "!target/server/spec/**/*.js", "!target/server/test-temp/**/*.js"])
+		.pipe(istanbul({includeUntested:true})) // Covering files
+		.pipe(gulp.dest("target/server-covered")) // copy covered files to a parallel directory
+		.on('finish', function () {
+			gulp.src("target/server/spec/**/*.js")
+				.pipe(gulp.dest("target/server-covered/spec"))
+				.on("finish", function() {
+					gulp.src(['target/server-covered/spec/**/*[Ss]pec.js'])
+						.pipe(jasmine())
+						.pipe(istanbul.writeReports()) // Creating the reports after tests runned
+						.on('end', cb);
+    			});
+    	});
 });
 
 gulp.task("test", ["compileServer", "compileClient"], function() {

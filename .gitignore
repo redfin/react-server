@@ -3,3 +3,4 @@ target
 target-node
 target-entrypoints
 build
+coverage
