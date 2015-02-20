@@ -494,7 +494,7 @@ function logRequestStats(req, res, context, start){
 	var allRequests = TritonAgent.cache().getAllRequests()
 	,   notLoaded   = TritonAgent.cache().getPendingRequests()
 
-	logger.gauge("countTotalRequests", allRequests.length);
+	logger.gauge("countDataRequests", allRequests.length);
 	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
 	logger.gauge("bytesRead", req.socket.bytesRead, {hi: 1<<12});
 	logger.gauge("bytesWritten", req.socket.bytesWritten, {hi: 1<<18});
