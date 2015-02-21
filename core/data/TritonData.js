@@ -16,7 +16,6 @@ var TritonDataRoot = React.createClass({
 		if (this.props._childFactory) {
 			return this.props._childFactory(this.props._store.state);
 		} else {
-			if (React.Children.count(this.props.children) !== 1) throw new Error("TritonDataRoot can only be used with a single child.");
 			var singleChild = React.Children.only(this.props.children);
 			return React.addons.cloneWithProps(singleChild, this.props._store.state);
 		}
