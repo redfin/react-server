@@ -13,8 +13,8 @@ describe("A Triton data store", () => {
 
 	it("fires when when a simple value is added", (done) => {
 		store.when("foo").then((state) => {
-			expect(state.foo).toBe("bar");
-			expect(store.state.foo).toBe("bar");
+			expect(state).toEqual(store.state);
+			expect(state).toEqual({foo:"bar"});
 			done();
 		});
 
@@ -25,18 +25,16 @@ describe("A Triton data store", () => {
 		store.setState({foo: "bar"});
 
 		store.when("foo").then((state) => {
-			expect(state.foo).toBe("bar");
-			expect(store.state.foo).toBe("bar");
+			expect(state).toEqual(store.state);
+			expect(state).toEqual({foo:"bar"});
 			done();
 		});
 	});
 
 	it("fires when when multiple values added", (done) => {
 		store.when(["foo", "baz"]).then((state) => {
-			expect(state.foo).toBe("bar");
-			expect(store.state.foo).toBe("bar");
-			expect(state.baz).toBe("qux");
-			expect(store.state.baz).toBe("qux");
+			expect(state).toEqual(store.state);
+			expect(state).toEqual({foo:"bar", baz:"qux"});
 			done();
 		});
 
@@ -47,10 +45,8 @@ describe("A Triton data store", () => {
 		store.setState({foo: "bar", baz: "qux"});
 
 		store.when(["foo", "baz"]).then((state) => {
-			expect(state.foo).toBe("bar");
-			expect(store.state.foo).toBe("bar");
-			expect(state.baz).toBe("qux");
-			expect(store.state.baz).toBe("qux");
+			expect(state).toEqual(store.state);
+			expect(state).toEqual({foo:"bar", baz:"qux"});
 			done();
 		});
 	});
@@ -59,10 +55,8 @@ describe("A Triton data store", () => {
 		var allValuesAdded = false;
 		store.when(["foo", "baz"]).then((state) => {
 			expect(allValuesAdded).toBe(true);
-			expect(state.foo).toBe("bar");
-			expect(store.state.foo).toBe("bar");
-			expect(state.baz).toBe("qux");
-			expect(store.state.baz).toBe("qux");
+			expect(state).toEqual(store.state);
+			expect(state).toEqual({foo:"bar", baz:"qux"});
 			done();
 		});
 
@@ -96,16 +90,21 @@ describe("A Triton data store", () => {
 
 	it("fires when when a promised value resolves", (done) => {
 		var deferred = Q.defer();
+		var shouldResolve = false;
 
 		store.setState({foo: deferred.promise});
 
 		store.when("foo").then((state) => {
-			expect(state.foo).toBe("bar");
-			expect(store.state.foo).toBe("bar");
+			expect(shouldResolve).toBe(true);
+			expect(state).toEqual(store.state);
+			expect(state).toEqual({foo:"bar"});
 			done();
 		});
 
-		deferred.resolve("bar");
+		setTimeout(() => {
+			shouldResolve = true;
+			deferred.resolve("bar");
+		}, 100);
 	});
 
 	it("doesn't fire when when a promised value doesn't resolve", (done) => {
@@ -118,6 +117,6 @@ describe("A Triton data store", () => {
 		store.setState({foo: deferred.promise});
 
 		// call done() in a timeout so that there's a chance for the when to (incorrectly) fire
-		setTimeout(done, 200);
+		setTimeout(done, 100);
 	});
 });

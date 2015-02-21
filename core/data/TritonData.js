@@ -1,5 +1,27 @@
 var EventEmitter = require('eventemitter3'),
-	Q = require("q");
+	Q = require("q"),
+	React = require("react/addons");
+
+var TritonDataRoot = React.createClass({
+	componentDidMount: function() {
+		this._storeListener = () => this.forceUpdate();
+		this.props._store.on("change", this._storeListener);
+	},
+
+	componentWillUnmount: function () {
+		this.props._store.removeListener("change", this._storeListener);
+	}, 
+
+	render: function() {
+		if (this.props._childFactory) {
+			return this.props._childFactory(this.props._store.state);
+		} else {
+			if (React.Children.count(this.props.children) !== 1) throw new Error("TritonDataRoot can only be used with a single child.");
+			var singleChild = React.Children.only(this.props.children);
+			return React.addons.cloneWithProps(singleChild, this.props._store.state);
+		}
+	}
+})
 
 class TritonData {
 	createStoreFactory(storeMethods) {
@@ -122,7 +144,26 @@ class TritonData {
 		return Store;
 	}
 
+	createRootElement(store, element) {
+		if (typeof element === "function") {
+			return <TritonDataRoot _store={store} _childFactory={element}/>;
+		} else {
+			return <TritonDataRoot _store={store}>{element}</TritonDataRoot>;
+		}
+	}
 
+	createRootElementWhen(names, store, element) {
+		var promise = store.when(names).then(() => this.createRootElement(store, element));
+		promise.getValue = () => this.createRootElement(store, element);
+		return promise;
+	}
+
+
+	createRootElementWhenResolved(store, element) {
+		var promise = store.whenResolved().then(() => this.createRootElement(store, element));
+		promise.getValue = () => this.createRootElement(store, element);
+		return promise;
+	}
 }
 
 module.exports = new TritonData();
