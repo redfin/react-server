@@ -1,14 +1,13 @@
 var Q = require("q"),
-	TritonData = require("../../data/TritonData");
+	Store = require("../../data/Store");
 
 describe("A Triton data store", () => {
 
 	var store, child, storeClass, deferred1, deferred2;
 
 	beforeEach(() => {
-		storeClass = TritonData.createStoreFactory({});
-		store = new storeClass();
-		child = new storeClass();
+		store = new Store();
+		child = new Store();
 		deferred1 = Q.defer();
 		deferred2 = Q.defer();
 	});
@@ -35,7 +34,7 @@ describe("A Triton data store", () => {
 		store.setState({foo: deferred1.promise});
 
 		store.whenResolved().then((state) => {
-			if (!whenResolvedShouldFire) fail("Fired whenResolved too early");
+			expect(whenResolvedShouldFire).toBe(true);
 			expect(state).toEqual({foo:"bar"});
 			done(); 
 		});

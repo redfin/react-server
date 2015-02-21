@@ -1,12 +1,11 @@
 var Q = require("q"),
-	TritonData = require("../../data/TritonData");
+	Store = require("../../data/Store");
 
 describe("A Triton data store", () => {
 	
 
 	it("only adds a promise's value to the state once it's resolved", (done) => {
-		var storeClass = TritonData.createStoreFactory({});
-		var store = new storeClass();
+		var store = new Store();
 
 		var deferred = Q.defer();
 		store.setState({foo: deferred.promise});
@@ -22,8 +21,7 @@ describe("A Triton data store", () => {
 	});
 
 	it("doesn't fire change when a promise is added", () => {
-		var storeClass = TritonData.createStoreFactory({});
-		var store = new storeClass();
+		var store = new Store();
 
 		store.on("change", () => fail("Change event fired when promise was added."));
 
@@ -32,8 +30,7 @@ describe("A Triton data store", () => {
 	});
 
 	it("does fire change when a promise resolves", (done) => {
-		var storeClass = TritonData.createStoreFactory({});
-		var store = new storeClass();
+		var store = new Store();
 
 		store.on("change", () => done());
 

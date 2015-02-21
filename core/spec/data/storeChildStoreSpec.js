@@ -1,13 +1,12 @@
-var TritonData = require("../../data/TritonData");
+var Store = require("../../data/Store");
 
 describe("A store with a child store", () => {
 
 	var parent, child;
 
 	beforeEach(() => {
-		var storeClass = TritonData.createStoreFactory({});
-		parent = new storeClass();
-		child = new storeClass();
+		parent = new Store();
+		child = new Store();
 
 		child.setState({foo:"bar"});
 		parent.setState({child:child});

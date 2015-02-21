@@ -1,5 +1,6 @@
 var Q = require("q"),
 	React = require("react"),
+	Store = require("../../data/Store"),
 	TritonData = require("../../data/TritonData"),
 	jsdom = require("jsdom");
 
@@ -34,8 +35,7 @@ describe("A root element", () => {
 	var store, storeClass, deferred1;
 
 	beforeEach(() => {
-		storeClass = TritonData.createStoreFactory({});
-		store = new storeClass();
+		store = new Store();
 		deferred1 = Q.defer();
 	});
 
