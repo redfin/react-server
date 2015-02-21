@@ -9,8 +9,8 @@ var superagent = require('superagent'),
  * to pass to superagent under the hood.
  */
 function Request(method, urlPath) {
-	this.method = method;
-	this.urlPath = urlPath;
+	this._method = method;
+	this._urlPath = urlPath;
 	this._queryParams = {};
 	this._postParams = {};
 	this._headers = {};
@@ -31,31 +31,63 @@ Object.keys(superagent.Request.prototype)
 		}
 	});
 
+Request.prototype.method = function (method) {
+	if (typeof method === 'undefined') {
+		return this._method;
+	}
+	this._method = method;
+	return this;
+}
+
+Request.prototype.urlPath = function (urlPath) {
+	if (typeof urlPath === 'undefined') {
+		return this._urlPath;
+	}
+	this._urlPath = urlPath;
+	return this;
+}
+
 Request.prototype.query = function (queryParams) {
+	if (typeof queryParams === 'undefined') {
+		return mixin({}, this._queryParams);
+	}
 	mixin(this._queryParams, queryParams);
 	return this;
 }
 
 Request.prototype.send = function (postParams) {
+	if (typeof postParams === 'undefined') {
+		return mixin({}, this._postParams);
+	}
 	mixin(this._postParams, postParams);
 	return this;
 }
 
 Request.prototype.set = function (headers) {
+	if (typeof headers === 'undefined') {
+		return mixin({}, this._headers);
+	}
 	mixin(this._headers, headers);
 	return this;
 }
 
 function mixin (to, from) {
 	Object.keys(from).forEach( headerName => to[headerName] = from[headerName] );
+	return to;
 }
 
 Request.prototype.timeout = function (timeout) {
+	if (typeof timeout === 'undefined') {
+		return this._timeout;
+	}
 	this._timeout = timeout;
 	return this;
 }
 
 Request.prototype.type = function (type) {
+	if (typeof type === 'undefined') {
+		return this._type;	
+	}
 	this._type = type;
 	return this;
 }
@@ -74,11 +106,12 @@ Request.prototype.end = function (fn) {
 	}
 
 	// only do caching for responses for GET requests for now
-	if (this.method !== 'GET') {
+	if (this._method !== 'GET') {
+		applyPlugins(this);
 		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
 	}
 
-	var urlPath = this.urlPath;
+	var urlPath = this._urlPath;
 
 	// get cache entry for url if exists; if server-side, create one if it doesn't already exist.
 	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
@@ -88,12 +121,14 @@ Request.prototype.end = function (fn) {
 	if (!SERVER_SIDE && !entry) {
 		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
 		// be fine?
+		applyPlugins(this);
 		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
 	}
 
 	// no previous requesters? fire the request
 	if (entry.requesters === 0) {
 		// update URL if we're actually making the call
+		applyPlugins(this);
 		superagentRequestEnd.call(this._buildSuperagentRequest(), function (err, res) {
 			if (err) {
 				entry.setError(err);
@@ -109,7 +144,7 @@ Request.prototype.end = function (fn) {
 }
 
 Request.prototype._buildSuperagentRequest = function () {
-	var req = superagent(this.method, this._buildUrl());
+	var req = superagent(this._method, this._buildUrl());
 
 	if (this._type) {
 		req.type(this._type);
@@ -128,10 +163,10 @@ Request.prototype._buildSuperagentRequest = function () {
 
 Request.prototype._buildUrl = function () {
 	// only modify relative paths
-	if (this._urlPrefix && this.urlPath.charAt(0) === '/') {
-		return this._urlPrefix + this.urlPath;
+	if (this._urlPrefix && this._urlPath.charAt(0) === '/') {
+		return this._urlPrefix + this._urlPath;
 	}
-	return this.urlPath;
+	return this._urlPath;
 }
 
 /**
@@ -164,9 +199,12 @@ Request.prototype.use = function () {
 }
 
 /**
- * Set the prefix used for relative URLs
+ * Get/Set the prefix used for relative URLs
  */
-Request.prototype.setUrlPrefix = function (urlPrefix) {
+Request.prototype.urlPrefix = function (urlPrefix) {
+	if (typeof urlPrefix === 'undefined') {
+		return this._urlPrefix;
+	}
 	this._urlPrefix = urlPrefix;
 	return this;
 }
@@ -174,15 +212,7 @@ Request.prototype.setUrlPrefix = function (urlPrefix) {
 
 // wrapper for superagent
 function makeRequest (method, url) {
-	var req = new Request(method, url);
-
-	// run any registered plugins
-	var plugins = makeRequest.requestPlugins();
-	plugins.forEach(function (pluginFunc) {
-		pluginFunc.apply(null, [req]);
-	})
-
-	return req;
+	return new Request(method, url);
 }
 module.exports = makeRequest;
 
@@ -255,7 +285,7 @@ makeRequest.requestPlugins = function () {
 
 /**
  * Adds a plugin function that can be used to modify the Request
- * object post-instantiation, but before the request is actually
+ * object before the request is actually
  * triggered.
  *
  * The callback function will take the Request instanceo as a parameter:
@@ -270,6 +300,15 @@ makeRequest.requestPlugins = function () {
 makeRequest.plugRequest = function (pluginFunc) {
 	var rlsPlugins = makeRequest.requestPlugins();
 	rlsPlugins.push(pluginFunc);
+}
+
+// private function
+function applyPlugins (req) {
+	// run any registered plugins
+	var plugins = makeRequest.requestPlugins();
+	plugins.forEach(function (pluginFunc) {
+		pluginFunc.apply(null, [req]);
+	})
 }
 
 
