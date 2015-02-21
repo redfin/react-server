@@ -77,11 +77,11 @@ module.exports = function(server, routes) {
 				} else {
 					next(err);
 				}
-				logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
+				handleResponseComplete(req, res, context, start, page);
 				return;
 			}
 
-			beginRender(req, res, start, context, page);
+			renderPage(req, res, context, start, page);
 
 		});
 
@@ -90,8 +90,27 @@ module.exports = function(server, routes) {
 	})});
 }
 
+function handleResponseComplete(req, res, context, start, page) {
 
-function beginRender(req, res, start, context, page) {
+	// If this was an error response other server middleware might change
+	// the response code or send more data (e.g. a nice 404 page), so
+	// we'll defer our calls to `logRequestStats()` and `handleComplete()`
+	// until that's done.
+	//
+	// If error handling middleware is not synchronous we should use
+	// something like `on-finished` to hook into the real response end.
+	//
+	setTimeout(() => logRequestStats(req, res, context, start, page), 0)
+
+	// Note that if the navigator couldn't even map the request to a page,
+	// we won't be able to call middleware `handleComplete()` here.
+	//
+	if (page) {
+		setTimeout(page.handleComplete, 0);
+	}
+}
+
+function renderPage(req, res, context, start, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -113,10 +132,18 @@ function beginRender(req, res, start, context, page) {
 		writeBody,
 		writeData,
 		setupLateArrivals,
+		handleResponseComplete,
 	].reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
-	).catch(err => logger.error("Error in beginRender chain", err.stack));
+	).catch(err => {
+		logger.error("Error in renderPage chain", err.stack)
+
+		// Bummer.
+		res.status(500).end();
+
+		handleResponseComplete(req, res, context, start, page);
+	});
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
@@ -440,20 +467,18 @@ function writeData(req, res, context, start) {
 }
 
 function setupLateArrivals(req, res, context, start, page) {
-	var allRequests = TritonAgent.cache().getAllRequests();
 	var notLoaded = TritonAgent.cache().getPendingRequests();
-	var routeName = context.navigator.getCurrentRoute().name;
-
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.whenDataReadyInternal().then( data => {
-			logger.time(`late_arrival.${routeName}`, new Date - start);
+			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
 				text: `__lateArrival(${
 					JSON.stringify(pendingRequest.url)
-				}, ${
-					JSON.stringify(data)
-				});`
+				}, "${
+					/* note the double-quotes wrapping this string */
+					encodeURIComponent(JSON.stringify(data))
+				}");`
 			}], res);
 
 		})
@@ -461,16 +486,32 @@ function setupLateArrivals(req, res, context, start, page) {
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
-	Q.allSettled(promises).then(function () {
+	return Q.allSettled(promises).then(function () {
 		res.end("</body></html>");
-		logger.gauge(`countTotalRequests.${routeName}`, allRequests.length);
-		logger.gauge(`countLateArrivals.${routeName}`, notLoaded.length, {hi: 1});
-		logger.gauge(`bytesRead.${routeName}`,req.socket.bytesRead, {hi: 1<<12});
-		logger.gauge(`bytesWritten.${routeName}`,req.socket.bytesWritten, {hi: 1<<18});
-		logger.gauge(`concurentRequests`, ACTIVE_REQUESTS--);
-		logger.time(`allDone.${routeName}`, new Date - start);
-		page.handleComplete();
 	});
+}
+
+function logRequestStats(req, res, context, start){
+	var allRequests = TritonAgent.cache().getAllRequests()
+	,   notLoaded   = TritonAgent.cache().getPendingRequests()
+
+	logger.gauge("countDataRequests", allRequests.length);
+	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
+	logger.gauge("bytesRead", req.socket.bytesRead, {hi: 1<<12});
+	logger.gauge("bytesWritten", req.socket.bytesWritten, {hi: 1<<18});
+
+	// All intentional response completion should funnel through this
+	// function.  If this gauge starts climbing gradually that's an
+	// indication that we have some _unintentional_ response completion
+	// going on that we should deal with.
+	logger.gauge("concurentRequests", ACTIVE_REQUESTS--);
+
+	var time = new Date - start;
+
+	logger.time(`responseCode.${res.statusCode}`, time);
+	logger.time("totalRequestTime", time);
+
+	return Q();
 }
 
 function getNonInternalConfigs() {

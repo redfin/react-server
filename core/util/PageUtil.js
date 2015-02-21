@@ -91,6 +91,8 @@ function standardizeStyles(styles) {
 
 
 var PageUtil = module.exports = {
+	PAGE_METHODS,
+
 	standardizeElements,
 	standardizeMetaTags,
 	standardizeScripts,

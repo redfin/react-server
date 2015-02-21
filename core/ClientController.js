@@ -357,9 +357,9 @@ class ClientController extends EventEmitter {
 		window.__lateArrival = this.lateArrival.bind(this);
 	}
 
-	lateArrival (url, res) {
+	lateArrival (url, resString) {
 		this._initialRenderDfd.promise.done( () => {
-			TritonAgent.cache().lateArrival(url, res);
+			TritonAgent.cache().lateArrival(url, JSON.parse(decodeURIComponent(resString)));
 		});
 	}
 

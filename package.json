@@ -38,6 +38,7 @@
     "gulp": "3.8.10",
     "gulp-6to5": "3.0.0",
     "gulp-filter": "2.0.0",
+    "gulp-istanbul": "0.6.0",
     "gulp-jasmine": "2.0.0",
     "gulp-jshint": "1.9.0",
     "gulp-rename": "1.2.0",

@@ -28,6 +28,12 @@ var makeLogger = function(group, opts){
 
 	winston.addColors(config.colors);
 
+	// For instantiating new transports later.
+	logger.opts = opts;
+
+	(config.extraTransports||[])
+		.forEach(transport => logger.add(transport, opts));
+
 	return logger;
 }
 
@@ -50,6 +56,19 @@ var setLevel = function(group, level){
 	common.forEachLogger((logger, loggerGroup) => {
 		if (loggerGroup == group)
 			logger.transports.file.level = level;
+	});
+}
+
+var addTransport = function(group, transport){
+
+	if (!common.config[group].extraTransports)
+		common.config[group].extraTransports = [];
+
+	common.config[group].extraTransports.push(transport);
+
+	common.forEachLogger((logger, loggerGroup) => {
+		if (loggerGroup == group)
+			logger.add(transport, logger.opts);
 	});
 }
 
@@ -76,4 +95,10 @@ setColorize(process.stdout.isTTY);
 // Just the default.
 setTimestamp(true);
 
-module.exports = { getLogger, setLevel, setColorize, setTimestamp };
+module.exports = {
+	addTransport,
+	getLogger,
+	setColorize,
+	setLevel,
+	setTimestamp,
+};

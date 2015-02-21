@@ -10,6 +10,12 @@
 
 var common = require('./common')
 
+// This is just so we have a real function to work with in IE9.
+var console_log = Function.prototype.bind.call(console.log, console);
+
+// IE9 also doesn't support color.
+var monochrome = typeof console.log == "object";
+
 var makeLogger = function(group, opts){
 	var config = common.config[group]
 
@@ -22,6 +28,12 @@ var makeLogger = function(group, opts){
 
 			if (config.levels[level] < config.levels[this.level])
 				return;
+
+			if (monochrome)
+				return console_log.apply(
+					console,
+					[`${level}: [${opts.name}]`].concat(args)
+				);
 
 			console.log.apply(
 				console,
