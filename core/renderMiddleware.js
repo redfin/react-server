@@ -506,6 +506,13 @@ function logRequestStats(req, res, context, start){
 	// going on that we should deal with.
 	logger.gauge("concurentRequests", ACTIVE_REQUESTS--);
 
+
+	// This should help us keep an eye out for memory leaks.
+	var mem = process.memoryUsage();
+	Object.keys(mem).forEach(
+		k => logger.gauge(`memoryUsage.${k}`, mem[k], {hi: 1<<29})
+	);
+
 	var time = new Date - start;
 
 	logger.time(`responseCode.${res.statusCode}`, time);
