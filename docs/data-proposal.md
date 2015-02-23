@@ -81,17 +81,19 @@ The only change I would propose is just aliasing `TritonData.createActions` to `
 
 ## Stores
 
-### `TritonData.createStoreFactory({init?: Function(): void}) : Store`
+### `Store`
 
-Creates a Store constructor function for creating instances. If an `init` function exists, then it will be called when  the constructor function is called, and it will be passed the arguments that were sent to the constructor function.
+Store is a JS class for holding data that can be used on its own or extended.
 
 ```
 // in MyStore.js
-module.exports = TritonData.createStoreFactory({
-  init: function(constructorArg) {
-    console.log("My constructor arg: " + constructorArg);
+class MyStore extends Store {
+  myFunc() {
+    console.log("here is a custom function");
   }
-});
+};
+
+module.exports = MyStore;
 
 // in MyPage.js
 
@@ -99,7 +101,7 @@ var MyStore = require("./MyStore");
 
 module.exports = class MyPage {
   handleRoute(request) {
-    this.store = MyStore("foo"); // console: "My constructor arg: foo"
+    this.store = new MyStore("foo"); 
   }
 };
 ```
