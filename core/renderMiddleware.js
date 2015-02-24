@@ -469,6 +469,11 @@ function writeData(req, res, context, start) {
 function setupLateArrivals(req, res, context, start, page) {
 	var notLoaded = TritonAgent.cache().getPendingRequests();
 
+	// This is for reporting purposes.  We're going to log how many late
+	// requests there were, but we won't actually emit the log line until
+	// all of the requests have resolved.
+	TritonAgent.cache().markLateRequests();
+
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.whenDataReadyInternal().then( data => {
 			logger.time("lateArrival", new Date - start);
@@ -493,7 +498,7 @@ function setupLateArrivals(req, res, context, start, page) {
 
 function logRequestStats(req, res, context, start){
 	var allRequests = TritonAgent.cache().getAllRequests()
-	,   notLoaded   = TritonAgent.cache().getPendingRequests()
+	,   notLoaded   = TritonAgent.cache().getLateRequests()
 
 	logger.gauge("countDataRequests", allRequests.length);
 	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
