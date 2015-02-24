@@ -9,6 +9,7 @@ class Store extends EventEmitter {
 		this._childStores = {};
 		this._whenDeferreds = {};
 		this._pendingValues = {};
+		this._actionListeners = [];
 
 		this.__tritonIsStore = true;
 	}
@@ -94,6 +95,13 @@ class Store extends EventEmitter {
 		});
 
 		if (shouldEmitChange) this.emit("change");
+	}
+
+	/**
+	 * Action Stuff
+	 */
+	listenTo (action, callback) {
+		this._actionListeners.push(action.onTrigger(callback.bind(this)));
 	}
 
 	// adds a single name-value pair to the store's state and, if when is waiting on that name, resolves the 
