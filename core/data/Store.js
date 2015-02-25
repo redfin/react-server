@@ -1,17 +1,29 @@
-var EventEmitter = require('eventemitter3'),
+var Reflux = require("reflux"),
 	Q = require("q");
 
-class Store extends EventEmitter {
+class Store {
 	constructor() {
-		super();
+		this._instance = Reflux.createStore(this);
+		for (var name in this._instance) {
+			if (typeof this._instance[name] === "function") {
+				this._mixinRefluxStoreMethod(name, this._instance);
+			}
+		}
+
 		this.state = {};
-		this._childListeners = {};
+		this._childUnsubscribes = {};
 		this._childStores = {};
 		this._whenDeferreds = {};
 		this._pendingValues = {};
 		this._actionListeners = [];
 
 		this.__tritonIsStore = true;
+	}
+
+	_mixinRefluxStoreMethod(name, refluxStore) {
+		this[name] = function() {
+			return refluxStore[name].apply(refluxStore, arguments);
+		}
 	}
 
 	when(names) {
@@ -56,10 +68,10 @@ class Store extends EventEmitter {
 
 			// first we look to see if there is currently a child store at this key. if so, 
 			// we need to make this store stop listening to the child store.
-			if (this._childListeners[key]) {
+			if (this._childUnsubscribes[key]) {
 				// this was a child store; we need to stop listening to it.
-				this._childStores[key].removeListener("change", this._childListeners[key]);
-				delete this._childListeners[key];
+				this._childUnsubscribes[key]();
+				delete this._childUnsubscribes[key];
 				delete this._childStores[key];
 			}
 
@@ -71,12 +83,11 @@ class Store extends EventEmitter {
 				this._setSingleNameValue(key, newValue.state);
 
 				// also, we need to automatically listen to change events from this child store.
-				this._childListeners[key] = () => {
-					this._setSingleNameValue(key, newValue.state);
-					this.emit("change");
-				};
 				this._childStores[key] = newValue;
-				newValue.on("change", this._childListeners[key]);
+				this._childUnsubscribes[key] = newValue.listen(() => {
+					this._setSingleNameValue(key, newValue.state);
+					this._emitChange();
+				});
 				shouldEmitChange = true;
 			} else if (newValue.then) {
 				// the value is a Promise (or a thenable, at the very least), which means that 
@@ -85,7 +96,7 @@ class Store extends EventEmitter {
 				newValue.then((value) => {
 					this._setSingleNameValue(key, value);
 					delete this._pendingValues[key];
-					this.emit("change");
+					this._emitChange();
 				});
 			} else {
 				// it was just a simple value, so we assign it to our state.
@@ -94,7 +105,11 @@ class Store extends EventEmitter {
 			}
 		});
 
-		if (shouldEmitChange) this.emit("change");
+		if (shouldEmitChange) this._emitChange();
+	}
+
+	_emitChange() {
+		this.trigger(this.state);
 	}
 
 	/**

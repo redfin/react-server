@@ -1,11 +1,12 @@
 var EventEmitter = require('eventemitter3'),
 	Q = require("q"),
-	React = require("react/addons");
+	React = require("react/addons"),
+	Reflux = require("reflux");
 
 var TritonDataRoot = React.createClass({
 	componentDidMount: function() {
 		this._storeListener = () => this.forceUpdate();
-		this.props._store.on("change", this._storeListener);
+		this.props._store.listen(this._storeListener);
 	},
 
 	componentWillUnmount: function () {
@@ -43,6 +44,14 @@ class TritonData {
 		var promise = store.whenResolved().then(() => this.createRootElement(store, element));
 		promise.getValue = () => this.createRootElement(store, element);
 		return promise;
+	}
+
+	createAction() {
+		return Reflux.createAction.apply(Reflux, arguments);
+	}
+
+	createActions() {
+		return Reflux.createActions.apply(Reflux, arguments);
 	}
 }
 
