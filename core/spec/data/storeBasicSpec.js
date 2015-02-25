@@ -21,7 +21,7 @@ describe("A TritonData store", () => {
 	it("emits a change event when the state is changed", (done) => {
 		var store = new Store();
 
-		store.on("change", () => {
+		store.listen(() => {
 			expect(store.state.foo).toBe("bar");
 			done();
 		});

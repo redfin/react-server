@@ -19,7 +19,7 @@ describe("A store with a child store", () => {
 	});
 
 	it("listens to the child store for a single state changes", (done) => {
-		parent.on("change", () => {
+		parent.listen(() => {
 			expect(parent.state.child.baz).toBe("qux");
 			done();
 		});
@@ -28,7 +28,7 @@ describe("A store with a child store", () => {
 	});
 
 	it("listens to the child store for a multi state changes", (done) => {
-		parent.on("change", () => {
+		parent.listen(() => {
 			expect(parent.state.child.baz).toBe("qux");
 			expect(parent.state.child.foo).toBe("llama");
 			done();
@@ -40,7 +40,7 @@ describe("A store with a child store", () => {
 	it("stops listening to the child store when the child store is removed", (done) => {
 		parent.setState({child: 3});
 
-		parent.on("change", () => {
+		parent.listen(() => {
 			fail("A change event fired for the parent.");
 		});
 

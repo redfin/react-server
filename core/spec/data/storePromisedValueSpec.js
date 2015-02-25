@@ -23,7 +23,7 @@ describe("A Triton data store", () => {
 	it("doesn't fire change when a promise is added", () => {
 		var store = new Store();
 
-		store.on("change", () => fail("Change event fired when promise was added."));
+		store.listen(() => fail("Change event fired when promise was added."));
 
 		var deferred = Q.defer();
 		store.setState({foo: deferred.promise});
@@ -32,7 +32,7 @@ describe("A Triton data store", () => {
 	it("does fire change when a promise resolves", (done) => {
 		var store = new Store();
 
-		store.on("change", () => done());
+		store.listen(() => done());
 
 		var deferred = Q.defer();
 		store.setState({foo: deferred.promise});

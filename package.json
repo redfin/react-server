@@ -24,6 +24,7 @@
     "mkdirp": "0.5.0",
     "q": "1.1.2",
     "querystring": "0.2.0",
+    "reflux": "0.2.5",
     "rimraf": "2.2.8",
     "routr": "0.0.5",
     "winston": "0.8.3"
