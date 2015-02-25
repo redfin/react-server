@@ -1,13 +1,13 @@
 var Q = require("q"),
-	Store = require("../../data/Store");
+	Stores = require("../../data/Stores");
 
 describe("A Triton data store", () => {
 
 	var store, child, storeClass;
 
 	beforeEach(() => {
-		store = new Store();
-		child = new Store();
+		store = Stores.createStoreFactory({})();
+		child = Stores.createStoreFactory({})();
 	});
 
 	it("fires when when a simple value is added", (done) => {

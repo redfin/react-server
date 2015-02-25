@@ -6,11 +6,11 @@ var EventEmitter = require('eventemitter3'),
 var TritonDataRoot = React.createClass({
 	componentDidMount: function() {
 		this._storeListener = () => this.forceUpdate();
-		this.props._store.listen(this._storeListener);
+		this._unsubscribe = this.props._store.listen(this._storeListener);
 	},
 
 	componentWillUnmount: function () {
-		this.props._store.removeListener("change", this._storeListener);
+		if (this._unsubscribe) this._unsubscribe();
 	}, 
 
 	render: function() {
@@ -23,7 +23,7 @@ var TritonDataRoot = React.createClass({
 	}
 })
 
-class TritonData {
+module.exports = {
 
 	createRootElement(store, element) {
 		if (typeof element === "function") {
@@ -31,13 +31,13 @@ class TritonData {
 		} else {
 			return <TritonDataRoot _store={store}>{element}</TritonDataRoot>;
 		}
-	}
+	},
 
 	createRootElementWhen(names, store, element) {
 		var promise = store.when(names).then(() => this.createRootElement(store, element));
 		promise.getValue = () => this.createRootElement(store, element);
 		return promise;
-	}
+	},
 
 
 	createRootElementWhenResolved(store, element) {
@@ -45,14 +45,4 @@ class TritonData {
 		promise.getValue = () => this.createRootElement(store, element);
 		return promise;
 	}
-
-	createAction() {
-		return Reflux.createAction.apply(Reflux, arguments);
-	}
-
-	createActions() {
-		return Reflux.createActions.apply(Reflux, arguments);
-	}
-}
-
-module.exports = new TritonData();
+};

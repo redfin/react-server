@@ -12,6 +12,7 @@ module.exports = {
 	logging: require("./logging"),
 	config: require("./config"),
 	TritonAgent: require('./util/TritonAgent'),
-	Store: require("./data/Store"),
-	TritonData: require("./data/TritonData")
+	Stores: require("./data/Stores"),
+	Actions: require("./data/Actions"),
+	RootElements: require("./data/RootElements")
 }

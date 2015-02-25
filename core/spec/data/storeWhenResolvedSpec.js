@@ -1,13 +1,13 @@
 var Q = require("q"),
-	Store = require("../../data/Store");
+	Stores = require("../../data/Stores");
 
 describe("A Triton data store", () => {
 
 	var store, child, storeClass, deferred1, deferred2;
 
 	beforeEach(() => {
-		store = new Store();
-		child = new Store();
+		store = Stores.createStoreFactory({})();
+		child = Stores.createStoreFactory({})();
 		deferred1 = Q.defer();
 		deferred2 = Q.defer();
 	});

@@ -1,12 +1,12 @@
-var Store = require("../../data/Store");
+var Stores = require("../../data/Stores");
 
 describe("A store with a child store", () => {
 
 	var parent, child;
 
 	beforeEach(() => {
-		parent = new Store();
-		child = new Store();
+		parent = Stores.createStoreFactory({})();
+		child = Stores.createStoreFactory({})();
 
 		child.setState({foo:"bar"});
 		parent.setState({child:child});

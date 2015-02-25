@@ -1,7 +1,7 @@
 var Q = require("q"),
 	React = require("react"),
-	Store = require("../../data/Store"),
-	TritonData = require("../../data/TritonData"),
+	Stores = require("../../data/Stores"),
+	RootElements = require("../../data/RootElements"),
 	jsdom = require("jsdom");
 
 // this is a crazy monkeypatch to convince React that it should use the DOM
@@ -35,14 +35,14 @@ describe("A root element", () => {
 	var store, storeClass, deferred1;
 
 	beforeEach(() => {
-		store = new Store();
+		store = Stores.createStoreFactory({})();
 		deferred1 = Q.defer();
 	});
 
 	itWithDiv("changes its rendering when the store changes", (div, done) => {
 		store.setState({foo:"bar"});
 
-		React.render(TritonData.createRootElement(store, <SimpleComponent/>), div, () => {
+		React.render(RootElements.createRootElement(store, <SimpleComponent/>), div, () => {
 			expect(div.innerHTML).toMatch("bar");
 			store.setState({foo:"baz"});
 			expect(div.innerHTML).toMatch("baz");
@@ -53,7 +53,7 @@ describe("A root element", () => {
 	itWithDiv("changes its rendering in a function when the store changes", (div, done) => {
 		store.setState({foo:"bar"});
 
-		React.render(TritonData.createRootElement(store, (state) => {
+		React.render(RootElements.createRootElement(store, (state) => {
 			return <SimpleComponent foo={state.foo + state.foo}/>
 		}), div, () => {
 			expect(div.innerHTML).toMatch("barbar");
@@ -67,7 +67,7 @@ describe("A root element", () => {
 		store.setState({foo:deferred1.promise});
 
 		var shouldResolve = false;
-		var elementPromise = TritonData.createRootElementWhen(["foo", "baz"], store, <SimpleComponent/>);
+		var elementPromise = RootElements.createRootElementWhen(["foo", "baz"], store, <SimpleComponent/>);
 
 		elementPromise.then((element) => {
 			expect(shouldResolve).toBe(true);
@@ -97,7 +97,7 @@ describe("A root element", () => {
 		store.setState({foo:deferred1.promise});
 
 		var shouldResolve = false;
-		var elementPromise = TritonData.createRootElementWhenResolved(store, <SimpleComponent/>);
+		var elementPromise = RootElements.createRootElementWhenResolved(store, <SimpleComponent/>);
 
 		elementPromise.then((element) => {
 			expect(shouldResolve).toBe(true);
