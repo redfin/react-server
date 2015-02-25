@@ -257,7 +257,7 @@ function renderScriptsAsync(scripts, res) {
 		res.write(LABString);
 
 		// We always want scripts to be executed in order.
-		res.write("$LAB.setOptions({AlwaysPreserveOrder:true});");
+		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
 
 		// We'll use this to store state between calls (see below).
 		res.write("window._tLAB=$LAB")
