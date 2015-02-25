@@ -3,7 +3,6 @@
 module.exports = {
 	BaseStore: require('./stores/BaseStore'),
 	Link: require('./components/Link'),
-	actions: require('./actions'),
 	ObjectGraph: require('./util/ObjectGraph'),
 	RequestLocalStorage: require('./util/RequestLocalStorage'),
 	getCurrentRequestContext: require('./context/RequestContext').getCurrentRequestContext,
