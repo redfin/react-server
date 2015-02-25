@@ -22,19 +22,19 @@ First off, I’d like to lay out the principles/beliefs that drive this proposal
 
 1. **Passing Props Down Through the Component Tree Is Not That Bad**. This is probably the most controversial thing I believe. I agree that it’d be nicer not to pass down props, and I would love to have Relay’s solution to the problem if I had a magic wand. However, in a practical matter I don’t think it’s that difficult to manage: most changes that are made to endpoints (like adding a field to CorgiHome) will filter down automatically through the component tree without changing anything, our component trees aren’t generally that deep, and prop passing code is not particularly hard to write or understand when you do need to add it.
 
-# Key Concepts: Stores, State, Actions, and Root Components.
+# Key Concepts: Stores, State, Actions, and Root Elements.
 
-Having outlined the basic principles, let's look at the key concepts of this proposal: Stores, State, Actions, and Root Components.
+Having outlined the basic principles, let's look at the key concepts of this proposal: Stores, State, Actions, and Root Elements.
 
-*Root Components* are mounted React components that are at the root of their render tree (i.e. React components currently in the document that had "React.render" called on them.) Root State is passed into them as props. There can be multiple Root Components in a page (as when `getElements` returns an array in Triton).
+*Root Elements* are mounted React elements that are at the root of their render tree (i.e. React elements currently in the document that had "React.render" called on them.) Root State is passed into them as props. There can be multiple Root Elements in a page (as when `getElements` returns an array in Triton).
 
-*State* is an object representing the state of a Store at any particular point in time. It is separate from the Store in that it does not respond to Actions. The State from the various Stores is bundled up into Root State and passed to Root Components; Stores are *not* passed to Root Components. Ideally, State would be an immutable data structure, but it can be mutable.
+*State* is an object representing the state of a Store at any particular point in time. It is separate from the Store in that it does not respond to Actions. The State from the various Stores is bundled up into Root State and passed to Root Elements; Stores are *not* passed to Root Elements. Ideally, State would be an immutable data structure, but it can be mutable.
 
-*Root State* is an aggregation of one or more States from one or more Stores in the App that is then passed into a Root Component. Note that there can be multiple Root States, because there can be multiple Root Components in a page.
+*Root State* is an aggregation of one or more States from one or more Stores in the App that is then passed into a Root Element. Note that there can be multiple Root States, because there can be multiple Root Elements in a page.
 
 *Stores* are objects that hold State and manage the changes to the State.
 
-*Actions* are events that fire from components anywhere in the render tree. Stores listen to Actions and potentially mutate State in response.
+*Actions* are events that fire from elements anywhere in the render tree. Stores listen to Actions and potentially mutate State in response.
 
 With these terms, let's chart out what a typical data flow would look like:
 
@@ -67,33 +67,31 @@ With these terms, let's chart out what a typical data flow would look like:
       }
     });
 ```
-1. The call to `setState` triggers a change event to be fired from the Store. If the Store is a child of a parent Store, then the change event is propagated up to the root. At the root, the change event for the Store has a handler that will bundle the Root State and pass it over to the Root Component.
+1. The call to `setState` triggers a change event to be fired from the Store. If the Store is a child of a parent Store, then the change event is propagated up to the root. At the root, the change event for the Store has a handler that will bundle the Root State and pass it over to the Root Element.
 
-1. The Root Component will pass down subparts of the State to its children, who will pass down subparts to their children, and the current State will be rendered.
+1. The Root Element will pass down subparts of the State to its children, who will pass down subparts to their children, and the current State will be rendered.
 
 # Rough API
 
-## Actions
+## `Actions`
 
 I think we should actually just use the [Actions from refluxjs](https://github.com/spoike/refluxjs#creating-actions). They are easy to create, they have an awesome pattern for child actions that fire on completion or error, and they are just functions.
 
-The only change I would propose is just aliasing `TritonData.createActions` to `Reflux.createActions`.
+The only change I would propose is just aliasing `Actions.createActions` to `Reflux.createActions`.
 
 ## Stores
 
-### `Store`
+### `Stores`
 
-Store is a JS class for holding data that can be used on its own or extended.
+`Stores` is a JS helper for creating Store Factory functions. Stores are for holding data. Note that a Store is a Reflux Store instance.
 
 ```
 // in MyStore.js
-class MyStore extends Store {
+module.exports = Stores.createStoreFactory({
   myFunc() {
     console.log("here is a custom function");
   }
-};
-
-module.exports = MyStore;
+});
 
 // in MyPage.js
 
@@ -101,7 +99,7 @@ var MyStore = require("./MyStore");
 
 module.exports = class MyPage {
   handleRoute(request) {
-    this.store = new MyStore("foo"); 
+    this.store = MyStore("foo"); 
   }
 };
 ```
@@ -135,7 +133,7 @@ If you need something more intricate than Stores just listening to their child S
 Many stores fetch data via asynchronous processes, often an HTTP JSON call. To make it easy to code asynchronous values into a Store, we have the notion of _Pending Values_. If you call `setState` and the value of a property is a Promise (or any `then`-able), then that name is not immediately added to `state`. Instead, once the promise resolves, the name is added to `state` with the value of the resolved promise. If the promise rejects, then the name is added with the value being the error that was thrown. (TODO: is that right? sounds hard to use in error cases.)
 
 ```
-var A = TritonData.createStore({});
+var A = Stores.createStoreFactory({})();
 A.setState({a: 1});
 var deferred = Q.defer();
 
@@ -152,45 +150,6 @@ setTimeout(() => {
 }, 1000);
 ```
 
-### `Store.view(names: [String])`
-
-Returns a Store that is a read-only view into this Store containing only the name-value pairs denoted in `names`.
-
-The Store returned by `view` is read-only, so it will not have a `setState` method. It will have a `state` that will be in sync with this Store at all times, and it will emit `change` events if the data for its subset of State changes:
-```
-var A = TritonData.createStore({});
-A.setState({a:1, b:2, c:3});
-var B = A.view(["b", "c"]);
-
-A.addListener("change", function() {
-  console.log("A changed");
-});
-B.addListener("change", function() {
-  console.log("B changed");
-});
-
-console.log(A.state); // {a:1, b:2, c:3}
-console.log(B.state); // {b:2, c:3}
-
-A.setState({b: 5}); // "A changed" "B changed"
-
-console.log(A.state); // {a:1, b:5, c:3}
-console.log(B.state); // {b:5, c:3}
-
-A.setState({a: 2}); // "A changed" (note, no "B changed")
-
-console.log(A.state); // {a:2, b:5, c:3}
-console.log(B.state); // {b:5, c:3}
-
-A.setState({d:10}); // "A changed" (note, no "B changed")
-
-console.log(A.state); // {a:2, b:5, c:3, d:10}
-console.log(B.state); // {b:5, c:3}
-
-B.setState({e:15}) // setState is undefined
-```
-This method is most useful when one Store is intended to server multiple different Root Components, but the components may not all depend on the entirety of the Store's state.
-
 ### `Store.when(names: String | [String]) : Promise(Object)`
 
 Returns a promise that resolves when all of the values with names in `names` have a non-pending non-`undefined` value.
@@ -201,36 +160,36 @@ The value of the promise is a hash of the names to their values.
 
 Returns a promise that resolves when there are no more pending values in the Store's `state`.
 
-## RootComponents
+## RootElements
 
-### `TritonData.createRootComponent(store: Store, element: ReactElement | Function(props: Object) : ReactElement) : ReactElement`
+### `RootElements.createRootElement(store: Store, element: ReactElement | Function(props: Object) : ReactElement) : ReactElement`
 
-Takes in a Store and a ReactElement or a Function to create a Root Component that is linked in a one-way data flow with the Store.
+Takes in a Store and a ReactElement or a Function to create a Root Element that is linked in a one-way data flow with the Store.
 
-If `element` is a ReactElement, the Root Component will be that element with a `prop` for every key-value pair in the Store's `state` mixed in. Any change events in the Store will automatically update the Root Component's props and, of course, force a re-render.
+If `element` is a ReactElement, the Root Element will be that element with a `prop` for every key-value pair in the Store's `state` mixed in. Any change events in the Store will automatically update the Root Element's props and, of course, force a re-render.
 
 If `element` is a Function, it will be called every time the Store updates with the state, and it should return a ReactElement that should be used at that moment. This is useful, for example, for mapping names that the Store uses to names that the control uses:
 
 ```
 // imagine store has fields foo and bar, which you want
 // to put into a React component's props baz and qux.
-var element = TritonData.createRootComponent(store, (props) => {
+var element = RootElements.createRootElement(store, (props) => {
     return <MyComponent foo={props.baz} bar={props.qux}/>;
 });
 ```
 
 This method would be most likely called in Triton's Page API method `getElements`.
 
-### `TritonData.createRootComponentWhen(names: [String], store: Store, element: ReactElement | Function(props: Object) : ReactElement) : EarlyPromise(ReactElement)`
+### `RootElements.createRootElementWhen(names: [String], store: Store, element: ReactElement | Function(props: Object) : ReactElement) : EarlyPromise(ReactElement)`
 
 Returns an `EarlyPromise` of a ReactElement that resolves when all the values in `names` are not pending and not `undefined`.
 
-If `element` is a ReactElement, the Root Component will be that element with a `prop` for every key-value pair in the Store's `state` mixed in. Any change events in the Store will automatically update the Root Component's props and, of course, force a re-render. Note that *all* of the Store's `state` is mixed in to the Root Component, not just the properties referenced in `names`.
+If `element` is a ReactElement, the Root Element will be that element with a `prop` for every key-value pair in the Store's `state` mixed in. Any change events in the Store will automatically update the Root Element's props and, of course, force a re-render. Note that *all* of the Store's `state` is mixed in to the Root Element, not just the properties referenced in `names`.
 
 If `element` is a Function, it will be called every time the Store updates with the state, and it should return a ReactElement that should be used at that moment.
 
 If the Promise is resolved Early, it returns the Element that would be created with the state available at the time.
 
-### `TritonData.createRootComponentWhenResolved(store: Store, element: ReactElement | Function(props: Object) : ReactElement) : EarlyPromise(ReactElement)`
+### `RootElements.createRootElementWhenResolved(store: Store, element: ReactElement | Function(props: Object) : ReactElement) : EarlyPromise(ReactElement)`
 
-Exactly like `createRootComponentWhen`, except that the resulting EarlyPromise resolves when there are no pending values in `state`.
+Exactly like `createRootElementWhen`, except that the resulting EarlyPromise resolves when there are no pending values in `state`.
