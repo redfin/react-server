@@ -558,6 +558,14 @@ class RequestDataCache {
 		return null;
 	}
 
+	markLateRequests () {
+		this.getPendingRequests().forEach(req => req.entry.late = true);
+	}
+
+	getLateRequests () {
+		return this.getAllRequests().filter(req => req.entry.late);
+	}
+
 	getPendingRequests () {
 		return this.getAllRequests().filter(req => !req.entry.loaded);
 	}
