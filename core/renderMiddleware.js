@@ -66,7 +66,7 @@ module.exports = function(server, routes) {
 		context.setServerStash({ req, res, start, startHR });
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
-		context.onNavigate( (err, page) => {
+		context.onNavigate( (err, page, path, type, isFragment) => {
 
 			if (err) {
 				logger.log("onNavigate received a non-2xx HTTP code", err);
@@ -81,7 +81,7 @@ module.exports = function(server, routes) {
 				return;
 			}
 
-			renderPage(req, res, context, start, page);
+			renderPage(req, res, context, start, page, isFragment);
 
 		});
 
@@ -110,7 +110,7 @@ function handleResponseComplete(req, res, context, start, page) {
 	}
 }
 
-function renderPage(req, res, context, start, page) {
+function renderPage(req, res, context, start, page, isFragment) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -118,22 +118,13 @@ function renderPage(req, res, context, start, page) {
 
 	var renderTimer = logger.timer("renderFunction");
 
-	// regardless of what happens, write out the header part
-	// TODO: should this include the common.js file? seems like it
-	// would give it a chance to download and parse while we're loading
-	// data
-	//
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
-	[
-		Q(), // This is just a NOOP lead-in to prime the reduction.
-		writeHeader,
-		startBody,
-		writeBody,
-		writeData,
-		setupLateArrivals,
-		handleResponseComplete,
-	].reduce((chain, func) => chain
+	var lifecycleMethods = isFragment
+			? fragmentLifecycle()
+			: pageLifecycle();
+
+	lifecycleMethods.reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
 	).catch(err => {
@@ -147,6 +138,29 @@ function renderPage(req, res, context, start, page) {
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
+}
+
+function fragmentLifecycle () {
+	return [
+		Q(), // NOOP lead-in to prime the reduction
+		writeBody,
+		endResponse,
+		handleResponseComplete
+	];
+}
+
+function pageLifecycle() {
+	return [
+		Q(), // This is just a NOOP lead-in to prime the reduction.
+		writeHeader,
+		startBody,
+		writeBody,
+		writeData,
+		setupLateArrivals,
+		closeBody,
+		endResponse,
+		handleResponseComplete,
+	];
 }
 
 function writeHeader(req, res, context, start, pageObject) {
@@ -491,9 +505,17 @@ function setupLateArrivals(req, res, context, start, page) {
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
-	return Q.allSettled(promises).then(function () {
-		res.end("</body></html>");
-	});
+	return Q.allSettled(promises)
+}
+
+function closeBody(req, res, context, start, page) {
+	res.write("</body></html>");
+	return Q();
+}
+
+function endResponse(req, res, context, start, page) {
+	res.end();
+	return Q();
 }
 
 function logRequestStats(req, res, context, start){

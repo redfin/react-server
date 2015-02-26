@@ -6,8 +6,16 @@ var cookie = require("cookie"),
  */
 class ClientRequest {
 
-	constructor(url, route) {
+	constructor(url) {
 		this._url = url;
+	}
+
+	getIsFragment () {
+		return false;
+	}
+
+	setIsFragment (isFragment) {
+		throw new Error("Client requests cannot be for fragments");
 	}
 
 	setRoute(route) {

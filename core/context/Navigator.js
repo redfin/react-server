@@ -48,6 +48,9 @@ class Navigator extends EventEmitter {
 			if (request.setRoute) {
 				request.setRoute(route);
 			}
+			if (SERVER_SIDE) {
+				request.setIsFragment(!!route.config.fragment);
+			}
 			this.handlePage(pageConstructor, request, type);
 
 		}, err => {
@@ -77,7 +80,7 @@ class Navigator extends EventEmitter {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
-				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, null, request.getUrl(), type);
+				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, null, request.getUrl(), type, request.getIsFragment());
 				return;
 			}
 			if (handleRouteResult.page) {
@@ -89,10 +92,10 @@ class Navigator extends EventEmitter {
 			}
 
 			this.finishRoute();
-			this.emit('navigateDone', null, page, request.getUrl(), type);
+			this.emit('navigateDone', null, page, request.getUrl(), type, request.getIsFragment());
 		}).catch(err => {
 			logger.error("Error while handling route.", err.stack);
-			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type);
+			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type, request.getIsFragment());
 		});
 
 	}

@@ -4,8 +4,17 @@
  * API.
  */
 class ExpressServerRequest {
-	constructor(expressServerRequest, route) {
+	constructor(expressServerRequest) {
 		this._wrappedRequest = expressServerRequest;
+		this._isFragment = false;
+	}
+
+	getIsFragment () {
+		return this._isFragment;
+	}
+
+	setIsFragment (isFragment) {
+		this._isFragment = isFragment;
 	}
 
 	setRoute(route) {
