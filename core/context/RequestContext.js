@@ -18,11 +18,17 @@ class RequestContext {
 
 		this._navigateListeners = [];
 
-		RequestLocals().instance = this;
+		this.registerRequestLocal();
 	}
 
 	static getCurrentRequestContext () {
 		return RequestLocals().instance;
+	}
+
+	// when we transition from page to page, we clear out the RequestLocals, but we need to re-register
+	// the RequestContext in the RequestLocals.
+	registerRequestLocal() {
+		RequestLocals().instance = this;
 	}
 
 	setDataLoadWait (ms) {

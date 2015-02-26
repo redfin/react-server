@@ -61,6 +61,8 @@ class ClientController extends EventEmitter {
 		// container.
 		if (this._previouslyRendered){
 			RequestLocalStorage.startRequest();
+			// we need to re-register the request context as a RequestLocal.
+			this.context.registerRequestLocal();
 		}
 	}
 

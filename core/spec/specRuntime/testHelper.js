@@ -1,4 +1,4 @@
-var renderMiddleware = require("../../renderMiddleware"),
+var renderMiddleware = require("../../server").middleware,
 	express = require("express"),
 	expressState = require('express-state'),
 	http = require("http"),
