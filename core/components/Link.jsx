@@ -1,13 +1,13 @@
 
 var React = require('react'),
 	ClientRequest = require("../ClientRequest"),
-	History = require("./History");
+	History = require("./History"),
+	getCurrentRequestContext = require("../context/RequestContext").getCurrentRequestContext;
 
 var Link = module.exports = React.createClass({
 	displayName: 'Link',
 
 	propTypes: {
-		context: React.PropTypes.object.isRequired,
 		path: React.PropTypes.string.isRequired
 	},
 
@@ -25,7 +25,7 @@ var Link = module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			this.props.context.navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);	
+			getCurrentRequestContext().navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);	
 		} else {
 			// do normal browser navigate
 		}
