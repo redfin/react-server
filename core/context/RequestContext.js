@@ -49,6 +49,14 @@ class RequestContext {
 		return this.serverStash;
 	}
 
+	setIsFragment (isFragment) {
+		return this.isFragment;
+	}
+
+	getIsFragment () {
+		return this.isFragment;
+	}
+
 	onNavigate (callback) {
 		this.navigator.on('navigateDone', callback);
 	}
