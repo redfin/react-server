@@ -57,6 +57,10 @@ var wrapLogger = function(getLoggerForConfig, opts){
 	mainLogger.time  = (token, ms,  opts) => timeLogger [classifyTime (ms,  opts)](token, {ms });
 	mainLogger.gauge = (token, val, opts) => gaugeLogger[classifyGauge(val, opts)](token, {val});
 
+	// Expose these.
+	mainLogger.timeLogger  = timeLogger;
+	mainLogger.gaugeLogger = gaugeLogger;
+
 	// This is just a convenience wrapper around the `time` method.
 	mainLogger.timer = (token, opts) => {
 
