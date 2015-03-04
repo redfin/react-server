@@ -10,14 +10,6 @@ class ClientRequest {
 		this._url = url;
 	}
 
-	getIsFragment () {
-		return false;
-	}
-
-	setIsFragment (isFragment) {
-		throw new Error("Client requests cannot be for fragments");
-	}
-
 	setRoute(route) {
 		this._route = route;
 	}

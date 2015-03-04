@@ -7,9 +7,6 @@ var ObjectGraph = require('../util/ObjectGraph'),
 	config = require('../config'),
 	logger = require('../logging').getLogger(__LOGGER__);
 
-// TODO FIXME
-var REFERRER_DOMAIN = "http://node.redfintest.com";
-
 class RequestContext {
 
 	constructor (routes, extraOpts) {
@@ -50,7 +47,7 @@ class RequestContext {
 	}
 
 	setIsFragment (isFragment) {
-		return this.isFragment;
+		this.isFragment = isFragment;
 	}
 
 	getIsFragment () {

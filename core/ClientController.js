@@ -78,7 +78,7 @@ class ClientController extends EventEmitter {
 		 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
-		context.onNavigate( (err, page, path, type, isFragment) => {
+		context.onNavigate( (err, page, path, type) => {
 			logger.debug('Executing navigate action');
 			
 			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar 

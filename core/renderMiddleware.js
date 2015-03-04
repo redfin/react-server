@@ -66,7 +66,7 @@ module.exports = function(server, routes) {
 		context.setServerStash({ req, res, start, startHR });
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
-		context.onNavigate( (err, page, path, type, isFragment) => {
+		context.onNavigate( (err, page, path, type) => {
 
 			if (err) {
 				logger.log("onNavigate received a non-2xx HTTP code", err);
@@ -81,7 +81,7 @@ module.exports = function(server, routes) {
 				return;
 			}
 
-			renderPage(req, res, context, start, page, isFragment);
+			renderPage(req, res, context, start, page);
 
 		});
 
@@ -118,7 +118,7 @@ function handleResponseComplete(req, res, context, start, page) {
 	}
 }
 
-function renderPage(req, res, context, start, page, isFragment) {
+function renderPage(req, res, context, start, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -128,7 +128,7 @@ function renderPage(req, res, context, start, page, isFragment) {
 
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
-	var lifecycleMethods = isFragment
+	var lifecycleMethods = context.getIsFragment()
 			? fragmentLifecycle()
 			: pageLifecycle();
 
