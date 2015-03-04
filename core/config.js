@@ -12,7 +12,7 @@ module.exports = function () {
 	// only read out the config once, and then cache it. -sra.
 	if (null === config) {
 		if (!process.env.R3S_CONFIGS) {
-			throw 'R3S_CONFIGS environment variable required to start server.';
+			throw new Error('R3S_CONFIGS environment variable required to start server.');
 		}
 
 		var fs = require("fs");

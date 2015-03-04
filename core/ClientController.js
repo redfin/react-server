@@ -127,7 +127,9 @@ class ClientController extends EventEmitter {
 			page.getBodyClasses().then((classes) => {
 				classes.push(`route-${routeName}`);
 				document.body.className = classes.join(' ');
-			}).then(() => this._render(page))
+			}).then(() => this._render(page)).catch((err) => {
+				logger.error("Error while rendering", err.stack);
+			});
 
 		});
 

@@ -90,7 +90,15 @@ module.exports = function(server, routes) {
 	})});
 }
 
+module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
+
 function handleResponseComplete(req, res, context, start, page) {
+
+	// All intentional response completion should funnel through this
+	// function.  If this value starts climbing gradually that's an
+	// indication that we have some _unintentional_ response completion
+	// going on that we should deal with.
+	ACTIVE_REQUESTS--;
 
 	// If this was an error response other server middleware might change
 	// the response code or send more data (e.g. a nice 404 page), so
@@ -526,19 +534,6 @@ function logRequestStats(req, res, context, start){
 	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
 	logger.gauge("bytesRead", req.socket.bytesRead, {hi: 1<<12});
 	logger.gauge("bytesWritten", req.socket.bytesWritten, {hi: 1<<18});
-
-	// All intentional response completion should funnel through this
-	// function.  If this gauge starts climbing gradually that's an
-	// indication that we have some _unintentional_ response completion
-	// going on that we should deal with.
-	logger.gauge("concurentRequests", ACTIVE_REQUESTS--);
-
-
-	// This should help us keep an eye out for memory leaks.
-	var mem = process.memoryUsage();
-	Object.keys(mem).forEach(
-		k => logger.gauge(`memoryUsage.${k}`, mem[k], {hi: 1<<29})
-	);
 
 	var time = new Date - start;
 
