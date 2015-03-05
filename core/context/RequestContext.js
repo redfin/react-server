@@ -1,6 +1,5 @@
 
-var ObjectGraph = require('../util/ObjectGraph'),
-	Navigator = require('./Navigator'),
+var Navigator = require('./Navigator'),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
 	Q = require('q'),
 	TritonAgent = require('../util/TritonAgent'),
