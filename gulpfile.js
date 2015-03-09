@@ -4,6 +4,7 @@ var gulp = require("gulp"),
 	rename = require("gulp-rename"),
 	sourcemaps = require("gulp-sourcemaps"),
 	filter = require("gulp-filter"),
+	changed = require("gulp-changed"),
 	jasmine = require("gulp-jasmine"),
 	common = require("./buildutils/gulp-common"),
 	logging = require("./buildutils/logger-loader"),
@@ -13,18 +14,20 @@ var src = ["core/**/*", "core/**/*"];
 
 function compile(serverSide) {
 	var codeFilter = filter(["**/*.js", "**/*.jsx"]);
+	var dest = 'target/' + (serverSide ? "server" : "client");
 	return gulp.src(src)
-		.pipe(logging())
-		.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
 		.pipe(codeFilter)
+			.pipe(changed(dest, {extension: '.js'}))
+			.pipe(logging())
+			.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
 			.pipe(sourcemaps.init())
 			.pipe(common.es6Transform())
 			.pipe(sourcemaps.write())
 			.pipe(rename(function (path) {
 				path.extname = ".js";
 			}))
-		.pipe(codeFilter.restore({end:true}))
-		.pipe(gulp.dest('target/' + (serverSide ? "server" : "client") ));
+		.pipe(codeFilter.restore())
+		.pipe(gulp.dest(dest));
 }
 
 gulp.task('compile', ["compileClient", "compileServer"]);
