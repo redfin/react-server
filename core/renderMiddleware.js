@@ -199,7 +199,7 @@ function renderMetaTags (pageObject, res) {
 	var metaTags = pageObject.getMetaTags();
 
 	var metaTagsRendered = metaTags.map(metaTagPromise => {
-		return metaTagPromise.then(metaTag => {
+		return metaTagPromise.then(PageUtil.makeArray).then(metaTags => metaTags.forEach(metaTag => {
 			// TODO: escaping
 			if ((metaTag.name && metaTag.httpEquiv) || (metaTag.name && metaTag.charset) || (metaTag.charset && metaTag.httpEquiv)) {
 				throw new Error("Meta tag cannot have more than one of name, httpEquiv, and charset", metaTag);
@@ -219,7 +219,7 @@ function renderMetaTags (pageObject, res) {
 
 			res.write(`>`)
 			if (metaTag.noscript) res.write(`</noscript>`);
-		});
+		}));
 	});
 
 	return Q.all(metaTagsRendered);
