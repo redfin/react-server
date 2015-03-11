@@ -53,6 +53,10 @@ class RequestContext {
 		return this.isFragment;
 	}
 
+	getCurrentPath () {
+		return this.navigator.getCurrentRoute().path;
+	}
+
 	onNavigate (callback) {
 		this.navigator.on('navigateDone', callback);
 	}
