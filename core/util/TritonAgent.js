@@ -16,6 +16,9 @@ function Request(method, urlPath) {
 	this._headers = {};
 	this._timeout = null;
 	this._type = null;
+
+	// public field
+	this.aborted = void 0; //default to undefined
 }
 
 // we implement a subset of superagent's API. for the other methods,
@@ -158,6 +161,10 @@ Request.prototype._buildSuperagentRequest = function () {
 		req.timeout(this._timeout);
 	}
 
+	// cache the internal request, so that we can cancel it
+	// if necessary (see: `abort()`)
+	this._superagentReq = req;
+
 	return req;
 }
 
@@ -206,6 +213,18 @@ Request.prototype.urlPrefix = function (urlPrefix) {
 		return this._urlPrefix;
 	}
 	this._urlPrefix = urlPrefix;
+	return this;
+}
+
+/**
+ * Abort the active request. Passes through to superagent's
+ * `abort()` method. Sets 'aborted' flag on this request
+ */
+Request.prototype.abort = function () {
+	if (this._superagentReq) {
+		this.aborted = true;
+		this._superagentReq.abort();
+	}
 	return this;
 }
 
