@@ -186,12 +186,14 @@ class BaseStore {
 			return TritonAgent.get(url).then(res => {
 				logger.debug("completed " + name + ": " + url);
 				logger.time(`loadByName.success.${name}`, new Date - t0);
+				logger.time(`load.success.${name}`, new Date - t0);
 				this._handleLoadResult(name, res.body);
 				this.emitChange();
 				return res.body;
 			}, err => {
 				logger.error("error " + name + ": " + url, err.stack);
 				logger.time(`loadByName.error.${name}`, new Date - t0);
+				logger.time(`load.error.${name}`, new Date - t0);
 				this._data[name].status = BaseStore.LoadState.ERROR;
 				this.emitChange();
 

@@ -540,6 +540,10 @@ function logRequestStats(req, res, context, start){
 	logger.time(`responseCode.${res.statusCode}`, time);
 	logger.time("totalRequestTime", time);
 
+	if (notLoaded.length) {
+		logger.time("totalRequestTimeWithLateArrivals", time);
+	}
+
 	return Q();
 }
 
