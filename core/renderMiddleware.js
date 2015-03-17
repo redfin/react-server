@@ -173,9 +173,12 @@ function pageLifecycle() {
 
 function writeHeader(req, res, context, start, pageObject) {
 	res.type('html');
+	res.set('Transfer-Encoding', 'chunked');
 
 	res.write("<!DOCTYPE html><html><head>");
 	
+	// note: these responses can currently come back out-of-order, as many are returning
+	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
@@ -212,10 +215,11 @@ function renderMetaTags (pageObject, res) {
 			if (metaTag.noscript) res.write(`<noscript>`);
 			res.write(`<meta`);
 
-			if (metaTag.name) res.write(` name="${metaTag.name}"`);
+			if (metaTag.name)      res.write(` name="${metaTag.name}"`);
 			if (metaTag.httpEquiv) res.write(` http-equiv="${metaTag.httpEquiv}"`);
-			if (metaTag.charset) res.write(` charset="${metaTag.charset}"`);
-			if (metaTag.content) res.write(` content="${metaTag.content}"`);
+			if (metaTag.charset)   res.write(` charset="${metaTag.charset}"`);
+			if (metaTag.property)  res.write(` property="${metaTag.property}"`);
+			if (metaTag.content)   res.write(` content="${metaTag.content}"`);
 
 			res.write(`>`)
 			if (metaTag.noscript) res.write(`</noscript>`);
@@ -223,6 +227,24 @@ function renderMetaTags (pageObject, res) {
 	});
 
 	return Q.all(metaTagsRendered);
+}
+
+function validateMetaTag(metaTag) {
+	// count the number of non-"content" attrs in use. If it's more than one, throw an error
+	// TODO: it's probably better to not exclude things here? if people were writing meta tags
+	// themselves, they could put whatever they wanted in there...
+	var possibleAttrs = ['name', 'httpEquiv', 'charset', 'property'];
+	var count = possibleAttrs.reduce( (count, attrName) => {
+		return metaTag[attrName] ? (count + 1) : count;
+	});
+
+	if (count > 1) {
+		throw new Error(`<meta> tag cannot have more than one of: {possibleAttrs.join(",")}`);
+	}
+
+	if ( (metaTag.name || metaTag.httpEquiv || metaTag.property) && !metaTag.content ) {
+		throw new Error(`<meta> tag has attribute requiring a content attr, but no content attr is specified`);
+	}
 }
 
 function renderBaseTag(pageObject, res) {
