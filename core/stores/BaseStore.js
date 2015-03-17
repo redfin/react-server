@@ -233,7 +233,7 @@ class BaseStore {
 				// promise so everyone's happy.
 				this._data[name].promise = promise
 					.then((data) => {
-						this._data[name].notStartedDfd.resolve();
+						this._data[name].notStartedDfd.resolve(data);
 						return data;
 					});
 			}
