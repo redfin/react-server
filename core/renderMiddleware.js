@@ -228,11 +228,18 @@ function renderMetaTags (pageObject, res) {
 function renderBaseTag(pageObject, res) {
 	return pageObject.getBase().then((base) => {
 		if (base !== null) {
-			res.write(`<base href=${base.href}`);
-			if (base.target) {
-				res.write(` target=${base.target}`);
+			if (!base.href && !base.target) {
+				throw new Error("<base> needs at least one of 'href' or 'target'");
 			}
-			res.write(`>`);
+			var tag = "<base";
+			if (base.href) {
+				tag += ` href="${base.href}"`;
+			}
+			if (base.target) {
+				tag += ` target="${base.target}"`;
+			}
+			tag += ">";
+			res.write(tag);
 		}
 	});
 }
