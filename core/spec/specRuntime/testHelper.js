@@ -127,7 +127,7 @@ var startTritonServer = (routes, cb) => {
 	writeEntrypointFile(testTempDir);
 	buildClientCode(testTempDir, () => {
 		var server = express();
-		process.env.R3S_CONFIGS = process.cwd() + "/target/config/dev"
+		process.env.TRITON_CONFIGS = process.cwd() + "/target/config/dev"
 
 		server.use('/rollups', express.static(testTempDir));
 

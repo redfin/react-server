@@ -11,12 +11,12 @@ module.exports = function () {
 
 	// only read out the config once, and then cache it. -sra.
 	if (null === config) {
-		if (!process.env.R3S_CONFIGS) {
-			throw new Error('R3S_CONFIGS environment variable required to start server.');
+		if (!process.env.TRITON_CONFIGS) {
+			throw new Error('TRITON_CONFIGS environment variable required to start server.');
 		}
 
 		var fs = require("fs");
-		var configFile = fs.readFileSync(process.env.R3S_CONFIGS + "/config.json");
+		var configFile = fs.readFileSync(process.env.TRITON_CONFIGS + "/config.json");
 		config = Object.freeze(JSON.parse(configFile));
 	}
 
