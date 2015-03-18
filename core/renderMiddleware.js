@@ -184,6 +184,7 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderStylesheets(pageObject, res),
 		renderScripts(pageObject, res),
 		renderMetaTags(pageObject, res),
+		renderLinkTags(pageObject, res),
 		renderBaseTag(pageObject, res)
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we 
@@ -257,6 +258,28 @@ function validateMetaTag(metaTag) {
 	if ( (metaTag.name || metaTag.httpEquiv || metaTag.property) && !metaTag.content ) {
 		throw new Error(`<meta> tag has attribute requiring a content attr, but no content attr is specified`);
 	}
+}
+
+function renderLinkTags (pageObject, res) {
+	var linkTags = pageObject.getLinkTags();
+
+	var linkTagsRendered = linkTags.map(linkTagPromise => {
+		return linkTagPromise.then(PageUtil.makeArray).then(linkTags => linkTags.forEach(linkTag => {
+
+			if (!linkTag.rel) {
+				throw new Error(`<link> tag specified without 'rel' attr`);
+			}
+
+			var text = "<link";
+			Object.keys(linkTag).forEach( attr => {
+				text += ` ${attr}="${linkTag[attr]}"`;
+			});
+			text += ">";
+			res.write(text);
+		}));
+	});
+
+	return Q.all(linkTagsRendered);
 }
 
 function renderBaseTag(pageObject, res) {

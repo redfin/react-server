@@ -29,7 +29,7 @@ var PAGE_METHODS = {
 	getSystemScripts   : [0, () => [], standardizeScripts],
 	getHeadStylesheets : [0, () => [], standardizeStyles],
 	getMetaTags        : [0, () => [], standardizeMetaTags],
-	getCanonicalUrl    : [0, () => "", Q],
+	getLinkTags        : [0, () => [], standardizeLinkTags],
 	getBase            : [0, () => null, Q],
 	getBodyClasses     : [0, () => [], Q],
 	getElements        : [0, () => [], standardizeElements],
@@ -61,6 +61,10 @@ function standardizeElements(elements) {
 
 function standardizeMetaTags(metaTags) {
 	return PageUtil.makeArray(metaTags).map(metaTag => Q(metaTag));
+}
+
+function standardizeLinkTags(linkTags) {
+	return PageUtil.makeArray(linkTags).map(linkTag => Q(linkTag));
 }
 
 function standardizeScripts(scripts) {
