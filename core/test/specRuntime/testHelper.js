@@ -23,7 +23,7 @@ var getPort = () => PORT;
 var writeRoutesFile = (routes, tempDir) => {
 	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
-			middleware: [require("../../client/spec/specRuntime/ScriptsMiddleware")],
+			middleware: [require("../../client/test/specRuntime/ScriptsMiddleware")],
 			routes: {`;
 
 	Object.keys(routes).forEach((url, index) => {
@@ -34,7 +34,7 @@ var writeRoutesFile = (routes, tempDir) => {
 				page: function () {
 					return {
 						done: function (cb) {
-							cb(require("../../client/spec/${routes[url]}"));
+							cb(require("../../client/test/${routes[url]}"));
 						}
 					};
 				}				
@@ -50,7 +50,7 @@ var writeRoutesFile = (routes, tempDir) => {
 			page: function() {
 				return {
 					done: function(cb) {
-						cb(require("../../client/spec/specRuntime/TransitionPage"));
+						cb(require("../../client/test/specRuntime/TransitionPage"));
 					}
 				};
 			}
