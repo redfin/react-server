@@ -492,6 +492,12 @@ function writeBody(req, res, context, start, page) {
 	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
 	var noTimeoutRenderPromise =  elementPromises.concat(Q()).reduce((chain, next, index) => {
 		return chain.then((element) => {
+
+			// The timeoutRenderPromise may have rejected our
+			// completion deferred due to an exception.
+			// If it did, we're done.
+			if (!bodyComplete.promise.isPending()) return;
+
 	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
 	 		rendered[index - 1] = true;
 			return next;
@@ -527,6 +533,9 @@ function writeBody(req, res, context, start, page) {
 				rendered[index] = true;
 			}
 		});
+	}).catch((err) => {
+		logger.error("Error while rendering with timeout", err.stack);
+		bodyComplete.reject(err);
 	});
 
 	// return a promise that resolves when either the async render OR the timeout sync
