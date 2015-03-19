@@ -518,7 +518,7 @@ function writeBody(req, res, context, start, page) {
 
 		// The noTimeoutRenderPromise may have rejected our completion
 		// deferred due to an exception.
-		if (!bodyComplete.isPending()) return;
+		if (!bodyComplete.promise.isPending()) return;
 
 		logger.debug("Timeout Exceeeded. Rendering...");
 		elementPromises.forEach((promise, index) => {
