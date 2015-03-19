@@ -92,6 +92,25 @@
 							</tasks>
 						</configuration>
 					</execution>
+					<!-- TODO: This ant task is copy/pasted in corvair, triton, triton-route-loader. It would be great if it wasn't... -->
+                    <execution>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <id>clean-triton</id>
+                        <configuration>
+                            <tasks>
+                                <echo>Cleaning...</echo>
+                                <exec
+                                    dir="${project.basedir}"
+                                    executable="rm"
+                                    failonerror="false">
+                                    <arg line="-rf ./node_modules/"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                    </execution>
 				</executions>
 			</plugin>
 		</plugins>
