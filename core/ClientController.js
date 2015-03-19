@@ -341,6 +341,10 @@ class ClientController extends EventEmitter {
 	 */
 	_initializeHistoryListener(context) {
 
+        // Disabled for 61.
+        // FIXME: Either make this work well or eliminate it.
+        return;
+
         this._historyListener = (e) => {
             if (context) {
                 var path = this._history.getPath();
