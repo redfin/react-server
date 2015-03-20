@@ -49,6 +49,8 @@ class ClientController extends EventEmitter {
 	}
 
 	terminate() {
+		// We may not have set up any history stuff...
+		if (!this._history) return;
         this._history.off(this._historyListener);
         this._historyListener = null;
         this._history = null;
