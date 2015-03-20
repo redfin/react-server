@@ -479,6 +479,8 @@ function startBody(req, res, context, start, page) {
  */
 function writeBody(req, res, context, start, page) {
 
+	var bodyComplete = Q.defer();
+
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
@@ -490,12 +492,19 @@ function writeBody(req, res, context, start, page) {
 	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
 	var noTimeoutRenderPromise =  elementPromises.concat(Q()).reduce((chain, next, index) => {
 		return chain.then((element) => {
+
+			// The timeoutRenderPromise may have rejected our
+			// completion deferred due to an exception.
+			// If it did, we're done.
+			if (!bodyComplete.promise.isPending()) return;
+
 	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
 	 		rendered[index - 1] = true;
 			return next;
 		})
 	}).catch((err) => {
 		logger.error("Error while rendering without timeout", err.stack);
+		bodyComplete.reject(err);
 	});
 
 	// Some time has already elapsed since the request started.
@@ -513,6 +522,10 @@ function writeBody(req, res, context, start, page) {
 		// if we rendered everything up to the last element already, just return.
 		if (rendered[elementPromises.length - 1]) return;
 
+		// The noTimeoutRenderPromise may have rejected our completion
+		// deferred due to an exception.
+		if (!bodyComplete.promise.isPending()) return;
+
 		logger.debug("Timeout Exceeeded. Rendering...");
 		elementPromises.forEach((promise, index) => {
 			if (!rendered[index]) {
@@ -520,11 +533,17 @@ function writeBody(req, res, context, start, page) {
 				rendered[index] = true;
 			}
 		});
+	}).catch((err) => {
+		logger.error("Error while rendering with timeout", err.stack);
+		bodyComplete.reject(err);
 	});
 
 	// return a promise that resolves when either the async render OR the timeout sync
 	// render happens. 
-	return PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise);
+	PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise)
+		.then(() => bodyComplete.resolve());
+
+	return bodyComplete.promise;
 }
 
 function renderElement(res, element, context, index) {
