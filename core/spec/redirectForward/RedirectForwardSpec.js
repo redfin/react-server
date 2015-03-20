@@ -1,6 +1,8 @@
 var helper = require("../specRuntime/testHelper"), 
 	Browser = require("zombie");
 
+// FIXME: All of the `xdescribe` tests here are skipped because client
+//        transitions are disabled in 61 per RED-63301.
 describe("A redirect page", () => {
 
 	helper.startServerBeforeAll([
@@ -11,13 +13,13 @@ describe("A redirect page", () => {
 
 	helper.stopServerAfterAll();
 
-	describe("redirects temporarily to the right page", () => {
+	xdescribe("redirects temporarily to the right page", () => {
 		helper.testWithDocument("/temporaryRedirect", (document) => {
 			expect(document.location.pathname).toMatch("/final");
 		});
 	});
 
-	describe("contains the correct HTML after temp redirect", () => {
+	xdescribe("contains the correct HTML after temp redirect", () => {
 		helper.testWithDocument("/temporaryRedirect", (document) => {
 			expect(document.querySelector("#main").innerHTML).toMatch("FinalPage");
 			expect(document.querySelector("body").innerHTML).not.toMatch(/TemporaryRedirectPage/);
@@ -34,13 +36,13 @@ describe("A redirect page", () => {
 		browser.visit(`http://localhost:${helper.getPort()}/temporaryRedirect`);
 	});
 
-	describe("redirects permanently to the right page", () => {
+	xdescribe("redirects permanently to the right page", () => {
 		helper.testWithDocument("/permanentRedirect", (document) => {
 			expect(document.location.pathname).toMatch("/final");
 		});
 	});
 
-	describe("contains the correct HTML after permanent redirect", () => {
+	xdescribe("contains the correct HTML after permanent redirect", () => {
 		helper.testWithDocument("/permanentRedirect", (document) => {
 			expect(document.querySelector("#main").innerHTML).toMatch("FinalPage");
 			expect(document.querySelector("body").innerHTML).not.toMatch(/PermanentRedirectPage/);
@@ -67,7 +69,7 @@ describe("A forward page", () => {
 
 	helper.stopServerAfterAll();
 
-	describe("does NOT change its URL", () => {
+	xdescribe("does NOT change its URL", () => {
 		helper.testWithDocument("/forward", (document) => {
 			expect(document.location.pathname).toMatch("/forward");
 		});
