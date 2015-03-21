@@ -8,7 +8,25 @@ var gulp = require("gulp"),
 	jasmine = require("gulp-jasmine"),
 	common = require("./buildutils/gulp-common"),
 	logging = require("./buildutils/logger-loader"),
-	istanbul = require('gulp-istanbul');
+	istanbul = require('gulp-istanbul'),
+	gulpif = require("gulp-if"),
+	minimist = require("minimist");
+
+var availableOptions = {
+	'boolean': [ 'verbose', 'skipSourcemaps' ],
+	'default': {
+		'verbose': false,
+		'skipSourcemaps': false
+	}
+}
+var options = minimist(process.argv.slice(2), availableOptions);
+
+function shouldSourcemap () {
+	return !options.skipSourcemaps;
+}
+function isVerbose () {
+	return !!options.verbose;
+}
 
 var src = ["core/**/*", "core/**/*"];
 
@@ -20,9 +38,9 @@ function compile(serverSide) {
 			.pipe(changed(dest, {extension: '.js'}))
 			.pipe(logging())
 			.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
-			.pipe(sourcemaps.init())
+			.pipe(gulpif(shouldSourcemap(), sourcemaps.init()))
 			.pipe(common.es6Transform())
-			.pipe(sourcemaps.write())
+			.pipe(gulpif(shouldSourcemap(), sourcemaps.write()))
 			.pipe(rename(function (path) {
 				path.extname = ".js";
 			}))
@@ -64,7 +82,7 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 
 gulp.task("test", ["compileServer", "compileClient"], function() {
 	return gulp.src("target/server/test/**/*[Ss]pec.js")
-		.pipe(jasmine());
+		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
 });
 
 // todo: where should tests go?
