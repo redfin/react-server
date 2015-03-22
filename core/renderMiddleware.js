@@ -128,9 +128,14 @@ function renderPage(req, res, context, start, page) {
 
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
-	var lifecycleMethods = context.getIsFragment()
-			? fragmentLifecycle()
-			: pageLifecycle();
+	var lifecycleMethods;
+	if (context.getIsFragment()){
+		lifecycleMethods = fragmentLifecycle();
+	} else if (context.getIsRawResponse()){
+		lifecycleMethods = rawResponseLifecycle();
+	} else {
+		lifecycleMethods = pageLifecycle();
+	}
 
 	lifecycleMethods.reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
@@ -146,6 +151,15 @@ function renderPage(req, res, context, start, page) {
 
 	// TODO: we probably want a "we're not waiting any longer for this"
 	// timeout as well, and cancel the waiting deferreds
+}
+
+function rawResponseLifecycle () {
+	return [
+		Q(), // NOOP lead-in to prime the reduction
+		writeResponseData,
+		endResponse,
+		handleResponseComplete,
+	];
 }
 
 function fragmentLifecycle () {
@@ -544,6 +558,10 @@ function writeBody(req, res, context, start, page) {
 		.then(() => bodyComplete.resolve());
 
 	return bodyComplete.promise;
+}
+
+function writeResponseData(req, res, context, start, page) {
+	page.getResponseData().then(data => res.write(data));
 }
 
 function renderElement(res, element, context, index) {

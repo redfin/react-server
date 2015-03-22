@@ -33,6 +33,7 @@ var PAGE_METHODS = {
 	getBase            : [0, () => null, Q],
 	getBodyClasses     : [0, () => [], Q],
 	getElements        : [0, () => [], standardizeElements],
+	getResponseData    : [0, () => "", Q],
 	handleComplete     : [0, () => null, Q],
 };
 
