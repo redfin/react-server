@@ -53,6 +53,14 @@ class RequestContext {
 		return this.isFragment;
 	}
 
+	setIsRawResponse (isRawResponse) {
+		this.isRawResponse = isRawResponse;
+	}
+
+	getIsRawResponse () {
+		return this.isRawResponse;
+	}
+
 	getCurrentPath () {
 		return this.navigator.getCurrentRoute().path;
 	}
