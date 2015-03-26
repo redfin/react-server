@@ -45,22 +45,6 @@ class RequestContext {
 		return this.serverStash;
 	}
 
-	setIsFragment (isFragment) {
-		this.isFragment = isFragment;
-	}
-
-	getIsFragment () {
-		return this.isFragment;
-	}
-
-	setIsRawResponse (isRawResponse) {
-		this.isRawResponse = isRawResponse;
-	}
-
-	getIsRawResponse () {
-		return this.isRawResponse;
-	}
-
 	getCurrentPath () {
 		return this.navigator.getCurrentRoute().path;
 	}

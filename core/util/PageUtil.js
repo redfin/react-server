@@ -1,4 +1,5 @@
 var Q = require("q"), 
+	RLS = require("./RequestLocalStorage").getNamespace(),
 	PromiseUtil = require("./PromiseUtil");
 
 // This data structure defines the page interface.
@@ -23,6 +24,7 @@ var Q = require("q"),
 // short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
+	getConfig          : [1, () => ({}), standardizeConfig],
 	handleRoute        : [1, () => ({code: 200}), Q],
 	getTitle           : [0, () => "", Q],
 	getScripts         : [0, () => [], standardizeScripts],
@@ -94,6 +96,113 @@ function standardizeStyles(styles) {
 	})
 }
 
+// Page (and middleware) `getConfig()` methods should return vanilla JS objects
+// containing config overrides (if any).  Callers receive `undefined`.
+//
+// It is an error to return an object that contains unrecognized keys.
+//
+// It is an error to access config values via `PageConfig.get()` from within a
+// `Page.getConfig()` method.
+//
+function standardizeConfig(config) { PageConfigSetValues(config) }
+
+// The return value from your page's (or middleware's) `getConfig()` method
+// will be passed to `PageConfig.setValues({...})` automatically.
+//
+// `PageConfig.setValues({...})` cannot be called directly.
+//
+// If you're going to consume a value in middleware, call
+// `PageConfig.setDefaults({...})` before you call `next()`.
+//
+// It is an error to return an object from `Page.getConfig()` that contains
+// keys that haven't previously been included in an object passed to
+// `PageConfig.setDefaults()`.  This is to avoid name mismatch between
+// configuration producers and consumers.
+//
+// It is an error to pass an object to `PageConfig.setDefaults({...})` that
+// contains keys that _have_ previously been included in an object passed to
+// `PageConfig.setDefaults({...})` (no duplicate defaults).  This is to avoid
+// name collision between configuration consumers.
+//
+var PageConfig = (function(){
+
+	// This gets bound to the outer `PageConfig`.
+	var PageConfig = {
+		setDefaults (obj) { return _set(obj, true ) },
+		setValues   (obj) { return _set(obj, false) },
+		get         (key) { return _get(key) },
+		finalize    (   ) { return _fin(   ) },
+	}
+
+	// Below here are helpers. They are hidden from outside callers.
+	//
+	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
+
+	var _get = function(key) {
+
+		// Get the current mutable config.
+		var config = _obj();
+
+		// No access until all `Page.getConfig()` methods are complete.
+		if (!RLS.PageConfigFinalized){
+			throw new Error(`Premature access: "${key}"`);
+		}
+
+		// The key _must_ exist.
+		if (!config.hasOwnProperty(key)){
+			throw new Error(`Invalid key: "${key}"`);
+		}
+
+		return config[key];
+	}
+
+	var _set = function(obj, isDefault) {
+
+		// Get the current mutable config.
+		var config = _obj();
+
+		// Copy input values into it.
+		Object.keys(obj||{}).forEach(key => {
+			var keyExists = config.hasOwnProperty(key);
+			if (isDefault && keyExists){
+				throw new Error(`Duplicate PageConfig default: "${key}"`);
+			} else if (!isDefault && !keyExists) {
+				throw new Error(`Missing PageConfig default: "${key}"`);
+			}
+
+			logger.debug(`${isDefault?"Default":"Set"} "${key}" => "${obj[key]}"`);
+
+			config[key] = obj[key];
+		});
+	};
+
+	var _obj = function(){
+
+		// Return the current mutable config.
+		return RLS().PageConfig || (RLS().PageConfig = {});
+	}
+
+	var _fin = function(){
+
+		// Can't actually freeze at `PageConfig.finalize()` time, since
+		// request forwarding uses a dirty RLS context.
+		//
+		// At least we can log the final config state and unlock access.
+		//
+		logger.debug('Final', _obj());
+
+		RLS.PageConfigFinalized = true;
+	}
+
+	return PageConfig;
+})();
+
+// The _only_ way to set values is to return them from `Page.getConfig()`.
+//
+// The `setValues({...})` method is _not_ exposed.
+//
+var PageConfigSetValues = PageConfig.setValues;
+delete(PageConfig.setValues);
 
 var PageUtil = module.exports = {
 	PAGE_METHODS,
@@ -102,6 +211,8 @@ var PageUtil = module.exports = {
 	standardizeMetaTags,
 	standardizeScripts,
 	standardizeStyles,
+
+	PageConfig,
 
 	/**
 	 * Given an array of page instances, return an object that implements the page interface. This returned object's

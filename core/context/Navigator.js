@@ -48,7 +48,6 @@ class Navigator extends EventEmitter {
 			if (request.setRoute) {
 				request.setRoute(route);
 			}
-			this.context.setIsFragment(!!route.config.fragment);
 			this.handlePage(pageConstructor, request, type);
 
 		}, err => {
@@ -71,6 +70,10 @@ class Navigator extends EventEmitter {
 			return new pageClass();
 		});
 		var page = PageUtil.createPageChain(pages);
+
+		page.getConfig(request)
+
+		PageUtil.PageConfig.finalize();
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
 		// respond.

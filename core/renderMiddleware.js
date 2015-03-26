@@ -47,6 +47,12 @@ module.exports = function(server, routes) {
 
 		logger.debug(`Incoming request for ${req.path}`);
 
+		// Defaults for config we'll use in this module.
+		PageUtil.PageConfig.setDefaults({
+			isFragment    : false,
+			isRawResponse : false,
+		});
+
 		// Just to keep an eye out for leaks.
 		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
 
@@ -129,9 +135,9 @@ function renderPage(req, res, context, start, page) {
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
 	var lifecycleMethods;
-	if (context.getIsFragment()){
+	if (PageUtil.PageConfig.get('isFragment')){
 		lifecycleMethods = fragmentLifecycle();
-	} else if (context.getIsRawResponse()){
+	} else if (PageUtil.PageConfig.get('isRawResponse')){
 		lifecycleMethods = rawResponseLifecycle();
 	} else {
 		lifecycleMethods = pageLifecycle();
