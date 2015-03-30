@@ -30,7 +30,7 @@
   },
   "peerDependencies": {
     "react": "0.12.2",
-    "superagent": "^0.21.0"
+    "superagent": "0.21.0"
   },
   "devDependencies": {
     "express": "4.11.2",
