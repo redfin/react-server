@@ -87,7 +87,7 @@
 									dir="${project.basedir}"
 									executable="${gulp.bin}"
 									failonerror="true">
-										<arg line="test" />
+										<arg line="test --verbose" />
 								</exec>
 							</tasks>
 						</configuration>
