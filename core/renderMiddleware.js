@@ -47,12 +47,6 @@ module.exports = function(server, routes) {
 
 		logger.debug(`Incoming request for ${req.path}`);
 
-		// Defaults for config we'll use in this module.
-		PageUtil.PageConfig.setDefaults({
-			isFragment    : false,
-			isRawResponse : false,
-		});
-
 		// Just to keep an eye out for leaks.
 		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
 
