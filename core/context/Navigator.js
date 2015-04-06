@@ -42,13 +42,6 @@ class Navigator extends EventEmitter {
 		this.startRoute(route);
 		this.emit('navigateStart', route);
 
-		// These defaults need to be available client-side, too, in
-		// case a page checks them.
-		PageUtil.PageConfig.setDefaults({
-			isFragment    : false,
-			isRawResponse : false,
-		});
-
 		/* Breathe... */
 
 		route.config.page().done( pageConstructor => {
@@ -78,9 +71,10 @@ class Navigator extends EventEmitter {
 		});
 		var page = PageUtil.createPageChain(pages);
 
-		page.getConfig(request)
-
-		PageUtil.PageConfig.finalize();
+		PageUtil.PageConfig.initFromPageWithDefaults(page, {
+			isFragment    : false,
+			isRawResponse : false,
+		});
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
 		// respond.

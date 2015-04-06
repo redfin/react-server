@@ -24,7 +24,6 @@ var Q = require("q"),
 // short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
-	getConfig          : [1, () => ({}), standardizeConfig],
 	handleRoute        : [1, () => ({code: 200}), Q],
 	getTitle           : [0, () => "", Q],
 	getScripts         : [0, () => [], standardizeScripts],
@@ -36,7 +35,22 @@ var PAGE_METHODS = {
 	getBodyClasses     : [0, () => [], Q],
 	getElements        : [0, () => [], standardizeElements],
 	getResponseData    : [0, () => "", Q],
-	handleComplete     : [0, () => null, Q],
+};
+
+// These are similar to `PAGE_METHODS`, but are not chained.
+//
+// Each page and middleware that implements a page hook will have its hook
+// called in turn.  Hooks do not receive a `next()` method, and are not
+// responsible for merging return values.
+//
+// Keys here are method names.
+//
+// The values are empty placeholder tuples.
+
+var PAGE_HOOKS = {
+	addConfig      : [],
+	getConfig      : [],
+	handleComplete : [],
 };
 
 // These `standardize*` functions show what will happen to the output of your
@@ -96,67 +110,49 @@ function standardizeStyles(styles) {
 	})
 }
 
-// Page (and middleware) `getConfig()` methods should return vanilla JS objects
-// containing config overrides (if any).  Callers receive `undefined`.
-//
-// It is an error to return an object that contains unrecognized keys.
-//
-// It is an error to access config values via `PageConfig.get()` from within a
-// `Page.getConfig()` method.
-//
-function standardizeConfig(config) { PageConfigSetValues(config) }
-
-// The return value from your page's (or middleware's) `getConfig()` method
-// will be passed to `PageConfig.setValues({...})` automatically.
-//
-// `PageConfig.setValues({...})` cannot be called directly.
-//
-// If you're going to consume a value in middleware, call
-// `PageConfig.setDefaults({...})` before you call `next()`.
-//
-// It is an error to return an object from `Page.getConfig()` that contains
-// keys that haven't previously been included in an object passed to
-// `PageConfig.setDefaults()`.  This is to avoid name mismatch between
-// configuration producers and consumers.
-//
-// It is an error to pass an object to `PageConfig.setDefaults({...})` that
-// contains keys that _have_ previously been included in an object passed to
-// `PageConfig.setDefaults({...})` (no duplicate defaults).  This is to avoid
-// name collision between configuration consumers.
-//
 var PageConfig = (function(){
+	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
 
 	// This gets bound to the outer `PageConfig`.
+	//
+	// Only `PageConfig.get(key)` is generally useful.
+	//
 	var PageConfig = {
-		setDefaults (obj) { return _set(obj, true ) },
-		setValues   (obj) { return _set(obj, false) },
-		get         (key) { return _get(key) },
-		finalize    (   ) { return _fin(   ) },
+
+		get(key) {
+
+			// No access until all `Page.addConfig()` and
+			// `Page.getConfig()` methods are complete.
+			if (!RLS.PageConfigFinalized){
+				throw new Error(`Premature access: "${key}"`);
+			}
+
+			// The key _must_ exist.
+			if (!_obj().hasOwnProperty(key)){
+				throw new Error(`Invalid key: "${key}"`);
+			}
+
+			return _obj()[key];
+		},
+
+
+		// Don't call this.  It's called for you.
+		initFromPageWithDefaults(page, defaults) {
+
+			// First set all defaults.  Then set all values.
+			_setDefaults(defaults);
+			page.addConfig().forEach(_setDefaults);
+			page.getConfig().forEach(_setValues);
+
+			logger.debug('Final', _obj());
+
+			RLS.PageConfigFinalized = true;
+		},
 	}
 
 	// Below here are helpers. They are hidden from outside callers.
-	//
-	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
 
-	var _get = function(key) {
-
-		// Get the current mutable config.
-		var config = _obj();
-
-		// No access until all `Page.getConfig()` methods are complete.
-		if (!RLS.PageConfigFinalized){
-			throw new Error(`Premature access: "${key}"`);
-		}
-
-		// The key _must_ exist.
-		if (!config.hasOwnProperty(key)){
-			throw new Error(`Invalid key: "${key}"`);
-		}
-
-		return config[key];
-	}
-
-	var _set = function(obj, isDefault) {
+	var _set = function(isDefault, obj) {
 
 		// Get the current mutable config.
 		var config = _obj();
@@ -165,7 +161,9 @@ var PageConfig = (function(){
 		Object.keys(obj||{}).forEach(key => {
 			var keyExists = config.hasOwnProperty(key);
 			if (isDefault && keyExists){
-				throw new Error(`Duplicate PageConfig default: "${key}"`);
+				// Can't make this fatal, because request
+				// forwarding uses a dirty RLS() context.
+				logger.warning(`Duplicate PageConfig default: "${key}"`);
 			} else if (!isDefault && !keyExists) {
 				throw new Error(`Missing PageConfig default: "${key}"`);
 			}
@@ -176,33 +174,17 @@ var PageConfig = (function(){
 		});
 	};
 
+	var _setDefaults = _set.bind({}, true);
+	var _setValues   = _set.bind({}, false);
+
 	var _obj = function(){
 
 		// Return the current mutable config.
 		return RLS().PageConfig || (RLS().PageConfig = {});
 	}
 
-	var _fin = function(){
-
-		// Can't actually freeze at `PageConfig.finalize()` time, since
-		// request forwarding uses a dirty RLS context.
-		//
-		// At least we can log the final config state and unlock access.
-		//
-		logger.debug('Final', _obj());
-
-		RLS.PageConfigFinalized = true;
-	}
-
 	return PageConfig;
 })();
-
-// The _only_ way to set values is to return them from `Page.getConfig()`.
-//
-// The `setValues({...})` method is _not_ exposed.
-//
-var PageConfigSetValues = PageConfig.setValues;
-delete(PageConfig.setValues);
 
 var PageUtil = module.exports = {
 	PAGE_METHODS,
@@ -245,6 +227,22 @@ var PageUtil = module.exports = {
 					);
 			}
 		}
+
+		Object.keys(PAGE_HOOKS).forEach(method => {
+
+			// Grab a list of pages that implement this method.
+			var implementors = pages.filter(page => page[method]);
+
+			// The resulting method calls each implementor's method
+			// in turn and returns an array containg in their
+			// return values.
+			pageChain[method] = function(){
+				var args = [].slice.call(arguments);
+				return implementors.map(
+					page => page[method].apply(page, args)
+				)
+			}
+		});
 
 		return pageChain;
 	},
