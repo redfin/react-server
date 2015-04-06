@@ -1,4 +1,5 @@
 var Q = require("q"), 
+	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace(),
 	PromiseUtil = require("./PromiseUtil");
 
@@ -52,6 +53,41 @@ var PAGE_HOOKS = {
 	getConfig      : [],
 	handleComplete : [],
 };
+
+// These methods will be made available on your page/middleware object.
+//
+// A method of the same name defined directly on your class will generate a warning.
+//
+var PAGE_MIXIN = {
+	getRequest: makeGetter('request'),
+	setRequest: makeSetter('request'),
+}
+
+function makeGetter(key){
+	return () => (RLS()._PageUtilMixin||{})[key];
+}
+
+function makeSetter(key){
+	return val => {
+		(RLS()._PageUtilMixin||(RLS()._PageUtilMixin={}))[key] = val;
+	}
+}
+
+function lazyMixinPageUtilMethods(page){
+	var proto = Object.getPrototypeOf(page);
+	if (proto._haveMixedInPageUtilMethods) return;
+
+	proto._haveMixedInPageUtilMethods = true;
+
+	Object.keys(PAGE_MIXIN).forEach(method => {
+		if (proto[method]){
+			logger.error(`PAGE_MIXINS method override: ${
+				(proto.constructor||{}).name
+			}.${method}`);
+		}
+		proto[method] = PAGE_MIXIN[method];
+	});
+}
 
 // These `standardize*` functions show what will happen to the output of your
 // page methods.
@@ -186,6 +222,13 @@ var PageConfig = (function(){
 	return PageConfig;
 })();
 
+var logInvocation = function(name, func){
+	return function(){
+		logger.debug(`Call ${name}`);
+		return func.apply(this, [].slice.call(arguments));
+	}
+}
+
 var PageUtil = module.exports = {
 	PAGE_METHODS,
 
@@ -207,6 +250,12 @@ var PageUtil = module.exports = {
 		// method names on page objects to chained function calls.
 		var pageChain = {};
 
+		pages.forEach(lazyMixinPageUtilMethods);
+
+		Object.keys(PAGE_MIXIN).forEach(method => {
+			pageChain[method] = logInvocation(method, PAGE_MIXIN[method]);
+		});
+
 		for (var method in PAGE_METHODS){
 
 			if (PAGE_METHODS.hasOwnProperty(method)){
@@ -217,14 +266,15 @@ var PageUtil = module.exports = {
 					standardizeReturnValue
 				] = PAGE_METHODS[method];
 
-				pageChain[method] = PageUtil
-					.createObjectFunctionChain(
+				pageChain[method] = logInvocation(method,
+					PageUtil.createObjectFunctionChain(
 						pages,
 						method,
 						argumentCount,
 						defaultImpl,
 						standardizeReturnValue
-					);
+					)
+				);
 			}
 		}
 
@@ -236,12 +286,12 @@ var PageUtil = module.exports = {
 			// The resulting method calls each implementor's method
 			// in turn and returns an array containg in their
 			// return values.
-			pageChain[method] = function(){
+			pageChain[method] = logInvocation(method, function(){
 				var args = [].slice.call(arguments);
 				return implementors.map(
 					page => page[method].apply(page, args)
 				)
-			}
+			});
 		});
 
 		return pageChain;

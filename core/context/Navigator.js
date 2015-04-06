@@ -71,6 +71,8 @@ class Navigator extends EventEmitter {
 		});
 		var page = PageUtil.createPageChain(pages);
 
+		page.setRequest(request);
+
 		PageUtil.PageConfig.initFromPageWithDefaults(page, {
 			isFragment    : false,
 			isRawResponse : false,
