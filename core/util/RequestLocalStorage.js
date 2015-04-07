@@ -40,8 +40,29 @@ if (SERVER_SIDE){
 
 var namespaces         = 0
 ,   getCountNamespaces = () => namespaces
-,   getNamespace       = () => (
-	(i => () => getContainer()[i] || (getContainer()[i] = {}))(namespaces++)
-)
+,   getNamespace       = () => {
+
+	// This will be our return value.
+	var getter = (
+		i => () => getContainer()[i] || (getContainer()[i] = {})
+	)(namespaces++);
+
+	if (SERVER_SIDE) {
+
+		Object.observe(getter, changes => {
+
+			// It's easy to make the mistake of using `RLS.foo`
+			// instead of `RLS().foo`, but this is actually a very
+			// bad error server-side.  It's a leak across requests.
+			throw new Error(`Use of "RLS.${
+				changes[0].name
+			}" should be "RLS().${
+				changes[0].name
+			}"!`);
+		});
+	}
+
+	return getter;
+}
 
 module.exports = { getNamespace, getCountNamespaces, startRequest };
