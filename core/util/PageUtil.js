@@ -319,7 +319,17 @@ var PageUtil = module.exports = {
 			// method in turn and returns an array containing in
 			// their return values.
 			pageChain[method] = logInvocation(method, function(){
+
+				// The `arguments` object isn't a real array.
+				// Pre-es5 `Function.apply()` required a real
+				// array.  This `[].slice.call(arguments)`
+				// idiom creates a real array with the elements
+				// of the `arguments` object.
+				//
+				// See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+				//
 				var args = [].slice.call(arguments);
+
 				return implementors.map(
 					page => page[method].apply(page, args)
 				)
