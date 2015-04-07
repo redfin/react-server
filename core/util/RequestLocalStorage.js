@@ -47,7 +47,9 @@ var namespaces         = 0
 		i => () => getContainer()[i] || (getContainer()[i] = {})
 	)(namespaces++);
 
-	if (SERVER_SIDE) {
+	// This is guarded against old versions of node that don't provide the
+	// necessary API (bamboo).
+	if (SERVER_SIDE && Object.observe) {
 
 		Object.observe(getter, changes => {
 
