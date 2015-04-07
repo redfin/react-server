@@ -90,12 +90,12 @@ var PAGE_HOOKS = {
 // are therefore shared between the page and all middleware.
 //
 function makeGetter(key){
-	return () => (RLS().MixinValues||{})[key];
+	return () => (RLS().mixinValues||{})[key];
 }
 
 function makeSetter(key){
 	return val => {
-		(RLS().MixinValues||(RLS().MixinValues={}))[key] = val;
+		(RLS().mixinValues||(RLS().mixinValues={}))[key] = val;
 	}
 }
 
@@ -189,7 +189,7 @@ var PageConfig = (function(){
 
 			// No access until all `Page.addConfig()` and
 			// `Page.getConfig()` methods are complete.
-			if (!RLS().PageConfigFinalized){
+			if (!RLS().pageConfigFinalized){
 				throw new Error(`Premature access: "${key}"`);
 			}
 
@@ -212,7 +212,7 @@ var PageConfig = (function(){
 
 			logger.debug('Final', _obj());
 
-			RLS().PageConfigFinalized = true;
+			RLS().pageConfigFinalized = true;
 		},
 	}
 
@@ -246,7 +246,7 @@ var PageConfig = (function(){
 	var _obj = function(){
 
 		// Return the current mutable config.
-		return RLS().PageConfig || (RLS().PageConfig = {});
+		return RLS().pageConfig || (RLS().pageConfig = {});
 	}
 
 	return PageConfig;
