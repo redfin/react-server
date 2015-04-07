@@ -3,9 +3,34 @@ var Q = require("q"),
 	RLS = require("./RequestLocalStorage").getNamespace(),
 	PromiseUtil = require("./PromiseUtil");
 
-// This data structure defines the page interface.
+
+// There are three data structures defined here that are relevant for page and
+// middleware authors:
 //
-// Each item represents a method that page objects (and middleware) may override.
+//   - PAGE_MIXIN   : These will be automatically defined on your class.
+//   - PAGE_METHODS : Chained methods that may be overridden in your class.
+//   - PAGE_HOOKS   : Non-chained methods that may be defined in your class.
+//
+// These three data structure define the page interface.
+
+
+
+// These methods will be available on your page/middleware object.
+//
+// Accidental definition of a method with a conflicting name directly on your
+// class will generate an error.
+//
+var PAGE_MIXIN = {
+	getRequest : makeGetter('request'),
+	getConfig  : key => PageConfig.get(key),
+
+	// Methods below here are called for you.
+	// You shouldn't need to call them yourself.
+	setRequest : makeSetter('request'),
+}
+
+
+// Each item here represents a method that page/middleware objects may override.
 //
 // The keys here are method names.
 //
@@ -38,42 +63,46 @@ var PAGE_METHODS = {
 	getResponseData    : [0, () => "", Q],
 };
 
-// These are similar to `PAGE_METHODS`, but are not chained.
+// These are similar to `PAGE_METHODS`, but differ as follows:
+//
+//   - They are not chained.
+//   - They do not have default implementations.
 //
 // Each page and middleware that implements a page hook will have its hook
 // called in turn.  Hooks do not receive a `next()` method, and are not
 // responsible for merging return values.
 //
-// Keys here are method names.
+// The keys here are method names.
 //
 // The values are empty placeholder tuples.
-
+//
 var PAGE_HOOKS = {
-	addConfig      : [],
-	setConfig      : [],
-	handleComplete : [],
+	addConfig      : [], // Define new configuration values.
+	setConfig      : [], // Alter existing configuration values.
+	handleComplete : [], // Do stuff after the response has been sent.
 };
 
-// These methods will be made available on your page/middleware object.
-//
-// A method of the same name defined directly on your class will generate a warning.
-//
-var PAGE_MIXIN = {
-	getRequest : makeGetter('request'),
-	setRequest : makeSetter('request'),
-	getConfig  : key => PageConfig.get(key),
-}
 
+// These are helpers for `PAGE_MIXIN` methods.
+//
+// Note that getters and setters don't actually modify the page/middleware
+// object directly, but rather stash values in request local storage.  Values
+// are therefore shared between the page and all middleware.
+//
 function makeGetter(key){
-	return () => (RLS()._PageUtilMixin||{})[key];
+	return () => (RLS().MixinValues||{})[key];
 }
 
 function makeSetter(key){
 	return val => {
-		(RLS()._PageUtilMixin||(RLS()._PageUtilMixin={}))[key] = val;
+		(RLS().MixinValues||(RLS().MixinValues={}))[key] = val;
 	}
 }
 
+// This attaches `PAGE_MIXIN` methods to page/middleware classes.
+//
+// It does this only _once_, and thereafter short-circuits.
+//
 function lazyMixinPageUtilMethods(page){
 	var proto = Object.getPrototypeOf(page);
 	if (proto._haveMixedInPageUtilMethods) return;
@@ -82,7 +111,7 @@ function lazyMixinPageUtilMethods(page){
 
 	Object.keys(PAGE_MIXIN).forEach(method => {
 		if (proto[method]){
-			logger.error(`PAGE_MIXINS method override: ${
+			throw new Error(`PAGE_MIXINS method override: ${
 				(proto.constructor||{}).name
 			}.${method}`);
 		}
@@ -223,6 +252,8 @@ var PageConfig = (function(){
 	return PageConfig;
 })();
 
+// This is used to log method calls on the page _chain_.  Method calls on
+// individual page/middleware objects are not automatically logged.
 var logInvocation = function(name, func){
 	return function(){
 		logger.debug(`Call ${name}`);
@@ -284,9 +315,9 @@ var PageUtil = module.exports = {
 			// Grab a list of pages that implement this method.
 			var implementors = pages.filter(page => page[method]);
 
-			// The resulting method calls each implementor's method
-			// in turn and returns an array containg in their
-			// return values.
+			// The resulting function calls each implementor's
+			// method in turn and returns an array containing in
+			// their return values.
 			pageChain[method] = logInvocation(method, function(){
 				var args = [].slice.call(arguments);
 				return implementors.map(
