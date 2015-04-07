@@ -50,7 +50,7 @@ var PAGE_METHODS = {
 
 var PAGE_HOOKS = {
 	addConfig      : [],
-	getConfig      : [],
+	setConfig      : [],
 	handleComplete : [],
 };
 
@@ -59,8 +59,9 @@ var PAGE_HOOKS = {
 // A method of the same name defined directly on your class will generate a warning.
 //
 var PAGE_MIXIN = {
-	getRequest: makeGetter('request'),
-	setRequest: makeSetter('request'),
+	getRequest : makeGetter('request'),
+	setRequest : makeSetter('request'),
+	getConfig  : key => PageConfig.get(key),
 }
 
 function makeGetter(key){
@@ -178,7 +179,7 @@ var PageConfig = (function(){
 			// First set all defaults.  Then set all values.
 			_setDefaults(defaults);
 			page.addConfig().forEach(_setDefaults);
-			page.getConfig().forEach(_setValues);
+			page.setConfig().forEach(_setValues);
 
 			logger.debug('Final', _obj());
 
