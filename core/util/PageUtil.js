@@ -189,7 +189,7 @@ var PageConfig = (function(){
 
 			// No access until all `Page.addConfig()` and
 			// `Page.getConfig()` methods are complete.
-			if (!RLS.PageConfigFinalized){
+			if (!RLS().PageConfigFinalized){
 				throw new Error(`Premature access: "${key}"`);
 			}
 
@@ -212,7 +212,7 @@ var PageConfig = (function(){
 
 			logger.debug('Final', _obj());
 
-			RLS.PageConfigFinalized = true;
+			RLS().PageConfigFinalized = true;
 		},
 	}
 
