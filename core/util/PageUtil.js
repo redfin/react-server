@@ -7,7 +7,7 @@ var Q = require("q"),
 // There are three data structures defined here that are relevant for page and
 // middleware authors:
 //
-//   - PAGE_MIXIN   : These will be automatically defined on your class.
+//   - PAGE_MIXIN   : Methods that will be automatically defined on your class.
 //   - PAGE_METHODS : Chained methods that may be overridden in your class.
 //   - PAGE_HOOKS   : Non-chained methods that may be defined in your class.
 //
