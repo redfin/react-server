@@ -72,9 +72,9 @@ var PAGE_METHODS = {
 // The values are empty placeholder tuples.
 //
 var PAGE_HOOKS = {
-	addConfig      : [], // Define new configuration values.
-	setConfig      : [], // Alter existing configuration values.
-	handleComplete : [], // Do stuff after the response has been sent.
+	addConfigValues : [], // Define new configuration values.
+	setConfigValues : [], // Alter existing configuration values.
+	handleComplete  : [], // Do stuff after the response has been sent.
 };
 
 
@@ -194,30 +194,36 @@ var PageConfig = (function(){
 
 		get(key) {
 
-			// No access until all `Page.addConfig()` and
-			// `Page.getConfig()` methods are complete.
+			// No access until all `Page.addConfigValues()` and
+			// `Page.setConfigValues()` methods are complete.
 			if (!RLS().pageConfigFinalized){
 				throw new Error(`Premature access: "${key}"`);
 			}
 
 			// The key _must_ exist.
-			if (!_obj().hasOwnProperty(key)){
+			if (!_getCurrentConfigObject().hasOwnProperty(key)){
 				throw new Error(`Invalid key: "${key}"`);
 			}
 
-			return _obj()[key];
+			return _getCurrentConfigObject()[key];
 		},
 
 
 		// Don't call this.  It's called for you.
+		// The `page` here is a page chain.
+		// It's called `page` in `Navigator` and `renderMiddleware`.
 		initFromPageWithDefaults(page, defaults) {
 
-			// First set all defaults.  Then set all values.
+			// First set the framework level defaults.
 			_setDefaults(defaults);
-			page.addConfig().forEach(_setDefaults);
-			page.setConfig().forEach(_setValues);
 
-			logger.debug('Final', _obj());
+			// Then let page/middleware define new config defaults,
+			// and finally let page/middleware alter existing
+			// config values.
+			page.addConfigValues().forEach(_setDefaults);
+			page.setConfigValues().forEach(_setValues);
+
+			logger.debug('Final', _getCurrentConfigObject());
 
 			RLS().pageConfigFinalized = true;
 		},
@@ -226,9 +232,7 @@ var PageConfig = (function(){
 	// Below here are helpers. They are hidden from outside callers.
 
 	var _set = function(isDefault, obj) {
-
-		// Get the current mutable config.
-		var config = _obj();
+		var config = _getCurrentConfigObject();
 
 		// Copy input values into it.
 		Object.keys(obj||{}).forEach(key => {
@@ -250,7 +254,7 @@ var PageConfig = (function(){
 	var _setDefaults = _set.bind({}, true);
 	var _setValues   = _set.bind({}, false);
 
-	var _obj = function(){
+	var _getCurrentConfigObject = function(){
 
 		// Return the current mutable config.
 		return RLS().pageConfig || (RLS().pageConfig = {});
