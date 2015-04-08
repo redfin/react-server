@@ -282,17 +282,19 @@ var PageUtil = module.exports = {
 
 	PageConfig,
 
-	/**
-	 * Given an array of page instances, return an object that implements the page interface. This returned object's
-	 * methods delegate to the first page in the pages array, passing the second page's implementation as the next
-	 * variable (and the second page's implementation gets the third page's next, and so on). 
-	 */
+	// Given an array of page/middleware instances, return an object that
+	// implements the interface defined by the union of:
+	//
+	//   - PAGE_CHAIN_PROTOTYPE
+	//   - PAGE_METHODS
+	//   - PAGE_HOOKS
+	//
 	createPageChain(pages) {
 
-		// This will be our return value.  It will be a mapping of
-		// method names on page objects to chained function calls.
+		// This will be our return value.
 		//
-		// It also inherits methods from the `PAGE_CHAIN_PROTOTYPE`.
+		// This `Object.create()` call creates a new empty object
+		// (`{}`) with `PAGE_CHAIN_PROTOTYPE` as its prototype.
 		//
 		var pageChain = Object.create(PAGE_CHAIN_PROTOTYPE);
 
@@ -300,6 +302,7 @@ var PageUtil = module.exports = {
 		// methods provided by `PAGE_MIXIN`.
 		pages.forEach(lazyMixinPageUtilMethods);
 
+		// Wire up the chained methods.
 		for (var method in PAGE_METHODS){
 
 			if (PAGE_METHODS.hasOwnProperty(method)){
@@ -322,6 +325,7 @@ var PageUtil = module.exports = {
 			}
 		}
 
+		// Wire up the un-chained methods.
 		Object.keys(PAGE_HOOKS).forEach(method => {
 
 			// Grab a list of pages that implement this method.
