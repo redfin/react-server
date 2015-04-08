@@ -129,9 +129,9 @@ function renderPage(req, res, context, start, page) {
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
 	var lifecycleMethods;
-	if (context.getIsFragment()){
+	if (PageUtil.PageConfig.get('isFragment')){
 		lifecycleMethods = fragmentLifecycle();
-	} else if (context.getIsRawResponse()){
+	} else if (PageUtil.PageConfig.get('isRawResponse')){
 		lifecycleMethods = rawResponseLifecycle();
 	} else {
 		lifecycleMethods = pageLifecycle();
