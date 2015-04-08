@@ -23,12 +23,7 @@ var Q = require("q"),
 var PAGE_MIXIN = {
 	getRequest : makeGetter('request'),
 	getConfig  : key => PageConfig.get(key),
-
-	// Methods below here are called for you.
-	// You shouldn't need to call them yourself.
-	setRequest : makeSetter('request'),
-}
-
+};
 
 // Each item here represents a method that page/middleware objects may override.
 //
@@ -83,7 +78,19 @@ var PAGE_HOOKS = {
 };
 
 
-// These are helpers for `PAGE_MIXIN` methods.
+
+// These methods are only defined on the page _chain_ which is used internally
+// within triton.  Page/middleware authers can ignore this.
+var PAGE_CHAIN_PROTOTYPE = {
+	setRequest: makeSetter('request'),
+};
+
+// We log all method calls on the page chain for debugging purposes.
+Object.keys(PAGE_CHAIN_PROTOTYPE).forEach(method => {
+	PAGE_CHAIN_PROTOTYPE[method] = logInvocation(method, PAGE_CHAIN_PROTOTYPE[method]);
+});
+
+// These are helpers for `PAGE_MIXIN` and `PAGE_CHAIN_PROTOTYPE` methods.
 //
 // Note that getters and setters don't actually modify the page/middleware
 // object directly, but rather stash values in request local storage.  Values
@@ -254,7 +261,7 @@ var PageConfig = (function(){
 
 // This is used to log method calls on the page _chain_.  Method calls on
 // individual page/middleware objects are not automatically logged.
-var logInvocation = function(name, func){
+function logInvocation(name, func){
 	return function(){
 		logger.debug(`Call ${name}`);
 		return func.apply(this, [].slice.call(arguments));
@@ -280,13 +287,14 @@ var PageUtil = module.exports = {
 
 		// This will be our return value.  It will be a mapping of
 		// method names on page objects to chained function calls.
-		var pageChain = {};
+		//
+		// It also inherits methods from the `PAGE_CHAIN_PROTOTYPE`.
+		//
+		var pageChain = Object.create(PAGE_CHAIN_PROTOTYPE);
 
+		// Make sure all page classes have been augmented with the
+		// methods provided by `PAGE_MIXIN`.
 		pages.forEach(lazyMixinPageUtilMethods);
-
-		Object.keys(PAGE_MIXIN).forEach(method => {
-			pageChain[method] = logInvocation(method, PAGE_MIXIN[method]);
-		});
 
 		for (var method in PAGE_METHODS){
 
