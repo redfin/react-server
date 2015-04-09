@@ -561,6 +561,7 @@ function writeBody(req, res, context, start, page) {
 }
 
 function writeResponseData(req, res, context, start, page) {
+	page.setExpressResponse(res);
 	page.getResponseData().then(data => res.write(data));
 }
 
