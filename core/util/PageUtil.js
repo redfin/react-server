@@ -22,8 +22,8 @@ var Q = require("q"),
 //
 var PAGE_MIXIN = {
 	getExpressResponse : makeGetter('expressResponse'), // Only available with `isRawResponse`.
-	getRequest : makeGetter('request'),
-	getConfig  : key => PageConfig.get(key),
+	getRequest         : makeGetter('request'),
+	getConfig          : key => PageConfig.get(key),
 };
 
 // Each item here represents a method that page/middleware objects may override.
@@ -84,7 +84,7 @@ var PAGE_HOOKS = {
 // within triton.  Page/middleware authers can ignore this.
 var PAGE_CHAIN_PROTOTYPE = {
 	setExpressResponse : makeSetter('expressResponse'),
-	setRequest: makeSetter('request'),
+	setRequest         : makeSetter('request'),
 };
 
 // We log all method calls on the page chain for debugging purposes.
