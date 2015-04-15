@@ -389,7 +389,13 @@ class CacheEntry {
 		var parseable = !!responseBodyParsers[res.type];
 		var resCopy = {};
 		Object.keys(res).forEach( (prop) => {
-			if ("body" === prop && parseable) {
+			if ("text" === prop) {
+				// encode text, so that if we response accidentally included HTML,
+				// we don't break the page
+				// note: this isn't free. it takes ~20ms consistently for RADP agent data
+				// TODO: there's got to be something more clever we can do here.
+				resCopy["text"] = encodeURIComponent(res["text"]);
+			} else if ("body" === prop && parseable) {
 				// don't copy body if it's a well-known (easily-parsed) content-type
 				resCopy._hasBody = true;
 			} else {
@@ -404,6 +410,11 @@ class CacheEntry {
 	}
 
 	rehydrate (state) {
+
+		// NOTE: rehydrate will be called _TWICE_ for late arrivals:
+		// once initially, when not loaded, and once again when
+		// the request arrives
+
 		this.url = state.url;
 		this.requesters = state.requesters;
 		this.loaded = state.loaded;
@@ -426,7 +437,15 @@ class CacheEntry {
 	}
 
 	_rehydrateResponse (res) {
-		if (res && res._hasBody) {
+		if (!res) return res;
+
+		if (res.text) {
+			// decode the text of the response
+			// note: this needs to be done before we can parse the body...
+			res.text = decodeURIComponent(res.text);
+		}
+
+		if (res._hasBody) {
 			// re-parse the text of the response body serialized by the server. 
 			// if the body wasn't in a known format, it will have been included directly
 
@@ -439,6 +458,7 @@ class CacheEntry {
 				: null;
 			delete res._hasBody;
 		}
+
 		return res;
 	}
 
@@ -698,11 +718,11 @@ class RequestDataCache {
 		}
 	}
 
-	lateArrival (url, res) {
+	lateArrival (url, dehydratedEntry) {
 		logger.debug(`Late arrival for ${url}`);
 		var dataCache = this.dataCache;
 		if (dataCache[url]) {
-			dataCache[url].setResponse(res);
+			dataCache[url].rehydrate(dehydratedEntry);
 		} else {
 			logger.debug("WTF?");
 		}

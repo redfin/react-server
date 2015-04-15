@@ -612,10 +612,9 @@ function setupLateArrivals(req, res, context, start, page) {
 			renderScriptsAsync([{
 				text: `__lateArrival(${
 					JSON.stringify(pendingRequest.url)
-				}, "${
-					/* note the double-quotes wrapping this string */
-					encodeURIComponent(JSON.stringify(data))
-				}");`
+				}, ${
+					JSON.stringify(pendingRequest.entry.dehydrate())
+				});`
 			}], res);
 
 		})
