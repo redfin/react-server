@@ -169,6 +169,104 @@ describe("TritonAgent", () => {
 
 	});
 
+	describe("cache behavior", () => {
+
+		it("includes both .text and .body when content-type is not well-known", withRlsContext( (done) => {
+
+			var URL = "/describe";
+			var FAKE_CONTENT_TYPE = "application/foo-json";
+
+			addJsonParserForContentType(superagent, FAKE_CONTENT_TYPE);
+
+			// only GET requests are cached at the moment
+			TritonAgent.get(URL)
+				.query({ type: FAKE_CONTENT_TYPE })
+				.then( (res) => {
+
+					var cache = TritonAgent.cache();
+					var dehydrated = cache.dehydrate();
+					var entry = dehydrated.dataCache[URL];
+
+					// verify that our cache looks as expected
+					expect(entry.res.text).toBeDefined();
+					expect(entry.res.body).toBeDefined();
+
+					// make sure that the cache is empty
+					TritonAgent.cache()._clear();
+
+					// verify that cache can be rehydrated
+					TritonAgent.cache().rehydrate(dehydrated);
+
+					var entry = dehydrated.dataCache[URL];
+					expect(entry).toBeDefined();
+					expect(entry.res.text).toBeDefined();
+					expect(entry.res.body).toBeDefined();
+
+					removeJsonParserForContentType(superagent, FAKE_CONTENT_TYPE);
+
+				}).catch( (err) => {
+					console.log(err.stack);
+					// this will fail the test
+					expect(err).toBeUndefined();
+				}).fin( () => {
+					removeJsonParserForContentType(superagent, FAKE_CONTENT_TYPE);
+					done();
+				});
+
+			// verify that things got written to the cache 
+			var cache = TritonAgent.cache();
+			expect(cache.getPendingRequests().length).toBe(1);
+			var dehydrated = cache.dehydrate();
+			expect(dehydrated.dataCache[URL]).toBeDefined();
+		}));
+
+		it("excludes body property when content-type is application/json", withRlsContext( (done) => {
+
+			var URL = "/describe";
+
+			// only GET requests are cached at the moment
+			TritonAgent.get(URL)
+				.then( (res) => {
+
+					var cache = TritonAgent.cache();
+					var dehydrated = cache.dehydrate();
+					var entry = dehydrated.dataCache[URL];
+
+					// verify that our cache looks as expected
+					expect(entry.res.text).toBeDefined();
+					expect(entry.res.body).toBeUndefined();
+
+					// make sure that the cache is empty
+					TritonAgent.cache()._clear();
+
+					// verify that cache can be rehydrated
+					TritonAgent.cache().rehydrate(dehydrated);
+
+					// after hydration, .body should be available again
+					var entry = dehydrated.dataCache[URL];
+					expect(entry).toBeDefined();
+					expect(entry.res.text).toBeDefined();
+					expect(entry.res.body).toBeDefined();
+
+					done();
+				}).catch( (err) => {
+					console.log(err.stack);
+
+					// this will fail the test
+					expect(err).toBeUndefined();
+					done();
+				});
+
+			// verify that things got written to the cache 
+			var cache = TritonAgent.cache();
+			expect(cache.getPendingRequests().length).toBe(1);
+			var dehydrated = cache.dehydrate();
+			expect(dehydrated.dataCache[URL]).toBeDefined();
+
+		}));
+
+	})
+
 });
 
 function withRlsContext (runTest) {
@@ -207,19 +305,28 @@ function makeServer (cb) {
 			reqObject[key] = req[key];
 		});
 		reqObject.headers = req.headers;
-		// console.log(reqObject);
-		res.type('application/json').end(JSON.stringify({req: reqObject}));
+
+		var type = req.query.type ? req.query.type : 'application/json';
+		setTimeout( () => {
+			res.status(200).type(type).end(JSON.stringify({req: reqObject}));
+		}, req.query.delay || 0);
 	});
 
 	server.use('/timeout', function (req, res) {
 		setTimeout( () => {
 			// wait 1s
-			res.status(200).end();
+			res.status(200).type('application/json').end(JSON.stringify({Hello: "World"}));
 		}, req.query.delay).unref();
 	});
 
 	var httpServer = http.createServer(server);
 	httpServer.listen(PORT, () => cb(httpServer));
 
+}
 
+function addJsonParserForContentType(superagent, contentType) {
+	superagent.parse[contentType] = superagent.parse['application/json'];
+}
+function removeJsonParserForContentType(superagent, contentType) {
+	delete superagent.parse[contentType];
 }

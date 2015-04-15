@@ -330,6 +330,18 @@ function applyPlugins (req) {
 	})
 }
 
+// TODO: we should figure out a way to consolidate this with SuperAgentExtender
+var responseBodyParsers = {
+	'application/json': function (text) {
+		if (text && text.trim) {
+			text = text.trim();
+		}
+		if (/^{}&&/.test(text)) {
+			text = text.substr(4);
+		}
+		return JSON.parse(text);
+	}
+}
 
 /**
  * An entry in the RequestDataCache
@@ -351,16 +363,51 @@ class CacheEntry {
 			url: this.url,
 			requesters: this.requesters,
 			loaded: this.loaded,
-			res: this.res,
+			res: this._copyResponseForDehydrate(this.res),
 			err: this.err // TODO: does this do something reasonable for Error objects?
 		};
+	}
+
+	/**
+	 * _copyResponseForDehydrate attempts to construct a canonical form of the response object
+	 * that can be used later to reconstruct it. Its primary goal is to avoid duplication of
+	 * the response body in both the `.text` and `.body` properties of the cached response object.
+	 *
+	 * There are several ways this could have been handled, but the purest way (as of right now)
+	 * from the standpoint of the API appears to be to provide parsing functions for known
+	 * response types (e.g., "application/json"). If the response content-type is known, we'll
+	 * simply serialize a placeholder (`_hasBody`) indicating that we should try to reparse the
+	 * body from the response text when rehydrating. If there is a parsed body on the response at
+	 * the time of dehydrating and we *don't* recognize the response type, we'll serialize both
+	 * `.text` and `.body`, paying a penalty in response size, but guaranteeing correctness.
+	 * (We'll also log a warning saying that we should probably add another response type).
+	 * 
+	 */
+	_copyResponseForDehydrate (res) {
+		if (!res) return res;
+
+		var parseable = !!responseBodyParsers[res.type];
+		var resCopy = {};
+		Object.keys(res).forEach( (prop) => {
+			if ("body" === prop && parseable) {
+				// don't copy body if it's a well-known (easily-parsed) content-type
+				resCopy._hasBody = true;
+			} else {
+				if ("body" === prop) {
+					// 'parseable' must be false. we should log a warning
+					logger.warning(`TritonAgent needs responseBodyParser for content-type: ${res.type} to avoid duplicating data in cache body`);
+				}
+				resCopy[prop] = res[prop];
+			}
+		});
+		return resCopy;
 	}
 
 	rehydrate (state) {
 		this.url = state.url;
 		this.requesters = state.requesters;
 		this.loaded = state.loaded;
-		this.res = state.res;
+		this.res = this._rehydrateResponse(state.res);
 		this.err = state.err;
 		
 		// TODO FIXME: these won't work if the response from the server was an error
@@ -376,6 +423,23 @@ class CacheEntry {
 		} else {
 			logger.debug(`Rehydrating pending url to cache without data: ${this.url}`);
 		}
+	}
+
+	_rehydrateResponse (res) {
+		if (res && res._hasBody) {
+			// re-parse the text of the response body serialized by the server. 
+			// if the body wasn't in a known format, it will have been included directly
+
+			var parse = responseBodyParsers[res.type];
+			if (!parse) {
+				logger.warning(`Unparseable content type for ${this.url}: ${res.type}, but response._hasBody was true. (This may be a bug in TritonAgent)`);
+			}
+			res.body = parse && res.text && res.text.length
+				? parse(res.text)
+				: null;
+			delete res._hasBody;
+		}
+		return res;
 	}
 
 	setResponse (res) {
@@ -467,7 +531,10 @@ class CacheEntry {
 		[
 			"body",
 			"text",
+			"type",
+
 			/*'files'*/ // TODO
+
 			"header",
 			"status",
 			"statusType",
@@ -639,6 +706,11 @@ class RequestDataCache {
 		} else {
 			logger.debug("WTF?");
 		}
+	}
+
+	// helper method. Useful in unit-tests
+	_clear () {
+		delete RLS().cache;
 	}
 
 }
