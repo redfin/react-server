@@ -13,7 +13,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
 	PromiseUtil = require("./util/PromiseUtil"),
-	TritonAgent = require('./util/TritonAgent');
+	TritonAgent = require('./util/TritonAgent'),
+	StringEscapeUtil = require('./util/StringEscapeUtil');
 
 
 // TODO FIXME ?? 
@@ -613,7 +614,7 @@ function setupLateArrivals(req, res, context, start, page) {
 				text: `__lateArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
-					JSON.stringify(pendingRequest.entry.dehydrate())
+					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
 				});`
 			}], res);
 

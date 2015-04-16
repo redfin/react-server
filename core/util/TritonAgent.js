@@ -389,13 +389,7 @@ class CacheEntry {
 		var parseable = !!responseBodyParsers[res.type];
 		var resCopy = {};
 		Object.keys(res).forEach( (prop) => {
-			if ("text" === prop) {
-				// encode text, so that if we response accidentally included HTML,
-				// we don't break the page
-				// note: this isn't free. it takes ~20ms consistently for RADP agent data
-				// TODO: there's got to be something more clever we can do here.
-				resCopy["text"] = encodeURIComponent(res["text"]);
-			} else if ("body" === prop && parseable) {
+			if ("body" === prop && parseable) {
 				// don't copy body if it's a well-known (easily-parsed) content-type
 				resCopy._hasBody = true;
 			} else {
@@ -438,12 +432,6 @@ class CacheEntry {
 
 	_rehydrateResponse (res) {
 		if (!res) return res;
-
-		if (res.text) {
-			// decode the text of the response
-			// note: this needs to be done before we can parse the body...
-			res.text = decodeURIComponent(res.text);
-		}
 
 		if (res._hasBody) {
 			// re-parse the text of the response body serialized by the server. 
