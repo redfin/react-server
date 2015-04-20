@@ -142,7 +142,7 @@ function renderPage(req, res, context, start, page) {
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
 	).catch(err => {
-		logger.error("Error in renderPage chain", err.stack)
+		logger.error("Error in renderPage chain ", err.stack)
 
 		// Bummer.
 		res.status(500).end();
