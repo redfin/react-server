@@ -34,6 +34,14 @@ Object.keys(superagent.Request.prototype)
 		}
 	});
 
+Request.prototype.agent = function (agent) {
+	if (typeof agent === 'undefined') {
+		return this._agent;
+	}
+	this._agent = agent;
+	return this;
+}
+
 Request.prototype.method = function (method) {
 	if (typeof method === 'undefined') {
 		return this._method;
@@ -149,6 +157,10 @@ Request.prototype.end = function (fn) {
 Request.prototype._buildSuperagentRequest = function () {
 	var req = superagent(this._method, this._buildUrl());
 
+	if (this._agent){
+		req.agent(this._agent);
+	}
+
 	if (this._type) {
 		req.type(this._type);
 	}
@@ -174,6 +186,13 @@ Request.prototype._buildUrl = function () {
 		return this._urlPrefix + this._urlPath;
 	}
 	return this._urlPath;
+}
+
+
+Request.prototype.getProtocol = function(){
+
+	// Returns undefined if no protocol found.
+	return (this._buildUrl().match(/^(.+?):/)||[])[1];
 }
 
 /**
