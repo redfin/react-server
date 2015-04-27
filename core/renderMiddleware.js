@@ -43,7 +43,7 @@ module.exports = function(server, routes) {
 	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
 
-		var start = new Date();
+		var start = RLS().startTime = new Date();
 		var startHR = process.hrtime();
 
 		logger.debug(`Incoming request for ${req.path}`);
@@ -217,6 +217,10 @@ function flushRes(res){
 	// middleware is installed, so we need to guard our calls.
 	if (res.flush) {
 		res.flush()
+		if (!RLS().didLogFirstFlush){
+			RLS().didLogFirstFlush = true;
+			logger.time('firstFlush', new Date - RLS().startTime);
+		}
 	}
 }
 
