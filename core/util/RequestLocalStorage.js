@@ -45,9 +45,13 @@ var namespaces         = 0
 ,   getNamespace       = () => {
 
 	// This will be our return value.
-	var getter = (
-		i => () => getContainer()[i] || (getContainer()[i] = {})
-	)(namespaces++);
+	var getter = (i => () => {
+		var container = getContainer();
+		if (!container){
+			throw new Error("RLS() access outside of request!");
+		}
+		return container[i] || (container[i] = {});
+	})(namespaces++);
 
 	// This is guarded against old versions of node that don't provide the
 	// necessary API (bamboo).
