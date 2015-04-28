@@ -110,7 +110,7 @@ function handleResponseComplete(req, res, context, start, page) {
 		// `handleComplete()` here.
 		//
 		if (page) {
-			setTimeout(page.handleComplete, 0);
+			page.handleComplete();
 		}
 	}));
 }
