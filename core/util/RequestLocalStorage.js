@@ -27,6 +27,7 @@
 if (SERVER_SIDE){
 	var key          = '_triton_request_local_storage_'
 	,   cls          = require('continuation-local-storage').createNamespace(key)
+	,   bind         = cls.bind.bind(cls)
 	,   getContainer = () => cls.get(key)
 	,   startRequest = (start) => { cls.run(() => {cls.set(key, []); start()}) }
 
@@ -34,6 +35,7 @@ if (SERVER_SIDE){
 	require('cls-q')(cls);
 } else {
 	var container    = []
+	,   bind         = f  => f
 	,   getContainer = () => container
 	,   startRequest = () => container = []
 }
@@ -67,4 +69,4 @@ var namespaces         = 0
 	return getter;
 }
 
-module.exports = { getNamespace, getCountNamespaces, startRequest };
+module.exports = { getNamespace, getCountNamespaces, startRequest, bind };

@@ -95,28 +95,24 @@ module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
 function handleResponseComplete(req, res, context, start, page) {
 
-	// All intentional response completion should funnel through this
-	// function.  If this value starts climbing gradually that's an
-	// indication that we have some _unintentional_ response completion
-	// going on that we should deal with.
-	ACTIVE_REQUESTS--;
+	req.socket.on('finish', RequestLocalStorage.bind(() => {
 
-	// If this was an error response other server middleware might change
-	// the response code or send more data (e.g. a nice 404 page), so
-	// we'll defer our calls to `logRequestStats()` and `handleComplete()`
-	// until that's done.
-	//
-	// If error handling middleware is not synchronous we should use
-	// something like `on-finished` to hook into the real response end.
-	//
-	setTimeout(() => logRequestStats(req, res, context, start, page), 0)
+		// All intentional response completion should funnel through
+		// this function.  If this value starts climbing gradually
+		// that's an indication that we have some _unintentional_
+		// response completion going on that we should deal with.
+		ACTIVE_REQUESTS--;
 
-	// Note that if the navigator couldn't even map the request to a page,
-	// we won't be able to call middleware `handleComplete()` here.
-	//
-	if (page) {
-		setTimeout(page.handleComplete, 0);
-	}
+		logRequestStats(req, res, context, start, page);
+
+		// Note that if the navigator couldn't even map the request to
+		// a page, we won't be able to call middleware
+		// `handleComplete()` here.
+		//
+		if (page) {
+			setTimeout(page.handleComplete, 0);
+		}
+	}));
 }
 
 function renderPage(req, res, context, start, page) {
