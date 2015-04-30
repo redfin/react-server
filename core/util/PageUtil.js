@@ -323,6 +323,11 @@ var PageUtil = module.exports = {
 			// chain them together so that each receives as an
 			// argument the rest of the chain in the form of an
 			// arity-zero function.
+			//
+			// The `next` argument in the reduction here is the
+			// accumulated chain.  It is what each implementation
+			// will receive as _its_ `next` argument.
+			//
 			pageChain[method] = logInvocation(method, pages
 				.filter      (page => page[method])
 				.map         (page => page[method].bind(page))
