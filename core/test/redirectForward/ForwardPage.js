@@ -1,7 +1,7 @@
 var React = require("react");
 
 class ForwardPage {
-	handleRoute(request) {
+	handleRoute() {
 		return {page: require("./FinalPage")};
 	}
 

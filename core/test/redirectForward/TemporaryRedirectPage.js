@@ -1,7 +1,7 @@
 var React = require("react");
 
 class TemporaryRedirectPage {
-	handleRoute(request) {
+	handleRoute() {
 		return {code: 302, location: "/final"};
 	}	
 

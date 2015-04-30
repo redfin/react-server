@@ -2,8 +2,8 @@ var React = require("react"),
 	Link = require("../../components/Link");
 
 class TransitionPage {
-	handleRoute(request, next) {
-		this.path = request.getQuery().url;
+	handleRoute() {
+		this.path = this.getRequest().getQuery().url;
 		return {code:200};
 	}
 
