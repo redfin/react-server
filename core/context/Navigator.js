@@ -80,7 +80,7 @@ class Navigator extends EventEmitter {
 
 		// call page.handleRoute(), and use the resulting code to decide how to 
 		// respond.
-		page.handleRoute(request).then(handleRouteResult => {
+		page.handleRoute().then(handleRouteResult => {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
