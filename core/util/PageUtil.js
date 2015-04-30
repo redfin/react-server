@@ -31,12 +31,11 @@ var PAGE_MIXIN = {
 // The keys here are method names.
 //
 // The values are tuples containing:
-//   - Number of arguments to the method.
 //   - Default implementation of the method.
 //   - Normalization function applied to method output.
 //
-// Note that each of these methods also receives an additional argument,
-// which is the next implementation of the method in the call chain.
+// Note that each of these methods receives an argument, which is the next
+// implementation of the method in the call chain.
 //     - Middleware implementations _should_ call this in most cases.*
 //     - Page implementations _may_ call this (it will be the default implementation).
 //
@@ -46,17 +45,17 @@ var PAGE_MIXIN = {
 // short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
-	handleRoute        : [0, () => ({code: 200}), Q],
-	getTitle           : [0, () => "", Q],
-	getScripts         : [0, () => [], standardizeScripts],
-	getSystemScripts   : [0, () => [], standardizeScripts],
-	getHeadStylesheets : [0, () => [], standardizeStyles],
-	getMetaTags        : [0, () => [], standardizeMetaTags],
-	getLinkTags        : [0, () => [], standardizeLinkTags],
-	getBase            : [0, () => null, Q],
-	getBodyClasses     : [0, () => [], Q],
-	getElements        : [0, () => [], standardizeElements],
-	getResponseData    : [0, () => "", Q],
+	handleRoute        : [() => ({code: 200}), Q],
+	getTitle           : [() => "", Q],
+	getScripts         : [() => [], standardizeScripts],
+	getSystemScripts   : [() => [], standardizeScripts],
+	getHeadStylesheets : [() => [], standardizeStyles],
+	getMetaTags        : [() => [], standardizeMetaTags],
+	getLinkTags        : [() => [], standardizeLinkTags],
+	getBase            : [() => null, Q],
+	getBodyClasses     : [() => [], Q],
+	getElements        : [() => [], standardizeElements],
+	getResponseData    : [() => "", Q],
 };
 
 // These are similar to `PAGE_METHODS`, but differ as follows:
@@ -274,6 +273,14 @@ function logInvocation(name, func){
 	}
 }
 
+// Return `fn` with a wrapper that puts its return value through `standardize`
+// on the way out.
+function makeStandard(standardize, fn){
+	return function(){
+		return standardize(fn.apply(null, [].slice.call(arguments)));
+	}
+}
+
 var PageUtil = module.exports = {
 	PAGE_METHODS,
 
@@ -307,24 +314,22 @@ var PageUtil = module.exports = {
 		// Wire up the chained methods.
 		for (var method in PAGE_METHODS){
 
-			if (PAGE_METHODS.hasOwnProperty(method)){
+			if (!PAGE_METHODS.hasOwnProperty(method)) return;
 
-				var [
-					argumentCount,
-					defaultImpl,
-					standardizeReturnValue
-				] = PAGE_METHODS[method];
+			var [defaultImpl, standardize] = PAGE_METHODS[method];
 
-				pageChain[method] = logInvocation(method,
-					PageUtil.createObjectFunctionChain(
-						pages,
-						method,
-						argumentCount,
-						defaultImpl,
-						standardizeReturnValue
-					)
-				);
-			}
+			// Take bound methods for each page/middleware that
+			// implement (plus the default implementation), and
+			// chain them together so that each receives as an
+			// argument the rest of the chain in the form of an
+			// arity-zero function.
+			pageChain[method] = logInvocation(method, pages
+				.filter      (page => page[method])
+				.map         (page => page[method].bind(page))
+				.concat      ([defaultImpl])
+				.map         (makeStandard.bind(null, standardize))
+				.reduceRight ((next, cur) => cur.bind(null, next))
+			);
 		}
 
 		// Wire up the un-chained methods.
@@ -355,67 +360,6 @@ var PageUtil = module.exports = {
 		});
 
 		return pageChain;
-	},
-
-	/**
-	 * Given an array of objects and a function name, this returns a function that will call functionName on the first
-	 * object, adding a next parameter to the end that is a function to call to the next object's implementation of functionName, and so on
-	 * down the line. It is a way to make a middleware-like chain of functions, but the functions will be bound to the object in 
-	 * question from objects.
-	 * 
-	 * The last object in the array will also receive a next parameter, which will call defaultImpl.
-	 * 
-	 * standardizeReturnValue will be called on every return value from functionName so that next will always return the same type. This
-	 * is useful when a function can return one of many different types.
-	 */
-	createObjectFunctionChain(objects, functionName, argumentCount, defaultImpl, standardizeReturnValue) {
-		// our first order of business is to get an array of pure functions to chain; this involves finding
-		// which objects have implementations for functionName, binding those implementations to the object
-		// in question, and standardizing the return values.
-		var functionsToChain = [];
-		objects.forEach((object) => {
-			if (object[functionName]) {
-				functionsToChain.push(function() { 
-					return standardizeReturnValue(object[functionName].apply(object, arguments));
-				});
-			}
-		});
-		// the innermost implementation calls the default implementation and standardizes the result.
-		functionsToChain.push(function() { 
-			return standardizeReturnValue(defaultImpl.apply(null, arguments));
-		});
-
-		// now we have an array of pure functions to chain.
-		return PageUtil.createFunctionChain(functionsToChain, argumentCount);
-	},
-
-	createFunctionChain(functions, argumentCount) {
-		if (functions.length === 0 ) {
-			throw new Error("createFunctionChain cannot be called with zero-length array.");
-		}
-
-		// we start from the innermost implementation (i.e. the last in the array) and move outward. nextImpl holds 
-		// the function that will be used as the next argument for the function before it in the array.
-		var nextImpl = functions[functions.length - 1];
-		// now let's chain together the other implementations.
-		for (var i = functions.length - 2; i >= 0; i--) {
-			// 
-			nextImpl = PageUtil._addArgumentToFunction(functions[i], nextImpl, argumentCount);
-		}
-		return nextImpl;
-	},
-
-	// takes in a function fn and returns a function that calls fn with argument bound at the end of the argument list.
-	_addArgumentToFunction(fn, argument, argumentCount) {
-		if (argumentCount > 6) {
-			throw new Error("_addArgumentToFunction only supports methods with up to 6 arguments");
-		}
-		return function(a, b, c, d, e, f) {
-			var args = [a, b, c, d, e, f];
-			args = args.slice(0, argumentCount);
-			args.push(argument);
-			return fn.apply(null, args);
-		}
 	},
 
 	makeArray(valueOrArray) {
