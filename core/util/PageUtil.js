@@ -319,7 +319,7 @@ var PageUtil = module.exports = {
 			var [defaultImpl, standardize] = PAGE_METHODS[method];
 
 			// Take bound methods for each page/middleware that
-			// implement (plus the default implementation), and
+			// implements (plus the default implementation), and
 			// chain them together so that each receives as an
 			// argument the rest of the chain in the form of an
 			// arity-zero function.
