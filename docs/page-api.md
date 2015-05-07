@@ -27,6 +27,7 @@ The rendering process follows the following flow:
 
 1. The request is compared to all the routes, and a Page constructor is retrieved.
 1. The Page constructor is called.
+1. `setConfigValues` is called.  This method may return an object representing configuration overrides for the page.
 1. `handleRoute` is called with the current Request to determine if this request needs to be redirected or forwarded.
  * If a redirect is returned (code 301 or 302), the user-visible URL will change, and the routing process will start again at step #1.
  * If a forward is returned (a Page constructor), then routing will jump back to step #2 with the new Page constructor.
@@ -35,13 +36,29 @@ The rendering process follows the following flow:
 1. `getElements` is called, and the resulting ReactElements are rendered and written out to the document in the order they were returned from getElements. On both client and server side, rendering of element N will always block on rendering of element N - 1. We may ease this restriction later.
 1. If a timeout is reached on the server, the EarlyPromises of ReactElements may be forced to resolve via `getValue`, and the resulting elements will be rendered and written out to the document. If `getElements` returns a Promise that is not an EarlyPromise, then nothing will be written out in the case of a timeout.
 
-Every method in this API takes in a `next` argument as the last argument in the list. This `next` argument is a function with the same prototype as the function in question minus a `next` argument, and it is used to call the default implementation of the function in question.
+
+# Page methods
+
+There are three groups of methods that are relevant to page objects, and they
+are all defined in simple data structures with ample commentary near the top of
+triton/core/util/PageUtil.js.  That is the authoritative reference for the
+triton page interface.
+
+* Please see: `triton/core/util/PageUtil.js`
+
+## Static methods
 
 `constructor()`
 
 `static middleware() : [Page classes]`
 
 * An array of page classes that should be used as mixins for this page. See Middleware section below to see what these are for.
+
+## PAGE_METHODS
+
+Each of these methods receives a function, `next`, as its sole argument.
+This `next function may be used to call the default implementation of the
+function in question.
 
 `handleRoute(request:Request, loader:Loader, next: Function), optional: {code?: int, location?: String, page?:Page} | Promise({code?: int, location?: String, page?:Page})`
 
@@ -95,6 +112,12 @@ Every method in this API takes in a `next` argument as the last argument in the 
 
 * Default: []
 
+`getLinkTags(next: Function): Link | Promise(Link) | [Link | Promise(Link)]`
+
+* A set of Link objects that represent the link tags for this page. If it’s a promise and the promise returns null, the link tag will not be used.
+
+* Default: []
+
 `getBase(next: Function): Base | Promise(Base | null) | null`
 
 * Returns the value of the HTML `<base>` tag. If null, there will be no <base> tag in the head.
@@ -115,15 +138,11 @@ Every method in this API takes in a `next` argument as the last argument in the 
 
 * If the any of the return values are EarlyPromises, they may be rendered in a partial state using `getValue`.
 
-* **TODO: consider renaming to getRootElements**
+`getResponseData(next: Function): String | Buffer | Promise(String) | Promise(Buffer)`
+
+* This method is only part of the "raw response" page lifecycle.  See
 
 ### TO BE IMPLEMENTED IN VERSION 2
-
-`getLinks(next:Function): Link | Promise(Link) | [Link | Promise(Link)]`
-
-* **NOT YET IMPLEMENTED**
-
-* RECOMMENDATION: v2, sigh.
 
 `getCanonicalUrl(next: Function), optional: String | Promise(String)`
 
@@ -143,106 +162,31 @@ Every method in this API takes in a `next` argument as the last argument in the 
 
 * RECOMMENDATION: v2, sigh.
 
-# Base
+## PAGE_HOOKS
 
-A Base tag for the page, to be returned by `Page.getBase()`.
+These are additional methods that a page/middleware may implement.
 
-`href: String`
+`setConfigValues()`: Config object
 
-`target?: String`
+Return configuration overrides for the page.
 
-# HttpHeader
-Simple object for `Page.getHttpHeaders()`.
+`addConfigValues()`: Config object
 
-`name: String`
+Add new configuration values, with defaults (only used by middleware).
 
-`value: String`
+`handleComplete()`: Called when the request is complete and the full response has been sent.
 
-# Meta
-Simple object for return from `Page.getMetaTags()`.
 
-`httpEquiv?: String`
+## PAGE_MIXIN
 
-* The HTTP header that this meta tag is replacing. Exactly one of `charset`, `httpEquiv`, and `name` must be present.
+These are methods that are automatically made available on the page object.
+The page may call these methods on itself.
 
-`name?: String`
+`getRequest()`: Get the request object (see "Request", below)
 
-* The meta value’s name. Exactly one of `charset`, `httpEquiv`, and `name` must be present.
+`getConfig(key)`: Get a single page configuration value.
 
-`charset?: String`
-
-* The HTML5 charset meta tag. Exactly one of `charset`, `httpEquiv`, and `name` must be present.
-
-`content?: String`
-
-* The content of the tag; MUST be set if `name` or `httpEquiv` is present.
-
-`noscript?: boolean`
-
-* **NOT YET IMPLEMENTED**
-* True if this meta tag should be inside a `<noscript>` element. Defaults to false.
-
-# Script
-
-A simple object that can be returned from `getScripts` which can represent either an external script file or an inline script.
-
-`href?: String`
-
-* For external script files, designates the file URL. A script object must have either `href` or `text`, but not both and not neither.
-
-`text?: String`
-
-* For inline script files, the text of the script. A script object must have either `href` or `text`, but not both and not neither.
-
-`type?: String`
-
-* The type of the script. If not present, it’s assumed to be “text/javascript”.
-
-# Style
-A simple object that can be returned from getStyles and which can represent either an external style file or an inline style block.
-
-`href?: String`
-
-* For external styles, designates the file URL. A style object must have either `href` or `text`, but not both and not neither.
-
-`text?: String`
-
-* For inline styles, the text of the style. A style object must have either `href` or `text`, but not both and not neither.
-
-`type?: String`
-
-* The type of the script. If not present, it’s assumed to be “text/css”.
-
-`media?: String`
-
-* The media query that applies for this style. If not present, it’s assumed to be “”.
-
-`noscript?: boolean`
-
-* **NOT YET IMPLEMENTED**
-* True if this style should be inside a `<noscript>` element. Defaults to false.
-
-# Link **NOT IMPLEMENTED**
-
-* A simple object that can be returned from `getLinks`. To see what these mean, check the documentation for HTML <link> elements.
-
-`rel: String`
-
-`crossorigin?:String`
-
-`href?: String`
-
-`hreflang?:String`
-
-`media?:String`
-
-`sizes?:Str`ing
-
-`type?:String`
-
-`noscript?: boolean`
-
-* True if this link should be inside a `<noscript>` element. Defaults to false.
+`getExpressResponse()`: Get the express response object (only available for raw response pages).
 
 # Middleware
 
