@@ -10,11 +10,16 @@
 
 var common = require('./common')
 
+// IE9 doesn't even _define_ console unless the dev tools are open.
+var _console = (typeof console === 'undefined')
+	?{log:()=>{}}
+	:console;
+
 // This is just so we have a real function to work with in IE9.
-var console_log = Function.prototype.bind.call(console.log, console);
+var console_log = Function.prototype.bind.call(_console.log, _console);
 
 // IE9 also doesn't support color.
-var monochrome = typeof console.log == "object";
+var monochrome = typeof _console.log == "object";
 
 var makeLogger = function(group, opts){
 	var config = common.config[group]
@@ -31,12 +36,12 @@ var makeLogger = function(group, opts){
 
 			if (monochrome)
 				return console_log.apply(
-					console,
+					_console,
 					[`${level}: [${opts.name}]`].concat(args)
 				);
 
-			console.log.apply(
-				console,
+			_console.log.apply(
+				_console,
 				[
 					'%c'+level+'%c: [%c'+opts.name+'%c]',
 					'color: '+config.colors[level],
