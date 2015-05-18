@@ -639,11 +639,19 @@ function endResponse(req, res, context, start, page) {
 function logRequestStats(req, res, context, start){
 	var allRequests = TritonAgent.cache().getAllRequests()
 	,   notLoaded   = TritonAgent.cache().getLateRequests()
+	,   sock        = req.socket
+	,   stash       = context.getServerStash()
+
+	stash.bytesR = sock.bytesRead    - (sock._preR||(sock._preR=0));
+	stash.bytesW = sock.bytesWritten - (sock._preW||(sock._preW=0));
+
+	sock._preR += stash.bytesR;
+	sock._preW += stash.bytesW;
 
 	logger.gauge("countDataRequests", allRequests.length);
 	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
-	logger.gauge("bytesRead", req.socket.bytesRead, {hi: 1<<12});
-	logger.gauge("bytesWritten", req.socket.bytesWritten, {hi: 1<<18});
+	logger.gauge("bytesRead", stash.bytesR, {hi: 1<<12});
+	logger.gauge("bytesWritten", stash.bytesW, {hi: 1<<18});
 
 	var time = new Date - start;
 
