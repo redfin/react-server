@@ -642,6 +642,11 @@ function logRequestStats(req, res, context, start){
 	,   sock        = req.socket
 	,   stash       = context.getServerStash()
 
+	// The socket can be re-used for multiple requests with keep-alive.
+	// Fortunately, until HTTP/2 rolls around, the requests over a given
+	// socket will happen serially.  So we can just keep track of the
+	// previous values for each socket and log the delta for a given
+	// request.
 	stash.bytesR = sock.bytesRead    - (sock._preR||(sock._preR=0));
 	stash.bytesW = sock.bytesWritten - (sock._preW||(sock._preW=0));
 
