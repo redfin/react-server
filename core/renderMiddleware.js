@@ -95,7 +95,7 @@ module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
 function handleResponseComplete(req, res, context, start, page) {
 
-	req.socket.on('finish', RequestLocalStorage.bind(() => {
+	res.on('finish', RequestLocalStorage.bind(() => {
 
 		// All intentional response completion should funnel through
 		// this function.  If this value starts climbing gradually
