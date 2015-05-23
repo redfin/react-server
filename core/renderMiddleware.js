@@ -562,6 +562,7 @@ function writeBody(req, res, context, start, page) {
 }
 
 function writeResponseData(req, res, context, start, page) {
+	page.setExpressRequest(req);
 	page.setExpressResponse(res);
 	return page.getResponseData().then(data => {
 		if (typeof data !== 'undefined') {
