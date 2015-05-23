@@ -1,6 +1,0 @@
-JSX hint setup
-npm install -g jsxhint
-install SublimeLinter from sublime package control
-install jsxhint from sublime package control
-edit SublimeLinter settings to set options for jsxhint to have --jsxonly argument
-edit ~/.jshintrc to have {"esnext":true}
