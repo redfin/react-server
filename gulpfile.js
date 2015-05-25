@@ -74,7 +74,7 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 				.on("finish", function() {
 					gulp.src(['target/server-covered/test/**/*[Ss]pec.js'])
 						.pipe(jasmine())
-						.pipe(istanbul.writeReports()) // Creating the reports after tests runned
+						.pipe(istanbul.writeReports({dir: './target/coverage'})) // Creating the reports after tests runned
 						.on('end', cb);
     			});
     	});
