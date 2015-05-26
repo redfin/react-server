@@ -86,6 +86,14 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setExpressRequest  : makeSetter('expressRequest'),
 	setExpressResponse : makeSetter('expressResponse'),
 	setRequest         : makeSetter('request'),
+
+	// TODO: Kill these.  They're only used to patch the status code
+	// through from navigator to renderMiddleware within triton itself.
+	// They don't need to be exposed publicly.
+	//
+	// The way to set a response code for your page is to return it from
+	// `handleRoute()` as e.g. `{status: 200}`.
+	//
 	getStatus          : makeGetter('status'),
 	setStatus          : makeSetter('status'),
 };
