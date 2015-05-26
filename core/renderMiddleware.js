@@ -123,6 +123,8 @@ function renderPage(req, res, context, start, page) {
 
 	var renderTimer = logger.timer("renderFunction");
 
+	res.status(page.getStatus()||200);
+
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
 	var lifecycleMethods;
@@ -562,6 +564,7 @@ function writeBody(req, res, context, start, page) {
 }
 
 function writeResponseData(req, res, context, start, page) {
+	page.setExpressRequest(req);
 	page.setExpressResponse(res);
 	return page.getResponseData().then(data => {
 		if (typeof data !== 'undefined') {

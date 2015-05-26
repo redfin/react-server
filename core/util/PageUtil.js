@@ -21,6 +21,7 @@ var Q = require("q"),
 // class will generate an error.
 //
 var PAGE_MIXIN = {
+	getExpressRequest  : makeGetter('expressRequest'),  // Only available with `isRawResponse`.
 	getExpressResponse : makeGetter('expressResponse'), // Only available with `isRawResponse`.
 	getRequest         : makeGetter('request'),
 	getConfig          : key => PageConfig.get(key),
@@ -82,8 +83,11 @@ var PAGE_HOOKS = {
 // These methods are only defined on the page _chain_ which is used internally
 // within triton.  Page/middleware authers can ignore this.
 var PAGE_CHAIN_PROTOTYPE = {
+	setExpressRequest  : makeSetter('expressRequest'),
 	setExpressResponse : makeSetter('expressResponse'),
 	setRequest         : makeSetter('request'),
+	getStatus          : makeGetter('status'),
+	setStatus          : makeSetter('status'),
 };
 
 // We log all method calls on the page chain for debugging purposes.
