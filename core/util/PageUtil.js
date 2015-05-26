@@ -86,6 +86,8 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setExpressRequest  : makeSetter('expressRequest'),
 	setExpressResponse : makeSetter('expressResponse'),
 	setRequest         : makeSetter('request'),
+	getStatus          : makeGetter('status'),
+	setStatus          : makeSetter('status'),
 };
 
 // We log all method calls on the page chain for debugging purposes.
