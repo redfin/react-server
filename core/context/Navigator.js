@@ -83,7 +83,7 @@ class Navigator extends EventEmitter {
 		page.handleRoute().then(handleRouteResult => {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
-			if (handleRouteResult.code && handleRouteResult.code / 100 !== 2) {
+			if (handleRouteResult.code && ((handleRouteResult.code / 100)|0) !== 2) {
 				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, null, request.getUrl(), type);
 				return;
 			}
