@@ -594,7 +594,11 @@ function renderElement(res, element, context, index) {
 }
 
 function writeData(req, res, context, start) {
-	res.expose(context.dehydrate(), 'InitialContext');
+	var initialContext = {
+		'TritonAgent.cache': TritonAgent.cache().dehydrate()
+	};
+
+	res.expose(initialContext, 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
 
 
