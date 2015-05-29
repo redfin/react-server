@@ -23,7 +23,6 @@ var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
  */
 Q.onerror = (err) => {
 	logger.error("Unhandled exception in Q promise: ", err);
-	throw err;
 }
 
 class ClientController extends EventEmitter {
