@@ -3,7 +3,7 @@ var React = require("react")
 ,	getCurrentRequestContext = require("../../common").getCurrentRequestContext
 ;
 
-var DATA_WAIT = 500
+var DATA_WAIT = 1000
 ,	ELEMENT_DELAY = 150
 ;
 
