@@ -384,13 +384,23 @@ class CacheEntry {
 		this.err = undefined;
 	}
 
-	dehydrate () {
+	dehydrate ( {responseBodyOnly} = {} ) {
+
+		var err = this.err;
+		if (err) {
+			// create a shallow copy of the error object
+			var errCopy = shallowCopy(err);
+			if (errCopy.response) {
+				errCopy.response = this._copyResponseForDehydrate(errCopy.response, { responseBodyOnly });
+			}
+		}
+
 		return {
 			url: this.url,
 			requesters: this.requesters,
 			loaded: this.loaded,
-			res: this._copyResponseForDehydrate(this.res),
-			err: this.err // TODO: does this do something reasonable for Error objects?
+			res: this._copyResponseForDehydrate(this.res, { responseBodyOnly }),
+			err: errCopy
 		};
 	}
 
@@ -409,11 +419,17 @@ class CacheEntry {
 	 * (We'll also log a warning saying that we should probably add another response type).
 	 * 
 	 */
-	_copyResponseForDehydrate (res) {
+	_copyResponseForDehydrate (res, {responseBodyOnly} = {}) {
 		if (!res) return res;
 
-		var parseable = !!responseBodyParsers[res.type];
 		var resCopy = {};
+		if (responseBodyOnly) {
+			resCopy.body = res.body;
+			return resCopy;
+		}
+
+		var parseable = !!responseBodyParsers[res.type];
+		
 		Object.keys(res).forEach( (prop) => {
 			if ("body" === prop && parseable) {
 				// don't copy body if it's a well-known (easily-parsed) content-type
@@ -509,9 +525,26 @@ class CacheEntry {
 	}
 
 	setError (err) {
+
+		if (SERVER_SIDE) {
+
+			// If the error was caused by a server response, trim it
+			// and serialize it like a regular response
+			if (err && err.response) {
+				err.response = this._trimResponseData(err.response);
+			}
+		}
+
 		this.err = err;
 		this.loaded = true;
-		this.dfd.reject(this.err);
+
+		if (SERVER_SIDE) {
+			// Deep copy, to make sure nobody plays with the 
+			// object we put in the cache
+			err = JSON.parse(JSON.stringify(err));
+		}
+
+		this.dfd.reject(err);
 	}
 
 	whenDataReady () {
@@ -606,7 +639,7 @@ class RequestDataCache {
 		this.dataCache = {};
 	}
 
-	dehydrate () {
+	dehydrate ({responseBodyOnly=false} = {}) {
 
 		var out = {};
 		
@@ -615,7 +648,7 @@ class RequestDataCache {
 		var dataCache = this.dataCache;
 		Object.keys(dataCache).forEach(function (url) {
 			var result = dataCache[url];
-			out.dataCache[url] = result.dehydrate();
+			out.dataCache[url] = result.dehydrate({ responseBodyOnly });
 		});
 
 		return out;
@@ -703,7 +736,7 @@ class RequestDataCache {
 	}
 
 	whenAllPendingResolve () {
-		var promises = this.getAllRequests().map(req => req.entry.promise);
+		var promises = this.getAllRequests().map(req => req.entry.dfd.promise);
 		return Q.allSettled(promises);
 	}
 
@@ -747,4 +780,9 @@ class RequestDataCache {
 		delete RLS().cache;
 	}
 
+}
+
+function shallowCopy(fromObj) {
+	return [{}].concat(Object.keys(fromObj))
+		.reduce( (toObj, k) => (toObj[k] = fromObj[k], toObj));
 }

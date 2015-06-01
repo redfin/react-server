@@ -56,6 +56,12 @@ function makeServer (cb, { port = PORT } = {}) {
 		}, req.query.delay || 0);
 	});
 
+	server.use('/error', function (req, res) {
+		setTimeout( () => {
+			res.status(req.query.status || 503).type('application/json').end(JSON.stringify({error: "An Error Occurred"}));
+		}, req.query.delay || 0);
+	});
+
 	server.use('/timeout', function (req, res) {
 		setTimeout( () => {
 			// wait 1s
