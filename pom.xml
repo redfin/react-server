@@ -23,6 +23,18 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<filesets>
+						<!-- delete node_modules/ in addition to target/ -->
+						<fileset>
+							<directory>node_modules</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.4</version>
 				<dependencies>
@@ -73,25 +85,6 @@
 							</tasks>
 						</configuration>
 					</execution>
-                   <!-- TODO: This ant task is copy/pasted in corvair, triton, triton-route-loader. It would be great if it wasn't... -->
-                    <execution>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <id>clean-triton-route-loader</id>
-                        <configuration>
-                            <tasks>
-                                <echo>Cleaning...</echo>
-                                <exec
-                                    dir="${project.basedir}"
-                                    executable="rm"
-                                    failonerror="false">
-                                    <arg line="-rf ./node_modules/"/>
-                                </exec>
-                            </tasks>
-                        </configuration>
-                    </execution>
 				</executions>
 			</plugin>
 		</plugins>
