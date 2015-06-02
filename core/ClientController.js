@@ -41,10 +41,8 @@ class ClientController extends EventEmitter {
 			routes.onClientConfigLoaded.call(this);
 		}
 
-		this.context = buildContext(
-			dehydratedState.InitialContext,
-			routes
-		);
+		this.context = buildContext(routes);
+		TritonAgent.cache().rehydrate(dehydratedState.InitialContext['TritonAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
 		var irDfd = this._initialRenderDfd = Q.defer();
@@ -467,11 +465,10 @@ function buildConfig(dehydratedConfig) {
 	return config;
 }
 
-function buildContext(dehydratedContext, routes) {
+function buildContext(routes) {
 	var context = new RequestContext.Builder()
 		.setRoutes(routes)
 		.create();
-	context.rehydrate(dehydratedContext);
 	return context;
 }
 

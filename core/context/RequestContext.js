@@ -61,16 +61,6 @@ class RequestContext {
 		this.navigator.navigate(request, type);
 	}
 
-	dehydrate () {
-		return {
-			'TritonAgent.cache': TritonAgent.cache().dehydrate()
-		}
-	}
-
-	rehydrate (state) {
-		TritonAgent.cache().rehydrate(state['TritonAgent.cache']);
-	}
-
 }
 
 class RequestContextBuilder {
