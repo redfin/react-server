@@ -210,10 +210,10 @@ function writeHeader(req, res, context, start, pageObject) {
 		// once we have finished rendering all of the pieces of the head element, we 
 		// can close the head and start the body element.
 		res.write(`</head>`);
-	});
 
-	// Get headers out right away so secondary resource download can start.
-	flushRes(res);
+		// Get headers out right away so secondary resource download can start.
+		flushRes(res);
+	});
 }
 
 function flushRes(res){
