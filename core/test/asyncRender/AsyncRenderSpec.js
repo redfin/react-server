@@ -1,6 +1,6 @@
 var helper = require("../specRuntime/testHelper");
 
-xdescribe("A page with async elements", () => {
+describe("A page with async elements", () => {
 
 	helper.startServerBeforeAll(["./asyncRender/AsyncElementPage", "./asyncRender/ServerTimeoutElementPage"]);
 

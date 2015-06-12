@@ -20,10 +20,12 @@ function getBrowser(opts) {
 
 var getPort = () => PORT;
 
-var writeRoutesFile = (routes, tempDir) => {
+var writeRoutesFile = (routes, tempDir, clientOrServer) => {
+	// clientOrServer = ["client"|"server"];
+
 	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
-			middleware: [require("../../client/test/specRuntime/ScriptsMiddleware")],
+			middleware: [require("../../${clientOrServer}/test/specRuntime/ScriptsMiddleware")],
 			routes: {`;
 
 	Object.keys(routes).forEach((url, index) => {
@@ -34,7 +36,7 @@ var writeRoutesFile = (routes, tempDir) => {
 				page: function () {
 					return {
 						done: function (cb) {
-							cb(require("../../client/test/${routes[url]}"));
+							cb(require("../../${clientOrServer}/test/${routes[url]}"));
 						}
 					};
 				}				
@@ -50,13 +52,13 @@ var writeRoutesFile = (routes, tempDir) => {
 			page: function() {
 				return {
 					done: function(cb) {
-						cb(require("../../client/test/specRuntime/TransitionPage"));
+						cb(require("../../${clientOrServer}/test/specRuntime/TransitionPage"));
 					}
 				};
 			}
 		}}};`;
 	mkdirp.sync(tempDir);
-	fs.writeFileSync(tempDir + "/routes.js", routesForTriton);
+	fs.writeFileSync(tempDir + `/routes-${clientOrServer}.js`, routesForTriton);
 }
 
 var writeEntrypointFile = (tempDir) => {
@@ -66,7 +68,7 @@ var writeEntrypointFile = (tempDir) => {
 
 		window.rfBootstrap = function () {
 			var controller = new ClientController({
-				routes: require("./routes.js")
+				routes: require("./routes-client.js")
 			});
 			
 			controller.init();
@@ -123,7 +125,8 @@ var startTritonServer = (routes, cb) => {
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
 	var testTempDir = __dirname + "/../../test-temp";
-	writeRoutesFile(routes, testTempDir);
+	writeRoutesFile(routes, testTempDir, "client");
+	writeRoutesFile(routes, testTempDir, "server");
 	writeEntrypointFile(testTempDir);
 	buildClientCode(testTempDir, () => {
 		var server = express();
@@ -135,8 +138,8 @@ var startTritonServer = (routes, cb) => {
 		// routes file may be in the require cache. this code may not be ideal in node
 		// (mucking with the require cache); if it causes problems, we should change the code
 		// to add a hash to the end of the module name.
-		delete require.cache[require.resolve(testTempDir + "/routes")]
-		renderMiddleware(server, require(testTempDir + "/routes"));
+		delete require.cache[require.resolve(testTempDir + "/routes-server")]
+		renderMiddleware(server, require(testTempDir + "/routes-server"));
 		var httpServer = http.createServer(server);
 		httpServer.listen(PORT, () => cb(httpServer));
 
