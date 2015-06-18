@@ -47,7 +47,7 @@ var makeLogger = function(group, opts){
 					[`${level}: [${opts.name}]`].concat(args)
 				);
 
-			_console.log.apply(
+			console_log.apply(
 				_console,
 				[
 					'%c'+level+'%c: [%c'+opts.name+'%c]',
