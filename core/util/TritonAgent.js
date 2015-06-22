@@ -204,9 +204,9 @@ Request.prototype.then = function (/*arguments*/) {
 	var dfd = this.asPromise();
 	dfd.catch( (err) => {
 		if (err.status) {
-			logger.warning(`Received HTTP code ${err.status} from server for URL ${this._urlPath}.\nResponse: ${err.response.text}.\nMessage: `, err.stack);
+			logger.warning(`Received HTTP code ${err.status} from server for URL ${this._urlPath}.\nResponse: ${err.response.text}.\nMessage: `, err);
 		} else {
-			logger.warning(`TritonAgent raised exception: ${err.stack}`);
+			logger.warning("TritonAgent raised exception", err);
 		}
 	});
 	return dfd.then.apply(dfd, arguments);
