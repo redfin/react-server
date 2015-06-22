@@ -1,7 +1,6 @@
 // the common object model of triton on server and client -sra.
 
 module.exports = {
-	BaseStore: require('./stores/BaseStore'),
 	Link: require('./components/Link'),
 	components: {
 		FragmentDataCache: require('./components/FragmentDataCache')
