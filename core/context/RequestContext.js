@@ -46,7 +46,7 @@ class RequestContext {
 	}
 
 	getCurrentPath () {
-		return this.navigator.getCurrentRoute().path;
+		return this.navigator.getCurrentRoute().url;
 	}
 
 	onNavigate (callback) {
