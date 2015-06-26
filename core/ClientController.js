@@ -16,13 +16,17 @@ window.React = React;
 
 var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
 
+// Browsers handle error and stack serialization in various ways.  This gives
+// us a good shot at getting something useful out of it.
+logClientError = (msg, err) => logger.error(msg, `${err}\n${err.stack}`)
+
 /**
  * Set up a Q error handler to make sure that errors that bubble
  * up are logged via our logger. Note: This will affect all unhandled
  * Q promise rejections, not just the ones in this file.
  */
 Q.onerror = (err) => {
-	logger.error("Unhandled exception in Q promise: ", err.stack);
+	logClientError("Unhandled exception in Q promise: ", err);
 }
 
 class ClientController extends EventEmitter {
@@ -110,7 +114,7 @@ class ClientController extends EventEmitter {
 						}, 0);
 					}
 				} else {
-					logger.error("onNavigate error:", err.stack);
+					logClientError("onNavigate error:", err);
 				}
 				return;
 			}
@@ -136,7 +140,7 @@ class ClientController extends EventEmitter {
 				classes.push(`route-${routeName}`);
 				document.body.className = classes.join(' ');
 			}).then(() => this._render(page)).catch((err) => {
-				logger.error("Error while adding body classes", err.stack);
+				logClientError("Error while adding body classes", err);
 			}).done();
 
 		});
@@ -149,7 +153,7 @@ class ClientController extends EventEmitter {
 				document.title = newTitle;
 			}
 		})
-		.catch(err => { logger.error("Error while setting the document title:", err.stack) })
+		.catch(err => { logClientError("Error while setting the document title:", err) })
 		.done();
 	}
 
@@ -170,7 +174,7 @@ class ClientController extends EventEmitter {
 			}
 
 		}).catch(err => {
-			logger.error("Error rendering <base>", err.stack);
+			logClientError("Error rendering <base>", err);
 		}).done();
 	}
 
@@ -198,7 +202,7 @@ class ClientController extends EventEmitter {
 
 				parent.appendChild(meta);
 			})
-			.catch( err => { logger.error("Error rendering meta tags: ", err.stack); })
+			.catch( err => { logClientError("Error rendering meta tags: ", err); })
 			.done();
 		});
 	}
@@ -283,7 +287,7 @@ class ClientController extends EventEmitter {
 				}
 			});
 		}).catch(err => {
-			logger.error("Error during syncRender:", err.stack);
+			logClientError("Error during syncRender:", err);
 		}).done();
 
 		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
@@ -292,7 +296,7 @@ class ClientController extends EventEmitter {
 			logger.debug("Loader cache depleted.");
 			scheduleSyncRender();
 		}).catch(err => {
-			logger.error("Error in scheduleSyncRender: ", err.stack);
+			logClientError("Error in scheduleSyncRender: ", err);
 		}).done();
 
 		// if no element promises, break early,
@@ -338,7 +342,7 @@ class ClientController extends EventEmitter {
 
 			this._previouslyRendered = true;
 		}).catch((err) => {
-			logger.error("Error while rendering:", err.stack);
+			logClientError("Error while rendering:", err);
 		}); // no done(), because we're handing this promise off to someone else
 	}
 
