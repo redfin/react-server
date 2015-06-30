@@ -239,7 +239,7 @@ describe("TritonAgent", () => {
 					expect(entry.res.body).toBeDefined();
 
 					// make sure that the cache is empty
-					TritonAgent.cache()._clear();
+					TritonAgent._clearCache();
 
 					// verify that cache can be rehydrated
 					TritonAgent.cache().rehydrate(dehydrated);
@@ -285,7 +285,7 @@ describe("TritonAgent", () => {
 					expect(entry.res.body).toBeUndefined();
 
 					// make sure that the cache is empty
-					TritonAgent.cache()._clear();
+					TritonAgent._clearCache();
 
 					// verify that cache can be rehydrated
 					TritonAgent.cache().rehydrate(dehydrated);
