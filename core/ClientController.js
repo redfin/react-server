@@ -9,7 +9,7 @@ var React = require('react/addons'),
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
-	TritonAgent = require('./util/TritonAgent');
+	TritonAgent = require('./TritonAgent');
 
 // for dev tools
 window.React = React;

@@ -1,4 +1,4 @@
-var TritonAgent = require("../../util/TritonAgent");
+var TritonAgent = require("../../TritonAgent");
 var superagent = require("superagent");
 var Q = require("q");
 

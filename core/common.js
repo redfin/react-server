@@ -13,5 +13,5 @@ module.exports = {
 	PageUtil: require("./util/PageUtil"),
 	logging: require("./logging"),
 	config: require("./config"),
-	TritonAgent: require('./util/TritonAgent')
+	TritonAgent: require('./TritonAgent')
 }

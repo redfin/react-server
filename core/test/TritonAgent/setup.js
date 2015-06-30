@@ -1,4 +1,4 @@
-var TritonAgent = require("../../util/TritonAgent")
+var TritonAgent = require("../../TritonAgent")
 ,	RLS = require("../../util/RequestLocalStorage")
 ;
 

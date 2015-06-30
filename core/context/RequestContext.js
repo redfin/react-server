@@ -2,7 +2,7 @@
 var Navigator = require('./Navigator'),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
 	Q = require('q'),
-	TritonAgent = require('../util/TritonAgent'),
+	TritonAgent = require('../TritonAgent'),
 	config = require('../config'),
 	logger = require('../logging').getLogger(__LOGGER__);
 

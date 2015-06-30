@@ -1,7 +1,7 @@
 var superagent = require('superagent'),
-	RLS = require('./RequestLocalStorage').getNamespace(),
-	logger = require('../logging').getLogger(__LOGGER__),
-	config = require("../config"),
+	RLS = require('./util/RequestLocalStorage').getNamespace(),
+	logger = require('./logging').getLogger(__LOGGER__),
+	config = require("./config"),
 	Q = require('q');
 
 /**
