@@ -2,6 +2,7 @@ var superagent = require('superagent')
 ,	logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	RequestPlugins = require("./RequestPlugins")
+,	{ mixin } = require("./util")
 ;
 
 /**
@@ -82,11 +83,6 @@ Request.prototype.set = function (headers) {
 	}
 	mixin(this._headers, headers);
 	return this;
-}
-
-function mixin (to, from) {
-	Object.keys(from).forEach( headerName => to[headerName] = from[headerName] );
-	return to;
 }
 
 Request.prototype.timeout = function (timeout) {

@@ -3,6 +3,7 @@ var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	RLS = require('../util/RequestLocalStorage').getNamespace()
 ,	config = require("../config")
+,	{ mixin } = require("./util")
 ;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender
@@ -38,7 +39,7 @@ class CacheEntry {
 		var err = this.err;
 		if (err) {
 			// create a shallow copy of the error object
-			var errCopy = shallowCopy(err);
+			var errCopy = mixin({}, err);
 			if (errCopy.response) {
 				errCopy.response = this._copyResponseForDehydrate(errCopy.response, { responseBodyOnly });
 			}
@@ -424,11 +425,6 @@ class RequestDataCache {
 		}
 	}
 
-}
-
-function shallowCopy(fromObj) {
-	return [{}].concat(Object.keys(fromObj))
-		.reduce( (toObj, k) => (toObj[k] = fromObj[k], toObj));
 }
 
 module.exports = RequestDataCache;
