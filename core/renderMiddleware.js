@@ -599,8 +599,13 @@ function renderElement(res, element, context, index) {
 	// We time how long _this_ element's render took, and also how long
 	// since the beginning of the request it took us to spit this element
 	// out.
-	timer.stop();
+	var individualTime = timer.stop();
 	logger.time(`renderElement.fromStart.${name}`, new Date - start);
+
+	// We _also_ keep track of the _total_ time we spent rendering during
+	// each request so we can keep track of that overhead.
+	RLS().renderTime || (RLS().renderTime = 0);
+	RLS().renderTime += individualTime;
 }
 
 function writeData(req, res, context, start) {
@@ -686,6 +691,11 @@ function logRequestStats(req, res, context, start){
 
 	logger.time(`responseCode.${res.statusCode}`, time);
 	logger.time("totalRequestTime", time);
+
+	// Only populated for full pages and fragments.
+	if (RLS().renderTime){
+		logger.time("totalRenderTime", RLS().renderTime);
+	}
 
 	if (notLoaded.length) {
 		logger.time("totalRequestTimeWithLateArrivals", time);

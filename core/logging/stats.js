@@ -67,12 +67,13 @@ var wrapLogger = function(getLoggerForConfig, opts){
 		var t0 = new Date // For use by `timer.stop`.
 		,   tt = t0       // For use by `timer.tick`.
 		,   nt = 0        // Number of times `tick` has been called.
+		,   ct = 0        // For storing return values.
 
 		return {
 
 			// The `stop` method logs the total elapsed time since
 			// timer creation.
-			stop: () => mainLogger.time(token, new Date - t0, opts),
+			stop: () => (mainLogger.time(token, ct = new Date - t0, opts), ct),
 
 			// The `tick` method logs the time elapsed since the
 			// last call to `tick` (or since timer creation).  A
@@ -85,9 +86,11 @@ var wrapLogger = function(getLoggerForConfig, opts){
 
 				name || (name = `tick_${nt++}`);
 
-				mainLogger.time(`${token}.${name}`, now-tt, opts);
+				mainLogger.time(`${token}.${name}`, ct=now-tt, opts);
 
 				tt = now;
+
+				return ct
 			},
 		};
 	}
