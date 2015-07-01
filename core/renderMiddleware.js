@@ -581,6 +581,10 @@ function writeResponseData(req, res, context, start, page) {
 }
 
 function renderElement(res, element, context, index) {
+	var name  = (((element||{}).type||{}).displayName||'Unknown').split('.').pop()
+	,   start = RLS().startTime
+	,   timer = logger.timer(`renderElement.individual.${name}`)
+
 	res.write(`<div data-triton-root-id=${index}>`);
 	if (element !== null) {
 		element = React.addons.cloneWithProps(element, { context: context });
@@ -591,6 +595,12 @@ function renderElement(res, element, context, index) {
 	// It may be a while before we render the next element, so let's send
 	// this one down right away.
 	flushRes(res);
+
+	// We time how long _this_ element's render took, and also how long
+	// since the beginning of the request it took us to spit this element
+	// out.
+	timer.stop();
+	logger.time(`renderElement.fromStart.${name}`, new Date - start);
 }
 
 function writeData(req, res, context, start) {
