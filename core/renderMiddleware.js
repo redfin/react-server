@@ -594,17 +594,24 @@ function getElementDisplayName(element){
 		// has a nice name.  This helps bypass anonymous wrapper
 		// elements.
 		if (React.Children.count(element.props.children) == 1){
-			name = getElementDisplayName(
-				React.Children.only(element.props.children)
-			);
-		} else {
-			name = 'Unknown';
+
+			// Sigh.  `React.Children.count` will happily return 1
+			// if the node contains only text, and then
+			// `React.Children.only` will happily _blow up_ if it
+			// receives that text saying it expects a single
+			// child... which `React.Children.count` just told us
+			// we have... :goberzerk:
+			try {
+				name = getElementDisplayName(
+					React.Children.only(element.props.children)
+				);
+			} catch (e) { /* Pass. */ }
 		}
 	}
 
 	// Some of our names are namespaced with dot-separation.  We just want
 	// the most significant part at the end.
-	return name.split('.').pop();
+	return (name||'Unknown').split('.').pop();
 }
 
 function renderElement(res, element, context, index) {
