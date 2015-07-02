@@ -580,8 +580,35 @@ function writeResponseData(req, res, context, start, page) {
 	});
 }
 
+function getElementDisplayName(element){
+
+	// Gotta be a react element.
+	if (!(element && element.type && element.props)) return 'None';
+
+	var name = element.type.displayName;
+
+	if (!name) {
+
+		// If the element doesn't have a `displayName`, but it has
+		// only a single child, we'll look at the child to see if it
+		// has a nice name.  This helps bypass anonymous wrapper
+		// elements.
+		if (React.Children.count(element.props.children) == 1){
+			name = getElementDisplayName(
+				React.Children.only(element.props.children)
+			);
+		} else {
+			name = 'Unknown';
+		}
+	}
+
+	// Some of our names are namespaced with dot-separation.  We just want
+	// the most significant part at the end.
+	return name.split('.').pop();
+}
+
 function renderElement(res, element, context, index) {
-	var name  = (((element||{}).type||{}).displayName||'Unknown').split('.').pop()
+	var name  = getElementDisplayName(element)
 	,   start = RLS().startTime
 	,   timer = logger.timer(`renderElement.individual.${name}`)
 
