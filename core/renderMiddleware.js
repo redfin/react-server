@@ -620,9 +620,19 @@ function renderElement(res, element, context, index) {
 	,   timer = logger.timer(`renderElement.individual.${name}`)
 
 	res.write(`<div data-triton-root-id=${index}>`);
-	if (element !== null) {
-		element = React.addons.cloneWithProps(element, { context: context });
-		res.write(React.renderToString(element));
+	try {
+		if (element !== null) {
+			res.write(React.renderToString(
+				React.addons.cloneWithProps(element, { context: context })
+			));
+		}
+	} catch (err) {
+		// A component failing to render is not fatal.  We've already
+		// started the page with a 200 response.  We've even opened
+		// the `data-triton-root-id` div for this component.  We need
+		// to close it out and move on.  This is a bummer, and we'll
+		// log it, but it's too late to totally bail out.
+		logger.error(`Error rendering element ${name}:`, err.stack);
 	}
 	res.write("</div>");
 
