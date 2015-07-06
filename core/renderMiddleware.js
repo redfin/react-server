@@ -410,7 +410,6 @@ function renderScriptsAsync(scripts, res) {
 
 		if (script.href) {
 			if (script.condition) {
-				logger.debug('script has condition');
 				res.write(`.script(function(){if(${script.condition}) return "${script.href}";})`);
 			} else {
 				res.write(`.script("${script.href}")`);
