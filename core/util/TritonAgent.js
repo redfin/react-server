@@ -128,7 +128,7 @@ Request.prototype.end = function (fn) {
 	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
 	// with host (which can vary between client and server) is not usable. The URL path (without the
 	// host) works fine though.
-	var entry = makeRequest.cache().entry(urlPath, SERVER_SIDE /* createIfMissing */);
+	var entry = makeRequest.cache().entry(urlPath, SERVER_SIDE /* createIfMissing */, this._cacheWhitelist);
 	if (!SERVER_SIDE && !entry) {
 		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
 		// be fine?
@@ -254,6 +254,14 @@ Request.prototype.abort = function () {
 	return this;
 }
 
+Request.prototype.cacheWhitelist = function (cacheWhitelist) {
+	if (typeof cacheWhitelist === 'undefined') {
+		return this._cacheWhitelist;
+	}
+	this._cacheWhitelist = cacheWhitelist;
+	return this;
+}
+
 
 // wrapper for superagent
 function makeRequest (method, url) {
@@ -312,7 +320,6 @@ makeRequest.put = function (url, data, fn){
  * Exposes the TritonAgent request data cache from RequestLocalStorage.
  */
 makeRequest.cache = function () {
-
 	var cache = RLS().cache;
 	if (!cache) {
 		cache = RLS().cache = new RequestDataCache();
@@ -374,9 +381,10 @@ var responseBodyParsers = {
  */
 class CacheEntry {
 
-	constructor (cache, url) {
+	constructor (cache, url, cacheWhitelist) {
 		this.cache = cache;
 		this.url = url;
+		this.cacheWhitelist = cacheWhitelist;
 		this.requesters = 0;
 		this.dfd = Q.defer();
 		this.loaded = false;
@@ -602,7 +610,7 @@ class CacheEntry {
 
 			/*'files'*/ // TODO
 
-			"header",
+			/* "header",*/ // header is no longer included by default in the cache to save space
 			"status",
 			"statusType",
 			"info",
@@ -619,6 +627,9 @@ class CacheEntry {
 			"notFound",
 			"forbidden"
 		].forEach( prop => {
+			result[prop] = res[prop];
+		});
+		this.cacheWhitelist.forEach( prop => {
 			result[prop] = res[prop];
 		});
 
@@ -673,16 +684,20 @@ class RequestDataCache {
 	 * URL from the cache.
 	 *
 	 * @param createIfMissing boolean default false
+	 * @param cacheWhitelist array default []
 	 */
-	entry (url, createIfMissing) {
+	entry (url, createIfMissing, cacheWhitelist) {
 		if (typeof createIfMissing === 'undefined') {
 			createIfMissing = false;
+		}
+		if (typeof cacheWhitelist === 'undefined') {
+			cacheWhitelist = [];
 		}
 		logger.debug(`Getting cache entry for ${url}`)
 
 		var cacheEntry = this.dataCache[url];
 		if (!cacheEntry && createIfMissing) {
-			cacheEntry = this.dataCache[url] = new CacheEntry(this, url);
+			cacheEntry = this.dataCache[url] = new CacheEntry(this, url, cacheWhitelist);
 		}
 
 		return cacheEntry;
