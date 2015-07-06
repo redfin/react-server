@@ -409,10 +409,17 @@ function renderScriptsAsync(scripts, res) {
 	scripts.forEach(script => {
 
 		if (script.href) {
-
-			res.write(`.script("${script.href}")`);
+			if (script.condition) {
+				logger.debug('script has condition');
+				res.write(`.script(function(){if(${script.condition}) return "${script.href}";})`);
+			} else {
+				res.write(`.script("${script.href}")`);
+			}
 
 		} else if (script.text) {
+			if (script.condition) {
+				throw new Error("Script using `text` cannot be loaded conditionally");
+			}
 
 			// The try/catch dance here is so exceptions get their
 			// own time slice and can't mess with execution of the
