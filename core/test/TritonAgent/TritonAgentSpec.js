@@ -435,7 +435,58 @@ describe("TritonAgent", () => {
 
 		}));
 
-	})
+		it("doesn't include header when not enabled", withRlsContext(done => {
+
+			var URL = "/describe";
+
+			TritonAgent.get(URL)
+				.then( (res) => {
+
+					var cache = TritonAgent.cache();
+					var dehydrated = cache.dehydrate();
+					var entry = dehydrated.dataCache[URL];
+
+					// verify that our cache looks as expected
+					expect(entry.res.header).toBeUndefined();
+
+					done();
+				}).catch( (err) => {
+					console.log(err.stack);
+
+					// this will fail the test
+					expect(err).toBeUndefined();
+					done();
+				})
+				.done();
+
+		}));
+
+		it("includes header when enabled", withRlsContext(done => {
+
+			var URL = "/describe";
+
+			TritonAgent.get(URL).withHeaderInResponse()
+				.then( (res) => {
+
+					var cache = TritonAgent.cache();
+					var dehydrated = cache.dehydrate();
+					var entry = dehydrated.dataCache[URL];
+
+					// verify that our cache looks as expected
+					expect(entry.res.header).toBeDefined();
+
+					done();
+				}).catch( (err) => {
+					console.log(err.stack);
+
+					// this will fail the test
+					expect(err).toBeUndefined();
+					done();
+				})
+				.done();
+
+		}));
+	});
 
 });
 
