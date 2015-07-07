@@ -254,14 +254,17 @@ Request.prototype.abort = function () {
 	return this;
 }
 
-Request.prototype.cacheWhitelist = function (cacheWhitelist) {
-	if (typeof cacheWhitelist === 'undefined') {
-		return this._cacheWhitelist;
+/**
+ * Enables saving the 'header' property in the response cache.
+ * This is disabled by default to save space in the cache.
+ */
+Request.prototype.withHeaderInResponse = function () {
+	if (typeof this._cacheWhitelist === 'undefined') {
+		this._cacheWhitelist = [];
 	}
-	this._cacheWhitelist = cacheWhitelist;
+	this._cacheWhitelist.push('header');
 	return this;
 }
-
 
 // wrapper for superagent
 function makeRequest (method, url) {
