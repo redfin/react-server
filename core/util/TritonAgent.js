@@ -632,9 +632,11 @@ class CacheEntry {
 		].forEach( prop => {
 			result[prop] = res[prop];
 		});
-		this.cacheWhitelist.forEach( prop => {
-			result[prop] = res[prop];
-		});
+		if (this.cacheWhitelist) {
+			this.cacheWhitelist.forEach( prop => {
+				result[prop] = res[prop];
+			});
+		}
 
 		return result;
 	}
