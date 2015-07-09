@@ -24,9 +24,10 @@ var responseBodyParsers = {
  */
 class CacheEntry {
 
-	constructor (cache, url) {
+	constructor (cache, url, cacheWhitelist) {
 		this.cache = cache;
 		this.url = url;
+		this.cacheWhitelist = cacheWhitelist;
 		this.requesters = 0;
 		this.dfd = Q.defer();
 		this.loaded = false;
@@ -252,7 +253,7 @@ class CacheEntry {
 
 			/*'files'*/ // TODO
 
-			"header",
+			/* "header",*/ // header is no longer included by default in the cache to save space
 			"status",
 			"statusType",
 			"info",
@@ -271,6 +272,11 @@ class CacheEntry {
 		].forEach( prop => {
 			result[prop] = res[prop];
 		});
+		if (this.cacheWhitelist) {
+			this.cacheWhitelist.forEach( prop => {
+				result[prop] = res[prop];
+			});
+		}
 
 		return result;
 	}
@@ -323,16 +329,20 @@ class RequestDataCache {
 	 * URL from the cache.
 	 *
 	 * @param createIfMissing boolean default false
+	 * @param cacheWhitelist array default []
 	 */
-	entry (url, createIfMissing) {
+	entry (url, createIfMissing, cacheWhitelist) {
 		if (typeof createIfMissing === 'undefined') {
 			createIfMissing = false;
+		}
+		if (typeof cacheWhitelist === 'undefined') {
+			cacheWhitelist = [];
 		}
 		logger.debug(`Getting cache entry for ${url}`)
 
 		var cacheEntry = this.dataCache[url];
 		if (!cacheEntry && createIfMissing) {
-			cacheEntry = this.dataCache[url] = new CacheEntry(this, url);
+			cacheEntry = this.dataCache[url] = new CacheEntry(this, url, cacheWhitelist);
 		}
 
 		return cacheEntry;

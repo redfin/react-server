@@ -126,7 +126,7 @@ Request.prototype.end = function (fn) {
 	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
 	// with host (which can vary between client and server) is not usable. The URL path (without the
 	// host) works fine though.
-	var entry = this._cache.entry(urlPath, SERVER_SIDE /* createIfMissing */);
+	var entry = this._cache.entry(urlPath, SERVER_SIDE /* createIfMissing */, this._cacheWhitelist);
 	if (!SERVER_SIDE && !entry) {
 		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
 		// be fine?
@@ -259,5 +259,18 @@ Request.prototype.abort = function () {
 	}
 	return this;
 }
+
+/**
+ * Enables saving the 'header' property in the response cache.
+ * This is disabled by default to save space in the cache.
+ */
+Request.prototype.withHeaderInResponse = function () {
+	if (typeof this._cacheWhitelist === 'undefined') {
+		this._cacheWhitelist = [];
+	}
+	this._cacheWhitelist.push('header');
+	return this;
+}
+
 
 module.exports = Request;
