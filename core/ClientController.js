@@ -433,7 +433,16 @@ class ClientController extends EventEmitter {
         };
 
         this._history = new History();
-        this._history.on(this._historyListener);
+		var init = () => this._history.on(this._historyListener);
+
+		// Need to go _after_ 'load' callbacks complete.
+		// Safari fires a 'popstate' on load (RED-67600).
+		// https://developer.mozilla.org/en-US/docs/Web/Events/popstate
+		if (document.readyState === 'complete'){
+			init();
+		} else {
+			window.addEventListener('load', ()=>setTimeout(init,0));
+		}
 	}
 
 	_setupLateArrivalHandler () {
