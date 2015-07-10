@@ -14,7 +14,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PageUtil = require("./util/PageUtil"),
 	PromiseUtil = require("./util/PromiseUtil"),
 	TritonAgent = require('./TritonAgent'),
-	StringEscapeUtil = require('./util/StringEscapeUtil');
+	StringEscapeUtil = require('./util/StringEscapeUtil'),
+	{PAGE_CSS_NODE_ID} = require('./constants');
 
 
 // TODO FIXME ?? 
@@ -464,9 +465,9 @@ function renderScripts(pageObject, res) {
 function renderStylesheets (pageObject, res) {
 	pageObject.getHeadStylesheets().forEach((styleSheet) => {
 		if (styleSheet.href) {
-			res.write(`<link rel="stylesheet" type="${styleSheet.type}" media="${styleSheet.media}" href="${styleSheet.href}" ${ClientCssHelper.PAGE_CSS_NODE_ID}>`);
+			res.write(`<link rel="stylesheet" type="${styleSheet.type}" media="${styleSheet.media}" href="${styleSheet.href}" ${PAGE_CSS_NODE_ID}>`);
 		} else if (styleSheet.text) {
-			res.write(`<style type="${styleSheet.type}" media="${styleSheet.media}" ${ClientCssHelper.PAGE_CSS_NODE_ID}>${styleSheet.text}</style>`);
+			res.write(`<style type="${styleSheet.type}" media="${styleSheet.media}" ${PAGE_CSS_NODE_ID}>${styleSheet.text}</style>`);
 		} else {
 			throw new Error("Style cannot be rendered because it has neither an href nor a text attribute: " + styleSheet);
 		}
@@ -474,17 +475,6 @@ function renderStylesheets (pageObject, res) {
 
 	// resolve immediately.
 	return Q("");
-
-	// implementation for async included below for if/when we switch over.
-	// var styleSheetsRendered = [];
-	// pageObject.getHeadStylesheets().forEach((styleSheetPromise) => {
-	// 	styleSheetsRendered.push(
-	// 		styleSheetPromise.then((stylesheet) => {
-	// 			res.write(`<link rel="stylesheet" type="text/css" href="${stylesheet}" id="${ClientCssHelper.PAGE_CSS_NODE_ID}">`);
-	// 		});
-	// 	);
-	// });
-	// return Q.all(styleSheetsRendered);
 }
 
 function startBody(req, res, context, start, page) {
