@@ -15,7 +15,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PromiseUtil = require("./util/PromiseUtil"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
-	{PAGE_CSS_NODE_ID} = require('./constants');
+	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID} = require('./constants');
 
 
 // TODO FIXME ?? 
@@ -295,12 +295,11 @@ function renderLinkTags (pageObject, res) {
 				throw new Error(`<link> tag specified without 'rel' attr`);
 			}
 
-			var text = "<link";
-			Object.keys(linkTag).forEach( attr => {
-				text += ` ${attr}="${linkTag[attr]}"`;
-			});
-			text += ">";
-			res.write(text);
+			res.write(`<link ${PAGE_LINK_NODE_ID} ${
+				Object.keys(linkTag)
+					.map(attr => `${attr}="${linkTag[attr]}"`)
+					.join(' ')
+			}>`);
 		}));
 	});
 
