@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "gulp": "3.8.10",
-    "gulp-6to5": "3.0.0",
+    "gulp-babel": "5.1.0",
     "gulp-replace": "0.5.2",
     "triton": "../triton"
   }
