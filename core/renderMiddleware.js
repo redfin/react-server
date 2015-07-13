@@ -13,7 +13,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
 	PromiseUtil = require("./util/PromiseUtil"),
-	TritonAgent = require('./util/TritonAgent'),
+	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil');
 
 

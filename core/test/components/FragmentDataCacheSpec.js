@@ -1,5 +1,5 @@
 
-var TritonAgent = require("../../util/TritonAgent")
+var TritonAgent = require("../../TritonAgent")
 ,	superagent = require("superagent")
 ,	cheerio = require("cheerio")
 ,	React = require("react")

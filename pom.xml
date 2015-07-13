@@ -99,7 +99,7 @@
 									dir="${project.basedir}"
 									executable="${gulp.bin}"
 									failonerror="true">
-										<arg line="test --verbose" />
+										<arg line="test --no-color --verbose" />
 								</exec>
 							</tasks>
 						</configuration>
