@@ -1,4 +1,4 @@
-var es6to5 = require("gulp-6to5");
+var babel = require("gulp-babel");
 
 var ecmaScriptTransforms = [
 	"es6.arrowFunctions",
@@ -8,8 +8,7 @@ var ecmaScriptTransforms = [
 	"es6.destructuring",
 	// "es6.forOf",
 	// "es6.modules",
-	"es6.parameters.default",
-	"es6.parameters.rest",
+	"es6.parameters",
 	// "es6.properties.computed",
 	"es6.properties.shorthand",
 	"es6.spread",
@@ -19,11 +18,12 @@ var ecmaScriptTransforms = [
 	// "es7.abstractReferences",
 	// "es7.comprehensions",
 	// "es7.exponentiationOperator",
-	"react",
+	"reactCompat",
 ];
 
 module.exports = {
 	es6Transform: function() {
-		return es6to5({experimental:true, whitelist:ecmaScriptTransforms});
+		// stage:1 needed since es7.objectRestSpread is a stage 1 ES7 proposal
+		return babel({stage:1, whitelist:ecmaScriptTransforms});
 	}
 }

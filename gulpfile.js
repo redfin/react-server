@@ -1,5 +1,4 @@
 var gulp = require("gulp"),
-	es6to5 = require("gulp-6to5"),
 	replace = require("gulp-replace"),
 	rename = require("gulp-rename"),
 	sourcemaps = require("gulp-sourcemaps"),
