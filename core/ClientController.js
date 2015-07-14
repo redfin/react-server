@@ -9,7 +9,8 @@ var React = require('react/addons'),
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
-	TritonAgent = require('./TritonAgent');
+	TritonAgent = require('./TritonAgent'),
+	{PAGE_LINK_NODE_ID} = require('./constants');
 
 // for dev tools
 window.React = React;
@@ -132,6 +133,7 @@ class ClientController extends EventEmitter {
 
 				this._renderMetaTags(page);
 
+				this._renderLinkTags(page);
 			}
 
 			cssHelper.ensureCss(routeName, page);
@@ -205,6 +207,23 @@ class ClientController extends EventEmitter {
 			.catch( err => { logClientError("Error rendering meta tags: ", err); })
 			.done();
 		});
+	}
+
+	_renderLinkTags(page) {
+
+		// First, remove all the current link tags.
+		;[].slice.call(document.head.querySelectorAll(`link[${PAGE_LINK_NODE_ID}]`))
+			.forEach(tag => tag.parentNode.removeChild(tag));
+
+		// Then add all the link tags for the new page.
+		page.getLinkTags()
+		.forEach(promise => promise.then(PageUtil.makeArray).then(tags => tags.forEach(tag => {
+			document.head.appendChild(
+				[document.createElement('link'), PAGE_LINK_NODE_ID]
+				.concat(Object.keys(tag))
+				.reduce((link, attr) => (link.setAttribute(attr, tag[attr]||''), link))
+			);
+		})).catch(err => logClientError("Error rendering link tags", err)).done());
 	}
 
 	_render (page) {

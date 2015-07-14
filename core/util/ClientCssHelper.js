@@ -1,12 +1,11 @@
 
 var logger = require('../logging').getLogger(__LOGGER__);
+var {PAGE_CSS_NODE_ID} = require('../constants');
 
 var pageCssLinkNode;
 var loadedCss = {};
 
 var ClientCssHelper = module.exports = {
-
-	PAGE_CSS_NODE_ID: 'data-triton-css-url',
 
 	registerPageLoad: function registerPageLoad(routeName) {
 		if (SERVER_SIDE) {
@@ -14,7 +13,7 @@ var ClientCssHelper = module.exports = {
 		}
 		// for each css node in the head that the Triton server wrote to the response, note it down in the cache, so that
 		// we can remove it on a page to page transition.
-		var serverWrittenLinkNodes = document.head.querySelectorAll(`link[${ClientCssHelper.PAGE_CSS_NODE_ID}],style[${ClientCssHelper.PAGE_CSS_NODE_ID}]`);
+		var serverWrittenLinkNodes = document.head.querySelectorAll(`link[${PAGE_CSS_NODE_ID}],style[${PAGE_CSS_NODE_ID}]`);
 		for (var i = 0; i < serverWrittenLinkNodes.length; i++) {
 			var key, styleNode = serverWrittenLinkNodes[i];
 			if (styleNode.href) {
