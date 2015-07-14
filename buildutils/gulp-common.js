@@ -18,7 +18,7 @@ var ecmaScriptTransforms = [
 	// "es7.abstractReferences",
 	// "es7.comprehensions",
 	// "es7.exponentiationOperator",
-	"reactCompat",
+	"react",
 ];
 
 module.exports = {
