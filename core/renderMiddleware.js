@@ -410,7 +410,19 @@ function renderScriptsAsync(scripts, res) {
 
 		if (script.href) {
 
-			res.write(`.script("${script.href}")`);
+			var LABScript = { src: script.href };
+
+			if (script.crossOrigin){
+				LABScript.crossOrigin = script.crossOrigin;
+			}
+
+			// If we don't have any other options we can shave a
+			// few bytes by just passing the string.
+			if (Object.keys(LABScript).length === 1){
+				LABScript = LABScript.src;
+			}
+
+			res.write(`.script(${JSON.stringify(LABScript)})`);
 
 		} else if (script.text) {
 
