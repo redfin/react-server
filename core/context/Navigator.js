@@ -9,6 +9,8 @@ var EventEmitter = require('events').EventEmitter,
 class Navigator extends EventEmitter {
 
 	constructor (context, routes) {
+		super();
+		
 		this.router = new Router(routes.routes);
 		this.context = context;
 		

@@ -37,7 +37,7 @@
     "express": "4.11.2",
     "express-state": "1.2.0",
     "gulp": "3.8.10",
-    "gulp-6to5": "3.0.0",
+    "gulp-babel": "5.1.0",
     "gulp-changed": "1.1.1",
     "gulp-if": "1.2.5",
     "gulp-filter": "2.0.0",

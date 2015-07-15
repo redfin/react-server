@@ -33,6 +33,8 @@ Q.onerror = (err) => {
 class ClientController extends EventEmitter {
 
 	constructor ({routes}) {
+		super();
+		
 		var dehydratedState = window.__tritonState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
