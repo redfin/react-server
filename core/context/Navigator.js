@@ -17,6 +17,7 @@ class Navigator extends EventEmitter {
 		this._globalMiddleware = routes.middleware;
 		this._loading = false;
 		this._currentRoute = null;
+		this._nextRoute = null;
 	}
 
 	/**
@@ -41,8 +42,16 @@ class Navigator extends EventEmitter {
 		}
 		logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
 
-		this.startRoute(route);
-		this.emit('navigateStart', route);
+		// We may or may not _actually_ start this route client side.
+		//
+		// If there's a flurry of navigation we skip any routes that
+		// blow by while we're still working on a page, and only
+		// finally start the _last_ one.
+		//
+		// The promise returned from `startRoute()` will be rejected
+		// if we're not going to proceed, so resources will be freed.
+		//
+		this.startRoute(route).then(() => {
 
 		/* Breathe... */
 
@@ -54,6 +63,8 @@ class Navigator extends EventEmitter {
 
 		}, err => {
 			console.error("Error resolving page", err);
+		});
+
 		});
 
 	}
@@ -100,7 +111,6 @@ class Navigator extends EventEmitter {
 				return;
 			}
 
-			this.finishRoute();
 			this.emit('navigateDone', null, page, request.getUrl(), type);
 		}).catch(err => {
 			logger.error("Error while handling route.", err.stack);
@@ -138,12 +148,70 @@ class Navigator extends EventEmitter {
 	}
 
 	startRoute (route) {
-		this._loading = true;
-		this._currentRoute = route;
+
+		// If we're being called with a requested route, we'll need to
+		// tell the caller when they can proceed with their
+		// navigation.
+		var dfd, promise;
+
+		// We need to handle the case where routes are requested while
+		// we're handling the previous navigation.  This can happen if
+		// the user furiously clicks the browser's forward/back
+		// navigation buttons.
+		//
+		// We don't want a _queue_ here, because we're only ultimately
+		// going to show the user the _final_ route that's requested,
+		// so we'll just keep a single reference to the next route we
+		// need to actually render once our current navigation is
+		// complete.
+		//
+		if (route) {
+
+			// We don't want to leave navigation detritus
+			// laying around as we discard bypassed pages.
+			if (this._nextRoute) this._nextRoute[1].reject();
+
+			dfd = Q.defer(), promise = dfd.promise;
+
+			this._nextRoute = [route, dfd];
+		}
+
+		// If we're _currently_ navigating, we'll wait to start the
+		// next route until this navigation is complete.  Interleaved
+		// navigation causes all kinds of havoc.
+		if (!this._loading && this._nextRoute){
+
+			[route, dfd] = this._nextRoute;
+
+			this._loading      = true;
+			this._currentRoute = route;
+			this._nextRoute    = null;
+
+			this.emit('navigateStart', route);
+
+			// This allows the actual navigation to
+			// proceed.
+			dfd.resolve();
+		}
+
+		return promise;
 	}
 
 	finishRoute () {
 		this._loading = false;
+
+		// If other routes were queued while we were navigating, we'll
+		// start the next one right off.
+		//
+		// I don't like this magic delay here, but it gives us a
+		// better shot at falling after things like lazy load images
+		// do their post-render wire-up.
+		//
+		// Anything that the current page does in the request context
+		// _after_ this timeout has elapsed and we've started a
+		// subsequent navigation is pure corruption. :p
+		//
+		setTimeout(() => this.startRoute(), 200);
 	}
 
 }

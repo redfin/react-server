@@ -145,6 +145,21 @@ class ClientController extends EventEmitter {
 				document.body.className = classes.join(' ');
 			}).then(() => this._render(page)).catch((err) => {
 				logClientError("Error during client transition render", err);
+			}).then(() => {
+
+				// We're responsible for letting the navigator
+				// know when we're more or less done stomping
+				// around in the current request context
+				// setting things up.
+				//
+				// We can't _guarantee_ that pages/middleware
+				// haven't set timers to mess with things in
+				// the future, so the navigator will wait a
+				// bit before yanking our context if an
+				// immediate subsequent navigation is
+				// scheduled.
+				//
+				context.navigator.finishRoute();
 			}).done();
 
 		});
