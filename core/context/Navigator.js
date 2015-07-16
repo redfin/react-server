@@ -53,17 +53,17 @@ class Navigator extends EventEmitter {
 		//
 		this.startRoute(route).then(() => {
 
-		/* Breathe... */
+			/* Breathe... */
 
-		route.config.page().done( pageConstructor => {
-			if (request.setRoute) {
-				request.setRoute(route);
-			}
-			this.handlePage(pageConstructor, request, type);
+			route.config.page().done( pageConstructor => {
+				if (request.setRoute) {
+					request.setRoute(route);
+				}
+				this.handlePage(pageConstructor, request, type);
 
-		}, err => {
-			console.error("Error resolving page", err);
-		});
+			}, err => {
+				console.error("Error resolving page", err);
+			});
 
 		});
 
