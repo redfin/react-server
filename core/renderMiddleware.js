@@ -409,10 +409,22 @@ function renderScriptsAsync(scripts, res) {
 	scripts.forEach(script => {
 
 		if (script.href) {
+			var LABScript = { src: script.href };
+
+			if (script.crossOrigin){
+				LABScript.crossOrigin = script.crossOrigin;
+			}
+
+			// If we don't have any other options we can shave a
+			// few bytes by just passing the string.
+			if (Object.keys(LABScript).length === 1){
+				LABScript = LABScript.src;
+			}
+
 			if (script.condition) {
-				res.write(`.script(function(){if(${script.condition}) return "${script.href}";})`);
+				res.write(`.script(function(){if(${script.condition}) return ${JSON.stringify(LABScript)}})`);
 			} else {
-				res.write(`.script("${script.href}")`);
+				res.write(`.script(${JSON.stringify(LABScript)})`);
 			}
 
 		} else if (script.text) {
