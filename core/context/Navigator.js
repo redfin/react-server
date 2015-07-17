@@ -203,15 +203,7 @@ class Navigator extends EventEmitter {
 		// If other routes were queued while we were navigating, we'll
 		// start the next one right off.
 		//
-		// I don't like this magic delay here, but it gives us a
-		// better shot at falling after things like lazy load images
-		// do their post-render wire-up.
-		//
-		// Anything that the current page does in the request context
-		// _after_ this timeout has elapsed and we've started a
-		// subsequent navigation is pure corruption. :p
-		//
-		setTimeout(() => this.startRoute(), 200);
+		this.startRoute();
 	}
 
 }

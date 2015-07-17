@@ -154,12 +154,22 @@ class ClientController extends EventEmitter {
 				//
 				// We can't _guarantee_ that pages/middleware
 				// haven't set timers to mess with things in
-				// the future, so the navigator will wait a
-				// bit before yanking our context if an
-				// immediate subsequent navigation is
+				// the future, so we need to wait a bit before
+				// letting the navigator yank our context if
+				// an immediate subsequent navigation is
 				// scheduled.
 				//
-				context.navigator.finishRoute();
+				// I don't like this magic delay here, but it
+				// gives us a better shot at falling after
+				// things like lazy load images do their
+				// post-render wire-up.
+				//
+				// Anything that the current page does in the
+				// request context _after_ this timeout has
+				// elapsed and we've started a subsequent
+				// navigation is pure corruption. :p
+				//
+				setTimeout(() => context.navigator.finishRoute(), 200);
 			}).done();
 
 		});
