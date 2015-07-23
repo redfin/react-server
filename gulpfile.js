@@ -9,7 +9,8 @@ var gulp = require("gulp"),
 	logging = require("./buildutils/logger-loader"),
 	istanbul = require('gulp-istanbul'),
 	gulpif = require("gulp-if"),
-	minimist = require("minimist");
+	minimist = require("minimist"),
+	eslint = require('gulp-eslint');
 
 var availableOptions = {
 	'boolean': [ 'verbose', 'skipSourcemaps' ],
@@ -82,6 +83,22 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 gulp.task("test", ["compileServer", "compileClient"], function() {
 	return gulp.src("target/server/test/**/*[Ss]pec.js")
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
+});
+
+gulp.task("eslint", [], function() {
+	return gulp.src(src)
+		.pipe(codeFilter)
+        // eslint() attaches the lint output to the eslint property
+        // of the file object so it can be used by other modules.
+        .pipe(eslint({
+        	reset: true
+        }))
+        // eslint.format() outputs the lint results to the console.
+        // Alternatively use eslint.formatEach() (see Docs).
+        .pipe(eslint.format());
+        // To have the process exit with an error code (1) on
+        // lint error, return the stream and pipe to failOnError last.
+        //.pipe(eslint.failWithError());
 });
 
 // todo: where should tests go?
