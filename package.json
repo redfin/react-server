@@ -82,6 +82,7 @@
       ],
       "comma-spacing": 0,
       "consistent-return": 2,
+      "constructor-super": 2,
       "curly": [
         2,
         "multi-line"
@@ -92,6 +93,7 @@
         2,
         "smart"
       ],
+      "guard-for-in": 2,
       "handle-callback-err": 0,
       "indent": [
         2,
@@ -123,15 +125,21 @@
       "no-new-func": 2,
       "no-obj-calls": 2,
       "no-path-concat": 2,
+      "no-process-env": 2,
       "no-process-exit": 2,
       "no-redeclare": 2,
+      "no-reserved-keys": 2,
       "no-return-assign": 2,
       "no-script-url": 2,
+      "no-self-compare": 2,
       "no-shadow": 0,
       "no-spaced-func": 0,
+      "no-this-before-super": 2,
+      "no-throw-literal": 2,
       "no-trailing-spaces": 2,
       "no-undef": 2,
       "no-underscore-dangle": 0,
+      "no-unexpected-multiline": 2,
       "no-unreachable": 2,
       "no-unused-expressions": 0,
       "no-unused-vars": 2,
