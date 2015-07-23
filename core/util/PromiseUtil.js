@@ -1,8 +1,8 @@
 var Q = require("q");
 
 var PromiseUtil = module.exports = {
-	/** 
-	 * Translates a normal Promise to a simple EarlyPromise. 
+	/**
+	 * Translates a normal Promise to a simple EarlyPromise.
 	 *     promise (required): the promise to translate.
 	 *     pendingValueFn (optional): a function that synchronously gives the value to be returned by getValue while the promise is pending.
 	 *         defaults to null if not present.
@@ -14,7 +14,7 @@ var PromiseUtil = module.exports = {
 		}
 
 		var isResolved = false,
-			resolvedValue, 
+			resolvedValue,
 			rejectedError = null;
 
 		promise.then((value) => {
@@ -25,7 +25,7 @@ var PromiseUtil = module.exports = {
 			rejectedError = error;
 		})
 
-		promise.getValue = function() { 
+		promise.getValue = function() {
 			if (null !== rejectedError) throw rejectedError;
 			if (isResolved) return resolvedValue;
 			if (typeof pendingValueFn === "undefined") return null;

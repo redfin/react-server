@@ -18,7 +18,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID} = require('./constants');
 
 
-// TODO FIXME ?? 
+// TODO FIXME ??
 // It *might* be worthwhile to get rid of all the closure-y things in render()
 // https://developers.google.com/speed/articles/optimizing-javascript
 
@@ -197,7 +197,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	res.set('Transfer-Encoding', 'chunked');
 
 	res.write("<!DOCTYPE html><html><head>");
-	
+
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
@@ -208,7 +208,7 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderLinkTags(pageObject, res),
 		renderBaseTag(pageObject, res)
 	]).then(() => {
-		// once we have finished rendering all of the pieces of the head element, we 
+		// once we have finished rendering all of the pieces of the head element, we
 		// can close the head and start the body element.
 		res.write(`</head>`);
 
@@ -564,7 +564,7 @@ function writeBody(req, res, context, start, page) {
 	});
 
 	// return a promise that resolves when either the async render OR the timeout sync
-	// render happens. 
+	// render happens.
 	PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise)
 		.then(() => bodyComplete.resolve());
 

@@ -1,4 +1,4 @@
-var Q = require("q"), 
+var Q = require("q"),
 	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace(),
 	PromiseUtil = require("./PromiseUtil");

@@ -21,14 +21,14 @@ var Link = module.exports = React.createClass({
 
 		// TODO: IE8-9 detection
 
-		// TODO: if OSX && key.isMeta? 
+		// TODO: if OSX && key.isMeta?
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			getCurrentRequestContext().navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);	
+			getCurrentRequestContext().navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);
 		} else {
 			// do normal browser navigate
 		}
-		
+
 	}
 })

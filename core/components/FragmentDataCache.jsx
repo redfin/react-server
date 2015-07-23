@@ -18,7 +18,7 @@ var TritonAgent = require("../TritonAgent"),
  * ```javascript
  * var dataCacheStr = document.getElementById('triton-fragment-data-cache')
  * 			.getAttribute('data-triton-data-cache');
- * 
+ *
  * var parsedData = JSON.parse(dataCacheStr);
  *
  * var entry = parsedData.dataCache["/someUrl"];
@@ -29,7 +29,7 @@ var TritonAgent = require("../TritonAgent"),
  *											// that was exceeded
  * } else {
  *		console.log(entry.res); // { body: }
- * 
+ *
  * ```
  *
  * Known issues:

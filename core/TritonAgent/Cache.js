@@ -68,7 +68,7 @@ class CacheEntry {
 	 * the time of dehydrating and we *don't* recognize the response type, we'll serialize both
 	 * `.text` and `.body`, paying a penalty in response size, but guaranteeing correctness.
 	 * (We'll also log a warning saying that we should probably add another response type).
-	 * 
+	 *
 	 */
 	_copyResponseForDehydrate (res, {responseBodyOnly} = {}) {
 		if (!res) return res;
@@ -80,7 +80,7 @@ class CacheEntry {
 		}
 
 		var parseable = !!responseBodyParsers[res.type];
-		
+
 		Object.keys(res).forEach( (prop) => {
 			if ("body" === prop && parseable) {
 				// don't copy body if it's a well-known (easily-parsed) content-type
@@ -107,7 +107,7 @@ class CacheEntry {
 		this.loaded = state.loaded;
 		this.res = this._rehydrateResponse(state.res);
 		this.err = state.err;
-		
+
 		// TODO FIXME: these won't work if the response from the server was an error
 
 		if (this.loaded) {
@@ -127,7 +127,7 @@ class CacheEntry {
 		if (!res) return res;
 
 		if (res._hasBody) {
-			// re-parse the text of the response body serialized by the server. 
+			// re-parse the text of the response body serialized by the server.
 			// if the body wasn't in a known format, it will have been included directly
 
 			var parse = responseBodyParsers[res.type];
@@ -190,7 +190,7 @@ class CacheEntry {
 		this.loaded = true;
 
 		if (SERVER_SIDE) {
-			// Deep copy, to make sure nobody plays with the 
+			// Deep copy, to make sure nobody plays with the
 			// object we put in the cache
 			err = JSON.parse(JSON.stringify(err));
 		}
@@ -207,7 +207,7 @@ class CacheEntry {
 		} else {
 			// client-side, whenever someone retrieves data from the cache,
 			// we decrement the number of retrievals expected, and when we
-			// hit zero, remove the cache entry. 
+			// hit zero, remove the cache entry.
 			return this._requesterDecrementingPromise(this.dfd.promise);
 		}
 	}
@@ -220,7 +220,7 @@ class CacheEntry {
 	decrementRequesters () {
 		logger.debug("Decrementing: " + this.url);
 		this.requesters -= 1;
-			
+
 		if (this.requesters === 0) {
 			delete this.cache.dataCache[this.url];
 		}
@@ -237,7 +237,7 @@ class CacheEntry {
 		// we want to decrement requests. the appropriate 'success' or 'error'
 		// callback will be executed on whatever is chained after this method
 		return promise.fin( resOrErr => {
-			this.decrementRequesters();		
+			this.decrementRequesters();
 			return resOrErr;
 		});
 	}
@@ -298,7 +298,7 @@ class RequestDataCache {
 	dehydrate ({responseBodyOnly=false} = {}) {
 
 		var out = {};
-		
+
 		out.dataCache = {};
 
 		var dataCache = this.dataCache;
@@ -400,7 +400,7 @@ class RequestDataCache {
 		return Q.allSettled(promises);
 	}
 
-	/** 
+	/**
 	 * Fires when the cache has been completely depleted, which is used as a signal to render when there was a timeout on the server.
 	 */
 	whenCacheDepleted () {
