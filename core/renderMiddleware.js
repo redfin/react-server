@@ -523,8 +523,8 @@ function writeBody(req, res, context, start, page) {
 			// If it did, we're done.
 			if (!bodyComplete.promise.isPending()) return;
 
-	 		if (!rendered[index-1]) renderElement(res, element, context, index - 1);
-	 		rendered[index - 1] = true;
+			if (!rendered[index-1]) renderElement(res, element, context, index - 1);
+			rendered[index - 1] = true;
 			return next;
 		})
 	}).catch((err) => {

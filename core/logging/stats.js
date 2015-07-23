@@ -111,7 +111,7 @@ var makeThresholdsSieve = (options, defaults) => {
 var makeTimeClassifier = opts => {
 	var thresholds = makeThresholdsSieve(opts.timing, DEFAULT_TIME_THRESHOLDS);
 	return (ms, o) => {
-		     if (ms <= thresholds('fast', o)) return 'fast';
+		if (ms <= thresholds('fast', o)) return 'fast';
 		else if (ms <= thresholds('fine', o)) return 'fine';
 		else                                  return 'slow';
 	}
@@ -120,7 +120,7 @@ var makeTimeClassifier = opts => {
 var makeGaugeClassifier = opts => {
 	var thresholds = makeThresholdsSieve(opts.gauge, DEFAULT_GAUGE_THRESHOLDS);
 	return (val, o) => {
-		     if (val <= thresholds('lo', o)) return 'lo';
+		if (val <= thresholds('lo', o)) return 'lo';
 		else if (val >= thresholds('hi', o)) return 'hi';
 		else                                 return 'ok';
 	}
