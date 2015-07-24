@@ -136,6 +136,7 @@
       "no-return-assign": 2,
       "no-script-url": 2,
       "no-self-compare": 2,
+      "no-sequences": 0,
       "no-shadow": 0,
       "no-spaced-func": 0,
       "no-this-before-super": 2,
