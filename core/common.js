@@ -5,7 +5,7 @@ module.exports = {
 	History: require('./components/History'),
 	ClientRequest: require('./ClientRequest'),
 	components: {
-		FragmentDataCache: require('./components/FragmentDataCache')
+		FragmentDataCache: require('./components/FragmentDataCache'),
 	},
 	RequestLocalStorage: require('./util/RequestLocalStorage'),
 	getCurrentRequestContext: require('./context/RequestContext').getCurrentRequestContext,
@@ -13,5 +13,5 @@ module.exports = {
 	PageUtil: require("./util/PageUtil"),
 	logging: require("./logging"),
 	config: require("./config"),
-	TritonAgent: require('./TritonAgent')
+	TritonAgent: require('./TritonAgent'),
 }
