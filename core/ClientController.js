@@ -19,7 +19,7 @@ var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
 
 // Browsers handle error and stack serialization in various ways.  This gives
 // us a good shot at getting something useful out of it.
-logClientError = (msg, err) => logger.error(msg, `${err}\n${err.stack}`)
+var logClientError = (msg, err) => logger.error(msg, `${err}\n${err.stack}`)
 
 /**
  * Set up a Q error handler to make sure that errors that bubble
@@ -34,7 +34,7 @@ class ClientController extends EventEmitter {
 
 	constructor ({routes}) {
 		super();
-		
+
 		var dehydratedState = window.__tritonState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
@@ -64,9 +64,9 @@ class ClientController extends EventEmitter {
 	terminate() {
 		// We may not have set up any history stuff...
 		if (!this._history) return;
-        this._history.off(this._historyListener);
-        this._historyListener = null;
-        this._history = null;
+		this._history.off(this._historyListener);
+		this._historyListener = null;
+		this._history = null;
 	}
 
 	_startRequest() {
@@ -82,38 +82,38 @@ class ClientController extends EventEmitter {
 	}
 
 	_setupNavigateListener () {
-		var context = this.context; 
+		var context = this.context;
 
 		context.onNavigateStart(this._startRequest.bind(this));
 
 		/**
-		 * type is one of 
-		 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
+		 * type is one of
+		 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a
 		 * full page load
 		 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
 		context.onNavigate( (err, page, path, type) => {
 			logger.debug('Executing navigate action');
-			
-			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar 
-			// before rendering. 
-			// note that for browsers that do not have pushState, this will result in a window.location change 
-			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to 
+
+			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar
+			// before rendering.
+			// note that for browsers that do not have pushState, this will result in a window.location change
+			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to
 			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
 			if (type === History.events.PUSHSTATE && this._history) {
 				this._history.pushState(null, null, path);
 			}
 
 			if (err) {
-				// redirects are sent as errors, so let's handle it if that's the case. 
+				// redirects are sent as errors, so let's handle it if that's the case.
 				if (err.status && (err.status === 301 || err.status === 302)) {
 					if (!err.redirectUrl) {
 						console.error("A redirect status was sent without a corresponding redirect redirectUrl.", err);
 					} else {
 						setTimeout(() => {
 							this._history.replaceState(null, null, err.redirectUrl);
-							this.context.navigate(new ClientRequest(err.redirectUrl)); 
+							this.context.navigate(new ClientRequest(err.redirectUrl));
 						}, 0);
 					}
 				} else {
@@ -193,7 +193,7 @@ class ClientController extends EventEmitter {
 				// get rid of the current base tag.
 				if (currentBaseTag) currentBaseTag.parentNode.removeChild(currentBaseTag);
 			} else {
-				// we need a base tag. add one if it's not there yet. 
+				// we need a base tag. add one if it's not there yet.
 				if (!currentBaseTag) {
 					currentBaseTag = document.createElement("base");
 					document.head.appendChild(currentBaseTag);
@@ -248,7 +248,7 @@ class ClientController extends EventEmitter {
 			document.head.appendChild(
 				[document.createElement('link'), PAGE_LINK_NODE_ID]
 				.concat(Object.keys(tag))
-				.reduce((link, attr) => (link.setAttribute(attr, tag[attr]||''), link))
+				.reduce((link, attr) => (link.setAttribute(attr, tag[attr] || ''), link))
 			);
 		})).catch(err => logClientError("Error rendering link tags", err)).done());
 	}
@@ -257,7 +257,7 @@ class ClientController extends EventEmitter {
 		var t0 = new Date;
 		logger.debug('React Rendering');
 
-		// if we were previously rendered on the client, clean up the old divs and 
+		// if we were previously rendered on the client, clean up the old divs and
 		// their ReactComponents.
 		this._cleanupPreviousRender(this.mountNode);
 
@@ -276,7 +276,7 @@ class ClientController extends EventEmitter {
 
 		var renderElement = (element, index) => {
 
-			// for each ReactElement that we want to render, either use the server-rendered root element, or 
+			// for each ReactElement that we want to render, either use the server-rendered root element, or
 			// create a new root element.
 			logger.debug("Rendering root node #" + index);
 			var root = serverRenderedRoots[index] || this._createTritonRootNode(this.mountNode, index);
@@ -354,8 +354,8 @@ class ClientController extends EventEmitter {
 		}
 
 		// I find the control flow for chaining promises impossibly mind-bending, but what I intended was something
-		// like: 
-		// 
+		// like:
+		//
 		//		elementPromises.forEach((elementPromise, index) => {
 		//			var element = await elementPromise;
 		//			renderElement(element, index);
@@ -368,7 +368,7 @@ class ClientController extends EventEmitter {
 		// if I got something wrong, what I intended was the control flow expressed in this comment.
 		return elementPromises.reduce((chain, next, index) => {
 			return chain.then((element) => {
-		 		renderElement(element, index - 1);
+				renderElement(element, index - 1);
 
 				// If our TritonAgent cache has been depleted
 				// we're racing with the sync render.  We want
@@ -382,9 +382,9 @@ class ClientController extends EventEmitter {
 				return next;
 			})
 		}).then((element) => {
-			// reduce is called length - 1 times. we need to call one final time here to make sure we 
+			// reduce is called length - 1 times. we need to call one final time here to make sure we
 			// chain the final promise.
-	 		renderElement(element, elementPromises.length - 1);
+			renderElement(element, elementPromises.length - 1);
 
 			this._previouslyRendered = true;
 		}).catch((err) => {
@@ -401,7 +401,7 @@ class ClientController extends EventEmitter {
 			logger.debug("Removing previous page's React components");
 
 			this._getRootElements(mountNode).forEach((tritonRoot) => {
-				// since this node has a "data-triton-root-id" attribute, we can assume that we created it and 
+				// since this node has a "data-triton-root-id" attribute, we can assume that we created it and
 				// should destroy it. Destruction means first unmounting from React and then destroying the DOM node.
 				React.unmountComponentAtNode(tritonRoot);
 				mountNode.removeChild(tritonRoot);
@@ -414,8 +414,8 @@ class ClientController extends EventEmitter {
 	 * should all have a "data-triton-root-id" attribute and be direct children of mountNode.
 	 */
 	_getRootElements(mountNode) {
-		// if children returned an array instead of a NodeList, we could use .filter(), but 
-		// alas, it does not. We could copy it over to an array, but seems easier to just iterate 
+		// if children returned an array instead of a NodeList, we could use .filter(), but
+		// alas, it does not. We could copy it over to an array, but seems easier to just iterate
 		// over the NodeList.
 		var potentialRoots = mountNode.children;
 		var result = [];
@@ -425,7 +425,7 @@ class ClientController extends EventEmitter {
 				// since this node has a "data-triton-root-id" attribute, we can assume that we created it.
 				result.push(potentialRoot);
 			} else {
-				// it's deeply troubling that there's a div we didn't create, but for now, just warn, and  
+				// it's deeply troubling that there's a div we didn't create, but for now, just warn, and
 				// don't obliterate the node.
 				console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
 					"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
@@ -447,13 +447,13 @@ class ClientController extends EventEmitter {
 
 	init () {
 
-		var unloadHandler = () => {this.terminate();};
+		var unloadHandler = () => {this.terminate(); };
 
 		if (window && window.addEventListener) {
-		    window.addEventListener("unload", unloadHandler);
+			window.addEventListener("unload", unloadHandler);
 		}
 		else if (window && window.attachEvent) {
-		    window.attachEvent("onunload", unloadHandler);
+			window.attachEvent("onunload", unloadHandler);
 		}
 
 		var location = window.location;
@@ -463,22 +463,22 @@ class ClientController extends EventEmitter {
 	}
 
 	/**
-	 * Initializes us to listen to back button events. When the user presses the back button, the history 
+	 * Initializes us to listen to back button events. When the user presses the back button, the history
 	 * listener will be called and cause a navigate() event.
 	 */
 	_initializeHistoryListener(context) {
 
-        this._historyListener = (e) => {
-            if (context) {
-                var path = this._history.getPath();
-                
-                // pass in "popstate" because this is when a user clicks the back button.
-                context.navigate(new ClientRequest(path), History.events.POPSTATE);
-                
-            }
-        };
+		this._historyListener = () => {
+			if (context) {
+				var path = this._history.getPath();
 
-        this._history = new History();
+				// pass in "popstate" because this is when a user clicks the back button.
+				context.navigate(new ClientRequest(path), History.events.POPSTATE);
+
+			}
+		};
+
+		this._history = new History();
 		var init = () => this._history.on(this._historyListener);
 
 		// Need to go _after_ 'load' callbacks complete.

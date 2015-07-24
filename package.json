@@ -71,6 +71,9 @@
       "es6": true,
       "node": true
     },
+    "globals": {
+      "__LOGGER__": false,
+    },
     "plugins": [
       "react"
     ],
