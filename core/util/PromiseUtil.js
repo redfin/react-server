@@ -1,6 +1,6 @@
 var Q = require("q");
 
-var PromiseUtil = module.exports = {
+module.exports = {
 	/**
 	 * Translates a normal Promise to a simple EarlyPromise.
 	 *     promise (required): the promise to translate.
@@ -47,5 +47,5 @@ var PromiseUtil = module.exports = {
 		});
 
 		return resultDeferred.promise;
-	}
+	},
 }
