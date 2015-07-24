@@ -1,14 +1,10 @@
 
 var Navigator = require('./Navigator'),
-	RequestLocals = require('../util/RequestLocalStorage').getNamespace(),
-	Q = require('q'),
-	TritonAgent = require('../TritonAgent'),
-	config = require('../config'),
-	logger = require('../logging').getLogger(__LOGGER__);
+	RequestLocals = require('../util/RequestLocalStorage').getNamespace();
 
 class RequestContext {
 
-	constructor (routes, extraOpts) {
+	constructor (routes) {
 
 		this.navigator = new Navigator(this, routes);
 
@@ -32,7 +28,7 @@ class RequestContext {
 		return this
 	}
 
-	getDataLoadWait (ms) {
+	getDataLoadWait () {
 		return this.dataLoadWait
 	}
 
@@ -73,7 +69,7 @@ class RequestContextBuilder {
 		return this;
 	}
 
-	setDefaultXhrHeadersFromRequest (req) {
+	setDefaultXhrHeadersFromRequest () {
 		return this;
 	}
 

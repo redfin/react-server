@@ -135,7 +135,7 @@ class Navigator extends EventEmitter {
 	getState () {
 		return {
 			loading: this._loading,
-			route: this._currentRoute
+			route: this._currentRoute,
 		}
 	}
 
