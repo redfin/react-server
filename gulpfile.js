@@ -58,7 +58,7 @@ gulp.task("compileServer", function() {
 	return compile(true);
 });
 
-gulp.task("build", ["compile"]);
+gulp.task("build", ["compile", "eslint"]);
 
 gulp.task('watch', function () {
    gulp.watch(src, ["build"]);
@@ -94,10 +94,10 @@ gulp.task("eslint", [], function() {
         .pipe(eslint())
         // eslint.format() outputs the lint results to the console.
         // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format());
+        .pipe(eslint.format())
         // To have the process exit with an error code (1) on
         // lint error, return the stream and pipe to failOnError last.
-        //.pipe(eslint.failWithError());
+        .pipe(eslint.failOnError());
 });
 
 // todo: where should tests go?
