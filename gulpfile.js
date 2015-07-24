@@ -16,8 +16,8 @@ var availableOptions = {
 	'boolean': [ 'verbose', 'skipSourcemaps' ],
 	'default': {
 		'verbose': false,
-		'skipSourcemaps': false
-	}
+		'skipSourcemaps': false,
+	},
 }
 var options = minimist(process.argv.slice(2), availableOptions);
 
@@ -61,7 +61,7 @@ gulp.task("compileServer", function() {
 gulp.task("build", ["compile", "eslint"]);
 
 gulp.task('watch', function () {
-   gulp.watch(src, ["build"]);
+	gulp.watch(src, ["build"]);
 });
 
 gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
@@ -76,8 +76,8 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 						.pipe(jasmine())
 						.pipe(istanbul.writeReports({dir: './target/coverage'})) // Creating the reports after tests runned
 						.on('end', cb);
-    			});
-    	});
+				});
+		});
 });
 
 gulp.task("test", ["compileServer", "compileClient"], function() {
