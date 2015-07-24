@@ -39,7 +39,7 @@ class ClientRequest {
 	getRouteName() {
 		return this._route.name;
 	}
-
+	/*eslint-disable no-unused-vars */
 	getHttpHeader(name, callback) {
 		// this is a no-op; there are no HTTP headers on the client-side.
 	}
@@ -47,7 +47,7 @@ class ClientRequest {
 	getHttpHeaders(callback) {
 		// this is a no-op; there are no HTTP headers on the client-side.
 	}
-
+	/*eslint-enable no-unused-vars */
 	getCookie(name) {
 		return this.getCookies()[name];
 	}
