@@ -65,7 +65,7 @@
   "eslintConfig": {
     "globals": {
       "__LOGGER__": false,
-      "SERVER_SIDE": true
+      "SERVER_SIDE": false
     },
     "ecmaFeatures": {
       "jsx": true
@@ -74,9 +74,6 @@
       "browser": true,
       "es6": true,
       "node": true
-    },
-    "globals": {
-      "__LOGGER__": false,
     },
     "plugins": [
       "react"
