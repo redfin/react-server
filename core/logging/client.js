@@ -33,19 +33,20 @@ var makeLogger = function(group, opts){
 			,   level = args.shift()
 
 			this.transports.forEach(transport => {
-				if (config.levels[level] < config.levels[transport.level])
-					return;
+				if (config.levels[level] < config.levels[transport.level]) return;
 				setTimeout(transport.log.bind(transport, level, args[0], args[1]), 0);
 			});
 
-			if (config.levels[level] < config.levels[this.level])
-				return;
+			if (config.levels[level] < config.levels[this.level]) return;
 
-			if (monochrome)
-				return console_log.apply(
+			if (monochrome){
+				console_log.apply(
 					_console,
 					[`${level}: [${opts.name}]`].concat(args)
 				);
+				return;
+			}
+
 
 			console_log.apply(
 				_console,
@@ -61,7 +62,7 @@ var makeLogger = function(group, opts){
 		transports: [],
 		add: function(transport, opts){
 			this.transports.push(new transport(opts));
-		}
+		},
 	}
 
 	Object.keys(config.levels).forEach(level => {
@@ -87,21 +88,20 @@ var setLevel = function(group, level){
 	common.config[group].baseLevel = level;
 
 	common.forEachLogger((logger, loggerGroup) => {
-		if (loggerGroup == group)
-			logger.level = level;
+		if (loggerGroup === group) logger.level = level;
 	});
 }
 
 var addTransport = function(group, transport){
 
-	if (!common.config[group].extraTransports)
+	if (!common.config[group].extraTransports){
 		common.config[group].extraTransports = [];
+	}
 
 	common.config[group].extraTransports.push(transport);
 
 	common.forEachLogger((logger, loggerGroup) => {
-		if (loggerGroup == group)
-			logger.add(transport, logger.opts);
+		if (loggerGroup === group) logger.add(transport, logger.opts);
 	});
 }
 
