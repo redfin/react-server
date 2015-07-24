@@ -52,7 +52,8 @@
  *   var barLogger = logging.getLogger(__LOGGER__({ label: "bar" }));
  *
  */
-if (SERVER_SIDE)
+if (SERVER_SIDE) {
 	module.exports = require('./logging/server.js');
-else
+} else {
 	module.exports = require('./logging/client.js');
+}

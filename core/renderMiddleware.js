@@ -5,7 +5,6 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
 	LABString = require('./util/LABString'),
-	ClientCssHelper = require('./util/ClientCssHelper'),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
@@ -68,7 +67,7 @@ module.exports = function(server, routes) {
 		context.setServerStash({ req, res, start, startHR });
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
-		context.onNavigate( (err, page, path, type) => {
+		context.onNavigate( (err, page) => {
 
 			if (err) {
 				logger.log("onNavigate received a non-2xx HTTP code", err);
@@ -168,7 +167,7 @@ function fragmentLifecycle () {
 		setContentType,
 		writeBody,
 		endResponse,
-		handleResponseComplete
+		handleResponseComplete,
 	];
 }
 
@@ -187,7 +186,7 @@ function pageLifecycle() {
 	];
 }
 
-function setContentType(req, res, context, start, pageObject) {
+function setContentType(req, res) {
 	// TODO: Provide a way to set this for non-HTML (raw) pages.
 	res.set('Content-Type', 'text/html; charset=utf-8');
 }
@@ -206,7 +205,7 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderScripts(pageObject, res),
 		renderMetaTags(pageObject, res),
 		renderLinkTags(pageObject, res),
-		renderBaseTag(pageObject, res)
+		renderBaseTag(pageObject, res),
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we
 		// can close the head and start the body element.
@@ -265,24 +264,6 @@ function renderMetaTags (pageObject, res) {
 	});
 
 	return Q.all(metaTagsRendered);
-}
-
-function validateMetaTag(metaTag) {
-	// count the number of non-"content" attrs in use. If it's more than one, throw an error
-	// TODO: it's probably better to not exclude things here? if people were writing meta tags
-	// themselves, they could put whatever they wanted in there...
-	var possibleAttrs = ['name', 'httpEquiv', 'charset', 'property'];
-	var count = possibleAttrs.reduce( (count, attrName) => {
-		return metaTag[attrName] ? (count + 1) : count;
-	});
-
-	if (count > 1) {
-		throw new Error(`<meta> tag cannot have more than one of: {possibleAttrs.join(",")}`);
-	}
-
-	if ( (metaTag.name || metaTag.httpEquiv || metaTag.property) && !metaTag.content ) {
-		throw new Error(`<meta> tag has attribute requiring a content attr, but no content attr is specified`);
-	}
 }
 
 function renderLinkTags (pageObject, res) {
@@ -454,7 +435,7 @@ function renderScripts(pageObject, res) {
 	var scripts = pageObject.getSystemScripts().concat(pageObject.getScripts());
 
 	var thereIsAtLeastOneNonJSScript = scripts.filter(
-		script => script.type && script.type != "text/javascript"
+		script => script.type && script.type !== "text/javascript"
 	).length;
 
 	if (thereIsAtLeastOneNonJSScript){
@@ -503,7 +484,7 @@ function startBody(req, res, context, start, page) {
  * all the ReactElements have been written out.
  */
 function writeBody(req, res, context, start, page) {
-
+	/*eslint-disable consistent-return */
 	var bodyComplete = Q.defer();
 
 	// standardize to an array of EarlyPromises of ReactElements
@@ -569,6 +550,7 @@ function writeBody(req, res, context, start, page) {
 		.then(() => bodyComplete.resolve());
 
 	return bodyComplete.promise;
+	/*eslint-enable consistent-return */
 }
 
 function writeResponseData(req, res, context, start, page) {
@@ -594,7 +576,7 @@ function getElementDisplayName(element){
 		// only a single child, we'll look at the child to see if it
 		// has a nice name.  This helps bypass anonymous wrapper
 		// elements.
-		if (React.Children.count(element.props.children) == 1){
+		if (React.Children.count(element.props.children) === 1){
 
 			// Sigh.  `React.Children.count` will happily return 1
 			// if the node contains only text, and then
@@ -653,9 +635,9 @@ function renderElement(res, element, context, index) {
 	RLS().renderTime += individualTime;
 }
 
-function writeData(req, res, context, start) {
+function writeData(req, res) {
 	var initialContext = {
-		'TritonAgent.cache': TritonAgent.cache().dehydrate()
+		'TritonAgent.cache': TritonAgent.cache().dehydrate(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
@@ -669,11 +651,11 @@ function writeData(req, res, context, start) {
 	// helpful this way.  With `window.rfBootstrap()` the error is just
 	// "undefined is not a function".
 	renderScriptsAsync([{
-		text: `${res.locals.state};rfBootstrap();`
+		text: `${res.locals.state};rfBootstrap();`,
 	}], res);
 }
 
-function setupLateArrivals(req, res, context, start, page) {
+function setupLateArrivals(req, res, context, start) {
 	var notLoaded = TritonAgent.cache().getPendingRequests();
 
 	// This is for reporting purposes.  We're going to log how many late
@@ -682,14 +664,14 @@ function setupLateArrivals(req, res, context, start, page) {
 	TritonAgent.cache().markLateRequests();
 
 	notLoaded.forEach( pendingRequest => {
-		pendingRequest.entry.whenDataReadyInternal().then( data => {
+		pendingRequest.entry.whenDataReadyInternal().then( () => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
 				text: `__lateArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
-				});`
+				});`,
 			}], res);
 
 		})
@@ -700,12 +682,12 @@ function setupLateArrivals(req, res, context, start, page) {
 	return Q.allSettled(promises)
 }
 
-function closeBody(req, res, context, start, page) {
+function closeBody(req, res) {
 	res.write("</body></html>");
 	return Q();
 }
 
-function endResponse(req, res, context, start, page) {
+function endResponse(req, res) {
 	res.end();
 	return Q();
 }
