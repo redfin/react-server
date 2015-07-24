@@ -63,6 +63,10 @@
     "zombie": "2.5.1"
   },
   "eslintConfig": {
+    "globals": {
+      "__LOGGER__": false,
+      "SERVER_SIDE": true
+    },
     "ecmaFeatures": {
       "jsx": true
     },
