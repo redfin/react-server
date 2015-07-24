@@ -4,11 +4,11 @@ var React = require('react'),
 	History = require("./History"),
 	getCurrentRequestContext = require("../context/RequestContext").getCurrentRequestContext;
 
-var Link = module.exports = React.createClass({
+module.exports = React.createClass({
 	displayName: 'Link',
 
 	propTypes: {
-		path: React.PropTypes.string.isRequired
+		path: React.PropTypes.string.isRequired,
 	},
 
 	render: function () {
@@ -30,5 +30,5 @@ var Link = module.exports = React.createClass({
 			// do normal browser navigate
 		}
 
-	}
+	},
 })

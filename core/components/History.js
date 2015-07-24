@@ -6,7 +6,6 @@
   * Redfin: unchnaged (so far)
   */
 /*global window */
-'use strict';
 
 var events = {
 		POPSTATE: 'popstate',
@@ -14,7 +13,7 @@ var events = {
 		// constant to make naming consistent, CLICK for backwards compat
 		CLICK: "click",
 		PUSHSTATE: "click",
-		PAGELOAD: "pageload"
+		PAGELOAD: "pageload",
 	};
 
 /**
@@ -96,7 +95,7 @@ History.prototype = {
 		} else {
 			win.location.replace(url);
 		}
-	}
+	},
 };
 
 History.events = events;

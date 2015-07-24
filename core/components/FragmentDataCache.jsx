@@ -39,14 +39,14 @@ var TritonAgent = require("../TritonAgent"),
 var FragmentDataCache = module.exports = React.createClass({
 
 	propTypes: {
-		cacheNodeId: React.PropTypes.string
+		cacheNodeId: React.PropTypes.string,
 	},
 
 	displayName: 'FragmentDataCache',
 
 	getDefaultProps: function () {
 		return {
-			cacheNodeId: "triton-fragment-data-cache"
+			cacheNodeId: "triton-fragment-data-cache",
 		}
 	},
 
@@ -57,7 +57,7 @@ var FragmentDataCache = module.exports = React.createClass({
 				data-triton-data-cache={JSON.stringify(TritonAgent.cache().dehydrate({ responseBodyOnly: true }))}>
 			</div>
 		);
-	}
+	},
 
 });
 

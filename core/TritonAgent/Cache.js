@@ -1,8 +1,6 @@
 
 var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
-,	RLS = require('../util/RequestLocalStorage').getNamespace()
-,	config = require("../config")
 ,	{ mixin } = require("./util")
 ;
 
@@ -16,7 +14,7 @@ var responseBodyParsers = {
 			text = text.substr(4);
 		}
 		return JSON.parse(text);
-	}
+	},
 }
 
 /**
@@ -51,7 +49,7 @@ class CacheEntry {
 			requesters: this.requesters,
 			loaded: this.loaded,
 			res: this._copyResponseForDehydrate(this.res, { responseBodyOnly }),
-			err: errCopy
+			err: errCopy,
 		};
 	}
 
@@ -268,7 +266,7 @@ class CacheEntry {
 			"unauthorized",
 			"notAcceptable",
 			"notFound",
-			"forbidden"
+			"forbidden",
 		].forEach( prop => {
 			result[prop] = res[prop];
 		});
@@ -365,7 +363,7 @@ class RequestDataCache {
 					// sort of a synchronous promise thing
 					cached.decrementRequesters();
 					return cached.res;
-				}
+				},
 			};
 		}
 		return null;

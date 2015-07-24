@@ -7,6 +7,6 @@ module.exports = {
 	mixin (to, from) {
 		Object.keys(from).forEach( headerName => to[headerName] = from[headerName] );
 		return to;
-	}
+	},
 
 }
