@@ -18,7 +18,7 @@ var TritonAgent = require("../TritonAgent"),
  * ```javascript
  * var dataCacheStr = document.getElementById('triton-fragment-data-cache')
  * 			.getAttribute('data-triton-data-cache');
- * 
+ *
  * var parsedData = JSON.parse(dataCacheStr);
  *
  * var entry = parsedData.dataCache["/someUrl"];
@@ -29,7 +29,7 @@ var TritonAgent = require("../TritonAgent"),
  *											// that was exceeded
  * } else {
  *		console.log(entry.res); // { body: }
- * 
+ *
  * ```
  *
  * Known issues:
@@ -39,14 +39,14 @@ var TritonAgent = require("../TritonAgent"),
 var FragmentDataCache = module.exports = React.createClass({
 
 	propTypes: {
-		cacheNodeId: React.PropTypes.string
+		cacheNodeId: React.PropTypes.string,
 	},
 
 	displayName: 'FragmentDataCache',
 
 	getDefaultProps: function () {
 		return {
-			cacheNodeId: "triton-fragment-data-cache"
+			cacheNodeId: "triton-fragment-data-cache",
 		}
 	},
 
@@ -57,7 +57,7 @@ var FragmentDataCache = module.exports = React.createClass({
 				data-triton-data-cache={JSON.stringify(TritonAgent.cache().dehydrate({ responseBodyOnly: true }))}>
 			</div>
 		);
-	}
+	},
 
 });
 

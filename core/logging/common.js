@@ -73,9 +73,12 @@ var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
 
 // We may have loggers with the same name in different groups, so we'll give
 // each group its own container.
-if (!Object.keys(loggers).length)
-	for (var group in config)
+if (!Object.keys(loggers).length){
+	for (var group in config){
+		if (!config.hasOwnProperty(group)) continue;
 		loggers[group] = {};
+	}
+}
 
 // This is just a cache.
 // Don't want to instantiate a given logger more than once.
@@ -93,7 +96,7 @@ var getLoggerForConfig = makeLogger => {
 // each of our two loggers and then stitches the stats logger onto the main
 // logger.
 var makeGetLogger = makeLogger => (
-	(opts) => stats.getCombinedLogger(getLoggerForConfig(makeLogger), opts)
+	opts => stats.getCombinedLogger(getLoggerForConfig(makeLogger), opts)
 );
 
 // Just a handy helper for iteration.

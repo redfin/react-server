@@ -95,7 +95,7 @@ Request.prototype.timeout = function (timeout) {
 
 Request.prototype.type = function (type) {
 	if (typeof type === 'undefined') {
-		return this._type;	
+		return this._type;
 	}
 	this._type = type;
 	return this;

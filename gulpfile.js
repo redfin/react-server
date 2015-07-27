@@ -9,14 +9,15 @@ var gulp = require("gulp"),
 	logging = require("./buildutils/logger-loader"),
 	istanbul = require('gulp-istanbul'),
 	gulpif = require("gulp-if"),
-	minimist = require("minimist");
+	minimist = require("minimist"),
+	eslint = require('gulp-eslint');
 
 var availableOptions = {
 	'boolean': [ 'verbose', 'skipSourcemaps' ],
 	'default': {
 		'verbose': false,
-		'skipSourcemaps': false
-	}
+		'skipSourcemaps': false,
+	},
 }
 var options = minimist(process.argv.slice(2), availableOptions);
 
@@ -57,10 +58,10 @@ gulp.task("compileServer", function() {
 	return compile(true);
 });
 
-gulp.task("build", ["compile"]);
+gulp.task("build", ["compile", "eslint"]);
 
 gulp.task('watch', function () {
-   gulp.watch(src, ["build"]);
+	gulp.watch(src, ["build"]);
 });
 
 gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
@@ -75,13 +76,28 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 						.pipe(jasmine())
 						.pipe(istanbul.writeReports({dir: './target/coverage'})) // Creating the reports after tests runned
 						.on('end', cb);
-    			});
-    	});
+				});
+		});
 });
 
 gulp.task("test", ["compileServer", "compileClient"], function() {
 	return gulp.src("target/server/test/**/*[Ss]pec.js")
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
+});
+
+gulp.task("eslint", [], function() {
+	var srcMinusTest = src;
+	srcMinusTest.push("!core/test/**/*");
+	return gulp.src(srcMinusTest)
+        // eslint() attaches the lint output to the eslint property
+        // of the file object so it can be used by other modules.
+        .pipe(eslint())
+        // eslint.format() outputs the lint results to the console.
+        // Alternatively use eslint.formatEach() (see Docs).
+        .pipe(eslint.format())
+        // To have the process exit with an error code (1) on
+        // lint error, return the stream and pipe to failOnError last.
+        .pipe(eslint.failAfterError());
 });
 
 // todo: where should tests go?

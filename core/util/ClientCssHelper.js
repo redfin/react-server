@@ -2,12 +2,11 @@
 var logger = require('../logging').getLogger(__LOGGER__);
 var {PAGE_CSS_NODE_ID} = require('../constants');
 
-var pageCssLinkNode;
 var loadedCss = {};
 
-var ClientCssHelper = module.exports = {
+module.exports = {
 
-	registerPageLoad: function registerPageLoad(routeName) {
+	registerPageLoad: function registerPageLoad() {
 		if (SERVER_SIDE) {
 			throw new Error("ClientCssHelper.registerPageLoad can't be called server-side");
 		}
@@ -78,5 +77,5 @@ var ClientCssHelper = module.exports = {
 
 	_keyFromStyleSheet: function(style) {
 		return style.href || style.text;
-	}
+	},
 }
