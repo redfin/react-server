@@ -120,6 +120,8 @@ describe("TritonAgent", () => {
 		it("pass query params", withRlsContext( (done) => {
 			TritonAgent.get('/describe')
 				.query({'foo': 'bar', 'baz': 'qux'})
+				.query('fish=water&88&cow=land')
+				.query({'a': 'b'})
 				.then( (res, err) => {
 
 					expect(res.ok).toBe(true);
@@ -131,6 +133,10 @@ describe("TritonAgent", () => {
 					expect(req.method).toBe("GET");
 					expect(req.query.foo).toBe("bar");
 					expect(req.query.baz).toBe("qux");
+					expect(req.query.fish).toBe("water");
+					expect(req.query['88']).toBe("");
+					expect(req.query.cow).toBe("land");
+					expect(req.query.a).toBe("b");
 
 					done();
 				}).done();
