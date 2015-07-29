@@ -63,8 +63,7 @@ Request.prototype.urlPath = function (urlPath) {
 
 Request.prototype.query = function (queryParams) {
 	if (typeof queryParams === 'undefined') {
-		logger.warning("Request.query does not support retrieving the current query string");
-		return this;
+		throw new Error("Request.query does not support retrieving the current query string");
 	}
 	this._queryParams.push(queryParams);
 	return this;
