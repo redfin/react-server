@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 
 /* This module provides access to objects that are scoped to the lifespan of a
  * request.

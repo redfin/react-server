@@ -19,6 +19,6 @@ module.exports = {
 
 	getCssRollupNameFromRouteName: function (routeName) {
 		return getEntryPointNameFromRouteName(routeName) + CSS_ROLLUP_SUFFIX;
-	}
+	},
 
 }

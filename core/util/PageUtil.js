@@ -1,4 +1,4 @@
-var Q = require("q"), 
+var Q = require("q"),
 	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace(),
 	PromiseUtil = require("./PromiseUtil");
@@ -311,6 +311,7 @@ var PageUtil = module.exports = {
 	//   - PAGE_HOOKS
 	//
 	createPageChain(pages) {
+		/* eslint-disable no-loop-func */
 
 		// This will be our return value.
 		//
@@ -326,7 +327,7 @@ var PageUtil = module.exports = {
 		// Wire up the chained methods.
 		for (var method in PAGE_METHODS){
 
-			if (!PAGE_METHODS.hasOwnProperty(method)) return;
+			if (!PAGE_METHODS.hasOwnProperty(method)) continue;
 
 			var [defaultImpl, standardize] = PAGE_METHODS[method];
 
@@ -377,6 +378,7 @@ var PageUtil = module.exports = {
 		});
 
 		return pageChain;
+		/* eslint-enable no-loop-func */
 	},
 
 	makeArray(valueOrArray) {
@@ -384,5 +386,5 @@ var PageUtil = module.exports = {
 			return [valueOrArray];
 		}
 		return valueOrArray;
-	}
+	},
 }

@@ -9,19 +9,19 @@ var makeLogger = function(group, opts){
 		level     : config.baseLevel,
 		stream    : process.stdout,
 		json      : false,
-		timestamp : TIMESTAMP_TRITON_LOG_OUTPUT,
+		timestamp : global.TIMESTAMP_TRITON_LOG_OUTPUT,
 	});
 
 	var logger = new (winston.Logger)({
 		transports: [
 			fileTransport,
-		]
+		],
 	});
 
 	// Need to be able to refresh this.
 	(logger.updateColorize = function(){
 		logger.transports.file.label = colorizeName(opts);
-		logger.transports.file.colorize = COLORIZE_TRITON_LOG_OUTPUT;
+		logger.transports.file.colorize = global.COLORIZE_TRITON_LOG_OUTPUT;
 	})();
 
 	logger.setLevels(config.levels);
@@ -42,8 +42,7 @@ var getLogger = common.makeGetLogger(makeLogger);
 var colorizeName = function(opts){
 
 	// Only colorize if we're attached to a terminal.
-	if (!COLORIZE_TRITON_LOG_OUTPUT)
-		return opts.name;
+	if (!global.COLORIZE_TRITON_LOG_OUTPUT) return opts.name;
 
 	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
 }
@@ -54,21 +53,20 @@ var setLevel = function(group, level){
 	common.config[group].baseLevel = level;
 
 	common.forEachLogger((logger, loggerGroup) => {
-		if (loggerGroup == group)
-			logger.transports.file.level = level;
+		if (loggerGroup === group) logger.transports.file.level = level;
 	});
 }
 
 var addTransport = function(group, transport){
 
-	if (!common.config[group].extraTransports)
+	if (!common.config[group].extraTransports){
 		common.config[group].extraTransports = [];
+	}
 
 	common.config[group].extraTransports.push(transport);
 
 	common.forEachLogger((logger, loggerGroup) => {
-		if (loggerGroup == group)
-			logger.add(transport, logger.opts);
+		if (loggerGroup === group) logger.add(transport, logger.opts);
 	});
 }
 

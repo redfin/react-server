@@ -90,7 +90,7 @@ var API = {
 	 */
 	plugRequest (pluginFunc) {
 		RequestPlugins.add(pluginFunc);
-	}
+	},
 
 
 }

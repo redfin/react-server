@@ -4,11 +4,11 @@ var React = require('react'),
 	History = require("./History"),
 	getCurrentRequestContext = require("../context/RequestContext").getCurrentRequestContext;
 
-var Link = module.exports = React.createClass({
+module.exports = React.createClass({
 	displayName: 'Link',
 
 	propTypes: {
-		path: React.PropTypes.string.isRequired
+		path: React.PropTypes.string.isRequired,
 	},
 
 	render: function () {
@@ -21,14 +21,14 @@ var Link = module.exports = React.createClass({
 
 		// TODO: IE8-9 detection
 
-		// TODO: if OSX && key.isMeta? 
+		// TODO: if OSX && key.isMeta?
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			getCurrentRequestContext().navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);	
+			getCurrentRequestContext().navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);
 		} else {
 			// do normal browser navigate
 		}
-		
-	}
+
+	},
 })

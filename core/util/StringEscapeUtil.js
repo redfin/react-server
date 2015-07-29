@@ -26,7 +26,7 @@ module.exports = {
 		return str.replace(UNSAFE_CHARS, function (match) {
 			return REPLACEMENT_CHARS[match];
 		});
-	}
+	},
 
 
 }

@@ -10,10 +10,10 @@ class Navigator extends EventEmitter {
 
 	constructor (context, routes) {
 		super();
-		
+
 		this.router = new Router(routes.routes);
 		this.context = context;
-		
+
 		this._globalMiddleware = routes.middleware;
 		this._loading = false;
 		this._currentRoute = null;
@@ -21,8 +21,8 @@ class Navigator extends EventEmitter {
 	}
 
 	/**
-	 * type is one of 
-	 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a 
+	 * type is one of
+	 *    History.events.PUSHSTATE: user clicked something to go forward but browser didn't do a
 	 * full page load
 	 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
 	 *    History.events.PAGELOAD: full browser page load, not using History API.
@@ -91,7 +91,7 @@ class Navigator extends EventEmitter {
 			isRawResponse : false,
 		});
 
-		// call page.handleRoute(), and use the resulting code to decide how to 
+		// call page.handleRoute(), and use the resulting code to decide how to
 		// respond.
 		page.handleRoute().then(handleRouteResult => {
 
@@ -119,7 +119,7 @@ class Navigator extends EventEmitter {
 
 	}
 
-	/** 
+	/**
 	 * recursively adds the middleware in the pages array to array.
 	 */
 	_addPageMiddlewareToArray(pages, array) {
@@ -135,7 +135,7 @@ class Navigator extends EventEmitter {
 	getState () {
 		return {
 			loading: this._loading,
-			route: this._currentRoute
+			route: this._currentRoute,
 		}
 	}
 

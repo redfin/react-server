@@ -1,5 +1,5 @@
 
-/** 
+/**
  * This class wraps a Request object from the Express Server and provides the Triton Request
  * API.
  */
