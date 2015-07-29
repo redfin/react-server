@@ -68,12 +68,14 @@
       "SERVER_SIDE": false
     },
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
+      "modules": true
     },
     "env": {
       "browser": true,
       "es6": true,
-      "node": true
+      "node": true,
+      "jasmine": true
     },
     "plugins": [
       "react"
