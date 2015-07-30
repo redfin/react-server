@@ -14,7 +14,7 @@ function Request(method, urlPath, cache) {
 	this._urlPath = urlPath;
 	this._cache = cache;
 
-	this._queryParams = {};
+	this._queryParams = [];
 	this._postParams = {};
 	this._headers = {};
 	this._timeout = null;
@@ -63,9 +63,9 @@ Request.prototype.urlPath = function (urlPath) {
 
 Request.prototype.query = function (queryParams) {
 	if (typeof queryParams === 'undefined') {
-		return mixin({}, this._queryParams);
+		throw new Error("Request.query does not support retrieving the current query string");
 	}
-	mixin(this._queryParams, queryParams);
+	this._queryParams.push(queryParams);
 	return this;
 }
 
@@ -171,9 +171,9 @@ Request.prototype._buildSuperagentRequest = function () {
 		req.type(this._type);
 	}
 
-	req.set(this._headers)
-		.query(this._queryParams)
-		.send(this._postParams)
+	req.set(this._headers);
+	this._queryParams.forEach(params => req.query(params));
+	req.send(this._postParams);
 
 	if (this._timeout) {
 		req.timeout(this._timeout);
