@@ -415,7 +415,9 @@ function renderScriptsAsync(scripts, res) {
 			// `this` correctly get the `window` object (despite
 			// being in a strict context).
 			//
-			res.write(`.wait(function(){"use strict";try{${
+			res.write(`.wait(function(){${
+				script.strict?'"use strict";':''
+			}try{${
 				script.text
 			}}catch(e){setTimeout(function(){throw(e)},1)}}.bind(this))`);
 

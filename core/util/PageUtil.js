@@ -172,13 +172,17 @@ function standardizeLinkTags(linkTags) {
 
 function standardizeScripts(scripts) {
 	return PageUtil.makeArray(scripts).map((script) => {
-		if (script.href || script.text) {
-			if (!script.type) script.type = "text/javascript";
-			return script;
+		if (!(script.href || script.text)) {
+			script = { href:script }
 		}
 
+		if (!script.type) script.type = "text/javascript";
+
+		// Default is strict mode unless otherwise specified.
+		if (!script.hasOwnProperty('strict')) script.strict = true;
+
 		// if the answer was a string, let's make a script object
-		return {href:script, type:"text/javascript"};
+		return script;
 	})
 }
 
