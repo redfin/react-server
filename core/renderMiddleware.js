@@ -390,7 +390,6 @@ function renderScriptsAsync(scripts, res) {
 	scripts.forEach(script => {
 
 		if (script.href) {
-
 			var LABScript = { src: script.href };
 
 			if (script.crossOrigin){
@@ -403,9 +402,16 @@ function renderScriptsAsync(scripts, res) {
 				LABScript = LABScript.src;
 			}
 
-			res.write(`.script(${JSON.stringify(LABScript)})`);
+			if (script.condition) {
+				res.write(`.script(function(){if(${script.condition}) return ${JSON.stringify(LABScript)}})`);
+			} else {
+				res.write(`.script(${JSON.stringify(LABScript)})`);
+			}
 
 		} else if (script.text) {
+			if (script.condition) {
+				throw new Error("Script using `text` cannot be loaded conditionally");
+			}
 
 			// The try/catch dance here is so exceptions get their
 			// own time slice and can't mess with execution of the
