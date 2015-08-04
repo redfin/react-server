@@ -263,9 +263,9 @@ class ClientController extends EventEmitter {
 
 		// if we are reattaching to server-generated HTML, we should find the root elements that were sent down.
 		// we store them in a temp array indexed by their triton-root-id.
-		var serverRenderedRoots = [];
+		var alreadyRenderedRoots = [];
 		this._getRootElements(this.mountNode).forEach((rootElement) => {
-			serverRenderedRoots[rootElement.getAttribute(TRITON_DATA_ATTRIBUTE)] = rootElement;
+			alreadyRenderedRoots[rootElement.getAttribute(TRITON_DATA_ATTRIBUTE)] = rootElement;
 		});
 
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
@@ -278,8 +278,18 @@ class ClientController extends EventEmitter {
 
 			// for each ReactElement that we want to render, either use the server-rendered root element, or
 			// create a new root element.
+			//
+			// During client renders we make two passes, one for
+			// quick elements without store dependencies and a
+			// second one to fill in elements with async data.
+			//
+			// The first pass adds triton root nodes.  We want
+			// to hang onto those for the second pass.
+			//
 			logger.debug("Rendering root node #" + index);
-			var root = serverRenderedRoots[index] || this._createTritonRootNode(this.mountNode, index);
+			var root = alreadyRenderedRoots[index] || (
+				alreadyRenderedRoots[index] = this._createTritonRootNode(this.mountNode, index)
+			);
 
 			// TODO: get rid of context once continuation-local-storage holds our important context vars.
 			// `element` can be null if getValue() on the root element promise returns null
