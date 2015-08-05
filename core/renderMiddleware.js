@@ -200,6 +200,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
+		renderDebugComments(pageObject, res),
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
 		renderScripts(pageObject, res),
@@ -227,6 +228,22 @@ function flushRes(res){
 			logger.time('firstFlush', new Date - RLS().startTime);
 		}
 	}
+}
+
+function renderDebugComments (pageObject, res) {
+	var debugComments = pageObject.getDebugComments();
+	var debugCommentsRendered = debugComments.map(debugCommentPromise => {
+		return debugCommentPromise.then(PageUtil.makeArray).then(debugComments => debugComments.forEach(debugComment => {
+
+			if (!debugComment.label || !debugComment.value) {
+				//should I blow up? should I even care?
+			}
+
+			res.write(`<!-- ` + debugComment.label + `: ` + debugComment.value + ` -->`);
+		}));
+	});
+
+	return Q.all(debugCommentsRendered);
 }
 
 function renderTitle (pageObject, res) {

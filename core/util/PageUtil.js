@@ -51,6 +51,7 @@ var PAGE_METHODS = {
 	getScripts         : [() => [], standardizeScripts],
 	getSystemScripts   : [() => [], standardizeScripts],
 	getHeadStylesheets : [() => [], standardizeStyles],
+	getDebugComments   : [() => [], standardizeDebugComments],
 	getMetaTags        : [() => [], standardizeMetaTags],
 	getLinkTags        : [() => [], standardizeLinkTags],
 	getBase            : [() => null, Q],
@@ -160,6 +161,10 @@ function standardizeElements(elements) {
 	return PageUtil
 		.makeArray(elements)
 		.map(element => PromiseUtil.early(Q(element)));
+}
+
+function standardizeDebugComments(debugComments) {
+	return PageUtil.makeArray(debugComments).map(debugComment => Q(debugComment));
 }
 
 function standardizeMetaTags(metaTags) {
