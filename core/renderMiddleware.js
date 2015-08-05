@@ -232,18 +232,16 @@ function flushRes(res){
 
 function renderDebugComments (pageObject, res) {
 	var debugComments = pageObject.getDebugComments();
-	var debugCommentsRendered = debugComments.map(debugCommentPromise => {
-		return debugCommentPromise.then(PageUtil.makeArray).then(debugComments => debugComments.forEach(debugComment => {
+	debugComments.map(debugComment => {
+		if (!debugComment.label || !debugComment.value) {
+			logger.warn("Debug comment is missing either a label or a value");
+		}
 
-			if (!debugComment.label || !debugComment.value) {
-				//should I blow up? should I even care?
-			}
-
-			res.write(`<!-- ` + debugComment.label + `: ` + debugComment.value + ` -->`);
-		}));
+		res.write(`<!-- ` + debugComment.label + `: ` + debugComment.value + ` -->`);
 	});
 
-	return Q.all(debugCommentsRendered);
+	// resolve immediately.
+	return Q("");
 }
 
 function renderTitle (pageObject, res) {

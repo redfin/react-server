@@ -164,7 +164,7 @@ function standardizeElements(elements) {
 }
 
 function standardizeDebugComments(debugComments) {
-	return PageUtil.makeArray(debugComments).map(debugComment => Q(debugComment));
+	return PageUtil.makeArray(debugComments);
 }
 
 function standardizeMetaTags(metaTags) {
