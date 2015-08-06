@@ -165,6 +165,7 @@ function fragmentLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
 		setContentType,
+		writeDebugComments,
 		writeBody,
 		endResponse,
 		handleResponseComplete,
@@ -237,11 +238,15 @@ function renderDebugComments (pageObject, res) {
 			logger.warn("Debug comment is missing either a label or a value");
 		}
 
-		res.write(`<!-- ` + debugComment.label + `: ` + debugComment.value + ` -->`);
+		res.write(`<!-- ${debugComment.label}: ${debugComment.value} -->`);
 	});
 
 	// resolve immediately.
 	return Q("");
+}
+
+function writeDebugComments (req, res, context, start, pageObject) {
+	return Q(renderDebugComments(pageObject, res));
 }
 
 function renderTitle (pageObject, res) {
