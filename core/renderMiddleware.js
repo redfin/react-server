@@ -235,7 +235,7 @@ function renderDebugComments (pageObject, res) {
 	var debugComments = pageObject.getDebugComments();
 	debugComments.map(debugComment => {
 		if (!debugComment.label || !debugComment.value) {
-			logger.warn("Debug comment is missing either a label or a value");
+			logger.warn("Debug comment is missing either a label or a value", debugComment);
 		}
 
 		res.write(`<!-- ${debugComment.label}: ${debugComment.value} -->`);
