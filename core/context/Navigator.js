@@ -51,7 +51,12 @@ class Navigator extends EventEmitter {
 		// The promise returned from `startRoute()` will be rejected
 		// if we're not going to proceed, so resources will be freed.
 		//
-		this.startRoute(route).then(() => {
+		this.startRoute(route, request, type).then(() => {
+			if (this._ignoreCurrentNavigation){
+				// This is a one-time deal.
+				this._ignoreCurrentNavigation = false;
+				return;
+			}
 
 			/* Breathe... */
 
@@ -67,6 +72,13 @@ class Navigator extends EventEmitter {
 
 		});
 
+	}
+
+	// If you call this you're responsible for calling `finishRoute()`
+	// when you're done with whatever it is you're hiding from the
+	// navigator.
+	ignoreCurrentNavigation() {
+		this._ignoreCurrentNavigation = true;
 	}
 
 	handlePage(pageConstructor, request, type) {
@@ -147,7 +159,7 @@ class Navigator extends EventEmitter {
 		return this._loading;
 	}
 
-	startRoute (route) {
+	startRoute (route, request, type) {
 
 		// If we're being called with a requested route, we'll need to
 		// tell the caller when they can proceed with their
@@ -173,7 +185,7 @@ class Navigator extends EventEmitter {
 
 			dfd = Q.defer(), promise = dfd.promise;
 
-			this._nextRoute = [route, dfd];
+			this._nextRoute = [route, request, type, dfd];
 		}
 
 		// If we're _currently_ navigating, we'll wait to start the
@@ -181,13 +193,13 @@ class Navigator extends EventEmitter {
 		// navigation causes all kinds of havoc.
 		if (!this._loading && this._nextRoute){
 
-			[route, dfd] = this._nextRoute;
+			[route, request, type, dfd] = this._nextRoute;
 
 			this._loading      = true;
 			this._currentRoute = route;
 			this._nextRoute    = null;
 
-			this.emit('navigateStart', route);
+			this.emit('navigateStart', {route, request, type});
 
 			// This allows the actual navigation to
 			// proceed.

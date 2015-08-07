@@ -10,6 +10,7 @@ var React = require('react/addons'),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
+	FramebackController = require('./FramebackController'),
 	{PAGE_LINK_NODE_ID} = require('./constants');
 
 // for dev tools
@@ -55,6 +56,7 @@ class ClientController extends EventEmitter {
 		var irDfd = this._initialRenderDfd = Q.defer();
 		this.once('render', irDfd.resolve.bind(irDfd));
 
+		this._setupFramebackController();
 		this._setupNavigateListener();
 		this._setupLateArrivalHandler();
 
@@ -69,16 +71,41 @@ class ClientController extends EventEmitter {
 		this._history = null;
 	}
 
-	_startRequest() {
+	_startRequest({request, type}) {
 
-		// If this is a secondary request (client transition) within a
-		// session, then we'll get a fresh RequestLocalStorage
-		// container.
-		if (this._previouslyRendered){
-			RequestLocalStorage.startRequest();
-			// we need to re-register the request context as a RequestLocal.
-			this.context.registerRequestLocal();
+		if (request.getFrameback()){
+
+			// Tell the navigator we got this one.
+			this.context.navigator.ignoreCurrentNavigation();
+
+			var url = request.getUrl();
+
+			if (type === History.events.PUSHSTATE) {
+				this._history.pushState({frameback:true}, null, url);
+			}
+
+			this.framebackController.navigateTo(url).then(() => {
+				this.context.navigator.finishRoute();
+			});
+
+		} else {
+
+			// If this is a secondary request (client transition)
+			// within a session, then we'll get a fresh
+			// RequestLocalStorage container.
+			if (this._previouslyRendered){
+
+				RequestLocalStorage.startRequest();
+
+				// we need to re-register the request context
+				// as a RequestLocal.
+				this.context.registerRequestLocal();
+			}
 		}
+	}
+
+	_setupFramebackController () {
+		this.framebackController = new FramebackController();
 	}
 
 	_setupNavigateListener () {
@@ -478,13 +505,22 @@ class ClientController extends EventEmitter {
 	 */
 	_initializeHistoryListener(context) {
 
-		this._historyListener = () => {
-			if (context) {
-				var path = this._history.getPath();
+		this._historyListener = ({state}) => {
+			if (this.framebackController.isActive()){
+				this.framebackController.navigateBack();
+			} else {
+				var frameback = (state||{}).frameback;
+				if (context) {
+					var path = this._history.getPath();
 
-				// pass in "popstate" because this is when a user clicks the back button.
-				context.navigate(new ClientRequest(path), History.events.POPSTATE);
+					// Pass in "popstate" because this is
+					// when a user clicks the back button.
+					context.navigate(
+						new ClientRequest(path, {frameback}),
+						History.events.POPSTATE
+					);
 
+				}
 			}
 		};
 
