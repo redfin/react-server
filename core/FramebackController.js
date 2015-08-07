@@ -19,6 +19,7 @@ class FramebackController {
 
 	constructor() {
 		this.active = false;
+		this.masterTitle = document.title; // Let's just stash this away.
 	}
 
 	isActive(){
@@ -45,6 +46,11 @@ class FramebackController {
 		this.showFrame();
 
 		// Should we wait for the details page to load?
+		// I don't think so.  We want the back button to be snappy.
+		// If the user clicks back before the page finishes loading
+		// we'll just abandon the frame.  If that causes some issue
+		// then we'll have to return a promise attached to a deferred
+		// that gets resolved in `_handleFrameLoad()`.
 		return Q();
 	}
 
@@ -61,6 +67,7 @@ class FramebackController {
 
 	showMaster(){
 		contentDiv().style.display = 'block';
+		document.title = this.masterTitle;
 		document.activeElement.blur();
 		window.focus();
 	}
@@ -72,14 +79,29 @@ class FramebackController {
 		Object.keys(FRAME_STYLE).forEach(k => {
 			this.frame.style[k] = FRAME_STYLE[k]
 		});
+
+		this.frame.src = absoluteUrl(url);
+
 		document.body.appendChild(this.frame);
-		this.frame.contentWindow.location = absoluteUrl(url);
+
+		// Can't get the `contentWindow` until it's in the document.
+		this.frame.contentWindow.addEventListener(
+			'load', this._handleFrameLoad.bind(this, this.frame)
+		);
 	}
 
 
 	showFrame(){
 		this.frame.style.display = 'block';
 		this.frame.contentWindow.focus();
+		this.setTitleFromFrame();
+	}
+
+	setTitleFromFrame(){
+		var doc = this.frame.contentDocument;
+		if (doc.readyState === 'complete' && this.active){
+			document.title = doc.title;
+		}
 	}
 
 	hideFrame(){
@@ -89,6 +111,21 @@ class FramebackController {
 	destroyFrame(){
 		document.body.removeChild(this.frame);
 		this.frame = null;
+	}
+
+	_handleFrameLoad(frame){
+		// Just in case the user navigated back and to a different
+		// frame while we were waiting for the first frame to load.
+		if (frame !== this.frame) return;
+
+		[].slice.call(frame.contentDocument.body.querySelectorAll('a')).forEach(link => {
+			if (!link.target) link.target = '_top';
+		});
+
+		// We've got it now, so let's set it.
+		this.setTitleFromFrame();
+
+		logger.debug("Frame loaded");
 	}
 }
 
