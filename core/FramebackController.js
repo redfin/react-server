@@ -88,6 +88,9 @@ class FramebackController {
 		this.frame.contentWindow.addEventListener(
 			'load', this._handleFrameLoad.bind(this, this.frame)
 		);
+
+		// Disable triton client navigation in the frame.
+		this.frame.contentWindow.__tritonIsFrame = true;
 	}
 
 
