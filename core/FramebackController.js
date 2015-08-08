@@ -102,7 +102,7 @@ class FramebackController {
 
 	setTitleFromFrame(){
 		var doc = this.frame.contentDocument;
-		if (doc.readyState === 'complete' && this.active){
+		if (doc.title && this.active){
 			document.title = doc.title;
 		}
 	}
