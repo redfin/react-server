@@ -8,7 +8,7 @@ class ClientRequest {
 
 	constructor(url, {frameback}={}) {
 		this._url = url;
-		this._frameback = frameback
+		this._frameback = frameback;
 	}
 
 	setRoute(route) {
