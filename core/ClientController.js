@@ -514,7 +514,8 @@ class ClientController extends EventEmitter {
 					var path = this._history.getPath();
 
 					// Pass in "popstate" because this is
-					// when a user clicks the back button.
+					// when a user clicks the forward/back
+					// button.
 					context.navigate(
 						new ClientRequest(path, {frameback}),
 						History.events.POPSTATE
