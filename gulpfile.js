@@ -58,7 +58,7 @@ gulp.task("compileServer", function() {
 	return compile(true);
 });
 
-gulp.task("build", ["compile", "eslint"]);
+gulp.task("build", ["compile"]);
 
 gulp.task('watch', function () {
 	gulp.watch(src, ["build"]);

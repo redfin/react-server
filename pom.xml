@@ -80,7 +80,7 @@
 									dir="${project.basedir}"
 									executable="${gulp.bin}"
 									failonerror="true">
-										<arg line="build" />
+										<arg line="eslint build" />
 								</exec>
 
 							</tasks>
