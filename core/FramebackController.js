@@ -30,6 +30,15 @@ experience is similar, but the back button isn't speeded up.  No iframe is
 used and the library gets out of the way.  You can choose to either open in a
 new tab or the same tab (by setting the 'target' attribute of anchors.)
 
+You can use this functionality by simply adding a `frameback={true}` attribute
+to your `<Link>` element.
+
+The details page linked to need not itself be a triton page.  If it _is_ a
+triton page it will have its client-navigation disabled.  Any navigation away
+from the details page will result in a full navigation of the outer window
+away from the master.  Thus only the master=>details=>back navigation is
+speeded up.
+
 */
 
 var Q      = require('q')
