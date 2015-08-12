@@ -1,3 +1,37 @@
+/*
+
+This module supports "frameback" functionality.
+
+This is useful when there's a master/detail set of pages, and displaying the
+master page is expensive.
+
+For example, a Web based email client might have an URL like "/inbox" that
+shows a list of emails, and URLs like "/email/1", "/email/2", etc., to show
+the contents of a particular email.
+
+Imagine a user is viewing "/inbox", and clicks through to "/email/32", and
+then clicks the back button.  The browser will re-request "/inbox" (assuming
+it's not cacheable, etc.)  If displaying "/inbox" is slow, the user will be
+forced to wait.
+
+One solution to this is to open details pages such as "/email/32" in a new tab
+or window.  The back button no longer works, but the window showing "/inbox"
+is still there showing the correct content!
+
+This module offers an alternate way to speed up the back button.  Instead of
+opening the details view in the same window (replacing the master view), or
+opening in a new window, this library opens the details view in an iframe, and
+hides the master view.  It uses HTML5 techniques to change the browser URL
+without forcing a page reload.  When the user presses the back button, the
+details view is hidden and the master view is displayed- instant back button!
+
+In browsers that don't support HTML5 style history manipulation, the
+experience is similar, but the back button isn't speeded up.  No iframe is
+used and the library gets out of the way.  You can choose to either open in a
+new tab or the same tab (by setting the 'target' attribute of anchors.)
+
+*/
+
 var Q      = require('q')
 ,   logger = require('./logging').getLogger(__LOGGER__)
 
