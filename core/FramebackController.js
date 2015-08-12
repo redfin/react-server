@@ -44,6 +44,8 @@ speeded up.
 var Q      = require('q')
 ,   logger = require('./logging').getLogger(__LOGGER__)
 
+// This is an attribute that's added to the main content div that contains all
+// triton elements.
 var {PAGE_CONTENT_NODE_ID} = require('./constants');
 
 // Cover the whole viewport.
@@ -61,10 +63,15 @@ var FRAME_STYLE = {
 class FramebackController {
 
 	constructor() {
+		// We'll set this when we're showing the details page.
 		this.active = false;
-		this.masterTitle = document.title; // Let's just stash this away.
+
+		// When we navigate back from a details page we'll restore the
+		// outer page's title to that of the master page.
+		this.masterTitle = document.title;
 	}
 
+	// Are we currently showing a details page in an iframe?
 	isActive(){
 		return this.active;
 	}
