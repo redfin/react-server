@@ -36,7 +36,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.4</version>
+				<version>1.7</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.apache.ant</groupId>
@@ -93,6 +93,7 @@
 						</goals>
 						<id>test-triton</id>
 						<configuration>
+							<skip>${skipTests}</skip>
 							<tasks>
 								<echo>Testing...</echo>
 								<exec
