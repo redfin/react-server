@@ -13,49 +13,37 @@ function makeRequest (method, url) {
 
 var API = {
 
-	get (url, data, fn) {
+	get (url, data) {
 		var req = makeRequest('GET', url);
-		if ('function' == typeof data) fn = data, data = null;
 		if (data) req.query(data);
-		if (fn) req.end(fn);
 		return req;
 	},
 
-	head (url, data, fn) {
+	head (url, data) {
 		var req = makeRequest('HEAD', url);
-		if ('function' == typeof data) fn = data, data = null;
 		if (data) req.send(data);
-		if (fn) req.end(fn);
 		return req;
 	},
 
-	del (url, data, fn) {
-		var req = makeRequest('DELETE', url);
-		if (fn) req.end(fn);
-		return req;
+	del (url) {
+		return makeRequest('DELETE', url);
 	},
 
-	patch (url, data, fn) {
+	patch (url, data) {
 		var req = makeRequest('PATCH', url);
-		if ('function' == typeof data) fn = data, data = null;
 		if (data) req.send(data);
-		if (fn) req.end(fn);
 		return req;
 	},
 
-	post (url, data, fn) {
+	post (url, data) {
 		var req = makeRequest('POST', url);
-		if ('function' == typeof data) fn = data, data = null;
 		if (data) req.send(data);
-		if (fn) req.end(fn);
 		return req;
 	},
 
-	put (url, data, fn) {
+	put (url, data) {
 		var req = makeRequest('PUT', url);
-		if ('function' == typeof data) fn = data, data = null;
 		if (data) req.send(data);
-		if (fn) req.end(fn);
 		return req;
 	},
 
