@@ -85,4 +85,4 @@ var API = {
 
 
 
-module.exports = mixin(makeRequest, API);
+module.exports = API;
