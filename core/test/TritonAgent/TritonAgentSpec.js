@@ -485,14 +485,152 @@ describe("TritonAgent", () => {
 					expect(entry.res.header).toBeDefined();
 
 					done();
-				}).catch( (err) => {
-					console.log(err.stack);
-
-					// this will fail the test
-					expect(err).toBeUndefined();
-					done();
 				})
+				.catch(err => fail(err.stack))
+				.fin(done)
 				.done();
+
+		}));
+
+		it("does return the same response for two requesters of the same URL", withRlsContext(done => {
+			var URL = "/describe";
+
+			Q.all([
+				TritonAgent.get(URL).then(res => res),
+				TritonAgent.get(URL).then(res => res),
+			]).then(results => {
+				var [res1, res2] = results;
+
+				expect(res1).toBe(res2);
+
+				var cache = TritonAgent.cache();
+				var dehydrated = cache.dehydrate();
+
+				expect(dehydrated.dataCache[URL].length).toBe(1);
+				expect(getFirstDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
+
+			})
+			.catch(err => fail(err.stack))
+			.fin(done)
+			.done();
+
+		}));
+
+		it("does return the sam response for two requesters with the same URL and query params", withRlsContext(done => {
+			var URL = "/describe";
+
+			Q.all([
+				TritonAgent.get(URL)
+					.query({"foo": "bar"})
+					.then(res => res),
+				TritonAgent.get(URL)
+					.query({"foo": "bar"})
+					.then(res => res),
+			]).then(results => {
+				var [res1, res2] = results;
+
+				expect(res1).toBe(res2);
+
+				var cache = TritonAgent.cache();
+				var dehydrated = cache.dehydrate();
+
+				expect(dehydrated.dataCache[URL].length).toBe(1);
+				expect(getFirstDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
+
+			})
+			.catch(err => fail(err.stack))
+			.fin(done)
+			.done();
+		}));
+
+		it("does not have a cache collision for two requests to same url with different HTTP methods", withRlsContext(done => {
+
+			var URL = "/describe";
+
+			Q.all([
+				TritonAgent.get(URL).then(res => res),
+				TritonAgent.post(URL).then(res => res),
+			]).then(results => {
+				var [res1, res2] = results;
+				expect(res1).not.toBe(res2);
+			})
+			.catch(err => fail(err.stack))
+			.fin(done)
+			.done();
+
+		}));
+
+		it("does not have a cache collision for two requests to same url with different body types", withRlsContext(done => {
+
+			var URL = "/describe";
+
+			Q.all([
+				// default is whatever 'form data' normally is
+				TritonAgent.get(URL).then(res => res),
+				TritonAgent.post(URL).type("application/json").then(res => res),
+			]).then(results => {
+				var [res1, res2] = results;
+				expect(res1).not.toBe(res2);
+			})
+			.catch(err => fail(err.stack))
+			.fin(done)
+			.done();
+
+		}));
+
+		it("does not have a cache collision for two requests to same url with different query parameters", withRlsContext(done => {
+
+			var URL = "/describe";
+
+			var p1 = TritonAgent.get(URL)
+						.query({ "foo": "bar" })
+						.then(res => res);
+
+			var p2 = TritonAgent.get(URL)
+						.query({ "foo": "baz"})
+						.then(res => res);
+
+			Q.all([p1, p2]).then(results => {
+				var [res1, res2] = results;
+
+				expect(res1).not.toBe(res2);
+				expect(res1.body.req.query.foo).toBe("bar");
+				expect(res2.body.req.query.foo).toBe("baz");
+
+			}).catch(errors => {
+				console.log(errors);
+				fail("An error occurred", errors);
+			})
+			.fin(done)
+			.done();
+
+		}));
+
+		it("does not have a cache collision for two requests to same url with different nested POST parameters", withRlsContext(done => {
+
+			var URL = "/describe";
+
+			var p1 = TritonAgent.post(URL)
+						.send({ "foo": {"bar": 1} })
+						.then(res => res);
+
+			var p2 = TritonAgent.post(URL)
+						.send({ "foo": {"bar": "baz"} })
+						.then(res => res);
+
+			Q.all([p1, p2]).then(results => {
+				var [res1, res2] = results;
+
+				expect(res1).not.toBe(res2);
+				expect(res1.body.req.body.foo.bar).toBe(1);
+				expect(res2.body.req.body.foo.bar).toBe("baz");
+
+			}).catch(errors => {
+				console.log(errors);
+				fail("An error occurred", errors);
+			})
+			.fin(done)
+			.done();
 
 		}));
 	});

@@ -2,6 +2,7 @@
 var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	{ mixin } = require("./util")
+,	isEqual = require("lodash/lang/isEqual")
 ;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender
@@ -256,7 +257,21 @@ class CacheEntry {
 
 	isForSameRequest (requestData) {
 		// this should have the same behavior as before
-		return requestData.urlPath === this.requestData.urlPath;
+		// TODO: deep equality.
+		var otherRD = requestData;
+		var myRD = this.requestData;
+
+		function same(propName) {
+			return isEqual(myRD[propName], otherRD[propName]);
+		}
+
+		// specifying the order of checks here to let the fast/common checks
+		// fail first
+		return same("urlPath")
+			&& same("method")
+			&& same("type")
+			&& same("queryParams")
+			&& same("postParams");
 	}
 
 	// Pull out the properties of the superagent response that we care

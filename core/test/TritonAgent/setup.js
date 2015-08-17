@@ -32,8 +32,12 @@ function withRlsContext (runTest) {
 function makeServer (cb, { port = PORT } = {}) {
 	var http = require("http");
 	var express = require("express");
+	var bodyParser = require("body-parser");
 
 	var server = express();
+
+	server.use(bodyParser.json());
+	server.use(bodyParser.urlencoded({extended: true}));
 
 	server.get('/simple', function (req, res) {
 		res.type('text/plain').end(SIMPLE_SUCCESS);
@@ -45,7 +49,7 @@ function makeServer (cb, { port = PORT } = {}) {
 
 	server.use('/describe', function (req, res) {
 		var reqObject = {};
-		["method", "query"].forEach( key => {
+		["method", "query", "body"].forEach( key => {
 			reqObject[key] = req[key];
 		});
 		reqObject.headers = req.headers;

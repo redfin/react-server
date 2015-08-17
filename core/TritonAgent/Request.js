@@ -18,7 +18,7 @@ function Request(method, urlPath, cache) {
 	this._postParams = {};
 	this._headers = {};
 	this._timeout = null;
-	this._type = null;
+	this._type = "json"; // superagent's default
 
 	// public field
 	this.aborted = undefined; //default to undefined
