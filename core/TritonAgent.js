@@ -7,7 +7,7 @@ var RLS = require('./util/RequestLocalStorage').getNamespace()
 
 // wrapper for superagent
 function makeRequest (method, url) {
-	return new Request(method, url, makeRequest.cache());
+	return new Request(method, url, API.cache());
 }
 
 var API = {
