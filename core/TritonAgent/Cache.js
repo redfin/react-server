@@ -318,7 +318,7 @@ class RequestDataCache {
 	dehydrate ({responseBodyOnly=false} = {}) {
 
 		var out = {
-			dataCache: {}
+			dataCache: {},
 		};
 
 		var dataCache = this.dataCache;
@@ -401,7 +401,7 @@ class RequestDataCache {
 
 	_removeEntry (entry) {
 		var urlPath = entry.requestData.urlPath,
-			entries = this.dataCache[urlPath];
+			entries = this.dataCache[urlPath],
 			idx = entries.indexOf(entry);
 		if (idx >= 0) {
 			entries.splice(idx, 1);

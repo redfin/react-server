@@ -120,8 +120,6 @@ Request.prototype.end = function (fn) {
 		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
 	}
 
-	var urlPath = this._urlPath;
-
 	// get cache entry for url if exists; if server-side, create one if it doesn't already exist.
 	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
 	// with host (which can vary between client and server) is not usable. The URL path (without the
