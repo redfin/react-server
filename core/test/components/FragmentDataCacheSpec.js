@@ -41,10 +41,10 @@ describe("FragmentDataCache", () => {
 
 					expect(parsedData).toBeDefined();
 					expect(parsedData.dataCache).toBeDefined();
-					expect(parsedData.dataCache[URL]).toBeDefined();
-					expect(parsedData.dataCache[URL].res.body).toBeDefined();
+					expect(getSingleEntry(parsedData, URL)).toBeDefined();
+					expect(getSingleEntry(parsedData, URL).res.body).toBeDefined();
 					// it should include the res.body prop only
-					expect(Object.keys(parsedData.dataCache[URL].res).length).toBe(1);
+					expect(Object.keys(getSingleEntry(parsedData, URL).res).length).toBe(1);
 
 					done();
 				}).catch(err => {
@@ -83,9 +83,9 @@ describe("FragmentDataCache", () => {
 					expect(parsedData).toBeDefined();
 					expect(parsedData.dataCache).toBeDefined();
 					expect(parsedData.dataCache[URL]).toBeDefined();
-					expect(parsedData.dataCache[URL].res.body).toBeDefined();
+					expect(getSingleEntry(parsedData, URL).res.body).toBeDefined();
 					// it should include the res.body prop only
-					expect(Object.keys(parsedData.dataCache[URL].res).length).toBe(1);
+					expect(Object.keys(getSingleEntry(parsedData, URL).res).length).toBe(1);
 
 					done();
 				}).catch(err => {
@@ -129,9 +129,9 @@ describe("FragmentDataCache", () => {
 				expect(parsedData).toBeDefined();
 				expect(parsedData.dataCache).toBeDefined();
 				expect(parsedData.dataCache[URL]).toBeDefined();
-				expect(parsedData.dataCache[URL].res.body).toBeDefined();
+				expect(getSingleEntry(parsedData, URL).res.body).toBeDefined();
 				// it should include the res.body prop only
-				expect(Object.keys(parsedData.dataCache[URL].res).length).toBe(1);
+				expect(Object.keys(getSingleEntry(parsedData, URL).res).length).toBe(1);
 
 				done();
 			}).catch(err => {
@@ -174,9 +174,9 @@ describe("FragmentDataCache", () => {
 				expect(parsedData).toBeDefined();
 				expect(parsedData.dataCache).toBeDefined();
 				expect(parsedData.dataCache[URL]).toBeDefined();
-				expect(parsedData.dataCache[URL].res.body).toBeDefined();
+				expect(getSingleEntry(parsedData, URL).res.body).toBeDefined();
 				// it should include the res.body prop only
-				expect(Object.keys(parsedData.dataCache[URL].res).length).toBe(1);
+				expect(Object.keys(getSingleEntry(parsedData, URL).res).length).toBe(1);
 
 				done();
 			}).catch(err => {
@@ -214,17 +214,17 @@ describe("FragmentDataCache", () => {
 				expect(parsedData).toBeDefined();
 				expect(parsedData.dataCache).toBeDefined();
 				expect(parsedData.dataCache["/describe"]).toBeDefined();
-				expect(parsedData.dataCache["/describe"].res.body).toBeDefined();
+				expect(getSingleEntry(parsedData, "/describe").res.body).toBeDefined();
 
 				expect(parsedData.dataCache["/error"]).toBeDefined();
-				expect(parsedData.dataCache["/error"].res).toBeUndefined();
-				expect(parsedData.dataCache["/error"].err).toBeDefined();
-				expect(parsedData.dataCache["/error"].err.response).toBeDefined();
-				expect(parsedData.dataCache["/error"].err.response.body).toBeDefined();
+				expect(getSingleEntry(parsedData, "/error").res).toBeUndefined();
+				expect(getSingleEntry(parsedData, "/error").err).toBeDefined();
+				expect(getSingleEntry(parsedData, "/error").err.response).toBeDefined();
+				expect(getSingleEntry(parsedData, "/error").err.response.body).toBeDefined();
 				
 				// it should include the res.body prop only
-				expect(Object.keys(parsedData.dataCache["/describe"].res).length).toBe(1);
-				expect(Object.keys(parsedData.dataCache["/error"].err.response).length).toBe(1);
+				expect(Object.keys(getSingleEntry(parsedData, "/describe").res).length).toBe(1);
+				expect(Object.keys(getSingleEntry(parsedData, "/error").err.response).length).toBe(1);
 
 				done();
 			}).catch(err => {
@@ -265,13 +265,13 @@ describe("FragmentDataCache", () => {
 				expect(parsedData).toBeDefined();
 				expect(parsedData.dataCache).toBeDefined();
 				expect(parsedData.dataCache["/describe"]).toBeDefined();
-				expect(parsedData.dataCache["/describe"].res.body).toBeDefined();
+				expect(getSingleEntry(parsedData, "/describe").res.body).toBeDefined();
 
 				expect(parsedData.dataCache["/timeout"]).toBeDefined();
-				expect(parsedData.dataCache["/timeout"].res).toBeUndefined();
-				expect(parsedData.dataCache["/timeout"].err).toBeDefined();
-				expect(parsedData.dataCache["/timeout"].err.response).toBeUndefined();
-				expect(parsedData.dataCache["/timeout"].err.timeout).toBeDefined();
+				expect(getSingleEntry(parsedData, "/timeout").res).toBeUndefined();
+				expect(getSingleEntry(parsedData, "/timeout").err).toBeDefined();
+				expect(getSingleEntry(parsedData, "/timeout").err.response).toBeUndefined();
+				expect(getSingleEntry(parsedData, "/timeout").err.timeout).toBeDefined();
 
 				done();
 
@@ -284,5 +284,9 @@ describe("FragmentDataCache", () => {
 
 		}));
 	});
+
+	function getSingleEntry(parsedData, url) {
+		return parsedData.dataCache[url][0];
+	}
 
 });

@@ -22,15 +22,29 @@ var responseBodyParsers = {
  */
 class CacheEntry {
 
-	constructor (cache, url, cacheWhitelist) {
+	/**
+	 * @param cache [required] the RequestDataCache instance that owns this
+	 *        `CacheEntry`.
+	 * @param requestData a request data descriptor. Won't be passed if this
+	 *        CacheEntry is in the process of being rehydrated
+	 * @param cacheWhiteList [optional] the whitelist of repsonse fields that
+	 *        will be serialized with this entry. Not passed when rehydrating.
+	 */
+	constructor (cache, requestData = {}, cacheWhitelist) {
 		this.cache = cache;
-		this.url = url;
 		this.cacheWhitelist = cacheWhitelist;
 		this.requesters = 0;
 		this.dfd = Q.defer();
 		this.loaded = false;
 		this.res = undefined;
 		this.err = undefined;
+		// copy the rest of the properties from input requestData
+		// to this.requestData
+
+		this.url = requestData.urlPath;
+		this.requestData = {};
+		Object.keys(requestData)
+			.forEach(key => this.requestData[key] = requestData[key]);
 	}
 
 	dehydrate ( {responseBodyOnly} = {} ) {
@@ -46,6 +60,7 @@ class CacheEntry {
 
 		return {
 			url: this.url,
+			requestData: this.requestData,
 			requesters: this.requesters,
 			loaded: this.loaded,
 			res: this._copyResponseForDehydrate(this.res, { responseBodyOnly }),
@@ -101,6 +116,7 @@ class CacheEntry {
 		// the request arrives
 
 		this.url = state.url;
+		this.requestData = state.requestData;
 		this.requesters = state.requesters;
 		this.loaded = state.loaded;
 		this.res = this._rehydrateResponse(state.res);
@@ -220,10 +236,8 @@ class CacheEntry {
 		this.requesters -= 1;
 
 		if (this.requesters === 0) {
-			delete this.cache.dataCache[this.url];
+			this.cache._removeEntry(this);
 		}
-
-		this.cache.checkCacheDepleted();
 	}
 
 	/**
@@ -238,6 +252,11 @@ class CacheEntry {
 			this.decrementRequesters();
 			return resOrErr;
 		});
+	}
+
+	isForSameRequest (requestData) {
+		// this should have the same behavior as before
+		return requestData.urlPath === this.requestData.urlPath;
 	}
 
 	// Pull out the properties of the superagent response that we care
@@ -290,19 +309,22 @@ class CacheEntry {
 class RequestDataCache {
 
 	constructor () {
+		/*
+		 * Map[String -> CacheEntry[]]
+		 */
 		this.dataCache = {};
 	}
 
 	dehydrate ({responseBodyOnly=false} = {}) {
 
-		var out = {};
-
-		out.dataCache = {};
+		var out = {
+			dataCache: {}
+		};
 
 		var dataCache = this.dataCache;
-		Object.keys(dataCache).forEach(function (url) {
-			var result = dataCache[url];
-			out.dataCache[url] = result.dehydrate({ responseBodyOnly });
+		Object.keys(dataCache).forEach(url => {
+			out.dataCache[url] =
+				dataCache[url].map(entry => entry.dehydrate({ responseBodyOnly }));
 		});
 
 		return out;
@@ -315,58 +337,76 @@ class RequestDataCache {
 		// clear state
 		var dataCache = this.dataCache = {};
 
-		Object.keys(state.dataCache).forEach( (url) => {
-			var cacheEntry = dataCache[url] = new CacheEntry(this, url);
-			cacheEntry.rehydrate(state.dataCache[url]);
+		Object.keys(state.dataCache).forEach(url => {
+			var entries = state.dataCache[url];
+			dataCache[url] = entries.map(entryData => {
+				var newEntry = new CacheEntry(this);
+				newEntry.rehydrate(entryData);
+				return newEntry;
+			})
 		});
 
 	}
 
 	/**
 	 * Get (optionally creating if necessary) the entry for the given
-	 * URL from the cache.
+	 * requestData from the cache.
 	 *
 	 * @param createIfMissing boolean default false
 	 * @param cacheWhitelist array default []
 	 */
-	entry (url, createIfMissing, cacheWhitelist) {
-		if (typeof createIfMissing === 'undefined') {
-			createIfMissing = false;
+	entry (requestData, createIfMissing = false, cacheWhitelist = []) {
+		if (!requestData.urlPath) {
+			throw new Error("Missing requestData.urlPath");
 		}
-		if (typeof cacheWhitelist === 'undefined') {
-			cacheWhitelist = [];
-		}
-		logger.debug(`Getting cache entry for ${url}`)
 
-		var cacheEntry = this.dataCache[url];
+		logger.debug(`Getting TritonAgent request data cache entry for ${requestData.urlPath}`)
+
+		var cacheEntry = this._findEntry(requestData);
 		if (!cacheEntry && createIfMissing) {
-			cacheEntry = this.dataCache[url] = new CacheEntry(this, url, cacheWhitelist);
+			cacheEntry = this._addEntry(requestData, cacheWhitelist);
 		}
 
 		return cacheEntry;
 	}
 
-	/**
-	 * Synchronously check if data is loaded already.
-	 * Returns an object with a getData() function, to
-	 * make it possible to check for the existence of a URL
-	 * in the cache, but not actually retrieve if (if desired).
-	 * Calling getData() will retrieve the data from the cache
-	 * and decrement the number of requesters
-	 */
-	checkLoaded (url) {
-		var cached = this.dataCache[url];
-
-		if (cached && cached.res) {
-			return {
-				getData: () => {
-					// sort of a synchronous promise thing
-					cached.decrementRequesters();
-					return cached.res;
-				},
-			};
+	_findEntry (requestData) {
+		var urlPath = requestData.urlPath;
+		var entries = this.dataCache[urlPath] || [];
+		// old-school loop so we can break early
+		for (var i = 0; i < entries.length; i++) {
+			var entry = entries[i];
+			if (entry.isForSameRequest(requestData)) {
+				return entry;
+			}
 		}
 		return null;
+	}
+
+	/**
+	 * Add a new CacheEntry for the request described by `requestData`
+	 *
+	 * @param requestData the request data descriptor, as defined by
+	 *        Request._getCacheAffectingData.
+	 * @param cacheWhiteList the whitelist of fields that will be provided
+	 *        on the request.
+	 */
+	_addEntry (requestData, cacheWhitelist) {
+		var urlPath = requestData.urlPath,
+			entries = this.dataCache[urlPath] || (this.dataCache[urlPath] = []),
+			newEntry = new CacheEntry(this, requestData, cacheWhitelist);
+		entries.push(newEntry);
+		return newEntry
+	}
+
+	_removeEntry (entry) {
+		var urlPath = entry.requestData.urlPath,
+			entries = this.dataCache[urlPath];
+			idx = entries.indexOf(entry);
+		if (idx >= 0) {
+			entries.splice(idx, 1);
+		}
+		this.checkCacheDepleted();
 	}
 
 	markLateRequests () {
@@ -382,15 +422,13 @@ class RequestDataCache {
 	}
 
 	getAllRequests() {
-		return Object.keys(this.dataCache)
-			.map(
-				url => (
-					{
-						url   : url,
-						entry : this.dataCache[url],
-					}
-				)
-			);
+		var all = [];
+		Object.keys(this.dataCache).forEach(url => {
+			this.dataCache[url].forEach(entry => {
+				all.push({ url, entry })
+			})
+		});
+		return all;
 	}
 
 	whenAllPendingResolve () {
@@ -413,9 +451,9 @@ class RequestDataCache {
 		logger.debug("_checkCacheDepleted");
 		if (this.whenCacheDepletedDfd) {
 			var totalRequestersPending = 0;
-			Object.keys(this.dataCache).forEach((name) => {
-				if (this.dataCache[name].loaded) {
-					totalRequestersPending += this.dataCache[name].requesters;
+			this.getAllRequests().forEach(req => {
+				if (req.entry.loaded) {
+					totalRequestersPending += req.entry.requesters;
 				}
 			});
 			logger.debug(`Checking for depleted cache, with ${totalRequestersPending} requesters left`);
@@ -425,9 +463,9 @@ class RequestDataCache {
 
 	lateArrival (url, dehydratedEntry) {
 		logger.debug(`Late arrival for ${url}`);
-		var dataCache = this.dataCache;
-		if (dataCache[url]) {
-			dataCache[url].rehydrate(dehydratedEntry);
+		var entry = this._findEntry(dehydratedEntry.requestData);
+		if (entry) {
+			entry.rehydrate(dehydratedEntry);
 		} else {
 			logger.debug("WTF?");
 		}

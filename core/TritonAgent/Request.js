@@ -126,7 +126,7 @@ Request.prototype.end = function (fn) {
 	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
 	// with host (which can vary between client and server) is not usable. The URL path (without the
 	// host) works fine though.
-	var entry = this._cache.entry(urlPath, SERVER_SIDE /* createIfMissing */, this._cacheWhitelist);
+	var entry = this._cache.entry(this._getCacheAffectingData(), SERVER_SIDE /* createIfMissing */, this._cacheWhitelist);
 	if (!SERVER_SIDE && !entry) {
 		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
 		// be fine?
@@ -194,6 +194,16 @@ Request.prototype._buildUrl = function () {
 	return this._urlPath;
 }
 
+Request.prototype._getCacheAffectingData = function () {
+	return {
+		urlPath: this._urlPath,
+		method: this._method,
+		queryParams: this._queryParams,
+		postParams: this._postParams,
+		// headers: this._headers, // headers are not included
+		type: this._type,
+	};
+}
 
 Request.prototype.getProtocol = function(){
 

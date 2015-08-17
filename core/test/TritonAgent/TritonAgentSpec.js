@@ -238,7 +238,9 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = dehydrated.dataCache[URL];
+
+					// only one entry, can just grab it via index
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.text).toBeDefined();
@@ -250,7 +252,8 @@ describe("TritonAgent", () => {
 					// verify that cache can be rehydrated
 					TritonAgent.cache().rehydrate(dehydrated);
 
-					var entry = dehydrated.dataCache[URL];
+					// only one entry; just grab it via index
+					entry = cache.dataCache[URL][0];
 					expect(entry).toBeDefined();
 					expect(entry.res.text).toBeDefined();
 					expect(entry.res.body).toBeDefined();
@@ -271,7 +274,7 @@ describe("TritonAgent", () => {
 			var cache = TritonAgent.cache();
 			expect(cache.getPendingRequests().length).toBe(1);
 			var dehydrated = cache.dehydrate();
-			expect(dehydrated.dataCache[URL]).toBeDefined();
+			expect(dehydrated.dataCache[URL]).toBeDefined();	
 		}));
 
 		it("excludes body property when content-type is application/json", withRlsContext( (done) => {
@@ -284,7 +287,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.text).toBeDefined();
@@ -297,7 +300,7 @@ describe("TritonAgent", () => {
 					TritonAgent.cache().rehydrate(dehydrated);
 
 					// after hydration, .body should be available again
-					var entry = dehydrated.dataCache[URL];
+					var entry = cache.dataCache[URL][0];
 					expect(entry).toBeDefined();
 					expect(entry.res.text).toBeDefined();
 					expect(entry.res.body).toBeDefined();
@@ -330,7 +333,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.text).toBeUndefined();
@@ -365,7 +368,7 @@ describe("TritonAgent", () => {
 				.catch(err => {
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res).toBeUndefined();
@@ -392,7 +395,7 @@ describe("TritonAgent", () => {
 				.catch(err => {
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res).toBeUndefined();
@@ -421,7 +424,7 @@ describe("TritonAgent", () => {
 				.catch(err => {
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res).toBeUndefined();
@@ -450,7 +453,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.header).toBeUndefined();
@@ -476,7 +479,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = dehydrated.dataCache[URL];
+					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.header).toBeDefined();
@@ -493,6 +496,10 @@ describe("TritonAgent", () => {
 
 		}));
 	});
+
+	function getFirstDehydratedCacheEntry(dehydratedCache, url) {
+		return dehydratedCache.dataCache[url][0];
+	}
 
 });
 
