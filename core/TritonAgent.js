@@ -2,7 +2,6 @@ var RLS = require('./util/RequestLocalStorage').getNamespace()
 ,	Cache = require("./TritonAgent/Cache")
 ,	Request = require("./TritonAgent/Request")
 ,	RequestPlugins = require("./TritonAgent/RequestPlugins")
-,	{ mixin } = require("./TritonAgent/util")
 ;
 
 
