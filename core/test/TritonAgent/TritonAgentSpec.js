@@ -1,6 +1,7 @@
 var TritonAgent = require("../../TritonAgent");
 var superagent = require("superagent");
 var Q = require("q");
+var isArray = require("lodash/lang/isArray");
 
 
 var {
@@ -240,7 +241,7 @@ describe("TritonAgent", () => {
 					var dehydrated = cache.dehydrate();
 
 					// only one entry, can just grab it via index
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.text).toBeDefined();
@@ -287,7 +288,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.text).toBeDefined();
@@ -333,7 +334,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.text).toBeUndefined();
@@ -368,7 +369,7 @@ describe("TritonAgent", () => {
 				.catch(err => {
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res).toBeUndefined();
@@ -395,7 +396,7 @@ describe("TritonAgent", () => {
 				.catch(err => {
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res).toBeUndefined();
@@ -424,7 +425,7 @@ describe("TritonAgent", () => {
 				.catch(err => {
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res).toBeUndefined();
@@ -453,7 +454,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.header).toBeUndefined();
@@ -479,7 +480,7 @@ describe("TritonAgent", () => {
 
 					var cache = TritonAgent.cache();
 					var dehydrated = cache.dehydrate();
-					var entry = getFirstDehydratedCacheEntry(dehydrated, URL);
+					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
 					// verify that our cache looks as expected
 					expect(entry.res.header).toBeDefined();
@@ -506,8 +507,9 @@ describe("TritonAgent", () => {
 				var cache = TritonAgent.cache();
 				var dehydrated = cache.dehydrate();
 
-				expect(dehydrated.dataCache[URL].length).toBe(1);
-				expect(getFirstDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
+				// single entry; not an array
+				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
+				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
 			.catch(err => fail(err.stack))
@@ -534,8 +536,8 @@ describe("TritonAgent", () => {
 				var cache = TritonAgent.cache();
 				var dehydrated = cache.dehydrate();
 
-				expect(dehydrated.dataCache[URL].length).toBe(1);
-				expect(getFirstDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
+				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
+				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
 			.catch(err => fail(err.stack))
@@ -635,8 +637,11 @@ describe("TritonAgent", () => {
 		}));
 	});
 
-	function getFirstDehydratedCacheEntry(dehydratedCache, url) {
-		return dehydratedCache.dataCache[url][0];
+	function getSingleDehydratedCacheEntry(dehydratedCache, url) {
+		var entryOrArray = dehydratedCache.dataCache[url];
+		// we expect a _single_ entry, i.e. not an array
+		expect(isArray(entryOrArray)).toBeFalsy();
+		return entryOrArray;
 	}
 
 });

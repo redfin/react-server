@@ -3,6 +3,7 @@ var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	{ mixin } = require("./util")
 ,	isEqual = require("lodash/lang/isEqual")
+,	isArray = require("lodash/lang/isArray")
 ;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender
@@ -338,8 +339,13 @@ class RequestDataCache {
 
 		var dataCache = this.dataCache;
 		Object.keys(dataCache).forEach(url => {
-			out.dataCache[url] =
+			// as a nice-to-have for FragmentDataCache, if there's only one entry
+			// for a given URL, don't serialize it as an array, serialize it as a single
+			// CacheEntry
+			var dehydratedEntries =
 				dataCache[url].map(entry => entry.dehydrate({ responseBodyOnly }));
+			out.dataCache[url] = dehydratedEntries.length === 1 ? dehydratedEntries[0] : dehydratedEntries;
+
 		});
 
 		return out;
@@ -353,7 +359,11 @@ class RequestDataCache {
 		var dataCache = this.dataCache = {};
 
 		Object.keys(state.dataCache).forEach(url => {
+
 			var entries = state.dataCache[url];
+			// convert entries to an array, if it was serialized as
+			// a single entry
+			entries = isArray(entries) ? entries : [entries];
 			dataCache[url] = entries.map(entryData => {
 				var newEntry = new CacheEntry(this);
 				newEntry.rehydrate(entryData);

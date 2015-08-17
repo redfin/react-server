@@ -4,6 +4,7 @@ var TritonAgent = require("../../TritonAgent")
 ,	cheerio = require("cheerio")
 ,	React = require("react")
 ,	FragmentDataCache = require("../../components/FragmentDataCache")
+,	isArray = require("lodash/lang/isArray")
 ;
 
 var {
@@ -283,10 +284,50 @@ describe("FragmentDataCache", () => {
 			}).done();
 
 		}));
+
+		it("dehydrates an array of entries when two requests are made to the same URL", withRlsContext(done => {
+
+			TritonAgent.get("/describe").query({"foo": "bar"}).then(res => res);;
+			TritonAgent.get("/describe").query({"foo": "baz"}).then(res => res)
+
+			FragmentDataCache.createWhenReady().then(fragmentComponent => {
+
+				expect(fragmentComponent).toBeDefined();
+
+				var htmlStr = React.renderToStaticMarkup(fragmentComponent);
+				var $ = cheerio.load(htmlStr);
+
+				var node
+				,	dataStr
+				,	parsedData;
+
+				node = $("#triton-fragment-data-cache");
+				expect(node.length).toBe(1);
+
+				dataStr = node.attr("data-triton-data-cache");
+				parsedData = JSON.parse(dataStr);
+
+				expect(parsedData).toBeDefined();
+				expect(parsedData.dataCache).toBeDefined();
+				expect(parsedData.dataCache["/describe"]).toBeDefined();
+				expect(parsedData.dataCache["/describe"].length).toBe(2);
+
+				done();
+
+			}).catch(err => {
+				console.log(err.stack);
+				// this will cause the test to fail
+				expect(err).toBeUndefined();
+				done();
+			}).done();
+		}));
 	});
 
 	function getSingleEntry(parsedData, url) {
-		return parsedData.dataCache[url][0];
+		var entryOrArray = parsedData.dataCache[url];
+		// we expect a _single_ entry
+		expect(isArray(entryOrArray)).toBeFalsy();
+		return entryOrArray;
 	}
 
 });
