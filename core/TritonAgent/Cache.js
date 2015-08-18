@@ -257,8 +257,6 @@ class CacheEntry {
 	}
 
 	isForSameRequest (requestData) {
-		// this should have the same behavior as before
-		// TODO: deep equality.
 		var otherRD = requestData;
 		var myRD = this.requestData;
 

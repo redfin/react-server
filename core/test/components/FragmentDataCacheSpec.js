@@ -287,8 +287,8 @@ describe("FragmentDataCache", () => {
 
 		it("dehydrates an array of entries when two requests are made to the same URL", withRlsContext(done => {
 
-			TritonAgent.get("/describe").query({"foo": "bar"}).then(res => res);;
-			TritonAgent.get("/describe").query({"foo": "baz"}).then(res => res)
+			TritonAgent.get("/describe").query({"foo": "bar"}).then(res => res);
+			TritonAgent.get("/describe").query({"foo": "baz"}).then(res => res);
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
