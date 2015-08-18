@@ -29,7 +29,7 @@ class ExpressServerRequest {
 	}
 
 	getHttpHeader(name) {
-		return this._wrappedRequest.get(name)
+		return this._wrappedRequest.get(name);
 	}
 
 	getRouteName() {
