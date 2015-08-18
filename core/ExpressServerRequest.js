@@ -28,16 +28,16 @@ class ExpressServerRequest {
 		return this._wrappedRequest.method;
 	}
 
-	getHttpHeader(name, callback) {
-		callback(this._wrappedRequest.get(name));
+	getHttpHeader(name) {
+		return this._wrappedRequest.get(name)
 	}
 
 	getRouteName() {
 		return this._route.name;
 	}
 
-	getHttpHeaders(callback) {
-		callback(this._wrappedRequest.headers);
+	getHttpHeaders() {
+		return this._wrappedRequest.headers;
 	}
 
 	getCookie(name) {
