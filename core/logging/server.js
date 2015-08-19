@@ -26,6 +26,8 @@ var makeLogger = function(group, opts){
 
 	logger.setLevels(config.levels);
 
+	logger.stack = common.stack;
+
 	winston.addColors(config.colors);
 
 	// For instantiating new transports later.

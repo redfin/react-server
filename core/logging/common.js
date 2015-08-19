@@ -106,4 +106,12 @@ var forEachLogger = callback => Object.keys(config).forEach(group => {
 	});
 });
 
-module.exports = { config, loggers, makeGetLogger, forEachLogger };
+// Return a stack trace.  Strip `strip` extra frames off (optional).
+function stack(strip=0){
+
+	// No stack property on Error objects in ie9, unfortunately.
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Stack
+	return (new Error().stack || '').split("\n").slice(2+strip).join("\n")
+}
+
+module.exports = { config, loggers, stack, makeGetLogger, forEachLogger };
