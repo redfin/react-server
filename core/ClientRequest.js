@@ -40,11 +40,11 @@ class ClientRequest {
 		return this._route.name;
 	}
 	/*eslint-disable no-unused-vars */
-	getHttpHeader(name, callback) {
+	getHttpHeader(name) {
 		// this is a no-op; there are no HTTP headers on the client-side.
 	}
 
-	getHttpHeaders(callback) {
+	getHttpHeaders() {
 		// this is a no-op; there are no HTTP headers on the client-side.
 	}
 	/*eslint-enable no-unused-vars */
