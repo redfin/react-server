@@ -155,6 +155,7 @@ function renderPage(req, res, context, start, page) {
 function rawResponseLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
+		setContentType,
 		writeResponseData,
 		endResponse,
 		handleResponseComplete,
@@ -187,9 +188,8 @@ function pageLifecycle() {
 	];
 }
 
-function setContentType(req, res) {
-	// TODO: Provide a way to set this for non-HTML (raw) pages.
-	res.set('Content-Type', 'text/html; charset=utf-8');
+function setContentType(req, res, context, start, pageObject) {
+	res.set('Content-Type', pageObject.getContentType());
 }
 
 function writeHeader(req, res, context, start, pageObject) {

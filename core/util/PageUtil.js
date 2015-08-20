@@ -47,6 +47,7 @@ var PAGE_MIXIN = {
 //
 var PAGE_METHODS = {
 	handleRoute        : [() => ({code: 200}), Q],
+	getContentType     : [() => "text/html; charset=utf-8", _ => _],
 	getTitle           : [() => "", Q],
 	getScripts         : [() => [], standardizeScripts],
 	getSystemScripts   : [() => [], standardizeScripts],
