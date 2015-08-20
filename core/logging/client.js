@@ -63,6 +63,7 @@ var makeLogger = function(group, opts){
 		add: function(transport, opts){
 			this.transports.push(new transport(opts));
 		},
+		stack: common.stack,
 	}
 
 	Object.keys(config.levels).forEach(level => {
