@@ -14,7 +14,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PromiseUtil = require("./util/PromiseUtil"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
-	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID} = require('./constants');
+	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID} = require('./constants');
 
 
 // TODO FIXME ??
@@ -503,7 +503,7 @@ function startBody(req, res, context, start, page) {
 
 	return page.getBodyClasses().then((classes) => {
 		classes.push(`route-${routeName}`)
-		res.write(`<body class='${classes.join(' ')}'><div id='content'>`);
+		res.write(`<body class='${classes.join(' ')}'><div id='content' ${PAGE_CONTENT_NODE_ID}>`);
 	})
 }
 

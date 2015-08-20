@@ -9,6 +9,13 @@ module.exports = React.createClass({
 
 	propTypes: {
 		path: React.PropTypes.string.isRequired,
+                frameback: React.PropTypes.bool,
+	},
+
+	getDefaultProps(){
+		return {
+			frameback: false,
+		}
 	},
 
 	render: function () {
@@ -25,7 +32,10 @@ module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			getCurrentRequestContext().navigate(new ClientRequest(this.props.path), History.events.PUSHSTATE);
+			getCurrentRequestContext().navigate(
+				new ClientRequest(this.props.path, {frameback:this.props.frameback}),
+				History.events.PUSHSTATE
+			);
 		} else {
 			// do normal browser navigate
 		}

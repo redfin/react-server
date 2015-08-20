@@ -3,7 +3,9 @@
  * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
  */
  /*
-  * Redfin: unchnaged (so far)
+  * Changes for use in triton:
+  * - Disables history navigation in a frameback child based on presence of
+  *   `window.__tritonIsFrame` flag.
   */
 /*global window */
 
@@ -38,7 +40,7 @@ History.prototype = {
 	 * @param {Function} listener
 	 */
 	on: function (listener) {
-		if (this._hasPushState) {
+		if (this.canClientNavigate()) {
 			this.win.addEventListener(History.events.POPSTATE, listener);
 		}
 	},
@@ -50,7 +52,7 @@ History.prototype = {
 	 * @param {Function} listener
 	 */
 	off: function (listener) {
-		if (this._hasPushState) {
+		if (this.canClientNavigate()) {
 			this.win.removeEventListener(History.events.POPSTATE, listener);
 		}
 	},
@@ -74,10 +76,10 @@ History.prototype = {
 	 */
 	pushState: function (state, title, url) {
 		var win = this.win;
-		if (this._hasPushState) {
+		if (this.canClientNavigate()) {
 			win.history.pushState(state, title, url);
 		} else {
-			win.location.href = url;
+			this.navigationWindow().location.href = url;
 		}
 	},
 
@@ -90,10 +92,23 @@ History.prototype = {
 	 */
 	replaceState: function (state, title, url) {
 		var win = this.win;
-		if (this._hasPushState) {
+		if (this.canClientNavigate()) {
 			win.history.replaceState(state, title, url);
 		} else {
-			win.location.replace(url);
+			this.navigationWindow().location.replace(url);
+		}
+	},
+
+	canClientNavigate: function() {
+		return this._hasPushState && !this.win.__tritonIsFrame;
+	},
+
+	navigationWindow: function() {
+		var win = this.win;
+		if (win.__tritonIsFrame){
+			return win.parent;
+		} else {
+			return win;
 		}
 	},
 };
