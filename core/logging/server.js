@@ -26,6 +26,8 @@ var makeLogger = function(group, opts){
 
 	logger.setLevels(config.levels);
 
+	logger.addRewriter(errorInterceptor);
+
 	logger.stack = common.stack;
 
 	winston.addColors(config.colors);
@@ -37,6 +39,18 @@ var makeLogger = function(group, opts){
 		.forEach(transport => logger.add(transport, opts));
 
 	return logger;
+}
+
+// Error objects are weird.  Let's turn them into normal objects.
+function errorInterceptor (level, msg, meta) {
+	if (meta instanceof Error) {
+		return {
+			message : meta.message,
+			stack   : meta.stack,
+		};
+	}
+
+	return meta;
 }
 
 var getLogger = common.makeGetLogger(makeLogger);
