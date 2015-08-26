@@ -28,13 +28,25 @@ var makeLogger = function(group, opts){
 		opts,
 		name: opts.name,
 		level: config.baseLevel,
-		log: function(){
-			var args  = [].slice.call(arguments)
-			,   level = args.shift()
+		log: function(level, msg, meta){
+
+			// Error objects are weird.  Let's turn them into normal objects.
+			if (meta instanceof Error){
+				meta = {
+					message : meta.message,
+					stack   : meta.stack,
+				};
+			}
+
+			// We want an array of arguments to apply to
+			// `console.log` so we don't trail an `undefined` when
+			// `meta` isn't passed.
+			var args = [msg];
+			if (meta !== void 0) args.push(meta);
 
 			this.transports.forEach(transport => {
 				if (config.levels[level] < config.levels[transport.level]) return;
-				setTimeout(transport.log.bind(transport, level, args[0], args[1]), 0);
+				setTimeout(transport.log.bind(transport, level, msg, meta), 0);
 			});
 
 			if (config.levels[level] < config.levels[this.level]) return;
