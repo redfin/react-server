@@ -51,24 +51,15 @@ var makeLogger = function(group, opts){
 
 			if (config.levels[level] < config.levels[this.level]) return;
 
-			if (monochrome){
-				console_log.apply(
-					_console,
-					[`${level}: [${opts.name}]`].concat(args)
-				);
-				return;
-			}
-
-
 			console_log.apply(
 				_console,
-				[
+				(monochrome?[`${level}: [${opts.name}]`]:[
 					'%c'+level+'%c: [%c'+opts.name+'%c]',
 					'color: '+config.colors[level],
 					'color: black',
 					'color: '+opts.color.client,
 					'color: black',
-				].concat(args)
+				]).concat(args)
 			);
 		},
 		transports: [],
