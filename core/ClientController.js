@@ -24,7 +24,7 @@ var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
  * Q promise rejections, not just the ones in this file.
  */
 Q.onerror = (err) => {
-	logger.error("Unhandled exception in Q promise: ", err);
+	logger.error("Unhandled exception in Q promise", err);
 }
 
 class ClientController extends EventEmitter {
@@ -140,7 +140,7 @@ class ClientController extends EventEmitter {
 						}, 0);
 					}
 				} else {
-					logger.error("onNavigate error:", err);
+					logger.error("onNavigate error", err);
 				}
 				return;
 			}
@@ -205,7 +205,7 @@ class ClientController extends EventEmitter {
 				document.title = newTitle;
 			}
 		})
-		.catch(err => { logger.error("Error while setting the document title:", err) })
+		.catch(err => { logger.error("Error while setting the document title", err) })
 		.done();
 	}
 
@@ -254,7 +254,7 @@ class ClientController extends EventEmitter {
 
 				parent.appendChild(meta);
 			})
-			.catch( err => { logger.error("Error rendering meta tags: ", err); })
+			.catch( err => { logger.error("Error rendering meta tags", err); })
 			.done();
 		});
 	}
@@ -366,7 +366,7 @@ class ClientController extends EventEmitter {
 				}
 			});
 		}).catch(err => {
-			logger.error("Error during syncRender:", err);
+			logger.error("Error during syncRender", err);
 		}).done();
 
 		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
@@ -375,7 +375,7 @@ class ClientController extends EventEmitter {
 			logger.debug("Loader cache depleted.");
 			scheduleSyncRender();
 		}).catch(err => {
-			logger.error("Error in scheduleSyncRender: ", err);
+			logger.error("Error in scheduleSyncRender", err);
 		}).done();
 
 		// if no element promises, break early,
@@ -421,7 +421,7 @@ class ClientController extends EventEmitter {
 
 			this._previouslyRendered = true;
 		}).catch((err) => {
-			logger.error("Error while rendering:", err);
+			logger.error("Error while rendering", err);
 		}); // no done(), because we're handing this promise off to someone else
 	}
 
