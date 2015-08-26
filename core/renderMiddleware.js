@@ -140,7 +140,7 @@ function renderPage(req, res, context, start, page) {
 		.then(() => func(req, res, context, start, page))
 		.then(() => renderTimer.tick(func.name))
 	).catch(err => {
-		logger.error("Error in renderPage chain ", err.stack)
+		logger.error("Error in renderPage chain", err)
 
 		// Bummer.
 		res.status(500).end();
@@ -537,7 +537,7 @@ function writeBody(req, res, context, start, page) {
 			return next;
 		})
 	}).catch((err) => {
-		logger.error("Error while rendering without timeout", err.stack);
+		logger.error("Error while rendering without timeout", err);
 		bodyComplete.reject(err);
 	});
 
@@ -568,7 +568,7 @@ function writeBody(req, res, context, start, page) {
 			}
 		});
 	}).catch((err) => {
-		logger.error("Error while rendering with timeout", err.stack);
+		logger.error("Error while rendering with timeout", err);
 		bodyComplete.reject(err);
 	});
 
@@ -643,7 +643,7 @@ function renderElement(res, element, context, index) {
 		// the `data-triton-root-id` div for this component.  We need
 		// to close it out and move on.  This is a bummer, and we'll
 		// log it, but it's too late to totally bail out.
-		logger.error(`Error rendering element ${name}:`, err.stack);
+		logger.error(`Error rendering element ${name}`, err);
 	}
 	res.write("</div>");
 
