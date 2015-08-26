@@ -30,14 +30,6 @@ var makeLogger = function(group, opts){
 		level: config.baseLevel,
 		log: function(level, msg, meta){
 
-			// Error objects are weird.  Let's turn them into normal objects.
-			if (meta instanceof Error){
-				meta = {
-					message : meta.message,
-					stack   : meta.stack,
-				};
-			}
-
 			// We want an array of arguments to apply to
 			// `console.log` so we don't trail an `undefined` when
 			// `meta` isn't passed.
