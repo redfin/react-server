@@ -19,7 +19,12 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
-						<buildcommands><buildcommand>org.eclipse.wst.common.project.facet.core.builder</buildcommand></buildcommands>
+					<buildcommands>
+						<!-- No builders are required. -->
+					</buildcommands>
+					<projectnatures>
+						<projectnature>org.eclipse.wst.jsdt.core.jsNature</projectnature>
+					</projectnatures>
 				</configuration>
 			</plugin>
 			<plugin>
