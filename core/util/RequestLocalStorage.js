@@ -10,12 +10,12 @@
  *
  * Example:
  *
- *   var RequestLocals = require('triton').RequestLocalStorage.getNamespace();
+ *   var RLS = require('triton').RequestLocalStorage.getNamespace();
  *
  *   var getInstance = function(){
  *
  *     // Get a reference to _current_ request's locals.
- *     var locals = RequestLocals();
+ *     var locals = RLS();
  *
  *     if (!locals.instance)
  *       locals.instance = new Instance();
