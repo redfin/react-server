@@ -21,6 +21,12 @@ var console_log = Function.prototype.bind.call(_console.log, _console);
 // IE9 also doesn't support color.
 var monochrome = typeof _console.log == "object";
 
+// We don't chain our transports in the same way as winston client-side, but
+// we'll conform more-or-less to winston's interface for the `log` method for
+// consistency's sake.  This means passing a function as the fourth argument.
+// We'll use a noop.
+var noop = () => {};
+
 var makeLogger = function(group, opts){
 	var config = common.config[group]
 
@@ -38,7 +44,7 @@ var makeLogger = function(group, opts){
 
 			this.transports.forEach(transport => {
 				if (config.levels[level] < config.levels[transport.level]) return;
-				setTimeout(transport.log.bind(transport, level, msg, meta), 0);
+				setTimeout(transport.log.bind(transport, level, msg, meta, noop), 0);
 			});
 
 			if (config.levels[level] < config.levels[this.level]) return;
