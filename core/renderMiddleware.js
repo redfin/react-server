@@ -103,14 +103,14 @@ function handleResponseComplete(req, res, context, start, page) {
 		// response completion going on that we should deal with.
 		ACTIVE_REQUESTS--;
 
-		logRequestStats(req, res, context, start, page);
-
 		// Note that if the navigator couldn't even map the request to
 		// a page, we won't be able to call middleware
 		// `handleComplete()` here.
 		//
 		if (page) {
 			page.handleComplete();
+
+			logRequestStats(req, res, context, start, page);
 		}
 	}));
 }
