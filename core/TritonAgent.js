@@ -1,7 +1,7 @@
 var RLS = require('./util/RequestLocalStorage').getNamespace()
 ,	Cache = require("./TritonAgent/Cache")
 ,	Request = require("./TritonAgent/Request")
-,	RequestPlugins = require("./TritonAgent/RequestPlugins")
+,	Plugins = require("./TritonAgent/Plugins")
 ;
 
 
@@ -76,9 +76,26 @@ var API = {
 	 * ```
 	 */
 	plugRequest (pluginFunc) {
-		RequestPlugins.add(pluginFunc);
+		Plugins.forRequest().add(pluginFunc);
 	},
 
+	/**
+	 * Adds a plugin function that can be used to modify the response
+	 * object before it is passed the caller's callback.
+	 *
+	 * The callback function will take err and response as parameters
+	 * (like the callback to `end()`), and the request as well:
+	 * ```
+	 * TritonAgent.plugResponse(function (err, response, request) {
+	 *     // e.g.
+	 *     console.log("Response received!", res.body);
+	 *     res.wasLogged = true; // or whatever
+	 * })
+	 * ```
+	 */
+	plugResponse (pluginFunc) {
+		Plugins.forResponse().add(pluginFunc);
+	},
 
 }
 
