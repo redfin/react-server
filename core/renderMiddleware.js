@@ -504,13 +504,11 @@ function startBody(req, res, context, start, page) {
 	return page.getBodyClasses().then((classes) => {
 		classes.push(`route-${routeName}`)
 		res.write(`<body class='${classes.join(' ')}'>`);
-		res.write(`<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-TZTT5H"
-			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-			'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-			})(window,document,'script','dataLayer','GTM-TZTT5H');</script>`);
+		page.getDataLayer().forEach((datalayer) => {
+			res.write(`<script>${datalayer.data}</script>`);
+			res.write(`<noscript>${datalayer.iframe}</noscript>`);
+			res.write(`<script>${datalayer.text}</script>`);
+		});
 		res.write(`<div id='content' ${PAGE_CONTENT_NODE_ID}>`);
 	})
 }
