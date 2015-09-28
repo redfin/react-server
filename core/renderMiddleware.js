@@ -504,11 +504,9 @@ function startBody(req, res, context, start, page) {
 	return page.getBodyClasses().then((classes) => {
 		classes.push(`route-${routeName}`)
 		res.write(`<body class='${classes.join(' ')}'>`);
-		page.getDataLayer().forEach((datalayer) => {
-			res.write(`<script>${datalayer.data}</script>`);
-			res.write(`<noscript>${datalayer.iframe}</noscript>`);
-			res.write(`<script>${datalayer.text}</script>`);
-		});
+		page.getBodyStartContent().then(texts => texts.forEach((text) => {
+			res.write(text);
+		}));
 		res.write(`<div id='content' ${PAGE_CONTENT_NODE_ID}>`);
 	})
 }

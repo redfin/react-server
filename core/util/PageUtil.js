@@ -51,7 +51,7 @@ var PAGE_METHODS = {
 	getTitle           : [() => "", Q],
 	getScripts         : [() => [], standardizeScripts],
 	getSystemScripts   : [() => [], standardizeScripts],
-	getDataLayer       : [() => [], _ => _],
+	getBodyStartContent: [() => [], Q],
 	getHeadStylesheets : [() => [], standardizeStyles],
 	getDebugComments   : [() => [], standardizeDebugComments],
 	getMetaTags        : [() => [], standardizeMetaTags],
