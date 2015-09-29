@@ -504,11 +504,11 @@ function startBody(req, res, context, start, page) {
 	return page.getBodyClasses().then((classes) => {
 		classes.push(`route-${routeName}`)
 		res.write(`<body class='${classes.join(' ')}'>`);
-		page.getBodyStartContent().then(texts => texts.forEach((text) => {
-			res.write(text);
-		}));
+	}).then(() => page.getBodyStartContent()).then((texts) => texts.forEach((text) => {
+		res.write(text);
+	})).then(() => {
 		res.write(`<div id='content' ${PAGE_CONTENT_NODE_ID}>`);
-	})
+	});
 }
 
 /**
