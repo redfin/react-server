@@ -371,8 +371,40 @@ class ClientController extends EventEmitter {
 
 		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
 		// this lets us render when the server timed out.
+		//
+		// A URL discrepancy between server and client could cause
+		// failure to deplete the `TritonAgent` cache.  If this
+		// happens we'll complain about it and kick off the
+		// synchronous render.  Better late than never.
+		//
+		// This timeout can be fairly agressive, since we should zip
+		// through our re-render pretty quickly so long as we're
+		// getting our data from the cache and the async render will
+		// stay ahead of the sync render so long as there's still no
+		// delay between elements.
+		//
+		var startSyncRenderDfd    = Q.defer();
+		var didKickOffSyncRender  = false;
+		var cacheDepletionTimeout = 1000;
+
 		TritonAgent.cache().whenCacheDepleted().then(() => {
 			logger.debug("Loader cache depleted.");
+			if (didKickOffSyncRender) {
+				logger.error("Timed out and THEN cache depleted");
+			} else {
+				startSyncRenderDfd.resolve();
+			}
+		});
+
+		setTimeout(() => {
+			if (!didKickOffSyncRender) {
+				logger.error(`Timed out waiting for cache depletion (${cacheDepletionTimeout}ms)`);
+				startSyncRenderDfd.resolve();
+			}
+		}, cacheDepletionTimeout);
+
+		startSyncRenderDfd.promise.then(() => {
+			didKickOffSyncRender = true;
 			scheduleSyncRender();
 		}).catch(err => {
 			logger.error("Error in scheduleSyncRender", err);
