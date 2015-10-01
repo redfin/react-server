@@ -1,7 +1,7 @@
 var superagent = require('superagent')
 ,	logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
-,	RequestPlugins = require("./RequestPlugins")
+,	Plugins = require("./Plugins")
 ,	{ mixin } = require("./util")
 ;
 
@@ -107,17 +107,30 @@ Request.prototype.type = function (type) {
  * browser.
  */
 Request.prototype.end = function (fn) {
-	var superagentRequestEnd = superagent.Request.prototype.end;
 
-	// TODO: support both (err, res) and (res) function signatures
 	if (fn.length !== 2) {
-		throw `Callback passed to end() must be the two-arg version: (err, res)`;
+		// a superagent requirement, as of ~v1.0
+		throw new Error("Callback passed to end() must be the two-arg version: (err, res)");
 	}
+
+	var executeRequest = function (cb) {
+		applyRequestPlugins(this);
+
+		// set up some params
+		var saRequest = buildSuperagentRequest.call(this);
+
+		// actually execute the request via superagent
+		superagent.Request.prototype.end.call(saRequest, cb);
+
+		return this;
+	}.bind(this);
+
+	// helper, for cleaner code below
+	var wrapResponseCallback = responsePluginApplyingCallback.bind(this);
 
 	// only do caching for responses for GET requests for now
 	if (this._method !== 'GET') {
-		applyPlugins(this);
-		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
+		return executeRequest(wrapResponseCallback(fn));
 	}
 
 	// get cache entry for url if exists; if server-side, create one if it doesn't already exist.
@@ -126,17 +139,12 @@ Request.prototype.end = function (fn) {
 	// host) works fine though.
 	var entry = this._cache.entry(this._getCacheAffectingData(), SERVER_SIDE /* createIfMissing */, this._cacheWhitelist);
 	if (!SERVER_SIDE && !entry) {
-		// TODO: do we need a publicly-visible prefix? it seems like relative URLs would
-		// be fine?
-		applyPlugins(this);
-		return superagentRequestEnd.apply(this._buildSuperagentRequest(), arguments);
+		return executeRequest(wrapResponseCallback(fn));
 	}
 
 	// no previous requesters? fire the request
 	if (entry.requesters === 0) {
-		// update URL if we're actually making the call
-		applyPlugins(this);
-		superagentRequestEnd.call(this._buildSuperagentRequest(), function (err, res) {
+		executeRequest(function (err, res) {
 			if (err) {
 				entry.setError(err);
 				return;
@@ -145,20 +153,39 @@ Request.prototype.end = function (fn) {
 		});
 	}
 
-	entry.whenDataReady().nodeify(fn);
+	entry.whenDataReady().nodeify(wrapResponseCallback(fn));
 
 	return this;
 }
 
 // private function
-function applyPlugins (req) {
+function applyRequestPlugins (req) {
 	// run any registered plugins
-	RequestPlugins.get().forEach(function (pluginFunc) {
+	Plugins.forRequest().asArray().forEach(function (pluginFunc) {
 		pluginFunc.apply(null, [req]);
 	})
 }
 
-Request.prototype._buildSuperagentRequest = function () {
+// private function; called with a Request instance bound to
+// `this`
+function responsePluginApplyingCallback(cb) {
+	// partly pedantic, partly so the code in the wrapped callback
+	// is shorter; saving plugins here guarantees that plugins added
+	// *after* the request is made, but *before* the response comes
+	// aren't called for this particular request
+	var thisReq = this;
+	var plugins = Plugins.forResponse().asArray();
+	return function (err, res) {
+		plugins.forEach(function (pluginFunc) {
+			pluginFunc.apply(null, [err, res, thisReq]);
+		});
+		cb(err, res);
+	}
+}
+
+// private function; called with a Request instance bound
+// to `this`
+function buildSuperagentRequest() {
 	var req = superagent(this._method, this._buildUrl());
 
 	if (this._agent){
@@ -242,7 +269,7 @@ Request.prototype.asPromise = function () {
  * error message than just not including it altogether.
  */
 Request.prototype.use = function () {
-	throw `use() function is superseded by plugRequest(...)`;
+	throw new Error(`use() function is superseded by plugRequest(...)`);
 }
 
 /**
