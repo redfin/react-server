@@ -1,5 +1,3 @@
-var Q = require("q");
-
 module.exports = {
 	/**
 	 * Translates a normal Promise to a simple EarlyPromise.
@@ -32,20 +30,5 @@ module.exports = {
 			return pendingValueFn();
 		};
 		return promise;
-	},
-
-	/**
-	 * Return the value of the first resolved or rejected promise in the arguments array
-	 */
-	race(...promises) {
-		var resultDeferred = Q.defer();
-
-		promises.forEach((promise) => {
-			promise.then(
-				(value) => resultDeferred.resolve(value),
-				(error) => resultDeferred.reject(error));
-		});
-
-		return resultDeferred.promise;
 	},
 }
