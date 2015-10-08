@@ -11,7 +11,6 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	expressState = require('express-state'),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
-	PromiseUtil = require("./util/PromiseUtil"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID} = require('./constants');
@@ -516,34 +515,30 @@ function startBody(req, res, context, start, page) {
  * all the ReactElements have been written out.
  */
 function writeBody(req, res, context, start, page) {
-	/*eslint-disable consistent-return */
-	var bodyComplete = Q.defer();
 
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-	// a boolean array to keep track of which elements have already been rendered. this is useful
-	// bookkeeping when the timeout happens so we don't double-render anything.
-	var rendered = [];
+	// This is where we'll store our rendered HTML strings.  A value of
+	// `undefined` means we haven't rendered that element yet.
+	var rendered = elementPromises.map(() => undefined);
 
-	// render the elements in sequence when they resolve (i.e. tell us they are ready).
-	// I learned how to chain an array of promises from http://bahmutov.calepin.co/chaining-promises.html
-	var noTimeoutRenderPromise =  elementPromises.concat(Q()).reduce((chain, next, index) => {
-		return chain.then((element) => {
+	// We need to return a promise that resolves when we're done, so we'll
+	// maintain an array of deferreds that we punch out as we render
+	// elements and we'll return a promise that resolves when they've all
+	// been hit.
+	var dfds = elementPromises.map(() => Q.defer());
 
-			// The timeoutRenderPromise may have rejected our
-			// completion deferred due to an exception.
-			// If it did, we're done.
-			if (!bodyComplete.promise.isPending()) return;
+	var doElement = (element, index) => {
 
-			if (!rendered[index-1]) renderElement(res, element, context, index - 1);
-			rendered[index - 1] = true;
-			return next;
-		})
-	}).catch((err) => {
-		logger.error("Error while rendering without timeout", err);
-		bodyComplete.reject(err);
-	});
+		rendered[index] = renderElement(res, element, context);
+
+		// If we've just rendered the next element to be written we'll
+		// write it out.
+		writeElements(res, rendered);
+
+		dfds[index].resolve();
+	};
 
 	// Some time has already elapsed since the request started.
 	// Note that you can override `DATA_LOAD_WAIT` with a
@@ -553,36 +548,43 @@ function writeBody(req, res, context, start, page) {
 
 	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
 
-	// set up a maximum wait time for data loading. if this timeout fires, we render with whatever we have,
-	// as best as possible. note that once the timeout fires, we render everything that's left
-	// synchronously.
-	var timeoutRenderPromise = Q.delay(timeRemaining).then(() => {
-		// if we rendered everything up to the last element already, just return.
-		if (rendered[elementPromises.length - 1]) return;
+	// Try to render everything when its data becomes available.
+	elementPromises.forEach((promise, index) => promise.then(element => {
 
-		// The noTimeoutRenderPromise may have rejected our completion
-		// deferred due to an exception.
-		if (!bodyComplete.promise.isPending()) return;
+		// Bummer.  Already rendered synchronously.
+		if (rendered[index] !== undefined) return;
 
-		logger.debug("Timeout Exceeeded. Rendering...");
-		elementPromises.forEach((promise, index) => {
-			if (!rendered[index]) {
-				renderElement(res, promise.getValue(), context, index);
-				rendered[index] = true;
-			}
-		});
-	}).catch((err) => {
-		logger.error("Error while rendering with timeout", err);
-		bodyComplete.reject(err);
-	});
+		doElement(element, index);
 
-	// return a promise that resolves when either the async render OR the timeout sync
-	// render happens.
-	PromiseUtil.race(noTimeoutRenderPromise, timeoutRenderPromise)
-		.then(() => bodyComplete.resolve());
+	}).catch(e => logger.error("Error while rendering without timeout", e)));
 
-	return bodyComplete.promise;
-	/*eslint-enable consistent-return */
+	// If we run out of time, just render with what we've got.
+	setTimeout(() => elementPromises.forEach((promise, index) => {
+
+		// Awesome.  Already rendered normally.
+		if (rendered[index] !== undefined) return;
+
+		try {
+			var element = promise.getValue();
+		} catch (e) {
+			logger.error("Error while rendering with timeout", e);
+		}
+
+		// Note that `element` may be undefined here if
+		// `promise.getValue()` blew up.  That's okay, `renderElement`
+		// wraps its call to `React.renderToString` in a try/catch.
+		//
+		// Importantly, we need to call `doElement` to resolve our
+		// deferred for this element so we can proceed beyond
+		// `writeBody`.  If there was an exception during the normal
+		// render, above, it _won't_ have resolved our deferred, so
+		// it's up to us.
+		//
+		doElement(element, index);
+
+	}), timeRemaining);
+
+	return Q.all(dfds.map(dfd => dfd.promise));
 }
 
 function writeResponseData(req, res, context, start, page) {
@@ -629,17 +631,17 @@ function getElementDisplayName(element){
 	return (name||'Unknown').split('.').pop();
 }
 
-function renderElement(res, element, context, index) {
+function renderElement(res, element, context) {
 	var name  = getElementDisplayName(element)
 	,   start = RLS().startTime
 	,   timer = logger.timer(`renderElement.individual.${name}`)
+	,   html  = ''
 
-	res.write(`<div data-triton-root-id=${index}>`);
 	try {
 		if (element !== null) {
-			res.write(React.renderToString(
+			html = React.renderToString(
 				React.addons.cloneWithProps(element, { context: context })
-			));
+			);
 		}
 	} catch (err) {
 		// A component failing to render is not fatal.  We've already
@@ -649,11 +651,6 @@ function renderElement(res, element, context, index) {
 		// log it, but it's too late to totally bail out.
 		logger.error(`Error rendering element ${name}`, err);
 	}
-	res.write("</div>");
-
-	// It may be a while before we render the next element, so let's send
-	// this one down right away.
-	flushRes(res);
 
 	// We time how long _this_ element's render took, and also how long
 	// since the beginning of the request it took us to spit this element
@@ -665,6 +662,36 @@ function renderElement(res, element, context, index) {
 	// each request so we can keep track of that overhead.
 	RLS().renderTime || (RLS().renderTime = 0);
 	RLS().renderTime += individualTime;
+
+	return html;
+}
+
+// Write as many elements out in a row as possible and then flush output.
+// We render elements as their data becomes available, so they might fill in
+// out-of-order.
+function writeElements(res, elements) {
+
+	// Pick up where we left off.
+	var start = RLS().nextElement||(RLS().nextElement=0);
+
+	for (var i = start; i < elements.length; RLS().nextElement = ++i){
+
+		// If we haven't rendered the next element yet, we're done.
+		if (elements[i] === undefined) break;
+
+		// Got one!
+		res.write(`<div data-triton-root-id=${i}>${elements[i]}</div>`);
+
+		// Free for GC.
+		//
+		// Note that `undefined` has special meaning here, so we're
+		// using `null`, instead.
+		elements[i] = null;
+	}
+
+	// It may be a while before we render the next element, so if we just
+	// wrote anything let's send it down right away.
+	if (i !== start) flushRes(res);
 }
 
 function writeData(req, res) {
