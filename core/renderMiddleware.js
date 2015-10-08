@@ -570,6 +570,16 @@ function writeBody(req, res, context, start, page) {
 			logger.error("Error while rendering with timeout", e);
 		}
 
+		// Note that `element` may be undefined here if
+		// `promise.getValue()` blew up.  That's okay, `renderElement`
+		// wraps its call to `React.renderToString` in a try/catch.
+		//
+		// Importantly, we need to call `doElement` to resolve our
+		// deferred for this element so we can proceed beyond
+		// `writeBody`.  If there was an exception during the normal
+		// render, above, it _won't_ have resolved our deferred, so
+		// it's up to us.
+		//
 		doElement(element, index);
 
 	}), timeRemaining);
