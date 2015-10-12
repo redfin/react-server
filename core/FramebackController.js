@@ -124,23 +124,43 @@ class FramebackController {
 
 	createFrame(url){
 		this.url = url;
+
+		this.loadTimer = logger.timer('loadTime');
+
 		this.frame = document.createElement("iframe");
 
 		Object.keys(FRAME_STYLE).forEach(k => {
 			this.frame.style[k] = FRAME_STYLE[k]
 		});
 
-		this.frame.src = absoluteUrl(url);
-
 		document.body.appendChild(this.frame);
 
-		// Can't get the `contentWindow` until it's in the document.
-		this.frame.contentWindow.addEventListener(
-			'load', this._handleFrameLoad.bind(this, this.frame)
-		);
+		// Can't get the `contentWindow` until it's in the document,
+		// and then we can't set our 'load' handler until the
+		// navigation has been initiated sometime after we call
+		// `setlocation`... ugh.  After the _current_ page's 'unload'
+		// fires we can set up our 'load' handler in a new timeslice.
+		this.frame.contentWindow.addEventListener('unload', () => setTimeout(() => {
 
-		// Disable triton client navigation in the frame.
-		this.frame.contentWindow.__tritonIsFrame = true;
+			// Firefox fires our `unload` handler _twice_ for all
+			// frameback navigation _after_ the _first_ for the
+			// page.  This guards against double-wiring our `load`
+			// handler. :goberzerk:
+			if (this.frame.contentWindow.__tritonIsFrame) return;
+
+			// Disable triton client navigation in the frame.
+			this.frame.contentWindow.__tritonIsFrame = true;
+
+			// Add our load handler now that we've got a fresh
+			// `window` during navigation.
+			this.frame.contentWindow.addEventListener(
+				'load', this._handleFrameLoad.bind(this, this.frame)
+			);
+		}, 10));
+
+
+		// Setting `frame.src` doesn't work in firefox. RED-70527
+		this.frame.contentWindow.location = absoluteUrl(url);
 	}
 
 
@@ -177,6 +197,8 @@ class FramebackController {
 
 		// We've got it now, so let's set it.
 		this.setTitleFromFrame();
+
+		this.loadTimer.stop();
 
 		logger.debug("Frame loaded");
 	}
