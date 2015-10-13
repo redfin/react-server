@@ -34,13 +34,15 @@ class Navigator extends EventEmitter {
 		type = type || History.events.PAGELOAD;
 
 		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl(), type:type}});
-		if (!route) {
+
+		if (route) {
+			logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
+		} else if (!request._frameback) {
 			setTimeout( () => {
 				this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);
 			}, 0);
 			return;
 		}
-		logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
 
 		// We may or may not _actually_ start this route client side.
 		//
@@ -177,7 +179,7 @@ class Navigator extends EventEmitter {
 		// need to actually render once our current navigation is
 		// complete.
 		//
-		if (route) {
+		if (request) {
 
 			// We don't want to leave navigation detritus
 			// laying around as we discard bypassed pages.
