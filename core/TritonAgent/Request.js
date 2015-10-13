@@ -108,9 +108,9 @@ Request.prototype.type = function (type) {
  */
 Request.prototype.end = function (fn) {
 
-	if (fn.length !== 2) {
+	if (!fn || fn.length !== 2) {
 		// a superagent requirement, as of ~v1.0
-		throw new Error("Callback passed to end() must be the two-arg version: (err, res)");
+		fn = (a, b) => {};
 	}
 
 	var executeRequest = function (cb) {
