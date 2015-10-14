@@ -12,7 +12,7 @@ Here's a simple Triton middleware that only sets the ContentType header to appli
 
 		// What is this and do we need it?
 		static middleware() {
-			return [{ setConfigValues(){ return { isRawResponse: true } } }]
+			return [{ setConfigValues(){ return { isRawResponse: true }; } }];
 		}
 
 		handleRoute(next) {
@@ -24,7 +24,7 @@ Here's a simple Triton middleware that only sets the ContentType header to appli
 		}
 
 		getResponseData(next) {
-			return next().then(object => object);
+			return next().then(object => JSON.stringify(object));
 		}
 	}
 
