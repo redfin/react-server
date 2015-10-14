@@ -108,9 +108,9 @@ Request.prototype.type = function (type) {
  */
 Request.prototype.end = function (fn) {
 
-	if (fn.length !== 2) {
-		// a superagent requirement, as of ~v1.0
-		throw new Error("Callback passed to end() must be the two-arg version: (err, res)");
+	if (!fn || fn.length !== 2) {
+		// a superagent requirement, as of ~v1.0; We're providing a default callback here.
+		fn = (a, b) => {}; // eslint-disable-line no-unused-vars
 	}
 
 	var executeRequest = function (cb) {
