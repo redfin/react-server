@@ -1,6 +1,6 @@
 
 var logger = require('./logging').getLogger(__LOGGER__),
-	React = require('react/addons'),
+	React = require('react'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
@@ -640,7 +640,7 @@ function renderElement(res, element, context) {
 	try {
 		if (element !== null) {
 			html = React.renderToString(
-				React.addons.cloneWithProps(element, { context: context })
+				React.cloneElement(element, { context: context })
 			);
 		}
 	} catch (err) {

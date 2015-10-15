@@ -1,5 +1,5 @@
 
-var React = require('react/addons'),
+var React = require('react'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -320,7 +320,7 @@ class ClientController extends EventEmitter {
 			// TODO: get rid of context once continuation-local-storage holds our important context vars.
 			// `element` can be null if getValue() on the root element promise returns null
 			if (element) {
-				element = React.addons.cloneWithProps(element, { context: this.context });
+				element = React.cloneElement(element, { context: this.context });
 				newRenderedElements[index] = React.render(element, root);
 			}
 			if (index === elementPromises.length - 1) {
