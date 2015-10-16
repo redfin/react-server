@@ -24,4 +24,4 @@ On the server, in renderMiddleware, each component to render is represented by a
 The timeout, then, is the ​_maximum_​ amount of time we're willing to wait to render server-side before _any_ content is render in the browser.  To ensure that the final document is completed after the server has timed out, we're force-render everything server-side immediately following  the timeout, then let the client pick up where the server left off.  Some middleware components may render immediately, if they are first in the document and do not require an asynchronous data call, regardless of timeout.
 
 For projects that ensure that elements on the page don't "jump" (change absolute location on the page) as other elements render in, they'll need to set the data wait on the server to a time that is longer than  if they don't have good no-data content in the widgets
-- always render placeholder ​_something_​ server-side, even if they don't have data (edited)
+- always render placeholder ​_something_​ server-side, even if they don't have data.
