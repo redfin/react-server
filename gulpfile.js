@@ -14,6 +14,7 @@ var gulp = require("gulp"),
 
 var availableOptions = {
 	'boolean': [ 'verbose', 'skipSourcemaps' ],
+	'string' : [ 'specs' ],
 	'default': {
 		'verbose': false,
 		'skipSourcemaps': false,
@@ -26,6 +27,22 @@ function shouldSourcemap () {
 }
 function isVerbose () {
 	return !!options.verbose;
+}
+function getSpecGlob (prefix) {
+	// add a wildcard onto the end if no file extension or wildcard
+	// currently present
+	var specGlob = options.specs || "*[Ss]pec.js";
+	if (!specGlob.endsWith(".js") && !specGlob.endsWith("*")) {
+		specGlob += "*";
+	}
+
+	var specs = prefix + specGlob;
+
+	if (isVerbose()) {
+		console.log("Running specs: ", specs);
+	}
+
+	return specs;
 }
 
 var src = ["core/**/*", "core/**/*"];
@@ -72,8 +89,7 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 			gulp.src("target/server/test/**/*.js")
 				.pipe(gulp.dest("target/server-covered/test"))
 				.on("finish", function() {
-					gulp.src(['target/server-covered/test/**/*[Ss]pec.js'])
-						.pipe(jasmine())
+					gulp.src(getSpecGlob('target/server-covered/test/**/')).pipe(jasmine())
 						.pipe(istanbul.writeReports({dir: './target/coverage'})) // Creating the reports after tests runned
 						.on('end', cb);
 				});
@@ -81,7 +97,7 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 });
 
 gulp.task("test", ["compileServer", "compileClient"], function() {
-	return gulp.src("target/server/test/**/*[Ss]pec.js")
+	return gulp.src(getSpecGlob("target/server/test/**/"))
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
 });
 
