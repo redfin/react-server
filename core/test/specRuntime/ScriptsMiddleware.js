@@ -1,6 +1,6 @@
 class ScriptMiddleware {
 
-	getScripts(next) {
+	getScripts (next) {
 		return ["/rollups/rollup.js"];
 	}
 }
