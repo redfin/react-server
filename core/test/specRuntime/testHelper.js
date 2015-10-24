@@ -153,18 +153,18 @@ var stopTritonServer = (server, done) => {
 var getServerBrowser = (url, cb) => {
 	var browser = getBrowser({runScripts:false});
 
-	browser.visit(`http://localhost:${PORT}${url}`).done(() => cb(browser));
+	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser), () => console.error(arguments));
 }
 
 var getClientBrowser = (url, cb) => {
 	var browser = getBrowser();
-	browser.visit(`http://localhost:${PORT}${url}`).done(() => cb(browser));
+	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser), () => console.error(arguments));
 };
 
 var getTransitionBrowser = (url, cb) => {
 	var browser = getBrowser();
 	// go to the transition page and click the link.
-	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).done(() => {
+	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).then(() => {
 		browser.clickLink("Click me", () => {
 			cb(browser);
 		});
