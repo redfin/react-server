@@ -135,8 +135,11 @@ class ClientController extends EventEmitter {
 						console.error("A redirect status was sent without a corresponding redirect redirectUrl.", err);
 					} else {
 						setTimeout(() => {
+							// we're about to load the _next_ page, so we should mark the
+							// redirect navigation finished
+							context.navigator.finishRoute();
 							this._history.replaceState(null, null, err.redirectUrl);
-							this.context.navigate(new ClientRequest(err.redirectUrl));
+							context.navigate(new ClientRequest(err.redirectUrl));
 						}, 0);
 					}
 				} else {
