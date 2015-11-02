@@ -1,12 +1,12 @@
-var helper = require("../specRuntime/testHelper"), 
+var helper = require("../specRuntime/testHelper"),
 	Browser = require("zombie");
 
 describe("A redirect page", () => {
 
 	helper.startServerBeforeAll([
-		"./redirectForward/TemporaryRedirectPage", 
+		"./redirectForward/TemporaryRedirectPage",
 		"./redirectForward/PermanentRedirectPage",
-		"./redirectForward/FinalPage", 
+		"./redirectForward/FinalPage",
 	]);
 
 	helper.stopServerAfterAll();
@@ -27,8 +27,8 @@ describe("A redirect page", () => {
 	it("gets the right status code for a temp redirect", (done) => {
 		var browser = new Browser();
 		browser.silent = true;
-		browser.on("redirect", (request, response, redirectRequest) => {
-			expect(response.statusCode).toBe(302);
+		browser.on("redirect", (request, response, redirectRequest) => { //eslint-disable-line no-unused-vars
+			expect(response.status).toBe(302);
 			done();
 		});
 		browser.visit(`http://localhost:${helper.getPort()}/temporaryRedirect`);
@@ -50,8 +50,8 @@ describe("A redirect page", () => {
 	it("gets the right status code for a permanent redirect", (done) => {
 		var browser = new Browser();
 		browser.silent = true;
-		browser.on("redirect", (request, response, redirectRequest) => {
-			expect(response.statusCode).toBe(301);
+		browser.on("redirect", (request, response, redirectRequest) => { //eslint-disable-line no-unused-vars
+			expect(response.status).toBe(301);
 			done();
 		});
 		browser.visit(`http://localhost:${helper.getPort()}/permanentRedirect`);
@@ -61,8 +61,8 @@ describe("A redirect page", () => {
 describe("A forward page", () => {
 
 	helper.startServerBeforeAll([
-		"./redirectForward/FinalPage", 
-		"./redirectForward/ForwardPage", 
+		"./redirectForward/FinalPage",
+		"./redirectForward/ForwardPage",
 	]);
 
 	helper.stopServerAfterAll();
@@ -84,12 +84,12 @@ describe("A forward page", () => {
 		var browser = new Browser();
 
 		browser.silent = true;
-		browser.on("redirect", (request, response, redirectRequest) => {
+		browser.on("redirect", (request, response, redirectRequest) => { //eslint-disable-line no-unused-vars
 			fail("Forward page redirected when it shouldn't have.");
 			done();
 		});
 		browser.visit(`http://localhost:${helper.getPort()}/forward`).then(() => {
-			expect(browser.resources[0].response.statusCode).toBe(200);
+			expect(browser.resources[0].response.status).toBe(200);
 			done();
 		});
 	});
