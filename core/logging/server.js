@@ -1,5 +1,9 @@
 var winston = require('winston')
 ,   common  = require('./common')
+,   _ = {
+        mapValues     : require("lodash/object/mapValues"),
+        isPlainObject : require("lodash/lang/isPlainObject"),
+    };
 
 var makeLogger = function(group, opts){
 	var config = common.config[group];
@@ -44,14 +48,25 @@ var makeLogger = function(group, opts){
 // Error objects are weird.  Let's turn them into normal objects.
 function errorInterceptor (level, msg, meta) {
 	if (meta instanceof Error) {
-		return {
-			message : meta.message,
-			stack   : meta.stack,
-		};
+		meta = {error: meta};
 	}
 
+	if (_.isPlainObject(meta)) {
+		// allow {error: <someError>} as a valid `meta`
+		meta = _.mapValues(meta, v => {
+			return (v instanceof Error) ? normalizeError(v) : v;
+		});
+	}
 	return meta;
 }
+
+function normalizeError (err) {
+	return {
+		'message': err.message,
+		'stack'  : err.stack,
+	}
+}
+
 
 var getLogger = common.makeGetLogger(makeLogger);
 
