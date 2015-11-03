@@ -31,8 +31,8 @@
     "winston": "0.8.3"
   },
   "peerDependencies": {
-    "react": "0.14.1",
-    "react-dom": "0.14.1",
+    "react": "0.14.2",
+    "react-dom": "0.14.2",
     "superagent": "1.2.0"
   },
   "devDependencies": {
