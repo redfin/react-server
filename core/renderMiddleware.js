@@ -50,6 +50,17 @@ module.exports = function(server, routes) {
 		// Just to keep an eye out for leaks.
 		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
 
+		// monkey-patch `res.write` so that we don't try to write to the stream if it's
+		// already closed
+		var origWrite = res.write;
+		res.write = function () {
+			if (!res.finished) {
+				origWrite.apply(res, arguments);
+			} else {
+				logger.error("Attempted write after response finished", { path: req && req.path || "unknown", stack: logger.stack() });
+			}
+		};
+
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
 				.setRoutes(routes)
