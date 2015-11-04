@@ -107,4 +107,8 @@ var addTransport = function(group, transport){
 	});
 }
 
-module.exports = { getLogger, setLevel, addTransport };
+var addRewriter = function(rewriter){
+	common.forEachLogger(logger => logger.addRewriter(rewriter));
+}
+
+module.exports = { getLogger, setLevel, addTransport, addRewriter };
