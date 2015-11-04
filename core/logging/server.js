@@ -3,6 +3,8 @@ var winston = require('winston')
 ,   _ = {
         mapValues     : require("lodash/object/mapValues"),
         isPlainObject : require("lodash/lang/isPlainObject"),
+        trimLeft      : require("lodash/string/trimLeft"),
+        trunc         : require("lodash/string/trunc"),
     };
 
 var makeLogger = function(group, opts){
@@ -49,6 +51,16 @@ var makeLogger = function(group, opts){
 function errorInterceptor (level, msg, meta) {
 	if (meta instanceof Error) {
 		meta = {error: meta};
+	}
+
+	if (meta && meta.status && meta.response) {
+		// this is a TritonAgent error
+		return {
+			response: {
+				status: meta.response.status,
+				response: _.trunc(_.trimLeft(meta.response.text), 200),
+			},
+		}
 	}
 
 	if (_.isPlainObject(meta)) {
