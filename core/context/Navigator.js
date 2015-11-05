@@ -33,6 +33,16 @@ class Navigator extends EventEmitter {
 		logger.debug(`Navigating to ${request.getUrl()}`);
 		type = type || History.events.PAGELOAD;
 
+		// If we're running without client navigation and this is a
+		// navigation away from the initial page we'll just let the
+		// browser handle this request as a normal page load.
+		if (global.__tritonDisableClientNavigation && this._haveInitialized){
+			window.location.href = request.getUrl();
+			return;
+		}
+
+		this._haveInitialized = true;
+
 		var route = this.router.getRoute(request.getUrl(), {navigate: {path:request.getUrl(), type:type}});
 
 		if (route) {
