@@ -536,6 +536,10 @@ class ClientController extends EventEmitter {
 	 */
 	_initializeHistoryListener(context) {
 
+		// If we're running without client navigation then we don't
+		// need a 'popstate' listener.
+		if (window.__tritonDisableClientNavigation) return;
+
 		this._historyListener = ({state}) => {
 			if (this.framebackController.isActive()){
 				this.framebackController.navigateBack();
