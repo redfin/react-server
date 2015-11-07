@@ -2,7 +2,9 @@ var winston = require('winston')
 ,   common  = require('./common')
 ,   _ = {
         mapValues     : require("lodash/object/mapValues"),
+        pick          : require("lodash/object/pick"),
         isPlainObject : require("lodash/lang/isPlainObject"),
+        isEmpty       : require("lodash/lang/isEmpty"),
         trimLeft      : require("lodash/string/trimLeft"),
         trunc         : require("lodash/string/trunc"),
     };
