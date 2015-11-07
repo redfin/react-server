@@ -263,15 +263,8 @@ Request.prototype.getProtocol = function(){
  * power of the underlying promise library, use `Request.asPromise()`
  */
 Request.prototype.then = function (/*arguments*/) {
-	var dfd = this.asPromise();
-	dfd.catch( (err) => {
-		if (err.status) {
-			logger.warning(`Received HTTP code ${err.status} from server for URL ${this._urlPath}.\nResponse: ${err.response.text}.\nMessage: `, err);
-		} else {
-			logger.warning("TritonAgent raised exception", err);
-		}
-	});
-	return dfd.then.apply(dfd, arguments);
+	var promise = this.asPromise();
+	return promise.then.apply(promise, arguments);
 };
 
 /**
@@ -281,8 +274,25 @@ Request.prototype.then = function (/*arguments*/) {
  */
 Request.prototype.asPromise = function () {
 	var dfd = Q.defer();
+	dfd.promise.catch(logRequestError.bind(this));
 	this.end(dfd.makeNodeResolver());
 	return dfd.promise;
+}
+
+// private method; 'this' bound to request object
+function logRequestError(err) {
+
+	var {response} = err;
+	if (!response) {
+		logger.warning(`TritonAgent raised exception for URL ${this._urlPath}`, err);
+	} else if (response.notFound) {
+		// 404? don't care about response
+		logger.warning(`Resource not found on server: ${this._urlPath}`);
+	} else if (response.serverError) {
+		logger.warning(`Received server error for URL ${this._urlPath}`, err);
+	} else {
+		logger.warning(`Unexpected status code returned for URL ${this._urlPath}`, err);
+	}
 }
 
 /**

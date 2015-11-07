@@ -2,7 +2,11 @@ var winston = require('winston')
 ,   common  = require('./common')
 ,   _ = {
         mapValues     : require("lodash/object/mapValues"),
+        pick          : require("lodash/object/pick"),
         isPlainObject : require("lodash/lang/isPlainObject"),
+        isEmpty       : require("lodash/lang/isEmpty"),
+        trimLeft      : require("lodash/string/trimLeft"),
+        trunc         : require("lodash/string/trunc"),
     };
 
 var makeLogger = function(group, opts){
@@ -47,24 +51,41 @@ var makeLogger = function(group, opts){
 
 // Error objects are weird.  Let's turn them into normal objects.
 function errorInterceptor (level, msg, meta) {
+
 	if (meta instanceof Error) {
+		meta = {error: meta};
+	} else if (meta && meta.status && meta.response) {
 		meta = {error: meta};
 	}
 
 	if (_.isPlainObject(meta)) {
 		// allow {error: <someError>} as a valid `meta`
-		meta = _.mapValues(meta, v => {
-			return (v instanceof Error) ? normalizeError(v) : v;
-		});
+		meta = _.mapValues(meta, normalizeError);
 	}
 	return meta;
 }
 
+// massage the error into a format suitable for logging
 function normalizeError (err) {
-	return {
-		'message': err.message,
-		'stack'  : err.stack,
+	if (err instanceof Error) {
+		return _.pick({
+			message: err.message,
+			stack: err.stack,
+		}, val => !_.isEmpty(val));
 	}
+
+	if (err && err.status && err.response) {
+		// this is probably a superagent error response. we definitely don't
+		// want to log the whole thing
+		return {
+			response: {
+				status: err.status,
+				responseText: _.trunc(_.trimLeft(err.response ? err.response.text : "<no response body>"), 200),
+			},
+		}
+	}
+
+	return err;
 }
 
 
@@ -101,6 +122,10 @@ var addTransport = function(group, transport){
 	});
 }
 
+var addRewriter = function(rewriter){
+	common.forEachLogger(logger => logger.addRewriter(rewriter));
+}
+
 var setTimestamp = function(bool){
 
 	global.TIMESTAMP_TRITON_LOG_OUTPUT = bool;
@@ -126,6 +151,7 @@ setTimestamp(true);
 
 module.exports = {
 	addTransport,
+	addRewriter,
 	getLogger,
 	setColorize,
 	setLevel,
