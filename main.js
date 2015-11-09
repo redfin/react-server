@@ -21,7 +21,7 @@ function doReplace(match /* whole match */, fileName) {
 		function () {
 		var Q = require('q');
 		var dfd = Q.defer();
-		if (SERVER_SIDE) {
+		if (process.env.IS_SERVER) {
 			var component = require("${fileName}"); 
 			dfd.resolve(component);
 		} else {
