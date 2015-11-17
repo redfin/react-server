@@ -606,8 +606,10 @@ function buildConfig(dehydratedConfig) {
 function buildContext(routes) {
 	var context = new RequestContext.Builder()
 		.setRoutes(routes)
-		.setIsMobile(Detection.isMobile(navigator.userAgent))
 		.create();
+
+	context.setIsMobile(Detection.isMobile(navigator.userAgent));
+
 	return context;
 }
 
