@@ -51,6 +51,15 @@ class RequestContext {
 		return this.serverStash;
 	}
 
+	setIsMobile (isMobile) {
+		this.isMobile = isMobile;
+		return this;
+	}
+
+	getIsMobile () {
+		return this.isMobile;
+	}
+
 	getCurrentPath () {
 		return this.navigator.getCurrentRoute().url;
 	}

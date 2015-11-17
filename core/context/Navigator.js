@@ -11,7 +11,7 @@ class Navigator extends EventEmitter {
 	constructor (context, routes) {
 		super();
 
-		this.router = new Router(routes.routes);
+		this.router = this._wrapRouter(new Router(routes.routes));
 		this.context = context;
 
 		this._globalMiddleware = routes.middleware;
@@ -230,6 +230,48 @@ class Navigator extends EventEmitter {
 		this.startRoute();
 	}
 
+	preFilterRoute(route){
+
+		// If the route specifies a value for mobile we'll filter it
+		// out if the value's truthiness doesn't match the current
+		// request's mobile-ness.
+		if (route.config.hasOwnProperty('mobile')){
+			if (!!this.context.getIsMobile() !== !!route.config.mobile){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	_wrapRouter(router) {
+		var getRoute = router.getRoute;
+		var navigator = this;
+
+		router.getRoute = function(url, options){
+			var allRoutes = this._routes;
+			var filtered = {};
+
+			Object.keys(allRoutes).forEach(key => {
+				var route = this._routes[key]
+				if (navigator.preFilterRoute(route)){
+					filtered[key] = route;
+				}
+			});
+
+			// Temporarily use the pre-filtered set of routes.
+			this._routes = filtered;
+
+			// Let routr do its thing.
+			var retval = getRoute.call(this, url, options);
+
+			// Restore the full set of routes.
+			this._routes = allRoutes;
+
+			return retval;
+		}
+
+		return router;
+	}
 }
 
 module.exports = Navigator;

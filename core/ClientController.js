@@ -9,6 +9,7 @@ var React = require('react'),
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
+	Detection = require("./util/Detection"),
 	TritonAgent = require('./TritonAgent'),
 	FramebackController = require('./FramebackController'),
 	{PAGE_LINK_NODE_ID} = require('./constants');
@@ -605,6 +606,7 @@ function buildConfig(dehydratedConfig) {
 function buildContext(routes) {
 	var context = new RequestContext.Builder()
 		.setRoutes(routes)
+		.setIsMobile(Detection.isMobile(navigator.userAgent))
 		.create();
 	return context;
 }
