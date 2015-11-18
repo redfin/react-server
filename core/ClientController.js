@@ -51,14 +51,12 @@ class ClientController extends EventEmitter {
 		TritonAgent.cache().rehydrate(dehydratedState.InitialContext['TritonAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
-		var irDfd = this._initialRenderDfd = Q.defer();
-		this.once('render', irDfd.resolve.bind(irDfd));
-
 		this._setupFramebackController();
 		this._setupNavigateListener();
-		this._setupLateArrivalHandler();
+		this._setupArrivalHandlers();
 
 		this._previouslyRendered = false;
+		this._rootNodeDfds = [];
 
 		// Log this after loglevel is set.
 		logger.time('wakeFromStart', wakeTime);
@@ -298,103 +296,54 @@ class ClientController extends EventEmitter {
 		// their ReactComponents.
 		this._cleanupPreviousRender(this.mountNode);
 
-		// if we are reattaching to server-generated HTML, we should find the root elements that were sent down.
-		// we store them in a temp array indexed by their triton-root-id.
-		var alreadyRenderedRoots = [];
-		this._getRootElements(this.mountNode).forEach((rootElement) => {
-			alreadyRenderedRoots[rootElement.getAttribute(TRITON_DATA_ATTRIBUTE)] = rootElement;
-		});
-
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-		var newRenderedElements = []
+		var rootNodePromises;
+		if (this._previouslyRendered){
+			rootNodePromises = elementPromises.map(index => Q(
+				this._createTritonRootNode(this.mountNode, index)
+			))
+		} else {
+			elementPromises.forEach((promise, index) => {
+				this._ensureRootNodeDfd(index);
+			});
+			rootNodePromises = this._rootNodeDfds.map(dfd => dfd.promise);
+		}
+
+		this._previouslyRendered = true;
+
+		var completionDfds = elementPromises.map(() => Q.defer());
+		var completionPromises = completionDfds.map(dfd => dfd.promise);
 
 		var renderElement = (element, index) => {
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
-			// for each ReactElement that we want to render, either use the server-rendered root element, or
-			// create a new root element.
-			//
-			// During client renders we make two passes, one for
-			// quick elements without store dependencies and a
-			// second one to fill in elements with async data.
-			//
-			// The first pass adds triton root nodes.  We want
-			// to hang onto those for the second pass.
-			//
+			// TODO: Render timing like we've got on the server.
 			logger.debug("Rendering root node #" + index);
-			var root = alreadyRenderedRoots[index] || (
-				alreadyRenderedRoots[index] = this._createTritonRootNode(this.mountNode, index)
-			);
 
-			// TODO: get rid of context once continuation-local-storage holds our important context vars.
-			// `element` can be null if getValue() on the root element promise returns null
-			if (element) {
-				element = React.cloneElement(element, { context: this.context });
-				newRenderedElements[index] = React.render(element, root);
-			}
+			element = React.cloneElement(element, { context: this.context });
+			React.render(element, root);
+			completionDfds[index].resolve();
 
 			if (!this._previouslyRendered){
 				var tDisplay = root.getAttribute('data-triton-timing-offset');
 				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
 				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
 			}
-
-			totalRenderTime += timer.stop();
-
-			if (index === elementPromises.length - 1) {
-
-				// This first one is just for historical continuity.
-				logger.time('render', new Date - t0);
-
-				// These are more interesting.
-				logger.time('renderCPUTime', totalRenderTime);
-
-				if (!this._previouslyRendered){
-					logger.time('renderFromStart', new Date - tStart);
-				}
-
-				this.emit("render");
-			}
 		};
 
-		// if no element promises, break early,
-		// and say we rendered
-		if (!elementPromises.length) {
-			return Q().then(() => {
-				this._previouslyRendered = true;
-			});
-		}
+		elementPromises.forEach((promise, index) => {
+			promise.then(element => rootNodePromises[index]
+				.then(root => renderElement(element, root, index))
+				.catch(e => logger.error(`Error with element render ${index}`, e))
+			).catch(e => logger.error(`Error with element promise ${index}`, e))
+		});
 
-		// I find the control flow for chaining promises impossibly mind-bending, but what I intended was something
-		// like:
-		//
-		//		elementPromises.forEach((elementPromise, index) => {
-		//			var element = await elementPromise;
-		//			renderElement(element, index);
-		//		});
-		//		this._previouslyRendered = true;
-		//		this.emit("render");
-		//
-		// if it was using ES7 async/await syntax. I learned how to chain an array of promises in ES5/6
-		// from http://bahmutov.calepin.co/chaining-promises.html , and apparently it looks like the code below. But
-		// if I got something wrong, what I intended was the control flow expressed in this comment.
-		return elementPromises.reduce((chain, next, index) => {
-			return chain.then((element) => {
-				renderElement(element, index - 1);
-
-				return next;
-			})
-		}).then((element) => {
-			// reduce is called length - 1 times. we need to call one final time here to make sure we
-			// chain the final promise.
-			renderElement(element, elementPromises.length - 1);
-
-			this._previouslyRendered = true;
-		}).catch((err) => {
-			logger.error("Error while rendering", err);
-		}); // no done(), because we're handing this promise off to someone else
+		return Q.all(completionPromises).then(() => {
+			logger.time('render', new Date - t0);
+			this.emit("render");
+		});
 	}
 
 	/**
@@ -510,16 +459,28 @@ class ClientController extends EventEmitter {
 		}
 	}
 
-	_setupLateArrivalHandler () {
+	_setupArrivalHandlers () {
 		// used by <script> callbacks to register data sent down on the
 		// initial connection after initial render
-		window.__lateArrival = this.lateArrival.bind(this);
+		window.__tritonDataArrival = this.dataArrival.bind(this);
+		window.__tritonNodeArrival = this.nodeArrival.bind(this);
 	}
 
-	lateArrival (url, dehydratedEntry) {
-		this._initialRenderDfd.promise.done( () => {
-			TritonAgent.cache().lateArrival(url, dehydratedEntry);
-		});
+	_ensureRootNodeDfd (index) {
+		if (!this._rootNodeDfds[index]){
+			this._rootNodeDfds[index] = Q.defer();
+		}
+		return this._rootNodeDfds[index];
+	}
+
+	dataArrival (url, dehydratedEntry) {
+		TritonAgent.cache().lateArrival(url, dehydratedEntry);
+	}
+
+	nodeArrival (index) {
+		this._ensureRootNodeDfd(index).resolve(
+			this._getRootElements(this.mountNode)[index]
+		);
 	}
 
 }

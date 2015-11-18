@@ -186,9 +186,9 @@ function pageLifecycle() {
 		setContentType,
 		writeHeader,
 		startBody,
+		bootstrapClient,
 		writeBody,
-		writeData,
-		setupLateArrivals,
+		wrapUpLateArrivals,
 		closeBody,
 		endResponse,
 		handleResponseComplete,
@@ -642,6 +642,9 @@ function writeElements(res, elements) {
 			new Date - t0
 		}">${elements[i]}</div>`);
 
+		// Let the client know.
+		renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
+
 		// Free for GC.
 		//
 		// Note that `undefined` has special meaning here, so we're
@@ -654,16 +657,13 @@ function writeElements(res, elements) {
 	if (i !== start) flushRes(res);
 }
 
-function writeData(req, res) {
+function bootstrapClient(req, res) {
 	var initialContext = {
 		'TritonAgent.cache': TritonAgent.cache().dehydrate(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
-
-
-	res.write("</div>"); // <div id="content">
 
 	// Using naked `rfBootstrap()` instead of `window.rfBootstrap()`
 	// because the browser's error message if it isn't defined is more
@@ -672,9 +672,12 @@ function writeData(req, res) {
 	renderScriptsAsync([{
 		text: `${res.locals.state};rfBootstrap();`,
 	}], res);
+
+	setupLateArrivals(req, res);
 }
 
-function setupLateArrivals(req, res, context, start) {
+function setupLateArrivals(req, res) {
+	var start = RLS().startTime;
 	var notLoaded = TritonAgent.cache().getPendingRequests();
 
 	// This is for reporting purposes.  We're going to log how many late
@@ -686,7 +689,7 @@ function setupLateArrivals(req, res, context, start) {
 		pendingRequest.entry.whenDataReadyInternal().then( () => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
-				text: `__lateArrival(${
+				text: `__tritonDataArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
@@ -698,11 +701,15 @@ function setupLateArrivals(req, res, context, start) {
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
-	return Q.allSettled(promises)
+	RLS().lateArrivals = Q.allSettled(promises)
+}
+
+function wrapUpLateArrivals(){
+	return RLS().lateArrivals;
 }
 
 function closeBody(req, res) {
-	res.write("</body></html>");
+	res.write("</div></body></html>");
 	return Q();
 }
 
