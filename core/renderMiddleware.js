@@ -26,6 +26,10 @@ var FAILSAFE_RENDER_TIMEOUT = 20e3;
 // We'll use this for keeping track of request concurrency per worker.
 var ACTIVE_REQUESTS = 0;
 
+// Some non-content items that can live in the elements array.
+var ELEMENT_PENDING         = -1;
+var ELEMENT_ALREADY_WRITTEN = -2;
+
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
@@ -538,7 +542,7 @@ function writeBody(req, res, context, start, page) {
 
 	// This is where we'll store our rendered HTML strings.  A value of
 	// `undefined` means we haven't rendered that element yet.
-	var rendered = elementPromises.map(() => undefined);
+	var rendered = elementPromises.map(() => ELEMENT_PENDING);
 
 	// We need to return a promise that resolves when we're done, so we'll
 	// maintain an array of deferreds that we punch out as we render
@@ -548,6 +552,9 @@ function writeBody(req, res, context, start, page) {
 
 	var doElement = (element, index) => {
 
+		// Exceeded `FAILSAFE_RENDER_TIMEOUT`.  Bummer.
+		if (rendered[index] === ELEMENT_ALREADY_WRITTEN) return;
+
 		rendered[index] = renderElement(res, element, context);
 
 		// If we've just rendered the next element to be written we'll
@@ -556,8 +563,6 @@ function writeBody(req, res, context, start, page) {
 
 		dfds[index].resolve();
 	};
-
-	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
 
 	// Render elements as their data becomes available.
 	elementPromises.forEach((promise, index) => promise
@@ -571,9 +576,29 @@ function writeBody(req, res, context, start, page) {
 	var totalWait     = req.query._debug_render_timeout || FAILSAFE_RENDER_TIMEOUT
 	,   timeRemaining = totalWait - (new Date - start)
 
-	// TODO: Handle `FAILSAFE_RENDER_TIMEOUT`.
+	var retval = Q.defer();
 
-	return Q.all(dfds.map(dfd => dfd.promise));
+	// If we exceed the timeout then we'll just send empty elements for
+	// anything that hadn't rendered yet.
+	retval.promise.catch(() => {
+
+		// Write out what we've got.
+		writeElements(res, rendered.map(
+			value => value === ELEMENT_PENDING?'':value
+		));
+
+		// If it hasn't arrived by now, we're not going to wait for it.
+		RLS().lateArrivals = undefined;
+
+		// Let the client know it's not getting any more data.
+		renderScriptsAsync([{ text: `__tritonFailArrival()` }], res)
+	});
+
+	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
+
+	setTimeout(() => retval.reject("Timed out rendering"), timeRemaining);
+
+	return retval.promise;
 }
 
 function writeResponseData(req, res, context, start, page) {
@@ -634,7 +659,7 @@ function writeElements(res, elements) {
 	for (var i = start; i < elements.length; RLS().nextElement = ++i){
 
 		// If we haven't rendered the next element yet, we're done.
-		if (elements[i] === undefined) break;
+		if (elements[i] === ELEMENT_PENDING) break;
 
 		// Got one!
 		// Mark when we sent it.
@@ -646,10 +671,7 @@ function writeElements(res, elements) {
 		renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
 
 		// Free for GC.
-		//
-		// Note that `undefined` has special meaning here, so we're
-		// using `null`, instead.
-		elements[i] = null;
+		elements[i] = ELEMENT_ALREADY_WRITTEN;
 	}
 
 	// It may be a while before we render the next element, so if we just

@@ -57,6 +57,7 @@ class ClientController extends EventEmitter {
 
 		this._previouslyRendered = false;
 		this._rootNodeDfds = [];
+		this._failDfd = Q.defer();
 
 		// Log this after loglevel is set.
 		logger.time('wakeFromStart', wakeTime);
@@ -340,9 +341,15 @@ class ClientController extends EventEmitter {
 			).catch(e => logger.error(`Error with element promise ${index}`, e))
 		});
 
-		return Q.all(completionPromises).then(() => {
+		var retval = Q.defer();
+
+		// We're getting out of here one way or another.
+		Q.all(completionPromises).then(retval.resolve);
+		this._failDfd.promise    .then(retval.resolve);
+
+		return retval.promise.then(() => {
 			logger.time('render', new Date - t0);
-			this.emit("render");
+			this.emit('render');
 		});
 	}
 
@@ -464,6 +471,7 @@ class ClientController extends EventEmitter {
 		// initial connection after initial render
 		window.__tritonDataArrival = this.dataArrival.bind(this);
 		window.__tritonNodeArrival = this.nodeArrival.bind(this);
+		window.__tritonFailArrival = this.failArrival.bind(this);
 	}
 
 	_ensureRootNodeDfd (index) {
@@ -483,6 +491,10 @@ class ClientController extends EventEmitter {
 				`div[${TRITON_DATA_ATTRIBUTE}="${index}"]`
 			)
 		);
+	}
+
+	failArrival () {
+		this._failDfd.resolve();
 	}
 
 }
