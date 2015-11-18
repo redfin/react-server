@@ -311,8 +311,6 @@ class ClientController extends EventEmitter {
 			rootNodePromises = this._rootNodeDfds.map(dfd => dfd.promise);
 		}
 
-		this._previouslyRendered = true;
-
 		var completionDfds = elementPromises.map(() => Q.defer());
 		var completionPromises = completionDfds.map(dfd => dfd.promise);
 
@@ -324,9 +322,11 @@ class ClientController extends EventEmitter {
 			React.render(element, root);
 			completionDfds[index].resolve();
 
-			var tDisplay = root.getAttribute('data-triton-timing-offset');
-			logger.time(`displayElement.fromStart.${name}`, +tDisplay);
-			logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
+			if (!this._previouslyRendered){
+				var tDisplay = root.getAttribute('data-triton-timing-offset');
+				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
+				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
+			}
 
 			totalRenderTime += timer.stop();
 		};
@@ -350,8 +350,15 @@ class ClientController extends EventEmitter {
 			logger.time('render', new Date - t0);
 
 			// These are more interesting.
-			logger.time('renderFromStart', new Date - times.t0);
 			logger.time('renderCPUTime', totalRenderTime);
+
+			// Don't track this on client transitions.
+			if (!this._previouslyRendered){
+				logger.time('renderFromStart', new Date - times.t0);
+			}
+
+			// Some things are just different on our first pass.
+			this._previouslyRendered = true;
 
 			this.emit('render');
 		});
