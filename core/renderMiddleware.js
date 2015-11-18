@@ -20,7 +20,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 // It *might* be worthwhile to get rid of all the closure-y things in render()
 // https://developers.google.com/speed/articles/optimizing-javascript
 
-var DATA_LOAD_WAIT = 250;
+// If an element hasn't rendered in this long it gets the axe.
+var FAILSAFE_RENDER_TIMEOUT = 20e3;
 
 // We'll use this for keeping track of request concurrency per worker.
 var ACTIVE_REQUESTS = 0;
@@ -68,10 +69,6 @@ module.exports = function(server, routes) {
 				.create({
 					// TODO: context opts?
 				});
-
-		// This is the default.
-		// Can be overridden by the page or middleware.
-		context.setDataLoadWait(DATA_LOAD_WAIT)
 
 		// Need this stuff in corvair for logging.
 		context.setServerStash({ req, res, start, startHR });
@@ -560,49 +557,21 @@ function writeBody(req, res, context, start, page) {
 		dfds[index].resolve();
 	};
 
-	// Some time has already elapsed since the request started.
-	// Note that you can override `DATA_LOAD_WAIT` with a
-	// `?_debug_data_load_wait={ms}` query string parameter.
-	var totalWait     = req.query._debug_data_load_wait || context.getDataLoadWait()
-	,   timeRemaining = totalWait - (new Date - start)
-
 	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
 
-	// Try to render everything when its data becomes available.
-	elementPromises.forEach((promise, index) => promise.then(element => {
+	// Render elements as their data becomes available.
+	elementPromises.forEach((promise, index) => promise
+		.then(element => doElement(element, index))
+		.catch(e => logger.error(`Error rendering element ${index}`, e))
+	);
 
-		// Bummer.  Already rendered synchronously.
-		if (rendered[index] !== undefined) return;
+	// Some time has already elapsed since the request started.
+	// Note that you can override `FAILSAFE_RENDER_TIMEOUT` with a
+	// `?_debug_render_timeout={ms}` query string parameter.
+	var totalWait     = req.query._debug_render_timeout || FAILSAFE_RENDER_TIMEOUT
+	,   timeRemaining = totalWait - (new Date - start)
 
-		doElement(element, index);
-
-	}).catch(e => logger.error("Error while rendering without timeout", e)));
-
-	// If we run out of time, just render with what we've got.
-	setTimeout(() => elementPromises.forEach((promise, index) => {
-
-		// Awesome.  Already rendered normally.
-		if (rendered[index] !== undefined) return;
-
-		try {
-			var element = promise.getValue();
-		} catch (e) {
-			logger.error("Error while rendering with timeout", e);
-		}
-
-		// Note that `element` may be undefined here if
-		// `promise.getValue()` blew up.  That's okay, `renderElement`
-		// wraps its call to `React.renderToString` in a try/catch.
-		//
-		// Importantly, we need to call `doElement` to resolve our
-		// deferred for this element so we can proceed beyond
-		// `writeBody`.  If there was an exception during the normal
-		// render, above, it _won't_ have resolved our deferred, so
-		// it's up to us.
-		//
-		doElement(element, index);
-
-	}), timeRemaining);
+	// TODO: Handle `FAILSAFE_RENDER_TIMEOUT`.
 
 	return Q.all(dfds.map(dfd => dfd.promise));
 }

@@ -1,8 +1,7 @@
 var Q = require("q"),
 	React = require('react'),
 	logger = require("../logging").getLogger(__LOGGER__),
-	RLS = require("./RequestLocalStorage").getNamespace(),
-	PromiseUtil = require("./PromiseUtil");
+	RLS = require("./RequestLocalStorage").getNamespace();
 
 
 // There are three data structures defined here that are relevant for page and
@@ -160,10 +159,10 @@ function standardizeElements(elements) {
 
 	// The return value could be a single element or an array.
 	// First, let's make sure that it's an array.
-	// Then, ensure that all elements are EarlyPromises.
+	// Then, ensure that all elements are wrapped in promises.
 	return PageUtil
 		.makeArray(elements)
-		.map(element => PromiseUtil.early(Q(element)));
+		.map(element => Q(element));
 }
 
 function standardizeDebugComments(debugComments) {

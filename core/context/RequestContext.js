@@ -23,25 +23,6 @@ class RequestContext {
 		RequestLocals().instance = this;
 	}
 
-	// Generally if we're setting dataLoadWait we actually just want to
-	// make sure it's _at least_ a certain value.  If someone else has
-	// already set it _higher_, we don't want to clobber their setting.
-	setDataLoadWaitMinimum (ms) {
-		if (this.dataLoadWait < ms){
-			this.dataLoadWait = ms;
-		}
-		return this;
-	}
-
-	setDataLoadWait (ms) {
-		this.dataLoadWait = ms
-		return this
-	}
-
-	getDataLoadWait () {
-		return this.dataLoadWait
-	}
-
 	setServerStash (stash) {
 		this.serverStash = stash;
 		return this;

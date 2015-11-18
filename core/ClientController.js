@@ -308,8 +308,6 @@ class ClientController extends EventEmitter {
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
 		var newRenderedElements = []
-		,   syncRenderDfd       = Q.defer()
-		,   syncRenderTimer     = null
 
 		var renderElement = (element, index) => {
 			var name  = PageUtil.getElementDisplayName(element)
@@ -361,89 +359,6 @@ class ClientController extends EventEmitter {
 			}
 		};
 
-
-		// When the TritonAgent cache is depleted there may be some
-		// react root elements left that didn't rely on any store data,
-		// but were stuck behind elements that _did_.  In order to give
-		// those elements a chance to render normally (not via
-		// `getValue()`) we'll schedule the sync render for a few
-		// milliseconds in the future.
-		//
-		var scheduleSyncRender = () => {
-			syncRenderTimer = setTimeout(() => {
-				syncRenderTimer = null;
-				syncRenderDfd.resolve();
-			}, 25);
-		};
-
-		// Then, each time an element successfully renders normally it
-		// will _reschedule_ the sync render for _another_ few
-		// milliseconds in the future.  This allows the normal render
-		// to stay ahead of the sync render so long as it's not waiting
-		// on anything async.
-		//
-		var rescheduleSyncRender = () => {
-			if (!syncRenderTimer) return;
-			clearTimeout(syncRenderTimer)
-			scheduleSyncRender();
-		}
-
-		syncRenderDfd.promise.then(() => {
-			logger.debug("Starting sync render.");
-
-			elementPromises.forEach((promise, index) => {
-
-				// If this element was already rendered
-				// normally we don't need to do anything.
-				if (!newRenderedElements[index]){
-					renderElement(promise.getValue(), index);
-				}
-			});
-		}).catch(err => {
-			logger.error("Error during syncRender", err);
-		}).done();
-
-		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
-		// this lets us render when the server timed out.
-		//
-		// A URL discrepancy between server and client could cause
-		// failure to deplete the `TritonAgent` cache.  If this
-		// happens we'll complain about it and kick off the
-		// synchronous render.  Better late than never.
-		//
-		// This timeout can be fairly agressive, since we should zip
-		// through our re-render pretty quickly so long as we're
-		// getting our data from the cache and the async render will
-		// stay ahead of the sync render so long as there's still no
-		// delay between elements.
-		//
-		var startSyncRenderDfd    = Q.defer();
-		var didKickOffSyncRender  = false;
-		var cacheDepletionTimeout = 1000;
-
-		TritonAgent.cache().whenCacheDepleted().then(() => {
-			logger.debug("Loader cache depleted.");
-			if (didKickOffSyncRender) {
-				logger.error("Timed out and THEN cache depleted");
-			} else {
-				startSyncRenderDfd.resolve();
-			}
-		});
-
-		setTimeout(() => {
-			if (!didKickOffSyncRender) {
-				logger.error(`Timed out waiting for cache depletion (${cacheDepletionTimeout}ms)`);
-				startSyncRenderDfd.resolve();
-			}
-		}, cacheDepletionTimeout);
-
-		startSyncRenderDfd.promise.then(() => {
-			didKickOffSyncRender = true;
-			scheduleSyncRender();
-		}).catch(err => {
-			logger.error("Error in scheduleSyncRender", err);
-		}).done();
-
 		// if no element promises, break early,
 		// and say we rendered
 		if (!elementPromises.length) {
@@ -468,15 +383,6 @@ class ClientController extends EventEmitter {
 		return elementPromises.reduce((chain, next, index) => {
 			return chain.then((element) => {
 				renderElement(element, index - 1);
-
-				// If our TritonAgent cache has been depleted
-				// we're racing with the sync render.  We want
-				// to stay ahead of it, so we'll tell it to
-				// wait a few milliseconds before kicking off.
-				// This gives the next element in the promise
-				// chain a head start in the event loop if it's
-				// not waiting for anything asynchronous.
-				rescheduleSyncRender();
 
 				return next;
 			})
