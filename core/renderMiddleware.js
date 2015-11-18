@@ -667,7 +667,7 @@ function writeElements(res, elements) {
 			new Date - t0
 		}">${elements[i]}</div>`);
 
-		// Let the client know.
+		// Let the client know it's there.
 		renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
 
 		// Free for GC.

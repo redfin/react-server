@@ -316,22 +316,19 @@ class ClientController extends EventEmitter {
 		var completionDfds = elementPromises.map(() => Q.defer());
 		var completionPromises = completionDfds.map(dfd => dfd.promise);
 
-		var renderElement = (element, index) => {
+		var renderElement = (element, root, index) => {
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
-
-			// TODO: Render timing like we've got on the server.
-			logger.debug("Rendering root node #" + index);
 
 			element = React.cloneElement(element, { context: this.context });
 			React.render(element, root);
 			completionDfds[index].resolve();
 
-			if (!this._previouslyRendered){
-				var tDisplay = root.getAttribute('data-triton-timing-offset');
-				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
-				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
-			}
+			var tDisplay = root.getAttribute('data-triton-timing-offset');
+			logger.time(`displayElement.fromStart.${name}`, +tDisplay);
+			logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
+
+			totalRenderTime += timer.stop();
 		};
 
 		elementPromises.forEach((promise, index) => {
@@ -348,7 +345,14 @@ class ClientController extends EventEmitter {
 		this._failDfd.promise    .then(retval.resolve);
 
 		return retval.promise.then(() => {
+
+			// This first one is just for historical continuity.
 			logger.time('render', new Date - t0);
+
+			// These are more interesting.
+			logger.time('renderFromStart', new Date - times.t0);
+			logger.time('renderCPUTime', totalRenderTime);
+
 			this.emit('render');
 		});
 	}
