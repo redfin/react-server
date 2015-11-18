@@ -479,7 +479,9 @@ class ClientController extends EventEmitter {
 
 	nodeArrival (index) {
 		this._ensureRootNodeDfd(index).resolve(
-			this._getRootElements(this.mountNode)[index]
+			this.mountNode.querySelector(
+				`div[${TRITON_DATA_ATTRIBUTE}="${index}"]`
+			)
 		);
 	}
 
