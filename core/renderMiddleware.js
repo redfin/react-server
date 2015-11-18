@@ -212,6 +212,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
 		renderDebugComments(pageObject, res),
+		renderTimingInit(pageObject, res),
 		renderTitle(pageObject, res),
 		renderStylesheets(pageObject, res),
 		renderScripts(pageObject, res),
@@ -241,11 +242,15 @@ function flushRes(res){
 	}
 }
 
+function renderTimingInit(pageObject, res) {
+	renderScriptsSync([{text:`__tritonTimingData={t0:+new Date,e:[]}`}], res)
+}
+
 function renderDebugComments (pageObject, res) {
 	var debugComments = pageObject.getDebugComments();
 	debugComments.map(debugComment => {
 		if (!debugComment.label || !debugComment.value) {
-			logger.warn("Debug comment is missing either a label or a value", debugComment);
+			logger.warning("Debug comment is missing either a label or a value", debugComment);
 		}
 
 		res.write(`<!-- ${debugComment.label}: ${debugComment.value} -->`);
@@ -337,10 +342,6 @@ function renderBaseTag(pageObject, res) {
 }
 
 function renderScriptsSync(scripts, res) {
-
-	// We should only need to render scripts synchronously if we have a
-	// non-JS script somewhere in the mix.
-	logger.warn("Loading scripts synchronously.  Check `type` attributes.");
 
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
 	// immediately.
@@ -608,42 +609,8 @@ function writeResponseData(req, res, context, start, page) {
 	});
 }
 
-function getElementDisplayName(element){
-
-	// Gotta be a react element.
-	if (!(element && element.type && element.props)) return 'None';
-
-	var name = element.type.displayName;
-
-	if (!name) {
-
-		// If the element doesn't have a `displayName`, but it has
-		// only a single child, we'll look at the child to see if it
-		// has a nice name.  This helps bypass anonymous wrapper
-		// elements.
-		if (React.Children.count(element.props.children) === 1){
-
-			// Sigh.  `React.Children.count` will happily return 1
-			// if the node contains only text, and then
-			// `React.Children.only` will happily _blow up_ if it
-			// receives that text saying it expects a single
-			// child... which `React.Children.count` just told us
-			// we have... :goberzerk:
-			try {
-				name = getElementDisplayName(
-					React.Children.only(element.props.children)
-				);
-			} catch (e) { /* Pass. */ }
-		}
-	}
-
-	// Some of our names are namespaced with dot-separation.  We just want
-	// the most significant part at the end.
-	return (name||'Unknown').split('.').pop();
-}
-
 function renderElement(res, element, context) {
-	var name  = getElementDisplayName(element)
+	var name  = PageUtil.getElementDisplayName(element)
 	,   start = RLS().startTime
 	,   timer = logger.timer(`renderElement.individual.${name}`)
 	,   html  = ''
@@ -692,6 +659,9 @@ function writeElements(res, elements) {
 
 		// Got one!
 		res.write(`<div data-triton-root-id=${i}>${elements[i]}</div>`);
+
+		// Mark when it arrived.
+		renderScriptsSync([{ text: `__tritonTimingData.e[${i}]=+new Date` }], res)
 
 		// Free for GC.
 		//

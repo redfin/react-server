@@ -1,4 +1,5 @@
 var Q = require("q"),
+	React = require('react'),
 	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace(),
 	PromiseUtil = require("./PromiseUtil");
@@ -398,4 +399,42 @@ var PageUtil = module.exports = {
 		}
 		return valueOrArray;
 	},
+
+	getElementDisplayName(element){
+
+		// Gotta be a react element.
+		if (!(element && element.type && element.props)) return 'None';
+
+		var name = element.type.displayName;
+
+		if (!name) {
+
+			// If the element doesn't have a `displayName`, but it
+			// has only a single child, we'll look at the child to
+			// see if it has a nice name.  This helps bypass
+			// anonymous wrapper elements.
+			if (React.Children.count(element.props.children) === 1){
+
+				// Sigh.  `React.Children.count` will happily
+				// return 1 if the node contains only text, and
+				// then `React.Children.only` will happily
+				// _blow up_ if it receives that text saying it
+				// expects a single child... which
+				// `React.Children.count` just told us we
+				// have... :goberzerk:
+				try {
+					name = PageUtil.getElementDisplayName(
+						React.Children.only(
+							element.props.children
+						)
+					);
+				} catch (e) { /* Pass. */ }
+			}
+		}
+
+		// Some of our names are namespaced with dot-separation.  We
+		// just want the most significant part at the end.
+		return (name||'Unknown').split('.').pop();
+	},
+
 }

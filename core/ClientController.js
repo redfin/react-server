@@ -32,6 +32,8 @@ class ClientController extends EventEmitter {
 	constructor ({routes}) {
 		super();
 
+		var wakeTime = new Date - window.__tritonTimingData.t0;
+
 		var dehydratedState = window.__tritonState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
@@ -57,6 +59,9 @@ class ClientController extends EventEmitter {
 		this._setupLateArrivalHandler();
 
 		this._previouslyRendered = false;
+
+		// Log this after loglevel is set.
+		logger.time('wakeFromStart', wakeTime);
 	}
 
 	terminate() {
@@ -281,7 +286,13 @@ class ClientController extends EventEmitter {
 
 	_render (page) {
 		var t0 = new Date;
+		var times = window.__tritonTimingData;
+
 		logger.debug('React Rendering');
+
+		// We keep track of the _total_ time we spent rendering during
+		// each request so we can keep track of that overhead.
+		var totalRenderTime = 0;
 
 		// if we were previously rendered on the client, clean up the old divs and
 		// their ReactComponents.
@@ -301,6 +312,8 @@ class ClientController extends EventEmitter {
 		,   syncRenderTimer     = null
 
 		var renderElement = (element, index) => {
+			var name  = PageUtil.getElementDisplayName(element)
+			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			// for each ReactElement that we want to render, either use the server-rendered root element, or
 			// create a new root element.
@@ -323,9 +336,21 @@ class ClientController extends EventEmitter {
 				element = React.cloneElement(element, { context: this.context });
 				newRenderedElements[index] = React.render(element, root);
 			}
+
+			logger.time(`displayElement.fromStart.${name}`, times.e[index] - times.t0);
+			logger.time(`renderElement.fromStart.${name}`, new Date - times.t0);
+
+			totalRenderTime += timer.stop();
+
 			if (index === elementPromises.length - 1) {
-				logger.debug('React Rendered');
+
+				// This first one is just for historical continuity.
 				logger.time('render', new Date - t0);
+
+				// These are more interesting.
+				logger.time('renderFromStart', new Date - times.t0);
+				logger.time('renderCPUTime', totalRenderTime);
+
 				this.emit("render");
 			}
 		};
