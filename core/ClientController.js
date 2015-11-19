@@ -526,6 +526,11 @@ class ClientController extends EventEmitter {
 	}
 
 	nodeArrival (index) {
+
+		// The server has just let us know that a pre-rendered root
+		// element has arrived.  We'll grab a reference to its DOM
+		// node and un-block client-side rendering of the element that
+		// we're going to mount into it.
 		this._ensureRootNodeDfd(index).resolve(
 			this.mountNode.querySelector(
 				`div[${TRITON_DATA_ATTRIBUTE}="${index}"]`
