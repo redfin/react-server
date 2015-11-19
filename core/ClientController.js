@@ -297,23 +297,50 @@ class ClientController extends EventEmitter {
 		// their ReactComponents.
 		this._cleanupPreviousRender(this.mountNode);
 
+		// These resolve with React elements when their data
+		// dependencies are fulfilled.
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
+		// These resolve with DOM mount points for the elements.
+		//
+		// Our behavior is different here for the _first_ render vs
+		// during a client transition.
 		var rootNodePromises;
 		if (this._previouslyRendered){
+
+			// On a client transition we've just blown away all of
+			// our mount points from the previous page, and we'll
+			// create a fresh set.  These are ready for use
+			// immediately.
 			rootNodePromises = elementPromises.map(index => Q(
 				this._createTritonRootNode(this.mountNode, index)
 			))
 		} else {
+
+			// On our _first_ render we want to mount to the DOM
+			// nodes produced during the _server-side_ render.
+			//
+			// We're awake and doing our thing while these
+			// server-rendered elements are streaming down, so we
+			// need to wait to render a given element until its
+			// mount point arrives.
+			//
+			// The server will tell us when each mount point is
+			// ready by calling `nodeArrival`, which triggers
+			// resolution of the corresponding `rootNodePromise`.
 			elementPromises.forEach((promise, index) => {
 				this._ensureRootNodeDfd(index);
 			});
 			rootNodePromises = this._rootNodeDfds.map(dfd => dfd.promise);
 		}
 
+		// We need to do some stuff when we're all done rendering, so
+		// we'll use an array of promises to figure out when to do it.
 		var completionDfds = elementPromises.map(() => Q.defer());
 		var completionPromises = completionDfds.map(dfd => dfd.promise);
 
+		// Once we've got an element and a root DOM node to mount it
+		// in we can finally render.
 		var renderElement = (element, root, index) => {
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
@@ -331,6 +358,8 @@ class ClientController extends EventEmitter {
 			totalRenderTime += timer.stop();
 		};
 
+		// As elements become ready, prime them to render as soon as
+		// their mount point is available.
 		elementPromises.forEach((promise, index) => {
 			promise.then(element => rootNodePromises[index]
 				.then(root => renderElement(element, root, index))
