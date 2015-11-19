@@ -13,7 +13,7 @@ describe("A page with async elements", () => {
 	});
 
 	it("can timeout on server", (done) => {
-		helper.getServerDocument("/serverTimeoutElement", (document) => {
+		helper.getServerDocument("/serverTimeoutElement?_debug_render_timeout=200", (document) => {
 			expect(document.querySelector("#main")).toBeNull();
 			done();
 		});
