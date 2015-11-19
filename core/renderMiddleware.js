@@ -695,6 +695,8 @@ function bootstrapClient(req, res) {
 		text: `${res.locals.state};rfBootstrap();`,
 	}], res);
 
+	// This actually needs to happen _synchronously_ with this current
+	// function to avoid letting responses slip in between.
 	setupLateArrivals(req, res);
 }
 
