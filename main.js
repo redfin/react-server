@@ -31,7 +31,7 @@ function doReplace(match /* whole match */, fileName) {
 			});
 		}
 		return dfd.promise;
-	}`;
+	}`.replace(/\s*\n\s*/g, '');
 }
 
 
