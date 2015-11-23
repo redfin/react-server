@@ -387,7 +387,7 @@ class ClientController extends EventEmitter {
 
 			// Don't track this on client transitions.
 			if (!this._previouslyRendered){
-				logger.time('renderFromStart', new Date - times.t0);
+				logger.time('renderFromStart', new Date - tStart);
 			}
 
 			// Some things are just different on our first pass.
