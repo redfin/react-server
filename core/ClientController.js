@@ -32,7 +32,7 @@ class ClientController extends EventEmitter {
 	constructor ({routes}) {
 		super();
 
-		var wakeTime = new Date - window.__tritonTimingData.t0;
+		var wakeTime = new Date - window.__tritonTimingStart;
 
 		var dehydratedState = window.__tritonState;
 
@@ -285,8 +285,8 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
+		var tStart = window.__tritonTimingStart;
 		var t0 = new Date;
-		var times = window.__tritonTimingData;
 
 		logger.debug('React Rendering');
 
@@ -338,8 +338,9 @@ class ClientController extends EventEmitter {
 			}
 
 			if (!this._previouslyRendered){
-				logger.time(`displayElement.fromStart.${name}`, times.e[index] - times.t0);
-				logger.time(`renderElement.fromStart.${name}`, new Date - times.t0);
+				var tDisplay = root.getAttribute('data-triton-timing-offset');
+				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
+				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
 			}
 
 			totalRenderTime += timer.stop();
@@ -353,7 +354,7 @@ class ClientController extends EventEmitter {
 				logger.time('renderCPUTime', totalRenderTime);
 
 				if (!this._previouslyRendered){
-					logger.time('renderFromStart', new Date - times.t0);
+					logger.time('renderFromStart', new Date - tStart);
 				}
 
 				this.emit("render");

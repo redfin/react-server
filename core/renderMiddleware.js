@@ -243,7 +243,15 @@ function flushRes(res){
 }
 
 function renderTimingInit(pageObject, res) {
-	renderScriptsSync([{text:`__tritonTimingData={t0:+new Date,e:[]}`}], res)
+	// This is awkward and imprecise.  We don't want to put `<script>`
+	// tags between divs above the fold, so we're going to keep separate
+	// track of time client and server side. Then we'll put `<noscript>`
+	// tags with data elements representing offset from our _server_ base
+	// time that we'll apply to our _client_ base time as a proxy for when
+	// the element arrived (when it's actually when we _sent_ it).
+	//
+	RLS().timingDataT0 = new Date;
+	renderScriptsSync([{text:`__tritonTimingStart=new Date`}], res)
 }
 
 function renderDebugComments (pageObject, res) {
@@ -649,6 +657,8 @@ function renderElement(res, element, context) {
 // out-of-order.
 function writeElements(res, elements) {
 
+	var t0 = RLS().timingDataT0;
+
 	// Pick up where we left off.
 	var start = RLS().nextElement||(RLS().nextElement=0);
 
@@ -658,10 +668,10 @@ function writeElements(res, elements) {
 		if (elements[i] === undefined) break;
 
 		// Got one!
-		res.write(`<div data-triton-root-id=${i}>${elements[i]}</div>`);
-
-		// Mark when it arrived.
-		renderScriptsSync([{ text: `__tritonTimingData.e[${i}]=+new Date` }], res)
+		// Mark when we sent it.
+		res.write(`<div data-triton-root-id=${i} data-triton-timing-offset="${
+			new Date - t0
+		}">${elements[i]}</div>`);
 
 		// Free for GC.
 		//
