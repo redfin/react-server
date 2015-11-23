@@ -522,7 +522,7 @@ class ClientController extends EventEmitter {
 			if (potentialRoot.hasAttribute(TRITON_DATA_ATTRIBUTE)) {
 				// since this node has a "data-triton-root-id" attribute, we can assume that we created it.
 				result.push(potentialRoot);
-			} else {
+			} else if (potentialRoot.tagName.toLowerCase() === 'div') {
 				// it's deeply troubling that there's a div we didn't create, but for now, just warn, and
 				// don't obliterate the node.
 				console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
