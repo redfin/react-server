@@ -190,7 +190,6 @@ function pageLifecycle() {
 		setContentType,
 		writeHeader,
 		startBody,
-		bootstrapClient,
 		writeBody,
 		wrapUpLateArrivals,
 		closeBody,
@@ -674,6 +673,7 @@ function writeElements(res, elements) {
 
 			// Okay, we've sent all of our above-the-fold HTML,
 			// now we can let the client start waking nodes up.
+			bootstrapClient(res)
 			for (var j = 0; j <= i; j++){
 				renderScriptsAsync([{ text: `__tritonNodeArrival(${j})` }], res)
 			}
@@ -692,7 +692,7 @@ function writeElements(res, elements) {
 	if (i !== start) flushRes(res);
 }
 
-function bootstrapClient(req, res) {
+function bootstrapClient(res) {
 	var initialContext = {
 		'TritonAgent.cache': TritonAgent.cache().dehydrate(),
 	};
@@ -710,10 +710,10 @@ function bootstrapClient(req, res) {
 
 	// This actually needs to happen _synchronously_ with this current
 	// function to avoid letting responses slip in between.
-	setupLateArrivals(req, res);
+	setupLateArrivals(res);
 }
 
-function setupLateArrivals(req, res) {
+function setupLateArrivals(res) {
 	var start = RLS().startTime;
 	var notLoaded = TritonAgent.cache().getPendingRequests();
 
