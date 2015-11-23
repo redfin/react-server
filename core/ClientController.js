@@ -360,12 +360,16 @@ class ClientController extends EventEmitter {
 
 		// As elements become ready, prime them to render as soon as
 		// their mount point is available.
-		elementPromises.forEach((promise, index) => {
-			promise.then(element => rootNodePromises[index]
+		//
+		// Always render in order to proritize content higher in the
+		// page.
+		//
+		elementPromises.reduce((chain, promise, index) => chain.then(
+			() => promise.then(element => rootNodePromises[index]
 				.then(root => renderElement(element, root, index))
 				.catch(e => logger.error(`Error with element render ${index}`, e))
 			).catch(e => logger.error(`Error with element promise ${index}`, e))
-		});
+		), Q());
 
 		var retval = Q.defer();
 
