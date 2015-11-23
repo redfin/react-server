@@ -59,6 +59,7 @@ var PAGE_METHODS = {
 	getBase            : [() => null, Q],
 	getBodyClasses     : [() => [], Q],
 	getElements        : [() => [], standardizeElements],
+	getAboveTheFoldCount : [() => 1, _ => _],
 	getResponseData    : [() => "", Q],
 };
 

@@ -540,6 +540,9 @@ function writeBody(req, res, context, start, page) {
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
+	// No JS until the HTML above the fold has made it through.
+	RLS().atfCount = page.getAboveTheFoldCount();
+
 	// This is where we'll store our rendered HTML strings.  A value of
 	// `undefined` means we haven't rendered that element yet.
 	var rendered = elementPromises.map(() => ELEMENT_PENDING);
@@ -667,8 +670,18 @@ function writeElements(res, elements) {
 			new Date - t0
 		}">${elements[i]}</div>`);
 
-		// Let the client know it's there.
-		renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
+		if (i === RLS().atfCount - 1){
+
+			// Okay, we've sent all of our above-the-fold HTML,
+			// now we can let the client start waking nodes up.
+			for (var j = 0; j <= i; j++){
+				renderScriptsAsync([{ text: `__tritonNodeArrival(${j})` }], res)
+			}
+		} else if (i >= RLS().atfCount){
+
+			// Let the client know it's there.
+			renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
+		}
 
 		// Free for GC.
 		elements[i] = ELEMENT_ALREADY_WRITTEN;
