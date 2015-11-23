@@ -337,8 +337,10 @@ class ClientController extends EventEmitter {
 				newRenderedElements[index] = React.render(element, root);
 			}
 
-			logger.time(`displayElement.fromStart.${name}`, times.e[index] - times.t0);
-			logger.time(`renderElement.fromStart.${name}`, new Date - times.t0);
+			if (!this._previouslyRendered){
+				logger.time(`displayElement.fromStart.${name}`, times.e[index] - times.t0);
+				logger.time(`renderElement.fromStart.${name}`, new Date - times.t0);
+			}
 
 			totalRenderTime += timer.stop();
 
@@ -348,8 +350,11 @@ class ClientController extends EventEmitter {
 				logger.time('render', new Date - t0);
 
 				// These are more interesting.
-				logger.time('renderFromStart', new Date - times.t0);
 				logger.time('renderCPUTime', totalRenderTime);
+
+				if (!this._previouslyRendered){
+					logger.time('renderFromStart', new Date - times.t0);
+				}
 
 				this.emit("render");
 			}
