@@ -669,6 +669,11 @@ function writeElements(res, elements) {
 			new Date - t0
 		}">${elements[i]}</div>`);
 
+		// Free for GC.
+		elements[i] = ELEMENT_ALREADY_WRITTEN;
+
+		if (PageUtil.PageConfig.get('isFragment')) continue;
+
 		if (i === RLS().atfCount - 1){
 
 			// Okay, we've sent all of our above-the-fold HTML,
@@ -682,9 +687,6 @@ function writeElements(res, elements) {
 			// Let the client know it's there.
 			renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
 		}
-
-		// Free for GC.
-		elements[i] = ELEMENT_ALREADY_WRITTEN;
 	}
 
 	// It may be a while before we render the next element, so if we just
