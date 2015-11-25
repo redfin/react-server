@@ -286,6 +286,7 @@ class ClientController extends EventEmitter {
 	_render (page) {
 		var tStart = window.__tritonTimingStart;
 		var t0 = new Date;
+		var retval = Q.defer();
 
 		logger.debug('React Rendering');
 
@@ -334,20 +335,14 @@ class ClientController extends EventEmitter {
 			rootNodePromises = this._rootNodeDfds.map(dfd => dfd.promise);
 		}
 
-		// We need to do some stuff when we're all done rendering, so
-		// we'll use an array of promises to figure out when to do it.
-		var completionDfds = elementPromises.map(() => Q.defer());
-		var completionPromises = completionDfds.map(dfd => dfd.promise);
-
 		// Once we've got an element and a root DOM node to mount it
 		// in we can finally render.
-		var renderElement = (element, root, index) => {
+		var renderElement = (element, root) => {
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
 			React.render(element, root);
-			completionDfds[index].resolve();
 
 			if (!this._previouslyRendered){
 				var tDisplay = root.getAttribute('data-triton-timing-offset');
@@ -369,13 +364,13 @@ class ClientController extends EventEmitter {
 				.then(root => renderElement(element, root, index))
 				.catch(e => logger.error(`Error with element render ${index}`, e))
 			).catch(e => logger.error(`Error with element promise ${index}`, e))
-		), Q());
+		), Q()).then(retval.resolve);
 
-		var retval = Q.defer();
-
-		// We're getting out of here one way or another.
-		Q.all(completionPromises).then(retval.resolve);
-		this._failDfd.promise    .then(retval.resolve);
+		// Look out for a failsafe timeout from the server on our
+		// first render.
+		if (!this._previouslyRendered){
+			this._failDfd.promise.then(retval.resolve);
+		}
 
 		return retval.promise.then(() => {
 
