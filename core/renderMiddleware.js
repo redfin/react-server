@@ -540,7 +540,8 @@ function writeBody(req, res, context, start, page) {
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
 	// No JS until the HTML above the fold has made it through.
-	RLS().atfCount = page.getAboveTheFoldCount();
+	// Need this to be an integer value greater than zero.
+	RLS().atfCount = Math.max(page.getAboveTheFoldCount()|0, 1);
 
 	// This is where we'll store our rendered HTML strings.  A value of
 	// `undefined` means we haven't rendered that element yet.
