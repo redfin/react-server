@@ -90,9 +90,9 @@ class Navigator extends EventEmitter {
 			if (loaders.mobile && this.context.getMobileDetect().phone()){
 
 				// Need to disambiguate for bundleNameUtil.
-				route.name += '-mobile';
+				route.name += '-phone';
 
-				loadPage = loaders.mobile;
+				loadPage = loaders.phone;
 			}
 
 			if (loaders.mobile && this.context.getMobileDetect().tablet()){
