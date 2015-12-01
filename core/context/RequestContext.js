@@ -51,13 +51,13 @@ class RequestContext {
 		return this.serverStash;
 	}
 
-	setIsMobile (isMobile) {
-		this.isMobile = isMobile;
+	setMobileDetect (mobileDetect) {
+		this.mobileDetect = mobileDetect;
 		return this;
 	}
 
-	getIsMobile () {
-		return this.isMobile;
+	getMobileDetect () {
+		return this.mobileDetect;
 	}
 
 	getCurrentPath () {

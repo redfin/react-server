@@ -608,7 +608,7 @@ function buildContext(routes) {
 		.setRoutes(routes)
 		.create();
 
-	context.setIsMobile(new MobileDetect(navigator.userAgent).phone());
+	context.setMobileDetect(new MobileDetect(navigator.userAgent));
 
 	return context;
 }

@@ -77,7 +77,7 @@ module.exports = function(server, routes) {
 		// Need this stuff in corvair for logging.
 		context.setServerStash({ req, res, start, startHR });
 
-		context.setIsMobile(new MobileDetect(req.get('user-agent')).phone());
+		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
