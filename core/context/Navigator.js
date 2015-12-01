@@ -85,7 +85,7 @@ class Navigator extends EventEmitter {
 				loaders = {'default': loaders};
 			}
 
-			var loadPage = loaders.default;
+			var loadPage;
 
 			var mobileDetect = this.context.getMobileDetect();
 
@@ -95,6 +95,9 @@ class Navigator extends EventEmitter {
 			// use that.
 			['phone', 'tablet', 'mobile'].forEach(format => {
 
+				// We'll take the _first_ format that matches.
+				if (loadPage) return;
+
 				if (loaders[format] && mobileDetect[format]()){
 
 					// Need to disambiguate for bundleNameUtil.
@@ -103,6 +106,8 @@ class Navigator extends EventEmitter {
 					loadPage = loaders[format];
 				}
 			});
+
+			if (!loadPage) loadPage = loaders.default;
 
 			loadPage().done(pageConstructor => {
 				if (request.setRoute) {
