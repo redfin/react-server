@@ -87,21 +87,18 @@ class Navigator extends EventEmitter {
 
 			var loadPage = loaders.default;
 
-			if (loaders.mobile && this.context.getMobileDetect().phone()){
+			var mobileDetect = this.context.getMobileDetect();
 
-				// Need to disambiguate for bundleNameUtil.
-				route.name += '-phone';
+			['phone', 'tablet'].forEach(format => {
 
-				loadPage = loaders.phone;
-			}
+				if (loaders[format] && mobileDetect[format]()){
 
-			if (loaders.mobile && this.context.getMobileDetect().tablet()){
+					// Need to disambiguate for bundleNameUtil.
+					route.name += '-'+format;
 
-				// Need to disambiguate for bundleNameUtil.
-				route.name += '-tablet';
-
-				loadPage = loaders.tablet;
-			}
+					loadPage = loaders[format];
+				}
+			});
 
 			loadPage().done(pageConstructor => {
 				if (request.setRoute) {
