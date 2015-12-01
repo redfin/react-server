@@ -85,29 +85,36 @@ class Navigator extends EventEmitter {
 				loaders = {'default': loaders};
 			}
 
-			var loadPage;
-
 			var mobileDetect = this.context.getMobileDetect();
 
+			// Our route may have multiple page implementations if
+			// there are device-specific variations.
+			//
+			// We'll take one of those if the request device
+			// matches, otherwise we'll use the default.
+			//
 			// Note that 'mobile' is the _union_ of 'phone' and
 			// 'tablet'.  If you _really_ want an iPad and an
 			// iPhone to get the _same_ non-desktop experience,
 			// use that.
-			['phone', 'tablet', 'mobile'].forEach(format => {
+			//
+			var loadPage = [
+				'phone',
+				'tablet',
+				'mobile',
+			].reduce((loader, format) => {
 
 				// We'll take the _first_ format that matches.
-				if (loadPage) return;
+				if (loader) return loader;
 
 				if (loaders[format] && mobileDetect[format]()){
 
 					// Need to disambiguate for bundleNameUtil.
 					route.name += '-'+format;
 
-					loadPage = loaders[format];
+					return loaders[format];
 				}
-			});
-
-			if (!loadPage) loadPage = loaders.default;
+			}, null) || loaders.default;
 
 			loadPage().done(pageConstructor => {
 				if (request.setRoute) {
