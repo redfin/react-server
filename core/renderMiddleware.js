@@ -1,6 +1,7 @@
 
 var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react'),
+	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
@@ -11,7 +12,6 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	expressState = require('express-state'),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
-	Detection = require("./util/Detection"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID} = require('./constants');
@@ -77,7 +77,7 @@ module.exports = function(server, routes) {
 		// Need this stuff in corvair for logging.
 		context.setServerStash({ req, res, start, startHR });
 
-		context.setIsMobile(Detection.isMobile(req.get('user-agent')));
+		context.setIsMobile(new MobileDetect(req.get('user-agent')).phone());
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {

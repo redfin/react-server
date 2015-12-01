@@ -1,5 +1,6 @@
 
 var React = require('react'),
+	MobileDetect = require('mobile-detect'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -9,7 +10,6 @@ var React = require('react'),
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
-	Detection = require("./util/Detection"),
 	TritonAgent = require('./TritonAgent'),
 	FramebackController = require('./FramebackController'),
 	{PAGE_LINK_NODE_ID} = require('./constants');
@@ -608,7 +608,7 @@ function buildContext(routes) {
 		.setRoutes(routes)
 		.create();
 
-	context.setIsMobile(Detection.isMobile(navigator.userAgent));
+	context.setIsMobile(new MobileDetect(navigator.userAgent).phone());
 
 	return context;
 }
