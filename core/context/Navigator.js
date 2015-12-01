@@ -95,6 +95,14 @@ class Navigator extends EventEmitter {
 				loadPage = loaders.mobile;
 			}
 
+			if (loaders.mobile && this.context.getMobileDetect().tablet()){
+
+				// Need to disambiguate for bundleNameUtil.
+				route.name += '-tablet';
+
+				loadPage = loaders.tablet;
+			}
+
 			loadPage().done(pageConstructor => {
 				if (request.setRoute) {
 					request.setRoute(route);
