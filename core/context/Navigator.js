@@ -89,7 +89,11 @@ class Navigator extends EventEmitter {
 
 			var mobileDetect = this.context.getMobileDetect();
 
-			['phone', 'tablet'].forEach(format => {
+			// Note that 'mobile' is the _union_ of 'phone' and
+			// 'tablet'.  If you _really_ want an iPad and an
+			// iPhone to get the _same_ non-desktop experience,
+			// use that.
+			['phone', 'tablet', 'mobile'].forEach(format => {
 
 				if (loaders[format] && mobileDetect[format]()){
 
