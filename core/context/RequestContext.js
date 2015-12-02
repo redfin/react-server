@@ -51,6 +51,15 @@ class RequestContext {
 		return this.serverStash;
 	}
 
+	setMobileDetect (mobileDetect) {
+		this.mobileDetect = mobileDetect;
+		return this;
+	}
+
+	getMobileDetect () {
+		return this.mobileDetect;
+	}
+
 	getCurrentPath () {
 		return this.navigator.getCurrentRoute().url;
 	}

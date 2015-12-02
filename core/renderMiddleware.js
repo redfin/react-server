@@ -1,6 +1,7 @@
 
 var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react'),
+	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
@@ -75,6 +76,8 @@ module.exports = function(server, routes) {
 
 		// Need this stuff in corvair for logging.
 		context.setServerStash({ req, res, start, startHR });
+
+		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
