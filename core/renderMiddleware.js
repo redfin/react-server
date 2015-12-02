@@ -325,7 +325,7 @@ function renderLinkTags (pageObject, res) {
 
 			res.write(`<link ${PAGE_LINK_NODE_ID} ${
 				Object.keys(linkTag)
-					.map(attr => ` ${attr}="${attrfy(linkTag[attr])}"`)
+					.map(attr => `${attr}="${attrfy(linkTag[attr])}"`)
 					.join(' ')
 			}>`);
 		}));
