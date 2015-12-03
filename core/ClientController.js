@@ -12,7 +12,11 @@ var React = require('react'),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
 	FramebackController = require('./FramebackController'),
-	{PAGE_LINK_NODE_ID} = require('./constants');
+	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
+
+var _ = {
+	forEach: require('lodash/collection/forEach'),
+};
 
 // for dev tools
 window.React = React;
@@ -317,11 +321,11 @@ class ClientController extends EventEmitter {
 
 			// On a client transition we've just blown away all of
 			// our mount points from the previous page, and we'll
-			// create a fresh set.  These are ready for use
-			// immediately.
-			rootNodePromises = elementPromises.map(index => Q(
-				this._createTritonRootNode(this.mountNode, index)
-			))
+			// create a fresh set.  We'll defer creating them
+			// until we've actually got our elements, since some
+			// items in the elements array may be container
+			// control.
+			rootNodePromises = elementPromises.map(() => Q())
 		} else {
 
 			// On our _first_ render we want to mount to the DOM
@@ -341,9 +345,39 @@ class ClientController extends EventEmitter {
 			rootNodePromises = this._rootNodeDfds.map(dfd => dfd.promise);
 		}
 
+		var mountNode = this.mountNode;
+
 		// Once we've got an element and a root DOM node to mount it
 		// in we can finally render.
 		var renderElement = (element, root, index) => {
+
+			// During client transitions we create our root
+			// elements as we go.
+			if (!root){
+				if (element.containerOpen){
+
+					// If we're opening a container that's
+					// our new mountNode.
+					mountNode = this._createContainerNode(
+						mountNode,
+						element.containerOpen,
+						index
+					);
+					return; // Nothing left to do.
+				} else if (element.containerClose) {
+
+					// If we're closing a container its
+					// parent is once again our mountNode.
+					mountNode = mountNode.parentNode;
+					return; // Nothing left to do.
+				} else {
+
+					// Need a new root element in our
+					// current mountNode.
+					root = this._createTritonRootNode(mountNode, index)
+				}
+			}
+
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
@@ -412,39 +446,30 @@ class ClientController extends EventEmitter {
 		if (this._previouslyRendered) {
 			logger.debug("Removing previous page's React components");
 
-			this._getRootElements(mountNode).forEach((tritonRoot) => {
-				// since this node has a "data-triton-root-id" attribute, we can assume that we created it and
-				// should destroy it. Destruction means first unmounting from React and then destroying the DOM node.
-				React.unmountComponentAtNode(tritonRoot);
-				mountNode.removeChild(tritonRoot);
+			[].slice.call(
+				mountNode.querySelectorAll(`div[${TRITON_DATA_ATTRIBUTE}]`)
+			).forEach(root => {
+
+				// Since this node has a "data-triton-root-id"
+				// attribute, we can assume that we created it
+				// and should destroy it. Destruction means
+				// first unmounting from React and then
+				// destroying the DOM node.
+				React.unmountComponentAtNode(root);
+				root.parentNode.removeChild(root);
+			});
+
+			[].slice.call(
+				mountNode.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
+			).forEach(root => {
+
+				// Gotta get rid of our containers, too.
+				// Need to do this _after_ killing the
+				// elements, since they might live within
+				// these containers.
+				root.parentNode.removeChild(root);
 			});
 		}
-	}
-
-	/**
-	 * Returns an array of all of the root elements that are children of mountNode. The root elements
-	 * should all have a "data-triton-root-id" attribute and be direct children of mountNode.
-	 */
-	_getRootElements(mountNode) {
-		// if children returned an array instead of a NodeList, we could use .filter(), but
-		// alas, it does not. We could copy it over to an array, but seems easier to just iterate
-		// over the NodeList.
-		var potentialRoots = mountNode.children;
-		var result = [];
-		for (var i = 0; i < potentialRoots.length; i++) {
-			var potentialRoot = potentialRoots[i];
-			if (potentialRoot.hasAttribute(TRITON_DATA_ATTRIBUTE)) {
-				// since this node has a "data-triton-root-id" attribute, we can assume that we created it.
-				result.push(potentialRoot);
-			} else if (potentialRoot.tagName.toLowerCase() === 'div') {
-				// it's deeply troubling that there's a div we didn't create, but for now, just warn, and
-				// don't obliterate the node.
-				console.warn("Found an element inside Triton's rendering canvas that did not have data-triton-root-id " +
-					"and was probably not created by Triton. Other code may be manually mucking with the DOM, which could " +
-					"cause unpredictable behavior", potentialRoot);
-			}
-		}
-		return result;
 	}
 
 	/**
@@ -455,6 +480,14 @@ class ClientController extends EventEmitter {
 		root.setAttribute(TRITON_DATA_ATTRIBUTE, index);
 		mountNode.appendChild(root);
 		return root;
+	}
+
+	_createContainerNode(mountNode, attrs, i) {
+		var node = document.createElement("div");
+		node.setAttribute(PAGE_CONTAINER_NODE_ID, i);
+		_.forEach(attrs, (v, k) => node.setAttribute(k, v));
+		mountNode.appendChild(node);
+		return node;
 	}
 
 	init () {
