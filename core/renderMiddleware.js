@@ -1,6 +1,7 @@
 
 var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react'),
+	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
@@ -76,6 +77,8 @@ module.exports = function(server, routes) {
 
 		// Need this stuff in corvair for logging.
 		context.setServerStash({ req, res, start, startHR });
+
+		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
@@ -278,6 +281,10 @@ function renderTitle (pageObject, res) {
 	});
 }
 
+function attrfy (value) {
+	return value.replace(/"/g, '&quot;');
+}
+
 function renderMetaTags (pageObject, res) {
 	var metaTags = pageObject.getMetaTags();
 
@@ -295,11 +302,11 @@ function renderMetaTags (pageObject, res) {
 			if (metaTag.noscript) res.write(`<noscript>`);
 			res.write(`<meta`);
 
-			if (metaTag.name)      res.write(` name="${metaTag.name}"`);
-			if (metaTag.httpEquiv) res.write(` http-equiv="${metaTag.httpEquiv}"`);
-			if (metaTag.charset)   res.write(` charset="${metaTag.charset}"`);
-			if (metaTag.property)  res.write(` property="${metaTag.property}"`);
-			if (metaTag.content)   res.write(` content="${metaTag.content}"`);
+			if (metaTag.name)      res.write(` name="${attrfy(metaTag.name)}"`);
+			if (metaTag.httpEquiv) res.write(` http-equiv="${attrfy(metaTag.httpEquiv)}"`);
+			if (metaTag.charset)   res.write(` charset="${attrfy(metaTag.charset)}"`);
+			if (metaTag.property)  res.write(` property="${attrfy(metaTag.property)}"`);
+			if (metaTag.content)   res.write(` content="${attrfy(metaTag.content)}"`);
 
 			res.write(`>`)
 			if (metaTag.noscript) res.write(`</noscript>`);
@@ -321,7 +328,7 @@ function renderLinkTags (pageObject, res) {
 
 			res.write(`<link ${PAGE_LINK_NODE_ID} ${
 				Object.keys(linkTag)
-					.map(attr => `${attr}="${linkTag[attr]}"`)
+					.map(attr => `${attr}="${attrfy(linkTag[attr])}"`)
 					.join(' ')
 			}>`);
 		}));
@@ -338,10 +345,10 @@ function renderBaseTag(pageObject, res) {
 			}
 			var tag = "<base";
 			if (base.href) {
-				tag += ` href="${base.href}"`;
+				tag += ` href="${attrfy(base.href)}"`;
 			}
 			if (base.target) {
-				tag += ` target="${base.target}"`;
+				tag += ` target="${attrfy(base.target)}"`;
 			}
 			tag += ">";
 			res.write(tag);

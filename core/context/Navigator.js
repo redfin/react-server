@@ -6,6 +6,10 @@ var EventEmitter = require('events').EventEmitter,
 	History = require("../components/History"),
 	PageUtil = require("../util/PageUtil");
 
+var _ = {
+	isFunction: require('lodash/lang/isFunction'),
+};
+
 class Navigator extends EventEmitter {
 
 	constructor (context, routes) {
@@ -72,7 +76,47 @@ class Navigator extends EventEmitter {
 
 			/* Breathe... */
 
-			route.config.page().done( pageConstructor => {
+			var loaders = route.config.page;
+
+			// Normalize.
+			// The page object may either directly be a loader or
+			// it may be an object whose values are loaders.
+			if (_.isFunction(loaders)){
+				loaders = {'default': loaders};
+			}
+
+			var mobileDetect = this.context.getMobileDetect();
+
+			// Our route may have multiple page implementations if
+			// there are device-specific variations.
+			//
+			// We'll take one of those if the request device
+			// matches, otherwise we'll use the default.
+			//
+			// Note that 'mobile' is the _union_ of 'phone' and
+			// 'tablet'.  If you _really_ want an iPad and an
+			// iPhone to get the _same_ non-desktop experience,
+			// use that.
+			//
+			var loadPage = [
+				'phone',
+				'tablet',
+				'mobile',
+			].reduce((loader, format) => {
+
+				// We'll take the _first_ format that matches.
+				if (loader) return loader;
+
+				if (loaders[format] && mobileDetect[format]()){
+
+					// Need to disambiguate for bundleNameUtil.
+					route.name += '-'+format;
+
+					return loaders[format];
+				}
+			}, null) || loaders.default;
+
+			loadPage().done(pageConstructor => {
 				if (request.setRoute) {
 					request.setRoute(route);
 				}
@@ -229,7 +273,6 @@ class Navigator extends EventEmitter {
 		//
 		this.startRoute();
 	}
-
 }
 
 module.exports = Navigator;

@@ -1,5 +1,6 @@
 
 var React = require('react'),
+	MobileDetect = require('mobile-detect'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -562,6 +563,9 @@ function buildContext(routes) {
 	var context = new RequestContext.Builder()
 		.setRoutes(routes)
 		.create();
+
+	context.setMobileDetect(new MobileDetect(navigator.userAgent));
+
 	return context;
 }
 
