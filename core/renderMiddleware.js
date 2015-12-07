@@ -121,9 +121,9 @@ function handleResponseComplete(req, res, context, start, page) {
 		// `handleComplete()` here.
 		//
 		if (page) {
-			page.handleComplete();
-
 			logRequestStats(req, res, context, start, page);
+
+			page.handleComplete();
 		}
 	}));
 }
