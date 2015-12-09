@@ -52,14 +52,13 @@ class ClientController extends EventEmitter {
 		TritonAgent.cache().rehydrate(dehydratedState.InitialContext['TritonAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
-		var irDfd = this._initialRenderDfd = Q.defer();
-		this.once('render', irDfd.resolve.bind(irDfd));
-
 		this._setupFramebackController();
 		this._setupNavigateListener();
-		this._setupLateArrivalHandler();
+		this._setupArrivalHandlers();
 
 		this._previouslyRendered = false;
+		this._rootNodeDfds = [];
+		this._failDfd = Q.defer();
 
 		// Log this after loglevel is set.
 		logger.time('wakeFromStart', wakeTime);
@@ -288,6 +287,7 @@ class ClientController extends EventEmitter {
 	_render (page) {
 		var tStart = window.__tritonTimingStart;
 		var t0 = new Date;
+		var retval = Q.defer();
 
 		logger.debug('React Rendering');
 
@@ -299,44 +299,51 @@ class ClientController extends EventEmitter {
 		// their ReactComponents.
 		this._cleanupPreviousRender(this.mountNode);
 
-		// if we are reattaching to server-generated HTML, we should find the root elements that were sent down.
-		// we store them in a temp array indexed by their triton-root-id.
-		var alreadyRenderedRoots = [];
-		this._getRootElements(this.mountNode).forEach((rootElement) => {
-			alreadyRenderedRoots[rootElement.getAttribute(TRITON_DATA_ATTRIBUTE)] = rootElement;
-		});
-
+		// These resolve with React elements when their data
+		// dependencies are fulfilled.
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-		var newRenderedElements = []
-		,   syncRenderDfd       = Q.defer()
-		,   syncRenderTimer     = null
+		// These resolve with DOM mount points for the elements.
+		//
+		// Our behavior is different here for the _first_ render vs
+		// during a client transition.
+		var rootNodePromises;
+		if (this._previouslyRendered){
 
-		var renderElement = (element, index) => {
+			// On a client transition we've just blown away all of
+			// our mount points from the previous page, and we'll
+			// create a fresh set.  These are ready for use
+			// immediately.
+			rootNodePromises = elementPromises.map(index => Q(
+				this._createTritonRootNode(this.mountNode, index)
+			))
+		} else {
+
+			// On our _first_ render we want to mount to the DOM
+			// nodes produced during the _server-side_ render.
+			//
+			// We're awake and doing our thing while these
+			// server-rendered elements are streaming down, so we
+			// need to wait to render a given element until its
+			// mount point arrives.
+			//
+			// The server will tell us when each mount point is
+			// ready by calling `nodeArrival`, which triggers
+			// resolution of the corresponding `rootNodePromise`.
+			elementPromises.forEach((promise, index) => {
+				this._ensureRootNodeDfd(index);
+			});
+			rootNodePromises = this._rootNodeDfds.map(dfd => dfd.promise);
+		}
+
+		// Once we've got an element and a root DOM node to mount it
+		// in we can finally render.
+		var renderElement = (element, root) => {
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
-			// for each ReactElement that we want to render, either use the server-rendered root element, or
-			// create a new root element.
-			//
-			// During client renders we make two passes, one for
-			// quick elements without store dependencies and a
-			// second one to fill in elements with async data.
-			//
-			// The first pass adds triton root nodes.  We want
-			// to hang onto those for the second pass.
-			//
-			logger.debug("Rendering root node #" + index);
-			var root = alreadyRenderedRoots[index] || (
-				alreadyRenderedRoots[index] = this._createTritonRootNode(this.mountNode, index)
-			);
-
-			// TODO: get rid of context once continuation-local-storage holds our important context vars.
-			// `element` can be null if getValue() on the root element promise returns null
-			if (element) {
-				element = React.cloneElement(element, { context: this.context });
-				newRenderedElements[index] = React.render(element, root);
-			}
+			element = React.cloneElement(element, { context: this.context });
+			React.render(element, root);
 
 			if (!this._previouslyRendered){
 				var tDisplay = root.getAttribute('data-triton-timing-offset');
@@ -345,151 +352,45 @@ class ClientController extends EventEmitter {
 			}
 
 			totalRenderTime += timer.stop();
-
-			if (index === elementPromises.length - 1) {
-
-				// This first one is just for historical continuity.
-				logger.time('render', new Date - t0);
-
-				// These are more interesting.
-				logger.time('renderCPUTime', totalRenderTime);
-
-				if (!this._previouslyRendered){
-					logger.time('renderFromStart', new Date - tStart);
-				}
-
-				this.emit("render");
-			}
 		};
 
-
-		// When the TritonAgent cache is depleted there may be some
-		// react root elements left that didn't rely on any store data,
-		// but were stuck behind elements that _did_.  In order to give
-		// those elements a chance to render normally (not via
-		// `getValue()`) we'll schedule the sync render for a few
-		// milliseconds in the future.
+		// As elements become ready, prime them to render as soon as
+		// their mount point is available.
 		//
-		var scheduleSyncRender = () => {
-			syncRenderTimer = setTimeout(() => {
-				syncRenderTimer = null;
-				syncRenderDfd.resolve();
-			}, 25);
-		};
-
-		// Then, each time an element successfully renders normally it
-		// will _reschedule_ the sync render for _another_ few
-		// milliseconds in the future.  This allows the normal render
-		// to stay ahead of the sync render so long as it's not waiting
-		// on anything async.
+		// Always render in order to proritize content higher in the
+		// page.
 		//
-		var rescheduleSyncRender = () => {
-			if (!syncRenderTimer) return;
-			clearTimeout(syncRenderTimer)
-			scheduleSyncRender();
+		elementPromises.reduce((chain, promise, index) => chain.then(
+			() => promise.then(element => rootNodePromises[index]
+				.then(root => renderElement(element, root, index))
+				.catch(e => logger.error(`Error with element render ${index}`, e))
+			).catch(e => logger.error(`Error with element promise ${index}`, e))
+		), Q()).then(retval.resolve);
+
+		// Look out for a failsafe timeout from the server on our
+		// first render.
+		if (!this._previouslyRendered){
+			this._failDfd.promise.then(retval.resolve);
 		}
 
-		syncRenderDfd.promise.then(() => {
-			logger.debug("Starting sync render.");
+		return retval.promise.then(() => {
 
-			elementPromises.forEach((promise, index) => {
+			// This first one is just for historical continuity.
+			logger.time('render', new Date - t0);
 
-				// If this element was already rendered
-				// normally we don't need to do anything.
-				if (!newRenderedElements[index]){
-					renderElement(promise.getValue(), index);
-				}
-			});
-		}).catch(err => {
-			logger.error("Error during syncRender", err);
-		}).done();
+			// These are more interesting.
+			logger.time('renderCPUTime', totalRenderTime);
 
-		// if and when the loader runs out of cache, we should render everything we have synchronously through EarlyPromises.
-		// this lets us render when the server timed out.
-		//
-		// A URL discrepancy between server and client could cause
-		// failure to deplete the `TritonAgent` cache.  If this
-		// happens we'll complain about it and kick off the
-		// synchronous render.  Better late than never.
-		//
-		// This timeout can be fairly agressive, since we should zip
-		// through our re-render pretty quickly so long as we're
-		// getting our data from the cache and the async render will
-		// stay ahead of the sync render so long as there's still no
-		// delay between elements.
-		//
-		var startSyncRenderDfd    = Q.defer();
-		var didKickOffSyncRender  = false;
-		var cacheDepletionTimeout = 1000;
-
-		TritonAgent.cache().whenCacheDepleted().then(() => {
-			logger.debug("Loader cache depleted.");
-			if (didKickOffSyncRender) {
-				logger.error("Timed out and THEN cache depleted");
-			} else {
-				startSyncRenderDfd.resolve();
+			// Don't track this on client transitions.
+			if (!this._previouslyRendered){
+				logger.time('renderFromStart', new Date - tStart);
 			}
-		});
 
-		setTimeout(() => {
-			if (!didKickOffSyncRender) {
-				logger.error(`Timed out waiting for cache depletion (${cacheDepletionTimeout}ms)`);
-				startSyncRenderDfd.resolve();
-			}
-		}, cacheDepletionTimeout);
-
-		startSyncRenderDfd.promise.then(() => {
-			didKickOffSyncRender = true;
-			scheduleSyncRender();
-		}).catch(err => {
-			logger.error("Error in scheduleSyncRender", err);
-		}).done();
-
-		// if no element promises, break early,
-		// and say we rendered
-		if (!elementPromises.length) {
-			return Q().then(() => {
-				this._previouslyRendered = true;
-			});
-		}
-
-		// I find the control flow for chaining promises impossibly mind-bending, but what I intended was something
-		// like:
-		//
-		//		elementPromises.forEach((elementPromise, index) => {
-		//			var element = await elementPromise;
-		//			renderElement(element, index);
-		//		});
-		//		this._previouslyRendered = true;
-		//		this.emit("render");
-		//
-		// if it was using ES7 async/await syntax. I learned how to chain an array of promises in ES5/6
-		// from http://bahmutov.calepin.co/chaining-promises.html , and apparently it looks like the code below. But
-		// if I got something wrong, what I intended was the control flow expressed in this comment.
-		return elementPromises.reduce((chain, next, index) => {
-			return chain.then((element) => {
-				renderElement(element, index - 1);
-
-				// If our TritonAgent cache has been depleted
-				// we're racing with the sync render.  We want
-				// to stay ahead of it, so we'll tell it to
-				// wait a few milliseconds before kicking off.
-				// This gives the next element in the promise
-				// chain a head start in the event loop if it's
-				// not waiting for anything asynchronous.
-				rescheduleSyncRender();
-
-				return next;
-			})
-		}).then((element) => {
-			// reduce is called length - 1 times. we need to call one final time here to make sure we
-			// chain the final promise.
-			renderElement(element, elementPromises.length - 1);
-
+			// Some things are just different on our first pass.
 			this._previouslyRendered = true;
-		}).catch((err) => {
-			logger.error("Error while rendering", err);
-		}); // no done(), because we're handing this promise off to someone else
+
+			this.emit('render');
+		});
 	}
 
 	/**
@@ -605,16 +506,40 @@ class ClientController extends EventEmitter {
 		}
 	}
 
-	_setupLateArrivalHandler () {
+	_setupArrivalHandlers () {
 		// used by <script> callbacks to register data sent down on the
 		// initial connection after initial render
-		window.__lateArrival = this.lateArrival.bind(this);
+		window.__tritonDataArrival = this.dataArrival.bind(this);
+		window.__tritonNodeArrival = this.nodeArrival.bind(this);
+		window.__tritonFailArrival = this.failArrival.bind(this);
 	}
 
-	lateArrival (url, dehydratedEntry) {
-		this._initialRenderDfd.promise.done( () => {
-			TritonAgent.cache().lateArrival(url, dehydratedEntry);
-		});
+	_ensureRootNodeDfd (index) {
+		if (!this._rootNodeDfds[index]){
+			this._rootNodeDfds[index] = Q.defer();
+		}
+		return this._rootNodeDfds[index];
+	}
+
+	dataArrival (url, dehydratedEntry) {
+		TritonAgent.cache().lateArrival(url, dehydratedEntry);
+	}
+
+	nodeArrival (index) {
+
+		// The server has just let us know that a pre-rendered root
+		// element has arrived.  We'll grab a reference to its DOM
+		// node and un-block client-side rendering of the element that
+		// we're going to mount into it.
+		this._ensureRootNodeDfd(index).resolve(
+			this.mountNode.querySelector(
+				`div[${TRITON_DATA_ATTRIBUTE}="${index}"]`
+			)
+		);
+	}
+
+	failArrival () {
+		this._failDfd.resolve();
 	}
 
 }

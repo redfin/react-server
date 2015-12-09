@@ -21,10 +21,15 @@ var logger = require('./logging').getLogger(__LOGGER__),
 // It *might* be worthwhile to get rid of all the closure-y things in render()
 // https://developers.google.com/speed/articles/optimizing-javascript
 
-var DATA_LOAD_WAIT = 250;
+// If an element hasn't rendered in this long it gets the axe.
+var FAILSAFE_RENDER_TIMEOUT = 20e3;
 
 // We'll use this for keeping track of request concurrency per worker.
 var ACTIVE_REQUESTS = 0;
+
+// Some non-content items that can live in the elements array.
+var ELEMENT_PENDING         = -1;
+var ELEMENT_ALREADY_WRITTEN = -2;
 
 /**
  * renderMiddleware entrypoint. Called by express for every request.
@@ -69,10 +74,6 @@ module.exports = function(server, routes) {
 				.create({
 					// TODO: context opts?
 				});
-
-		// This is the default.
-		// Can be overridden by the page or middleware.
-		context.setDataLoadWait(DATA_LOAD_WAIT)
 
 		// Need this stuff in corvair for logging.
 		context.setServerStash({ req, res, start, startHR });
@@ -193,8 +194,7 @@ function pageLifecycle() {
 		writeHeader,
 		startBody,
 		writeBody,
-		writeData,
-		setupLateArrivals,
+		wrapUpLateArrivals,
 		closeBody,
 		endResponse,
 		handleResponseComplete,
@@ -546,9 +546,13 @@ function writeBody(req, res, context, start, page) {
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
+	// No JS until the HTML above the fold has made it through.
+	// Need this to be an integer value greater than zero.
+	RLS().atfCount = Math.max(page.getAboveTheFoldCount()|0, 1);
+
 	// This is where we'll store our rendered HTML strings.  A value of
 	// `undefined` means we haven't rendered that element yet.
-	var rendered = elementPromises.map(() => undefined);
+	var rendered = elementPromises.map(() => ELEMENT_PENDING);
 
 	// We need to return a promise that resolves when we're done, so we'll
 	// maintain an array of deferreds that we punch out as we render
@@ -557,6 +561,9 @@ function writeBody(req, res, context, start, page) {
 	var dfds = elementPromises.map(() => Q.defer());
 
 	var doElement = (element, index) => {
+
+		// Exceeded `FAILSAFE_RENDER_TIMEOUT`.  Bummer.
+		if (rendered[index] === ELEMENT_ALREADY_WRITTEN) return;
 
 		rendered[index] = renderElement(res, element, context);
 
@@ -567,51 +574,41 @@ function writeBody(req, res, context, start, page) {
 		dfds[index].resolve();
 	};
 
+	// Render elements as their data becomes available.
+	elementPromises.forEach((promise, index) => promise
+		.then(element => doElement(element, index))
+		.catch(e => logger.error(`Error rendering element ${index}`, e))
+	);
+
 	// Some time has already elapsed since the request started.
-	// Note that you can override `DATA_LOAD_WAIT` with a
-	// `?_debug_data_load_wait={ms}` query string parameter.
-	var totalWait     = req.query._debug_data_load_wait || context.getDataLoadWait()
+	// Note that you can override `FAILSAFE_RENDER_TIMEOUT` with a
+	// `?_debug_render_timeout={ms}` query string parameter.
+	var totalWait     = req.query._debug_render_timeout || FAILSAFE_RENDER_TIMEOUT
 	,   timeRemaining = totalWait - (new Date - start)
 
-	logger.debug(`totalWait: ${totalWait}ms, timeRemaining: ${timeRemaining}ms`);
+	var retval = Q.defer();
 
-	// Try to render everything when its data becomes available.
-	elementPromises.forEach((promise, index) => promise.then(element => {
+	// If we exceed the timeout then we'll just send empty elements for
+	// anything that hadn't rendered yet.
+	retval.promise.catch(() => {
 
-		// Bummer.  Already rendered synchronously.
-		if (rendered[index] !== undefined) return;
+		// Write out what we've got.
+		writeElements(res, rendered.map(
+			value => value === ELEMENT_PENDING?'':value
+		));
 
-		doElement(element, index);
+		// If it hasn't arrived by now, we're not going to wait for it.
+		RLS().lateArrivals = undefined;
 
-	}).catch(e => logger.error("Error while rendering without timeout", e)));
+		// Let the client know it's not getting any more data.
+		renderScriptsAsync([{ text: `__tritonFailArrival()` }], res)
+	});
 
-	// If we run out of time, just render with what we've got.
-	setTimeout(() => elementPromises.forEach((promise, index) => {
+	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
 
-		// Awesome.  Already rendered normally.
-		if (rendered[index] !== undefined) return;
+	setTimeout(() => retval.reject("Timed out rendering"), timeRemaining);
 
-		try {
-			var element = promise.getValue();
-		} catch (e) {
-			logger.error("Error while rendering with timeout", e);
-		}
-
-		// Note that `element` may be undefined here if
-		// `promise.getValue()` blew up.  That's okay, `renderElement`
-		// wraps its call to `React.renderToString` in a try/catch.
-		//
-		// Importantly, we need to call `doElement` to resolve our
-		// deferred for this element so we can proceed beyond
-		// `writeBody`.  If there was an exception during the normal
-		// render, above, it _won't_ have resolved our deferred, so
-		// it's up to us.
-		//
-		doElement(element, index);
-
-	}), timeRemaining);
-
-	return Q.all(dfds.map(dfd => dfd.promise));
+	return retval.promise;
 }
 
 function writeResponseData(req, res, context, start, page) {
@@ -672,7 +669,7 @@ function writeElements(res, elements) {
 	for (var i = start; i < elements.length; RLS().nextElement = ++i){
 
 		// If we haven't rendered the next element yet, we're done.
-		if (elements[i] === undefined) break;
+		if (elements[i] === ELEMENT_PENDING) break;
 
 		// Got one!
 		// Mark when we sent it.
@@ -681,10 +678,23 @@ function writeElements(res, elements) {
 		}">${elements[i]}</div>`);
 
 		// Free for GC.
-		//
-		// Note that `undefined` has special meaning here, so we're
-		// using `null`, instead.
-		elements[i] = null;
+		elements[i] = ELEMENT_ALREADY_WRITTEN;
+
+		if (PageUtil.PageConfig.get('isFragment')) continue;
+
+		if (i === RLS().atfCount - 1){
+
+			// Okay, we've sent all of our above-the-fold HTML,
+			// now we can let the client start waking nodes up.
+			bootstrapClient(res)
+			for (var j = 0; j <= i; j++){
+				renderScriptsAsync([{ text: `__tritonNodeArrival(${j})` }], res)
+			}
+		} else if (i >= RLS().atfCount){
+
+			// Let the client know it's there.
+			renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
+		}
 	}
 
 	// It may be a while before we render the next element, so if we just
@@ -692,16 +702,13 @@ function writeElements(res, elements) {
 	if (i !== start) flushRes(res);
 }
 
-function writeData(req, res) {
+function bootstrapClient(res) {
 	var initialContext = {
 		'TritonAgent.cache': TritonAgent.cache().dehydrate(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
 	res.expose(getNonInternalConfigs(), "Config");
-
-
-	res.write("</div>"); // <div id="content">
 
 	// Using naked `rfBootstrap()` instead of `window.rfBootstrap()`
 	// because the browser's error message if it isn't defined is more
@@ -710,9 +717,14 @@ function writeData(req, res) {
 	renderScriptsAsync([{
 		text: `${res.locals.state};rfBootstrap();`,
 	}], res);
+
+	// This actually needs to happen _synchronously_ with this current
+	// function to avoid letting responses slip in between.
+	setupLateArrivals(res);
 }
 
-function setupLateArrivals(req, res, context, start) {
+function setupLateArrivals(res) {
+	var start = RLS().startTime;
 	var notLoaded = TritonAgent.cache().getPendingRequests();
 
 	// This is for reporting purposes.  We're going to log how many late
@@ -724,7 +736,7 @@ function setupLateArrivals(req, res, context, start) {
 		pendingRequest.entry.whenDataReadyInternal().then( () => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
-				text: `__lateArrival(${
+				text: `__tritonDataArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
@@ -736,11 +748,15 @@ function setupLateArrivals(req, res, context, start) {
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
 	var promises = notLoaded.map( result => result.entry.dfd.promise );
-	return Q.allSettled(promises)
+	RLS().lateArrivals = Q.allSettled(promises)
+}
+
+function wrapUpLateArrivals(){
+	return RLS().lateArrivals;
 }
 
 function closeBody(req, res) {
-	res.write("</body></html>");
+	res.write("</div></body></html>");
 	return Q();
 }
 

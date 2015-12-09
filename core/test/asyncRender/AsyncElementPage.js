@@ -1,19 +1,13 @@
 var React = require("react")
 ,	Q = require("q")
-,	getCurrentRequestContext = require("../../common").getCurrentRequestContext
 ;
 
-var DATA_WAIT = 2000
-,	ELEMENT_DELAY = 150
+var ELEMENT_DELAY = 150
 ;
 
 class AsyncElementPage {
 
 	handleRoute (next) {
-		if (SERVER_SIDE) {
-			// guarantee that data wait is longer than element delay
-			getCurrentRequestContext().setDataLoadWait(DATA_WAIT);
-		}
 		return next();
 	}
 
