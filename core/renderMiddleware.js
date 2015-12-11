@@ -87,7 +87,7 @@ module.exports = function(server, routes) {
 				logger.log("onNavigate received a non-2xx HTTP code", err);
 				if (err.status && err.status === 404) {
 					next();
-				} else if (err.status === 301 || err.status === 302) {
+				} else if (err.status === 301 || err.status === 302 || err.status === 307) {
 					res.redirect(err.status, err.redirectUrl);
 				} else {
 					next(err);
