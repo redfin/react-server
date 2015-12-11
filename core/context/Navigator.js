@@ -152,6 +152,8 @@ class Navigator extends EventEmitter {
 		});
 		var page = PageUtil.createPageChain(pages);
 
+		this.emit("page", page);
+
 		page.setRequest(request);
 
 		PageUtil.PageConfig.initFromPageWithDefaults(page, {

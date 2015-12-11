@@ -24,6 +24,9 @@ var logger = require('./logging').getLogger(__LOGGER__),
 // If an element hasn't rendered in this long it gets the axe.
 var FAILSAFE_RENDER_TIMEOUT = 20e3;
 
+// If a page's `handleRoute` fails to resolve this fast it gets the axe.
+var FAILSAFE_ROUTER_TIMEOUT = 20e3;
+
 // We'll use this for keeping track of request concurrency per worker.
 var ACTIVE_REQUESTS = 0;
 
@@ -83,6 +86,17 @@ module.exports = function(server, routes) {
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
+			if (!navigateDfd.promise.isPending()) {
+				logger.error("Finished navigation after FAILSAFE_ROUTER_TIMEOUT", {
+					page: context.page,
+					path: req.path,
+				});
+				return;
+			}
+
+			// Success.
+			navigateDfd.resolve();
+
 			if (err) {
 				logger.log("onNavigate received a non-2xx HTTP code", err);
 				if (err.status && err.status === 404) {
@@ -98,6 +112,21 @@ module.exports = function(server, routes) {
 
 			renderPage(req, res, context, start, page);
 
+		});
+
+
+		var navigateDfd = Q.defer();
+
+		setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
+
+		// If we fail to navigate, we'll throw a 500 and move on.
+		navigateDfd.promise.catch(() => {
+			logger.error("Failed to navigate after FAILSAFE_ROUTER_TIMEOUT", {
+				page: context.navigator.getCurrentRoute().name,
+				path: req.path,
+			});
+			handleResponseComplete(req, res, context, start, context.page);
+			next({status: 500});
 		});
 
 		context.navigate(new ExpressServerRequest(req));
