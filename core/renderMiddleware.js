@@ -99,6 +99,7 @@ module.exports = function(server, routes) {
 
 			if (err) {
 				logger.log("onNavigate received a non-2xx HTTP code", err);
+				handleResponseComplete(req, res, context, start, page);
 				if (err.status && err.status === 404) {
 					next();
 				} else if (err.status === 301 || err.status === 302 || err.status === 307) {
@@ -106,7 +107,6 @@ module.exports = function(server, routes) {
 				} else {
 					next(err);
 				}
-				handleResponseComplete(req, res, context, start, page);
 				return;
 			}
 
@@ -185,10 +185,11 @@ function renderPage(req, res, context, start, page) {
 	).catch(err => {
 		logger.error("Error in renderPage chain", err)
 
+		// Register `finish` listener before ending response.
+		handleResponseComplete(req, res, context, start, page);
+
 		// Bummer.
 		res.status(500).end();
-
-		handleResponseComplete(req, res, context, start, page);
 	});
 
 	// TODO: we probably want a "we're not waiting any longer for this"
@@ -200,8 +201,8 @@ function rawResponseLifecycle () {
 		Q(), // NOOP lead-in to prime the reduction
 		setContentType,
 		writeResponseData,
-		endResponse,
 		handleResponseComplete,
+		endResponse,
 	];
 }
 
@@ -211,8 +212,8 @@ function fragmentLifecycle () {
 		setContentType,
 		writeDebugComments,
 		writeBody,
-		endResponse,
 		handleResponseComplete,
+		endResponse,
 	];
 }
 
@@ -225,8 +226,8 @@ function pageLifecycle() {
 		writeBody,
 		wrapUpLateArrivals,
 		closeBody,
-		endResponse,
 		handleResponseComplete,
+		endResponse,
 	];
 }
 
