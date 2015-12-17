@@ -56,6 +56,8 @@ module.exports = function(server, routes) {
 
 		logger.debug(`Incoming request for ${req.path}`);
 
+		initResponseCompletePromise(res);
+
 		// Just to keep an eye out for leaks.
 		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
 
@@ -136,9 +138,18 @@ module.exports = function(server, routes) {
 
 module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
+function initResponseCompletePromise(res){
+	var dfd = Q.defer();
+
+	res.on('close',  dfd.resolve);
+	res.on('finish', dfd.resolve);
+
+	RLS().responseCompletePromise = dfd.promise;
+}
+
 function handleResponseComplete(req, res, context, start, page) {
 
-	var finish = RequestLocalStorage.bind(() => {
+	RLS().responseCompletePromise.then(RequestLocalStorage.bind(() => {
 
 		// All intentional response completion should funnel through
 		// this function.  If this value starts climbing gradually
@@ -155,15 +166,7 @@ function handleResponseComplete(req, res, context, start, page) {
 
 			page.handleComplete();
 		}
-	});
-
-	// The socket may have been destroyed under us if the connection was
-	// closed by the client before we called `res.end()`.
-	if (res.socket.destroyed) {
-		setImmediate(finish);
-	} else {
-		res.on('finish', finish);
-	}
+	}));
 }
 
 function renderPage(req, res, context, start, page) {
