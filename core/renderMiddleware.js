@@ -138,7 +138,7 @@ module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
 function handleResponseComplete(req, res, context, start, page) {
 
-	res.on('finish', RequestLocalStorage.bind(() => {
+	var finish = RequestLocalStorage.bind(() => {
 
 		// All intentional response completion should funnel through
 		// this function.  If this value starts climbing gradually
@@ -155,7 +155,15 @@ function handleResponseComplete(req, res, context, start, page) {
 
 			page.handleComplete();
 		}
-	}));
+	});
+
+	// The socket may have been destroyed under us if the connection was
+	// closed by the client before we called `res.end()`.
+	if (res.socket.destroyed) {
+		setImmediate(finish);
+	} else {
+		res.on('finish', finish);
+	}
 }
 
 function renderPage(req, res, context, start, page) {
