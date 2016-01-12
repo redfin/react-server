@@ -64,6 +64,14 @@
 								</script>
 								<echo>Using npm registry: ${npm.registry}</echo>
 
+								<echo>Ensuring triton dependency is up-to-date</echo>
+								<exec
+									dir="${project.basedir}"
+									executable="rm"
+									failonerror="true">
+										<arg line="-rf node_modules/triton" />
+								</exec>
+
 								<echo>Installing project npm dependencies...</echo>
 								<exec
 									dir="${project.basedir}"
