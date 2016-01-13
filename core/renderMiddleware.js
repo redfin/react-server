@@ -258,8 +258,10 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderDebugComments(pageObject, res),
 		renderTimingInit(pageObject, res),
 		renderTitle(pageObject, res),
-		renderStylesheets(pageObject, res),
+		// PLAT-602: inline scripts come before stylesheets because
+		// stylesheet downloads block inline script execution.
 		renderScripts(pageObject, res),
+		renderStylesheets(pageObject, res),
 		renderMetaTags(pageObject, res),
 		renderLinkTags(pageObject, res),
 		renderBaseTag(pageObject, res),

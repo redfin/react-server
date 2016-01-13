@@ -60,14 +60,7 @@
 
 								<!-- TODO: this little chunk of JS is copy/pasted in corvair, triton, triton-route-loader. It would be great if it wasn't... -->
 								<script language="javascript">
-									var getenv = java.lang.System.getenv;
-									if (getenv("IS_BAMBOO")) {
-										project.setProperty("npm.registry", "http://localhost:7732");
-									} else if (getenv("JENKINS_URL")) {
-										project.setProperty("npm.registry", "http://builder.redfintest.com:7732");
-									} else {
-										project.setProperty("npm.registry", "http://builder.redfintest.com:7732");
-									}
+									project.setProperty("npm.registry", "http://qa-compile-1.redfintest.com:4873");
 								</script>
 								<echo>Using npm registry: ${npm.registry}</echo>
 
