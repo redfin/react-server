@@ -52,9 +52,7 @@ class Navigator extends EventEmitter {
 		if (route) {
 			logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
 		} else if (!request._frameback) {
-			setTimeout( () => {
-				this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);
-			}, 0);
+			this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);
 			return;
 		}
 
