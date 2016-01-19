@@ -18,9 +18,9 @@ function getBrowser(opts) {
 	return browser;
 }
 
-var getPort = () => PORT;
+var getPort = function () { return PORT };
 
-var writeRoutesFile = (routes, tempDir, clientOrServer) => {
+var writeRoutesFile = function (routes, tempDir, clientOrServer) {
 	// clientOrServer = ["client"|"server"];
 
 	// first we convert our simple routes format to a triton routes file.
@@ -61,7 +61,7 @@ var writeRoutesFile = (routes, tempDir, clientOrServer) => {
 	fs.writeFileSync(tempDir + `/routes-${clientOrServer}.js`, routesForTriton);
 }
 
-var writeEntrypointFile = (tempDir) => {
+var writeEntrypointFile = function (tempDir) {
 	mkdirp.sync(tempDir);
 	fs.writeFileSync(tempDir + "/entrypoint.js", `
 		var ClientController = require("triton").ClientController;
@@ -77,7 +77,7 @@ var writeEntrypointFile = (tempDir) => {
 }
 
 
-var buildClientCode = (tempDir, cb) => {
+var buildClientCode = function (tempDir, cb) {
 
 	webpack({
 		context: tempDir,
@@ -107,7 +107,7 @@ var buildClientCode = (tempDir, cb) => {
 // "./SomeTestPage" ==> "/someTest"
 // "./someDir/SomeTestInDirPage" ==> "/someTestInDir"
 // "./foo/BarPagelet" ==> "/barPagelet"  <-- note does not *end* with "Page"
-var routesArrayToMap = (routesArray) => {
+var routesArrayToMap = function (routesArray) {
 	var result = {};
 	routesArray.forEach((file) => {
 		var fileName = path.basename(file);
@@ -120,7 +120,7 @@ var routesArrayToMap = (routesArray) => {
 
 // starts a simple triton server.
 // routes is of the form {url: pathToPageCode} or [pathToPageCode]
-var startTritonServer = (routes, cb) => {
+var startTritonServer = function (routes, cb) {
 	// if we got an array, normalize it to a map of URLs to file paths.
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
@@ -146,22 +146,22 @@ var startTritonServer = (routes, cb) => {
 	});
 };
 
-var stopTritonServer = (server, done) => {
+var stopTritonServer = function (server, done) {
 	server.close(done);
 };
 
-var getServerBrowser = (url, cb) => {
+var getServerBrowser = function (url, cb) {
 	var browser = getBrowser({runScripts:false});
 
 	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser), () => console.error(arguments));
 }
 
-var getClientBrowser = (url, cb) => {
+var getClientBrowser = function (url, cb) {
 	var browser = getBrowser();
 	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser), () => console.error(arguments));
 };
 
-var getTransitionBrowser = (url, cb) => {
+var getTransitionBrowser = function (url, cb) {
 	var browser = getBrowser();
 	// go to the transition page and click the link.
 	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).then(() => {
@@ -178,45 +178,45 @@ var getTransitionBrowser = (url, cb) => {
 // server-generated HTML via `window.document`, but it is not generally useful to do
 // much else with the window object, as no JavaScript has run on the client (i.e.
 // React will not be present, and nothing will be interactive.).
-var getServerWindow = (url, cb) => { getServerBrowser(url, (browser) => cb(browser.window)); }
+var getServerWindow = function (url, cb) { getServerBrowser(url, (browser) => cb(browser.window)); }
 
 // vists the url `url` and calls `cb` with the browser's window
 // object after the page has completely downloaded from the server and all client
 // JavaScript has run. at this point, the page will have re-rendered, and
 // it will be interactive.
-var getClientWindow = (url, cb) => { getClientBrowser(url, (browser) => cb(browser.window)); };
+var getClientWindow = function (url, cb) { getClientBrowser(url, (browser) => cb(browser.window)); };
 
 // vists the url `url` via a client-side transition, and calls `cb`
 // with the browser's window object after the page has completely run all client
 // JavaScript. at this point, the page will have transitioned and rendered, and
 // it will be interactive.
-var getTransitionWindow = (url, cb) => { getTransitionBrowser(url, (browser) => cb(browser.window)); };
+var getTransitionWindow = function (url, cb) { getTransitionBrowser(url, (browser) => cb(browser.window)); };
 
 // vists the url `url` and calls `cb` with the browser's document
 // object after the page has completely downloaded from the server but before any client
 // JavaScript has run. this is the right method to use to run assertions on the server-
 // generated HTML.
-var getServerDocument = (url, cb) => { getServerWindow(url, (window) => cb(window.document)); };
+var getServerDocument = function (url, cb) { getServerWindow(url, (window) => cb(window.document)); };
 
 // vists the url `url` and calls `cb` with the browser's document
 // object after the page has completely downloaded from the server and all client
 // JavaScript has run. this is the right method to use to run assertions on the HTML
 // after client-side rendering has completed.
-var getClientDocument = (url, cb) => { getClientWindow(url, (window) => cb(window.document)); };
+var getClientDocument = function (url, cb) { getClientWindow(url, (window) => cb(window.document)); };
 
 
 // vists the url `url` via a client-side transition, and calls `cb`
 // with the browser's document object after the page has completely run all client
 // JavaScript. this is the right method to use to run assertions on the HTML
 // after a client-side transition has completed.
-var getTransitionDocument = (url, cb) => { getTransitionWindow(url, (window) => cb(window.document)); };
+var getTransitionDocument = function (url, cb) { getTransitionWindow(url, (window) => cb(window.document)); };
 
 // used to test the JS internals of a page both on client load and on page-to-page
 // transition. this does NOT test server load, since JS doesn't run on that. if you just
 // want to test document structure, including server generated documents, use testWithDocument.
 // testFn's first argument will be the window object. if it takes a second argument, it will be
 // a done callback for async tests.
-var testWithWindow = (url, testFn) => {
+var testWithWindow = function (url, testFn) {
 	var callback = (document, done) => {
 		if (testFn.length >= 2) {
 			testFn(document, done);
@@ -245,7 +245,7 @@ var testWithWindow = (url, testFn) => {
 // testWithWindow.
 // testFn's first argument will be the document object. if it takes a second argument, it will be
 // a done callback for async tests.
-var testWithDocument = (url, testFn) => {
+var testWithDocument = function (url, testFn) {
 	var callback = (document, done) => {
 		if (testFn.length >= 2) {
 			testFn(document, done);
@@ -273,7 +273,7 @@ var testWithDocument = (url, testFn) => {
 
 }
 
-var testSetupFn = (routes) => {
+var testSetupFn = function (routes) {
 	return (done) => {
 		startTritonServer(routes, s => {
 			servers.push(s);
@@ -282,31 +282,31 @@ var testSetupFn = (routes) => {
 	}
 }
 
-var testTeardownFn = (done) => {
+var testTeardownFn = function (done) {
 	stopTritonServer(servers.pop(), done);
 };
 
 // convenience function to start a triton server before each test. make sure to
 // call stopServerAfterEach so that the server is stopped.
-var startServerBeforeEach = (routes) => {
+var startServerBeforeEach = function (routes) {
 	beforeEach(testSetupFn(routes));
 }
 
 // convenience function to start a triton server before all the tests. make sure to
 // call stopServerAfterEach so that the server is stopped.
-var startServerBeforeAll = (routes) => {
+var startServerBeforeAll = function (routes) {
 	beforeAll(testSetupFn(routes));
 }
 
 // convenience function to stop a triton server after each test. to be paired
 // with startServerBeforeEach.
-var stopServerAfterEach = () => {
+var stopServerAfterEach = function () {
 	afterEach(testTeardownFn);
 }
 
 // convenience function to stop a triton server after all the tests. to be paired
 // with startServerBeforeAll.
-var stopServerAfterAll = () => {
+var stopServerAfterAll = function () {
 	afterAll(testTeardownFn);
 }
 
