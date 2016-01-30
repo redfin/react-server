@@ -649,7 +649,23 @@ function writeBody(req, res, context, start, page) {
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
 
-	setTimeout(() => retval.reject("Timed out rendering"), timeRemaining);
+	setTimeout(() => {
+		// give some additional information when we time out
+		retval.reject({
+			message: "Timed out rendering.",
+			// `timeRemaining` is how long we waited before timing out
+			timeWaited: timeRemaining,
+			elements: rendered.map(val => {
+				if (val === ELEMENT_ALREADY_WRITTEN) {
+					return 'W'; // written
+				} else if (val === ELEMENT_PENDING) {
+					return 'P'; // not rendered
+				} else {
+					return 'R'; // rendered, not yet written
+				}
+			}),
+		});
+	}, timeRemaining);
 
 	return retval.promise;
 }
