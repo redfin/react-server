@@ -620,7 +620,41 @@ function writeBody(req, res, context, start, page) {
 	// Render elements as their data becomes available.
 	elementPromises.forEach((promise, index) => promise
 		.then(element => doElement(element, index))
-		.catch(e => logger.error(`Error rendering element ${index}`, e))
+		.catch(e => {
+			logger.error(`Error rendering element ${index}`, e)
+			// TODO: the error handling here should probably be merged
+			// somehow with renderElement so that we get timing info.
+
+			// In the case where there was an exception thrown while rendering,
+			// the next three lines are effectively a no-op. In the case where
+			// the element promise was rejected, this prevents a hang until
+			// FAILSAFE_RENDER_TIMEOUT has passed.
+
+			// No way we can recover in the second case, so let's just move on.
+			// We'll call `writeElements` just in case everything is ready
+			// after us.
+
+			// This doesn't completely handle the extremely unlikely case that:
+			//     1) `renderElement` successfully rendered this element, and
+			//     2) `writeElements` successfully wrote it, but...
+			//     3) `writeElements` threw after this element was written.
+			//
+			// We'll make a good-faith effort, but in this rare case writeElements is probably
+			// going to fail again when we call it here. At least if that happens, _this_
+			// particular element should show up properly on the page, even though the page
+			// overall could be totally horked. And we won't have a 20s timeout...
+			try {
+				if (rendered[index] !== ELEMENT_ALREADY_WRITTEN) {
+					rendered[index] = '';
+					writeElements(res, rendered);
+				}
+			} finally {
+				// try _really_ hard to resolve this deferred, to avoid a 20s hang.
+				dfds[index].resolve();
+			}
+		})
+		// just in case writeElements throws in our error callback above.
+		.catch(e => logger.error(`Error recovering from error rendering element ${index}`, e))
 	);
 
 	// Some time has already elapsed since the request started.
