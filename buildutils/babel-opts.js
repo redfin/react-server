@@ -8,7 +8,7 @@ var ecmaScriptTransforms = [
 	// "es6.forOf",
 	"es6.modules",
 	"es6.parameters",
-	// "es6.properties.computed",
+	"es6.properties.computed",
 	"es6.properties.shorthand",
 	"es6.spread",
 	"es6.templateLiterals",
