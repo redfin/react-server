@@ -295,6 +295,11 @@ class ClientController extends EventEmitter {
 		// each request so we can keep track of that overhead.
 		var totalRenderTime = 0;
 
+		// We'll consider the page "interactive" when we've rendered
+		// all elements that we expect to be above the fold.
+		// Need this to be an integer value greater than zero.
+		var aboveTheFoldCount = Math.max(page.getAboveTheFoldCount()|0, 1)
+
 		// if we were previously rendered on the client, clean up the old divs and
 		// their ReactComponents.
 		this._cleanupPreviousRender(this.mountNode);
@@ -338,20 +343,26 @@ class ClientController extends EventEmitter {
 
 		// Once we've got an element and a root DOM node to mount it
 		// in we can finally render.
-		var renderElement = (element, root) => {
+		var renderElement = (element, root, index) => {
 			var name  = PageUtil.getElementDisplayName(element)
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
 			React.render(element, root);
 
+			totalRenderTime += timer.stop();
+
 			if (!this._previouslyRendered){
 				var tDisplay = root.getAttribute('data-triton-timing-offset');
 				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
 				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
-			}
 
-			totalRenderTime += timer.stop();
+				if (index === aboveTheFoldCount) {
+					logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
+					logger.time(`renderAboveTheFold.individual`, totalRenderTime);
+					logger.time(`renderAboveTheFold.elementCount`, aboveTheFoldCount);
+				}
+			}
 		};
 
 		// As elements become ready, prime them to render as soon as
