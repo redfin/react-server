@@ -1,26 +1,25 @@
 var React = require('react');
 var Q = require('q');
 
-var RootContainer = module.exports = React.createClass({
-	displayName: 'RootContainer',
+class RootContainer extends React.Component {
+	displayName: 'RootContainer'
 
-	propTypes: {
-		when: React.PropTypes.object,
-		_isRootContainer: React.PropTypes.bool,
-	},
-
-	getDefaultProps(){
-		return {
-			when: Q(),
-			_isRootContainer: true,
-		}
-	},
-
-	render: function () {
+	render() {
 		throw new Error("RootContainers can't go in non-RootContainers!");
-	},
+	}
+}
 
-})
+module.exports = RootContainer;
+
+RootContainer.propTypes = {
+	when: React.PropTypes.object,
+	_isRootContainer: React.PropTypes.bool,
+}
+
+RootContainer.defaultProps = {
+	when: Q(),
+	_isRootContainer: true,
+}
 
 RootContainer.flattenForRender = function(element) {
 	return [{containerOpen: containerAttrs(element)}]
