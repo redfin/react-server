@@ -357,7 +357,7 @@ class ClientController extends EventEmitter {
 				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
 				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
 
-				if (index === aboveTheFoldCount) {
+				if (index === aboveTheFoldCount - 1) {
 					logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
 					logger.time(`renderAboveTheFold.individual`, totalRenderTime);
 					logger.time(`renderAboveTheFold.elementCount`, aboveTheFoldCount);
