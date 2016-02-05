@@ -353,7 +353,7 @@ class ClientController extends EventEmitter {
 
 			// During client transitions we create our root
 			// elements as we go.
-			if (!root){
+			if (!root && this._previouslyRendered){
 				if (element.containerOpen){
 
 					// If we're opening a container that's
