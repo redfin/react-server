@@ -2,6 +2,7 @@
 
 module.exports = {
 	RootContainer: require("./components/RootContainer"),
+	RootElement: require("./components/RootElement"),
 	Link: require('./components/Link'),
 	History: require('./components/History'),
 	ClientRequest: require('./ClientRequest'),

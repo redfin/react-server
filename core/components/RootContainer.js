@@ -1,9 +1,8 @@
 var React = require('react');
 var Q = require('q');
+var RootElement = require('./RootElement');
 
 class RootContainer extends React.Component {
-	displayName: 'RootContainer'
-
 	render() {
 		throw new Error("RootContainers can't go in non-RootContainers!");
 	}
@@ -47,14 +46,10 @@ function containerAttrs (element) {
 	return attrs;
 }
 
-function scheduleChild (element, child) {
-	return element.props.when.then(props => React.cloneElement(child, props))
-}
-
 function prepChildren (element) {
 	return React.Children.toArray(element.props.children).map(
 		child => RootContainer.isRootContainer(child)
 			?RootContainer.flattenForRender(child)
-			:scheduleChild(element, child)
+			:RootElement.ensureRootElement(element, child)
 	)
 }

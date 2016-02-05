@@ -4,6 +4,7 @@ var Q = require("q"),
 	RLS = require("./RequestLocalStorage").getNamespace();
 
 var {isRootContainer, flattenForRender} = require('../components/RootContainer');
+var {isRootElement, scheduleRender} = require('../components/RootElement');
 
 // There are three data structures defined here that are relevant for page and
 // middleware authors:
@@ -165,6 +166,7 @@ function standardizeElements(elements) {
 	return PageUtil
 		.makeArray(elements)
 		.map(e => isRootContainer(e)?flattenForRender(e):e)
+		.map(e => isRootElement  (e)?scheduleRender  (e):e)
 		.reduce((m, e) => m.concat(Array.isArray(e)?e:[e]), [])
 		.map(e => Q(e));
 }
