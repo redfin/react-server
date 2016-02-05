@@ -1,6 +1,6 @@
 var React = require('react');
 var Q = require('q');
-var RootElement = require('./RootElement');
+var {ensureRootElementWithContainer} = require('./RootElement');
 
 class RootContainer extends React.Component {
 	render() {
@@ -11,12 +11,11 @@ class RootContainer extends React.Component {
 module.exports = RootContainer;
 
 RootContainer.propTypes = {
-	when: React.PropTypes.object,
+	listen: React.PropTypes.func,
 	_isRootContainer: React.PropTypes.bool,
 }
 
 RootContainer.defaultProps = {
-	when: Q(),
 	_isRootContainer: true,
 }
 
@@ -50,6 +49,6 @@ function prepChildren (element) {
 	return React.Children.toArray(element.props.children).map(
 		child => RootContainer.isRootContainer(child)
 			?RootContainer.flattenForRender(child)
-			:RootElement.ensureRootElement(element, child)
+			:ensureRootElementWithContainer(child, element)
 	)
 }
