@@ -1,5 +1,4 @@
 var React = require('react');
-var Q = require('q');
 var {ensureRootElementWithContainer} = require('./RootElement');
 
 class RootContainer extends React.Component {
