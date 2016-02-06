@@ -175,7 +175,7 @@ function renderPage(req, res, context, start, page) {
 
 	logger.debug("Route Name: " + routeName);
 
-	var renderTimer = logger.timer("renderFunction");
+	var timer = logger.timer("lifecycle.individual");
 
 	res.status(page.getStatus()||200);
 
@@ -192,7 +192,10 @@ function renderPage(req, res, context, start, page) {
 
 	lifecycleMethods.reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
-		.then(() => renderTimer.tick(func.name))
+		.then(() => {
+			timer.tick(func.name);
+			logger.time(`lifecycle.fromStart.${func.name}`, new Date - start);
+		})
 	).catch(err => {
 		logger.error("Error in renderPage chain", err)
 
