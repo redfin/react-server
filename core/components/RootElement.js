@@ -41,6 +41,17 @@ class RootElement extends React.Component {
 			this._changeCount = 0;
 		}
 
+		if (typeof this.props.children === 'string') {
+
+			logger.error(
+				"Root elements cannot be raw text",
+				{ text: this.props.children }
+			);
+
+			// Don't keep choking on it.  Just gut it.
+			return <div />;
+		}
+
 		return React.cloneElement(
 			React.Children.only(this.props.children),
 			this.props.childProps
@@ -75,9 +86,20 @@ RootElement.isRootElement = function(element) {
 }
 
 RootElement.ensureRootElementWithContainer = function(element, container) {
-	if (RootElement.isRootElement(element) || !React.isValidElement(element)) {
+
+	// If it's _already_ a root element, pass it along.
+	if (RootElement.isRootElement(element) || (
+
+		// Alternatively, if it's a control object pass it along.
+		//
+		// We exclude strings here since we already gripe about them
+		// at render time.
+		//
+		!React.isValidElement(element) && typeof element !== 'string'
+	)){
 		return element;
 	}
+
 	return <RootElement listen={container.props.listen}>{element}</RootElement>;
 }
 
