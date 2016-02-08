@@ -3,6 +3,8 @@ var Q = require("q"),
 	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace();
 
+var {isRootContainer, flattenForRender} = require('../components/RootContainer');
+var {ensureRootElement, scheduleRender} = require('../components/RootElement');
 
 // There are three data structures defined here that are relevant for page and
 // middleware authors:
@@ -163,7 +165,10 @@ function standardizeElements(elements) {
 	// Then, ensure that all elements are wrapped in promises.
 	return PageUtil
 		.makeArray(elements)
-		.map(element => Q(element));
+		.map(e => isRootContainer(e)?flattenForRender(e):e)
+		.reduce((m, e) => m.concat(Array.isArray(e)?e:[e]), [])
+		.map(ensureRootElement)
+		.map(scheduleRender)
 }
 
 function standardizeDebugComments(debugComments) {

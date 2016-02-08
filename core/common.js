@@ -1,6 +1,8 @@
 // the common object model of triton on server and client -sra.
 
 module.exports = {
+	RootContainer: require("./components/RootContainer"),
+	RootElement: require("./components/RootElement"),
 	Link: require('./components/Link'),
 	History: require('./components/History'),
 	ClientRequest: require('./ClientRequest'),

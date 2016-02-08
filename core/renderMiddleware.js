@@ -14,8 +14,11 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
-	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID} = require('./constants');
+	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
+var _ = {
+	map: require('lodash/collection/map'),
+};
 
 // TODO FIXME ??
 // It *might* be worthwhile to get rid of all the closure-y things in render()
@@ -718,6 +721,13 @@ function writeResponseData(req, res, context, start, page) {
 }
 
 function renderElement(res, element, context) {
+
+	if (element.containerOpen || element.containerClose){
+
+		// Short-circuit out.  Don't want timing for containers.
+		return element;
+	}
+
 	var name  = PageUtil.getElementDisplayName(element)
 	,   start = RLS().startTime
 	,   timer = logger.timer(`renderElement.individual.${name}`)
@@ -757,8 +767,6 @@ function renderElement(res, element, context) {
 // out-of-order.
 function writeElements(res, elements) {
 
-	var t0 = RLS().timingDataT0;
-
 	// Pick up where we left off.
 	var start = RLS().nextElement||(RLS().nextElement=0);
 
@@ -768,10 +776,7 @@ function writeElements(res, elements) {
 		if (elements[i] === ELEMENT_PENDING) break;
 
 		// Got one!
-		// Mark when we sent it.
-		res.write(`<div data-triton-root-id=${i} data-triton-timing-offset="${
-			new Date - t0
-		}">${elements[i]}</div>`);
+		writeElement(res, elements[i], i);
 
 		// Free for GC.
 		elements[i] = ELEMENT_ALREADY_WRITTEN;
@@ -796,6 +801,23 @@ function writeElements(res, elements) {
 	// It may be a while before we render the next element, so if we just
 	// wrote anything let's send it down right away.
 	if (i !== start) flushRes(res);
+}
+
+function writeElement(res, element, i){
+	if (element.containerOpen) {
+		res.write(`<div ${PAGE_CONTAINER_NODE_ID}=${i}${
+			_.map(element.containerOpen, (v, k) => ` ${k}="${attrfy(v)}"`)
+		}>`);
+	} else if (element.containerClose) {
+		res.write('</div>');
+	} else {
+		res.write(`<div data-triton-root-id=${
+			i
+		} data-triton-timing-offset="${
+			// Mark when we sent it.
+			new Date - RLS().timingDataT0
+		}">${element}</div>`);
+	}
 }
 
 function bootstrapClient(res) {
