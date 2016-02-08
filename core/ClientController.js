@@ -363,19 +363,21 @@ class ClientController extends EventEmitter {
 						element.containerOpen,
 						index
 					);
-					return; // Nothing left to do.
 				} else if (element.containerClose) {
 
 					// If we're closing a container its
 					// parent is once again our mountNode.
 					mountNode = mountNode.parentNode;
-					return; // Nothing left to do.
 				} else {
 
 					// Need a new root element in our
 					// current mountNode.
 					root = this._createTritonRootNode(mountNode, index)
 				}
+			}
+
+			if (element.containerOpen || element.containerClose){
+				return; // Nothing left to do.
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
