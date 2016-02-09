@@ -7,8 +7,8 @@ var replace = require("gulp-replace")
 var isWindows = ('win32' === process.platform)
 ,   REPLACE_TOKEN = /(?:__LOGGER__|__CHANNEL__)(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
 ,   THIS_MODULE   = isWindows
-						? /(?:[^\\]+\\node_modules\\)?triton\\buildutils\\logger-loader\.js$/
-						: /(?:[^\/]+\/node_modules\/)?triton\/buildutils\/logger-loader\.js$/
+						? /(?:[^\\]+\\node_modules\\)?react-server\\buildutils\\logger-loader\.js$/
+						: /(?:[^\/]+\/node_modules\/)?react-server\/buildutils\/logger-loader\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
 module.exports = function(){

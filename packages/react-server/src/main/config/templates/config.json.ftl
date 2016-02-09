@@ -1,6 +1,0 @@
-
-{
-	"environmentName": "${environment}",
-	
-	"internal": {}
-}

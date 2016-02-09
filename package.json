@@ -1,6 +1,6 @@
 {
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "lerna": "^1.1.0"
   }
 }

@@ -1,4 +1,4 @@
-target-node
-target-entrypoints
-build
 coverage
+target/
+npm-debug.log
+node_modules

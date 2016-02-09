@@ -8,10 +8,13 @@
   "author": "Navtej",
   "license": "Apache License 2.0",
   "scripts": {
-    "start": "node ./start.js",
-    "debug": "node-debug -p 9000 ./start.js",
-    "test": "jest"
+    "prepublish": "gulp build && gulp test",
+    "test": "gulp test"
   },
+  "files": [
+    "buildutils",
+    "target"
+  ],
   "dependencies": {
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",
