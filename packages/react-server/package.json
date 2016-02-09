@@ -1,5 +1,5 @@
 {
-  "name": "triton",
+  "name": "react-server",
   "version": "0.0.0",
   "description": "Redfin React Render Server",
   "main": "target/server/server.js",
