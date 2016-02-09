@@ -1,11 +1,11 @@
 {
   "name": "react-server",
   "version": "0.0.2",
-  "description": "Redfin React Render Server",
+  "description": "React Server",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
   "author": "Navtej",
-  "license": "MIT",
+  "license": "Apache License 2.0",
   "scripts": {
     "start": "node ./start.js",
     "debug": "node-debug -p 9000 ./start.js",
