@@ -4,6 +4,7 @@
   "description": "React Server",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
+  "repository": "redfin/react-server",
   "author": "Navtej",
   "license": "Apache License 2.0",
   "scripts": {
