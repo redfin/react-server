@@ -1,6 +1,6 @@
 {
   "name": "react-server",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Redfin React Render Server",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
