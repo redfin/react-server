@@ -1,0 +1,176 @@
+{
+  "name": "triton",
+  "version": "0.0.0",
+  "description": "Redfin React Render Server",
+  "main": "target/server/server.js",
+  "browser": "target/client/client.js",
+  "author": "Navtej",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./start.js",
+    "debug": "node-debug -p 9000 ./start.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "body-parser": "1.9.2",
+    "bundle-loader": "0.5.2",
+    "cls-q": "1.1.0",
+    "continuation-local-storage": "3.1.4",
+    "cookie": "0.1.2",
+    "cookie-parser": "1.3.3",
+    "debug": "2.1.0",
+    "eventemitter3": "0.1.6",
+    "express-state": "1.2.0",
+    "gulp-foreach": "0.1.0",
+    "lodash": "3.10.1",
+    "mkdirp": "0.5.0",
+    "mobile-detect": "1.3.0",
+    "q": "1.4.1",
+    "querystring": "0.2.0",
+    "rimraf": "2.2.8",
+    "routr": "0.1.3",
+    "winston": "0.8.3"
+  },
+  "peerDependencies": {
+    "react": "0.14.2",
+    "react-dom": "0.14.2",
+    "superagent": "1.2.0"
+  },
+  "devDependencies": {
+    "cheerio": "0.19.0",
+    "eslint": "0.24.1",
+    "eslint-plugin-react": "3.0.0",
+    "express": "4.11.2",
+    "gulp": "3.8.10",
+    "gulp-babel": "5.1.0",
+    "gulp-changed": "1.1.1",
+    "gulp-if": "1.2.5",
+    "gulp-eslint": "0.15.0",
+    "gulp-filter": "2.0.0",
+    "gulp-istanbul": "0.6.0",
+    "gulp-jasmine": "2.0.0",
+    "gulp-jshint": "1.9.0",
+    "gulp-rename": "1.2.0",
+    "gulp-replace": "0.5.2",
+    "gulp-sourcemaps": "1.3.0",
+    "gulp-substituter": "0.3.0",
+    "minimist": "1.1.0",
+    "handlebars": "1.3.0",
+    "handlebars-loader": "0.1.7",
+    "jasmine": "2.3.1",
+    "jsdom": "5.6.1",
+    "jsx-loader": "0.12.2",
+    "path-to-regexp": "1.0.1",
+    "webpack": "1.4.13",
+    "zombie": "4.1.0"
+  },
+  "eslintConfig": {
+    "globals": {
+      "__LOGGER__": false,
+      "SERVER_SIDE": false
+    },
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    },
+    "env": {
+      "browser": true,
+      "es6": true,
+      "node": true,
+      "jasmine": true
+    },
+    "plugins": [
+      "react"
+    ],
+    "rules": {
+      "camelcase": 0,
+      "comma-dangle": [
+        2,
+        "always-multiline"
+      ],
+      "comma-spacing": 0,
+      "consistent-return": 2,
+      "constructor-super": 2,
+      "curly": [
+        2,
+        "multi-line"
+      ],
+      "dot-notation": 2,
+      "eol-last": 2,
+      "eqeqeq": [
+        2,
+        "smart"
+      ],
+      "guard-for-in": 2,
+      "handle-callback-err": 0,
+      "indent": [
+        2,
+        "tab"
+      ],
+      "key-spacing": 0,
+      "linebreak-style": [
+        2,
+        "unix"
+      ],
+      "new-cap": 0,
+      "new-parens": 0,
+      "no-cond-assign": [
+        2,
+        "except-parens"
+      ],
+      "no-constant-condition": 2,
+      "no-dupe-args": 2,
+      "no-dupe-keys": 2,
+      "no-empty": 2,
+      "no-eval": 2,
+      "no-ex-assign": 2,
+      "no-extra-bind": 2,
+      "no-extra-semi": 0,
+      "no-loop-func": 2,
+      "no-mixed-requires": 0,
+      "no-mixed-spaces-and-tabs": 2,
+      "no-multi-spaces": 0,
+      "no-new-func": 2,
+      "no-obj-calls": 2,
+      "no-path-concat": 2,
+      "no-process-env": 2,
+      "no-process-exit": 2,
+      "no-redeclare": 2,
+      "no-return-assign": 2,
+      "no-script-url": 2,
+      "no-self-compare": 2,
+      "no-sequences": 0,
+      "no-shadow": 0,
+      "no-spaced-func": 0,
+      "no-this-before-super": 2,
+      "no-throw-literal": 2,
+      "no-trailing-spaces": 2,
+      "no-undef": 2,
+      "no-underscore-dangle": 0,
+      "no-unexpected-multiline": 2,
+      "no-unreachable": 2,
+      "no-unused-expressions": 0,
+      "no-unused-vars": 2,
+      "no-use-before-define": 0,
+      "no-wrap-func": 0,
+      "quotes": [
+        0,
+        "double"
+      ],
+      "semi": [
+        0,
+        "always"
+      ],
+      "semi-spacing": 2,
+      "space-infix-ops": 0,
+      "space-return-throw-case": 2,
+      "space-unary-ops": 2,
+      "strict": [
+        2,
+        "never"
+      ],
+      "valid-typeof": 2,
+      "yoda": 0
+    }
+  }
+}
