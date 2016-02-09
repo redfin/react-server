@@ -49,7 +49,7 @@ class ExpressServerRequest {
 	}
 
 	getBody() {
-		throw new Error("ExpressServerRequest.getBody not implemented.");
+		return this._wrappedRequest.body;
 	}
 
 }
