@@ -1,9 +1,9 @@
 
 /**
- * Perform a C-style "preprocessor" replace of __DEFAULT_ACTION_FUNCTION__
- * with a function that will trigger data loading via Component.loadData
- * if available, and in addition will perform lazy-loading of the component
- * file client-side, if it isn't already loaded.
+ * Perform a C-style "preprocessor" replace of __LAZY_REQUIRE__
+ * with a function that returns a promise that is resolved when
+ * the file reference by LAZY_REQUIRED is loaded. Allows code-splitting
+ * for the browser for webpack users.
  */
 
 var replace = require("gulp-replace");
