@@ -119,11 +119,15 @@ RootElement.scheduleRender = function(element) {
 		// updating itself.
 		if (updater) return updater(childProps);
 
-		dfd.resolve(React.cloneElement(element, {
-			childProps,
-			subscribe,
-			unsubscribe,
-		}));
+		// The promise itself will only resolve once, but we don't
+		// want to _clone_ multiple times.
+		if (dfd.promise.isPending()) {
+			dfd.resolve(React.cloneElement(element, {
+				childProps,
+				subscribe,
+				unsubscribe,
+			}));
+		}
 	});
 	var subscribe = callback => updater = callback;
 	return dfd.promise
