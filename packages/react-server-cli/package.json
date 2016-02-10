@@ -9,7 +9,7 @@
   },
   "author": "Sasha Aickin",
   "bin": {
-    "react-server-cli": "./bin/react-server-cli"
+    "react-server-cli": "bin/react-server-cli"
   },
   "license": "Apache-2.0",
   "dependencies": {
