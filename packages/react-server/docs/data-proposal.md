@@ -18,7 +18,7 @@ First off, I’d like to lay out the principles/beliefs that drive this proposal
 
 1. **Actions are not necessary on the server.** Server-side rendering is a point-in-time rendering of the component tree, not a living, mutating UX, as it is on the client. Actions are really only needed for the latter.
 
-1. **Immutable data is a great tool, but we have to support mutable data**. I think immutable data structures are an insanely good match for React, and we should migrate towards them. However, we have mutable data models right now, and we shouldn’t require teams to port from those models just to get rendering in Triton. I want any data flow we use right now to be compatible with immutable data, but I think to start we will be using it with mutable objects.
+1. **Immutable data is a great tool, but we have to support mutable data**. I think immutable data structures are an insanely good match for React, and we should migrate towards them. However, we have mutable data models right now, and we shouldn’t require teams to port from those models just to get rendering in react-server. I want any data flow we use right now to be compatible with immutable data, but I think to start we will be using it with mutable objects.
 
 1. **Passing Props Down Through the Component Tree Is Not That Bad**. This is probably the most controversial thing I believe. I agree that it’d be nicer not to pass down props, and I would love to have Relay’s solution to the problem if I had a magic wand. However, in a practical matter I don’t think it’s that difficult to manage: most changes that are made to endpoints (like adding a field to CorgiHome) will filter down automatically through the component tree without changing anything, our component trees aren’t generally that deep, and prop passing code is not particularly hard to write or understand when you do need to add it.
 
@@ -26,7 +26,7 @@ First off, I’d like to lay out the principles/beliefs that drive this proposal
 
 Having outlined the basic principles, let's look at the key concepts of this proposal: Stores, State, Actions, and Root Elements.
 
-*Root Elements* are mounted React elements that are at the root of their render tree (i.e. React elements currently in the document that had "React.render" called on them.) Root State is passed into them as props. There can be multiple Root Elements in a page (as when `getElements` returns an array in Triton).
+*Root Elements* are mounted React elements that are at the root of their render tree (i.e. React elements currently in the document that had "React.render" called on them.) Root State is passed into them as props. There can be multiple Root Elements in a page (as when `getElements` returns an array in react-server).
 
 *State* is an object representing the state of a Store at any particular point in time. It is separate from the Store in that it does not respond to Actions. The State from the various Stores is bundled up into Root State and passed to Root Elements; Stores are *not* passed to Root Elements. Ideally, State would be an immutable data structure, but it can be mutable.
 
@@ -178,7 +178,7 @@ var element = RootElements.createRootElement(store, (props) => {
 });
 ```
 
-This method would be most likely called in Triton's Page API method `getElements`.
+This method would be most likely called in react-server's Page API method `getElements`.
 
 ### `RootElements.createRootElementWhen(names: [String], store: Store, element: ReactElement | Function(props: Object) : ReactElement) : EarlyPromise(ReactElement)`
 
