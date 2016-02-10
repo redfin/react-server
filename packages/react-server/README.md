@@ -6,10 +6,10 @@ Triton is closest in its implementation to [reflux](https://github.com/reflux/re
 Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-transitioning-to-universal-javascript.html).
 
 ## Getting started
-1. Install node.js.	We recommend installing io.js v2.3.3 with [n](https://github.com/tj/n).
+1. Install node.js.	We recommend installing node v4.2.3 with [n](https://github.com/tj/n).
 	See their [installation instructions](https://github.com/tj/n#installation) and [usage](https://github.com/tj/n#usage) for more details, or just close your eyes and jump:
 
-		npm install -g n && n io 2.3.3
+		npm install -g n && n 4.2.3
 
 2. Create a new npm project folder with some basic folders:
 		mkdir example-triton && cd example-triton
