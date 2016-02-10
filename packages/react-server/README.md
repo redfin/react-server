@@ -155,4 +155,8 @@ We welcome contributions to Triton!  To contribute, follow these steps:
 // TODO: Concepts
 // TODO: routing guide
 // TODO: page guide
-// TODO: generator
+// TODO: generator 
+
+## What is "triton"? Why do I see that in code comments?
+
+Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know). It has always seemed like a preeeety big coincidence to us that they were first to market with a product named `triton`, and they are also one floor above our San Francisco engineering office...
