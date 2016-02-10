@@ -1,8 +1,8 @@
-# Triton
-Triton is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
+# react-server
+react-server is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
 for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
 based on the [Flux pattern](https://facebook.github.io/flux/docs/overview.html).  
-Triton is closest in its implementation to [reflux](https://github.com/reflux/refluxjs)
+react-server is closest in its implementation to [reflux](https://github.com/reflux/refluxjs)
 Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-transitioning-to-universal-javascript.html).
 
 ## Getting started
@@ -12,15 +12,15 @@ Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-t
 		npm install -g n && n 4.2.3
 
 2. Create a new npm project folder with some basic folders:
-		mkdir example-triton && cd example-triton
+		mkdir example-react-server && cd example-react-server
 		mkdir pages
 
 3. Create a new npm project (follow the helpful npm prompts).
 		npm init
 
-4. Install Triton and its related dependencies
+4. Install react-server and its related dependencies
 
-		npm install --save triton express react
+		npm install --save react-server express react
 
 5. Create a page object:
 		touch pages/HelloWorld.js
@@ -48,7 +48,7 @@ Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-t
 		let HelloWorldPage = require("./pages/HelloWorld");
 
 		module.exports = {
-			// Triton middleware.  TODO: add a "writing Triton middleware" example.
+			// react-server middleware.  TODO: add a "writing react-server middleware" example.
 			middleware: [],
 
 			routes: {
@@ -82,24 +82,24 @@ Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-t
 	And add the minimal server logic:
 
 		// "use strict" required to use `class` and `let`, but not strictly required
-		// for using Triton.
+		// for using react-server.
 		"use strict";
 
 		// Require dependencies
-		let triton = require("triton"),
+		let rs = require("react-server"),
 			http = require("http"),
 			express = require("express"),
 			routes = require("./routes");
 
-		// TODO: Move this into triton.setConfig()
+		// TODO: Move this into rs.setConfig()
 		process.env.TRITON_CONFIGS = __dirname;
 
 		// By instantiating Express directly, you can use other Express middleware,
-		// or even multiple instances of Triton middleware.
+		// or even multiple instances of react-server middleware.
 		let server = express();
 
-		// Register Triton as an Express middleware.
-		triton.middleware(server, routes);
+		// Register react-server as an Express middleware.
+		rs.middleware(server, routes);
 
 		// Use process.env.PORT if it's been set elsewhere, or 3000 if it hasn't.
 		// This allows you to set process.env.PORT to a different value in production
@@ -126,7 +126,7 @@ navigating to http://localhost:3000, or by opening it in your default browser fr
 		open http://localhost:3000
 
 ## Contributing
-We welcome contributions to Triton!  To contribute, follow these steps:
+We welcome contributions to react-server!  To contribute, follow these steps:
 
 1. Check out the code.  You'll want to [fork the repository](https://help.github.com/articles/fork-a-repo/),
  and then clone it locally.
@@ -146,10 +146,10 @@ We welcome contributions to Triton!  To contribute, follow these steps:
 
 6. Create a [pull request](https://help.github.com/articles/using-pull-requests/)
 
-7. Repeat zero or more times: Get some feedback from [another contributor](https://github.com/Redfin/triton/graphs/contributors),
+7. Repeat zero or more times: Get some feedback from [another contributor](https://github.com/redfin/react-server/graphs/contributors),
  resolve it, update your pull request.
 
-8. Your pull request gets merged!  Congratulations, you're officially a Triton contributor.
+8. Your pull request gets merged!  Congratulations, you're officially a react-server contributor.
  Have a 🍺to celebrate; your check is in the mail, we swear 😉.
 
 // TODO: Concepts

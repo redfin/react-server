@@ -41,10 +41,10 @@ The rendering process follows the following flow:
 
 There are three groups of methods that are relevant to page objects, and they
 are all defined in simple data structures with ample commentary near the top of
-triton/core/util/PageUtil.js.  That is the authoritative reference for the
-triton page interface.
+react-server/core/util/PageUtil.js.  That is the authoritative reference for the
+react-server page interface.
 
-* Please see: `triton/core/util/PageUtil.js`
+* Please see: `react-server/core/util/PageUtil.js`
 
 ## Static methods
 
@@ -92,9 +92,9 @@ function in question.
 
 `getSystemScripts(next: Function): String | Script | [String | Script]`
 
-* URLs for the critical client-side JavaScript files that make Triton run on the client side, including both the Triton runtime, this page class, and its bundled dependencies. Do not override this method unless you are doing something very tricky, like packaging Triton for the client with something other than the standard Webpack.
+* URLs for the critical client-side JavaScript files that make react-server run on the client side, including both the react-server runtime, this page class, and its bundled dependencies. Do not override this method unless you are doing something very tricky, like packaging react-server for the client with something other than the standard Webpack.
 
-* Default: the URLs of the files that Triton needs to run on the client-side.
+* Default: the URLs of the files that react-server needs to run on the client-side.
 
 * **for v2:** allow Promises as return value
 

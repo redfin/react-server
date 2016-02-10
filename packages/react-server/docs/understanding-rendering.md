@@ -1,6 +1,6 @@
 # Understanding Rendering
 
-Given that Triton is about using universal JavaScript to make server- and client-side rendering as similar as possible, it can be hard to understand which part of a large Triton application is rendering any given part of a "finished" html document.  This guide will help you understand how different parts of the rendering lifecycle take place, and how the final document is assembled.
+Given that react-server is about using universal JavaScript to make server- and client-side rendering as similar as possible, it can be hard to understand which part of a large react-server application is rendering any given part of a "finished" html document.  This guide will help you understand how different parts of the rendering lifecycle take place, and how the final document is assembled.
 
 On the server, in renderMiddleware, each component to render is represented by a promise that's resolved immediately if there's no data requirement, or when data resolves, if created by RootElements.createWhenResolved, or a similar function (note that this is ​_effectively_​ what happens; the actual rendering can happen out of order, but elements are streamed to the browser sequentially).
 
