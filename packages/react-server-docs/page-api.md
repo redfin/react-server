@@ -1,4 +1,5 @@
 # Route
+
 A binding of URL paths to a Page class that can render the results for those URLs.
 
 `path: String | RegEx | [ String | RegEx ]`
