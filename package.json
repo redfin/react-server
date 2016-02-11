@@ -1,6 +1,10 @@
 {
   "private": true,
   "devDependencies": {
+    "eslint": "0.24.1",
+    "eslint-plugin-react": "3.0.0",
+    "gulp": "3.9.1",
+    "gulp-chug": "0.5.1",
     "lerna": "^1.1.0"
   }
 }

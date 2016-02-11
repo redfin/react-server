@@ -1,4 +1,5 @@
-# react-server
+# react-server [![NPM version][npm-badge-img]][npm-url]
+
 react-server is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
 for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
 based on the [Flux pattern](https://facebook.github.io/flux/docs/overview.html).  
@@ -160,3 +161,6 @@ We welcome contributions to react-server!  To contribute, follow these steps:
 ## What is "triton"? Why do I see that in code comments?
 
 Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know). It has always seemed like a preeeety big coincidence to us that they were first to market with a product named `triton`, and they are also one floor above our San Francisco engineering office...
+
+[npm-badge-img]: https://badge.fury.io/js/react-server.png
+[npm-url]: https://npmjs.org/package/react-server
