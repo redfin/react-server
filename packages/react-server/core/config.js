@@ -8,22 +8,19 @@
 if (SERVER_SIDE) {
 
 	module.exports = function () {
-
 		// only read out the config once, and then cache it. -sra.
 		if (null === config) {
 			/*eslint-disable no-process-env */
-			if (!process.env.TRITON_CONFIGS) {
-				/*eslint-enable no-process-env */
-				throw new Error('TRITON_CONFIGS environment variable required to start server.');
+			if (process.env.TRITON_CONFIGS) {
+				var fs = require("fs");
+				/*eslint-disable no-process-env */
+				var configFile = fs.readFileSync(process.env.TRITON_CONFIGS + "/config.json");
+				/*eslint-disable no-process-env */
+				config = Object.freeze(JSON.parse(configFile));
+			} else {
+				config = Object.freeze({});
 			}
-
-			var fs = require("fs");
-			/*eslint-disable no-process-env */
-			var configFile = fs.readFileSync(process.env.TRITON_CONFIGS + "/config.json");
-			/*eslint-disable no-process-env */
-			config = Object.freeze(JSON.parse(configFile));
 		}
-
 		return config;
 	};
 
