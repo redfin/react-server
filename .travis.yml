@@ -6,6 +6,6 @@ node_js:
 
 before_script:
   - npm install -g gulp
-  - for d in `ls packages/`; do cd packages/$d; npm install --ignore-scripts; cd -; done
+  - for d in `ls packages/`; do cd packages/$d; npm install; cd -; done
 
 script: gulp travis-ci
