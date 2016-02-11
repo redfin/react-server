@@ -41,8 +41,11 @@ speeded up.
 
 */
 
+var EventEmitter = require('events').EventEmitter;
+
 var Q      = require('q')
 ,   logger = require('./logging').getLogger(__LOGGER__)
+,   RLS    = require('./util/RequestLocalStorage').getNamespace()
 
 // This is an attribute that's added to the main content div that contains all
 // triton elements.
@@ -60,15 +63,24 @@ var FRAME_STYLE = {
 	'zIndex'   : '10',
 }
 
-class FramebackController {
+class FramebackController extends EventEmitter {
+
+	static getCurrent() {
+		return RLS().instance;
+	}
 
 	constructor() {
+		super();
+
 		// We'll set this when we're showing the details page.
 		this.active = false;
 
 		// When we navigate back from a details page we'll restore the
 		// outer page's title to that of the master page.
 		this.masterTitle = document.title;
+
+		// Stash ourselves in request local storage.
+		RLS().instance = this;
 	}
 
 	// Are we currently showing a details page in an iframe?
@@ -165,6 +177,7 @@ class FramebackController {
 
 
 	showFrame(){
+		this.emit('showFrame');
 		this.frame.style.display = 'block';
 		this.frame.contentWindow.focus();
 		this.setTitleFromFrame();
@@ -178,6 +191,7 @@ class FramebackController {
 	}
 
 	hideFrame(){
+		this.emit('hideFrame');
 		this.frame.style.display = 'none';
 	}
 

@@ -6,6 +6,7 @@ module.exports = {
 	Link: require('./components/Link'),
 	History: require('./components/History'),
 	ClientRequest: require('./ClientRequest'),
+	FramebackController: require('./FramebackController'),
 	components: {
 		FragmentDataCache: require('./components/FragmentDataCache'),
 	},
