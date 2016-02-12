@@ -9,7 +9,7 @@
   "files": [
     "index.js"
   ],
-  "devDependencies": {
+  "dependencies": {
     "gulp-foreach": "0.1.0",
     "gulp-replace": "0.5.2"
   }
