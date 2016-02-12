@@ -8,8 +8,8 @@ var isWindows = ('win32' === process.platform)
 ,   REPLACE_TOKEN = /(?:__LOGGER__|__CHANNEL__)(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 ,   THIS_MODULE   = isWindows
-	? /(?:[^\\]+\\node_modules\\)?react-server-gulp-module-tagger\.js$/
-	: /(?:[^\/]+\/node_modules\/)?react-server-gulp-module-tagger\.js$/
+	? /(?:[^\\]+\\node_modules\\)?react-server-gulp-module-tagger\\index\.js$/
+	: /(?:[^\/]+\/node_modules\/)?react-server-gulp-module-tagger\/index\.js$/
 
 module.exports = function(){
 	return forEach(function(stream, file){
