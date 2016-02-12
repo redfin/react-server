@@ -25,7 +25,6 @@
     "debug": "2.1.0",
     "eventemitter3": "0.1.6",
     "express-state": "1.2.0",
-    "gulp-foreach": "0.1.0",
     "lodash": "3.10.1",
     "mkdirp": "0.5.0",
     "mobile-detect": "1.3.0",
@@ -67,6 +66,7 @@
     "path-to-regexp": "1.0.1",
     "react": "0.14.2",
     "react-dom": "0.14.2",
+    "react-server-gulp-module-tagger": "^0.0.0",
     "superagent": "1.2.0",
     "webpack": "1.4.13",
     "zombie": "4.1.0"
