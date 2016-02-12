@@ -16,5 +16,6 @@ addons:
 before_script:
   - npm install -g gulp
   - for d in `ls packages/`; do cd packages/$d; npm install; cd -; done
+  - cd packages/react-server; npm link ../react-server-gulp-module-tagger
 
 script: gulp travis-ci
