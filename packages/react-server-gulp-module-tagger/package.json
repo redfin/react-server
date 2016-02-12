@@ -1,0 +1,16 @@
+{
+  "name": "react-server-gulp-module-tagger",
+  "version": "0.0.0",
+  "description": "A gulp plugin to replace tags with module information",
+  "main": "index.js",
+  "repository": "redfin/react-server",
+  "author": "Redfin",
+  "license": "Apache License 2.0",
+  "files": [
+    "index.js"
+  ],
+  "devDependencies": {
+    "gulp-foreach": "0.1.0",
+    "gulp-replace": "0.5.2"
+  }
+}
