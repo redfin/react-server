@@ -14,8 +14,7 @@ addons:
       - g++-4.8
 
 before_script:
-  - npm install -g gulp
-  - for d in `ls packages/`; do cd packages/$d; npm install; cd -; done
-  - cd packages/react-server; npm link ../react-server-gulp-module-tagger
+  - npm install -g gulp lerna
+  - lerna bootstrap
 
 script: gulp travis-ci
