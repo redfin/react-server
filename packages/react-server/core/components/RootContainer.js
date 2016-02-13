@@ -1,5 +1,8 @@
 var React = require('react');
-var {ensureRootElementWithContainer} = require('./RootElement');
+var {
+	ensureRootElementWithContainer,
+	getRootElementAttributes,
+} = require('./RootElement');
 
 class RootContainer extends React.Component {
 	render() {
@@ -19,7 +22,7 @@ RootContainer.defaultProps = {
 }
 
 RootContainer.flattenForRender = function(element) {
-	return [{containerOpen: containerAttrs(element)}]
+	return [{containerOpen: getRootElementAttributes(element)}]
 		.concat(prepChildren(element))
 		.concat([{containerClose: true}])
 		.reduce((m,v) => m.concat(Array.isArray(v)?v:[v]), [])
@@ -27,21 +30,6 @@ RootContainer.flattenForRender = function(element) {
 
 RootContainer.isRootContainer = function(element) {
 	return element && element.props && element.props._isRootContainer;
-}
-
-function containerAttrs (element) {
-	var props = element.props;
-	var attrs = {};
-
-	if (props.className) attrs.class = props.className;
-
-	// TODO: Others?
-	[
-		'id',
-		'style',
-	].forEach(k => props[k] && (attrs[k] = props[k]));
-
-	return attrs;
 }
 
 function prepChildren (element) {
