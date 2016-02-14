@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+require("babel-core/register");
+require.extensions['.css'] = function(module, filename) {
+  return module._compile("", filename);
+};
+
+require("../target/index.js");
