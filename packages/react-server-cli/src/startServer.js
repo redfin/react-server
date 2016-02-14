@@ -1,11 +1,8 @@
-"use strict";
-
 import triton from "react-server"
 import http from "http"
 import express from "express"
 import path from "path"
 import compression from "compression"
-import webpack from "webpack"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "./compileClient"
 
@@ -46,11 +43,11 @@ export default function(routesRelativePath, {
 		logger.notice("Starting servers...")
 		Promise.all([
 			jsUrl ? Promise.resolve() : startJsServer(compiler, jsPort),
-			startHtmlServer(serverRoutes, port)
+			startHtmlServer(serverRoutes, port),
 		])
 			.then(
 				() => logger.notice(`Ready for requests on port ${port}.`),
-				() => process.exit(1)
+				(e) => {throw e}
 			);
 	}
 }
@@ -68,13 +65,13 @@ const startHtmlServer = (serverRoutes, port) => {
 };
 
 const startStaticJsServer = (compiler, port) => {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		compiler.run(function(err, stats) {
 			handleCompilationErrors(err, stats);
 
-		    logger.debug("Successfully compiled static JavaScript.");
-    		// TODO: make this parameterized based on what is returned from compileClient
-    		let server = express();
+			logger.debug("Successfully compiled static JavaScript.");
+			// TODO: make this parameterized based on what is returned from compileClient
+			let server = express();
 			server.use('/', compression(), express.static('__clientTemp/build'));
 			logger.info("Starting static JavaScript server...");
 
@@ -88,13 +85,13 @@ const startStaticJsServer = (compiler, port) => {
 
 const startHotLoadJsServer = (compiler, port) => {
 	logger.info("Starting hot reload JavaScript server...");
-	const compiledPromise = new Promise((resolve, reject) => compiler.plugin("done", () => resolve()));
+	const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));
 	const jsServer = new WebpackDevServer(compiler, {
 		noInfo: true,
 		hot: true,
 		headers: { 'Access-Control-Allow-Origin': '*' },
 	});
-	const serverStartedPromise = new Promise((resolve, reject) => {
+	const serverStartedPromise = new Promise((resolve) => {
 		jsServer.listen(port, () => resolve() );
 	});
 	return Promise.all([compiledPromise, serverStartedPromise])
@@ -103,20 +100,20 @@ const startHotLoadJsServer = (compiler, port) => {
 
 const handleCompilationErrors = (err, stats) => {
 	if(err) {
-    	logger.error("Error during webpack build.");
-    	logger.error(err);
-    	throw new Error(err);
-    	// TODO: inspect stats to see if there are errors -sra.
-    } else if (stats.hasErrors()) {
-    	logger.error("There were errors in the JavaScript compilation.");
-    	stats.toJson().errors.forEach((error) => {
-    		logger.error(error);
-    	});
-    	throw new Error("There were errors in the JavaScript compilation.");
-    } else if (stats.hasWarnings()) {
-    	logger.warning("There were warnings in the JavaScript compilation. Note that this is normal if you are minifying your code.");
-    	// for now, don't enumerate warnings; they are absolutely useless in minification mode.
-    	// TODO: handle this more intelligently, perhaps with a --reportwarnings flag or with different
-    	// behavior based on whether or not --minify is set.
-    }
+		logger.error("Error during webpack build.");
+		logger.error(err);
+		throw new Error(err);
+		// TODO: inspect stats to see if there are errors -sra.
+	} else if (stats.hasErrors()) {
+		logger.error("There were errors in the JavaScript compilation.");
+		stats.toJson().errors.forEach((error) => {
+			logger.error(error);
+		});
+		throw new Error("There were errors in the JavaScript compilation.");
+	} else if (stats.hasWarnings()) {
+		logger.warning("There were warnings in the JavaScript compilation. Note that this is normal if you are minifying your code.");
+		// for now, don't enumerate warnings; they are absolutely useless in minification mode.
+		// TODO: handle this more intelligently, perhaps with a --reportwarnings flag or with different
+		// behavior based on whether or not --minify is set.
+	}
 }

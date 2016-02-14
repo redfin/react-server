@@ -1,26 +1,24 @@
 import webpack from "webpack"
-import reactServer from "react-server"
 import path from "path"
 import mkdirp from "mkdirp"
 import fs from "fs"
-import Q from "Q"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 
-const logger = reactServer.logging.getLogger({name: "react-server-cli/compileClient.js", color: {server: 164}});
+// commented out to please eslint, but readd if logging is needed in this file.
+//import reactServer from "react-server"
+//const logger = reactServer.logging.getLogger({name: "react-server-cli/compileClient.js", color: {server: 164}});
 /**
  * Compiles the routes file in question for browser clients using webpack.
  */
  // TODO: add options for sourcemaps.
-export default (routes,
-		{
-			workingDir = "./__clientTemp",
-			routesDir = ".",
-			outputDir = workingDir + "/build",
-			outputUrl = "/static/",
-			hot = true,
-			minify = false,
-		} = {}
-	) => {
+export default (routes,{
+	workingDir = "./__clientTemp",
+	routesDir = ".",
+	outputDir = workingDir + "/build",
+	outputUrl = "/static/",
+	hot = true,
+	minify = false,
+} = {}) => {
 	const workingDirAbsolute = path.resolve(process.cwd(), workingDir);
 	mkdirp.sync(workingDirAbsolute);
 	const outputDirAbsolute = path.resolve(process.cwd(), outputDir);
@@ -33,19 +31,21 @@ export default (routes,
 	const entrypointBase = hot ? [`webpack-dev-server/client?${outputUrl}`,"webpack/hot/only-dev-server"] : [];
 	let entrypoints = {};
 	for (let routeName in routes.routes) {
-		let route = routes.routes[routeName];
-		var absolutePathToPage = path.resolve(routesDirAbsolute, route.page);
+		if (routes.routes.hasOwnProperty(routeName)) {
+			let route = routes.routes[routeName];
+			var absolutePathToPage = path.resolve(routesDirAbsolute, route.page);
 
-		entrypoints[routeName] = [
-			...entrypointBase,
-			bootstrapFile,
-			absolutePathToPage,
-		];
+			entrypoints[routeName] = [
+				...entrypointBase,
+				bootstrapFile,
+				absolutePathToPage,
+			];
+		}
 	}
 
 	// now rewrite the routes file out in a webpack-compatible way.
 	const serverRoutes = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false);
-	const clientRoutes = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, true);
+	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, true);
 
 	// finally, let's pack this up with webpack.
 	return {
@@ -65,19 +65,21 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 			chunkFilename: "[id].bundle.js",
 		},
 		module: {
-			loaders: [{
-				test: /\.jsx?$/,
-				loader: "babel",
-				exclude: /node_modules/,
-			},
-			{
-				test: /.css$/,
-				loader: extractTextLoader,
-				exclude: /node_modules/,
-			}]
+			loaders: [
+				{
+					test: /\.jsx?$/,
+					loader: "babel",
+					exclude: /node_modules/,
+				},
+				{
+					test: /.css$/,
+					loader: extractTextLoader,
+					exclude: /node_modules/,
+				},
+			],
 		},
 		plugins: [
-			new ExtractTextPlugin("[name].css")
+			new ExtractTextPlugin("[name].css"),
 		],
 	};
 
@@ -85,7 +87,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 		webpackConfig.plugins = [
 			...webpackConfig.plugins,
 			new webpack.DefinePlugin({
-				'process.env': {NODE_ENV: '"production"'}
+				'process.env': {NODE_ENV: '"production"'},
 			}),
 			// TODO: should this be done as babel plugin?
 			new webpack.optimize.UglifyJsPlugin(),
@@ -96,14 +98,14 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 
 	if (hot) {
 		webpackConfig.module.loaders.unshift({
-				test: /\.jsx?$/,
-				loader: "react-hot",
-				exclude: /node_modules/,
+			test: /\.jsx?$/,
+			loader: "react-hot",
+			exclude: /node_modules/,
 		});
 		webpackConfig.plugins = [
 			...webpackConfig.plugins,
 			new webpack.HotModuleReplacementPlugin(),
-			new webpack.NoErrorsPlugin()
+			new webpack.NoErrorsPlugin(),
 		];
 	}
 
@@ -130,33 +132,35 @@ module.exports = {
 	routes:{`);
 
 	for (let routeName in routes.routes) {
-		let route = routes.routes[routeName];
-		var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, route.page));
+		if (routes.routes.hasOwnProperty(routeName)) {
+			let route = routes.routes[routeName];
+			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, route.page));
 
-		routesOutput.push(`
-		${routeName}: {`);
-		for (let name of ["path", "method"]) {
 			routesOutput.push(`
-			${name}: "${route[name]}",`);
+			${routeName}: {`);
+			for (let name of ["path", "method"]) {
+				routesOutput.push(`
+				${name}: "${route[name]}",`);
+			}
+			routesOutput.push(`
+				page: function() {
+					return {
+						done: function(cb) {`);
+			if (isClient) {
+				routesOutput.push(`
+							require.ensure("${relativePathToPage}", function() {
+								cb(unwrapEs6Module(require("${relativePathToPage}")));
+							});`);
+			} else {
+				routesOutput.push(`
+							cb(unwrapEs6Module(require("${relativePathToPage}")));`);
+			}
+			routesOutput.push(`
+						}
+					};
+				},
+			},`);
 		}
-		routesOutput.push(`
-			page: function() {
-				return {
-					done: function(cb) {`);
-		if (isClient) {
-			routesOutput.push(`
-						require.ensure("${relativePathToPage}", function() {
-							cb(unwrapEs6Module(require("${relativePathToPage}")));
-						});`);
-		} else {
-			routesOutput.push(`
-						cb(unwrapEs6Module(require("${relativePathToPage}")));`);
-		}
-		routesOutput.push(`
-					}
-				};
-			},
-		},`);
 	}
 	routesOutput.push(`
 	}
