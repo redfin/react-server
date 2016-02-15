@@ -1,10 +1,10 @@
-# Testing Triton
+# Testing `react-server`
 
-This directory has helper infrastructure for writing tests for Triton. The tests here are not meant to test app code, but really only to test the core features of Triton as a server and client framework.
+This directory contains integration tests that test the core features of `react-server` as a server and client framework. Tests for specific modules can be found in `__tests__` subdirectories as siblings of those modules.
 
-## To run the tests
+## To run all the tests
 
-1. cd to the `triton` root directory. Unfortunately, the tests only work from that directory at the moment.
+1. cd to the `react-server/packages/react-server` directory.
 1. If you haven't ever run tests before: `npm install -g gulp`.
 1. `gulp test`
 
@@ -12,7 +12,7 @@ You should see something like:
 
 ```
 $ gulp test
-[09:31:12] Using gulpfile ~/code/main/triton/gulpfile.js
+[09:31:12] Using gulpfile ~/code/main/react-server/packages/react-server/gulpfile.js
 [09:31:12] Starting 'compileServer'...
 [09:31:12] Starting 'compileClient'...
 [09:31:14] Finished 'compileServer' after 2.16 s
@@ -27,23 +27,23 @@ Finished in 0 seconds
 
 Each little green dot is a test spec that passed. Every red "F" is a test that failed, but you probably know that if you have written Jasmine tests before.
 
-## Tutorial: Writing a test
+## Tutorial: Writing an integration test
 
-We're using [Jasmine 2.1.x](http://jasmine.github.io/2.1/introduction.html) as our test runner. Most tests take the following form:
+We're using [Jasmine 2.3.x](http://jasmine.github.io/2.3/introduction.html) as our test runner. Most tests take the following form:
 
-1. Create a `Page` class that exercises the Triton functionality that you want to test.
-1. Write a Jasmine spec that starts up a Triton server with that page and then fires up a [Zombie](https://github.com/assaf/zombie) browser to make assertions about the site.
+1. Create a `Page` class that exercises the `react-server `functionality that you want to test.
+1. Write a Jasmine spec that starts up a server with that page and then fires up a [Zombie](https://github.com/assaf/zombie) browser to make assertions about the rendered content.
 
-### Creating a `Page` class that exercises Triton
+### Creating a `Page` class that exercises `react-server`
 
-Let's say that we wanted to just test that Triton will render a simple "Hello, world!" page.
+Let's say that we wanted to just test that `react-server` will render a simple "Hello, world!" page.
 
-First, make a subdirectory of the `specs` directory, called "helloWorld". By convention, I'd like it if we didn't put any Spec files or Page files in the main `specs` directory for cleanliness. I expect that most of these directories will have one Spec file and one or more Page files, but it's certainly reasonable to put multiple related Spec files in a directory together.
+First, make a subdirectory of `core/__tests__/integration`, called "helloWorld". By convention, Spec files and Page files should not be placed in the `integration` directory. I expect that most of these directories will have one Spec file and one or more Page files, but it's certainly reasonable to put multiple related Spec files in a directory together.
 
-Next, we'd write a `Page` class that exercises the  functionality we want to test in Triton:
+Next, we'd write a `Page` class that exercises the  functionality we want to test in `react-server`:
 
 ```
-// triton/core/specs/helloWorld/HelloWorldPage.js
+// react-server/core/__tests__/integration/helloWorld/HelloWorldPage.js
 
 // React is required because we have JSX.
 var React = require("react");
@@ -63,22 +63,22 @@ module.exports = HelloWorldPage;
 
 Next, write a `Spec` file that will:
 
-1. start up a Triton server,
+1. start up a server running `react-server`,
 1. instantiate a Zombie browser against the page,
 1. run some assertions against the browser before the client-side JavaScript runs, after the client-side JavaScript runs, and after a client-side transition.
 
-Luckily, there are a lot of helper functions wrapped up in `specRuntime/testHelper` that do most of the heavy lifting:
+Luckily, there are a lot of helper functions wrapped up in `core/test/specRuntime/testHelper` that do most of the heavy lifting:
 
 ```
-// triton/core/specs/helloWorld/HelloWorldSpec.js
-var helper = require("../specRuntime/testHelper");
+// react-server/core/__tests__/integration/helloWorld/HelloWorldSpec.js
+var helper = require("../../../test/specRuntime/testHelper");
 
 describe("A basic page", () => {
 
-  // starts up a Triton server once before all the tests run
+  // starts up a server once before all the tests run
   // and maps the url "/hello" to HelloWorldPage.
-  helper.startTritonBeforeAll([
-    "./simpleRender/HelloWorldPage",
+  helper.startServerBeforeAll(__filename, [
+    "./HelloWorldPage",
   ]);
 
   // Make sure to shut the server down.
@@ -95,21 +95,21 @@ describe("A basic page", () => {
 });
 ```
 
-The helper method `startTritonBeforeAll` fires up an Express server with the pages you hand to it, and it automatically makes a URL for the page based on the name of the page class (although you can hand it custom URLs if you like; see below).
+The helper method `startServerBeforeAll` fires up an Express server with the pages you hand to it, and it automatically makes a URL for the page based on the name of the page class (although you can hand it custom URLs if you like; see below).
 
-The other interesting method here is `testWithDocument`; that method creates three different Jasmine test specs, one for each of the environments where Triton can render a page: server, client, and client transition. `testWithDocument` runs the callback passed to it once for each test. So, although it look like you only wrote one test, here, there are actually three Jasmine specs, and you can be sure that Hello World rendering is working in all three environments.
+The other interesting method here is `testWithDocument`; that method creates three different Jasmine test specs, one for each of the environments where `react-server` can render a page: server, client, and client transition. `testWithDocument` runs the callback passed to it once for each test. So, although it look like you only wrote one test, here, there are actually three Jasmine specs, and you can be sure that Hello World rendering is working in all three environments.
 
 Note that the file must end with "Spec.js" or "spec.js" to be recognized as a test by the framework.
 
-And that's it for testing the rendered HTML of Triton! If you want to do more complicated tests, check out the `testHelper` API below.
+And that's it for testing the rendered HTML of `react-server`! If you want to do more complicated tests, check out the `testHelper` API below.
 
 ## The `testHelper` API
 
 `testHelper` should give you the basic tools you need to write most tests, including the ability to use the same test code on server, client, and client transition environments.
 
-### `startServerBeforeAll(routes: Object | Array[String])`
+### `startServerBeforeAll(specFileName, routes: Object | Array[String])`
 
-This method should be called inside a describe function to set up a Triton server with the page classes passed in once before all the tests start.
+This method should be called inside a describe function to set up `react-server` with the page classes passed in once before all the tests start.
 
 If the argument is an Object, it is interpreted as a map of URLs to **paths to page class files**. Note that it is **not** actual JavaScript objects. Never do this:
 
@@ -126,22 +126,20 @@ This will not work, because you have required the file rather than passing the p
 ```
 // Yes, my pretties.
 helper.startServerBeforeAll({
-    "/myPage": "./myPage/MyPage",
-    "/myOtherPage": "./myPage/MyOtherPage"
+    "/myPage": "./MyPage",
+    "/myOtherPage": "./MyOtherPage"
   });
 ```
 
 We need a file path and not a class because we need to be able to package up these routes with webpack, which deals solely with files.
 
-Furthermore, the path to the page class file needs to be relative to the `specs` directory, **not relative to the `Spec` file**. I know that's hokey, but I didn't have time to make it work that way.
-
 If, as is common, you just want to use the class name as the URL, you can use a shorthand and pass an array of `Page` class files. The word "Page" will be stripped from the end and the first letter will be lower cased:
 
 ```
 // creates a server with two URLs: /my and /myOther
-helper.startServerBeforeAll([]
-    "./myPage/MyPage",
-    "./myPage/MyOtherPage"
+helper.startServerBeforeAll([
+    "./MyPage",
+    "./MyOtherPage"
   ]);
 ```
 
@@ -157,7 +155,7 @@ These are just like `startServerBeforeAll` and `stopServerAfterAll`, except that
 
 ### `testWithDocument(url: String, testCallback:Function(document, done?))`
 
-The primary method for testing what HTML has been generated by Triton. This method creates three specs (one each for server-generate HTML, client-generated HTML, and client transition-generated HTML), and it runs `testCallback` on the resulting HTML document once per spec.
+The primary method for testing what HTML has been generated by `react-server`. This method creates three specs (one each for server-generate HTML, client-generated HTML, and client transition-generated HTML), and it runs `testCallback` on the resulting HTML document once per spec.
 
 You can use any standard DOM operations on the document, such as querySelectorAll or innerHTML, to examine the resulting document tree.
 
@@ -185,7 +183,7 @@ Visits the `url` and returns a document object once all the the client JavaScrip
 
 ### `getTransitionDocument(url: String, callback: Function(document))`
 
-Visits a dummy page, and then clicks on a triton `Link` to visit the `url` and returns a document object once all the the client JavaScript has run. Does not create a Jasmine spec. Generally, you will use `testWithDocument`, but `getTransitionDocument` is useful if you know you don't want to test on server or client first load.
+Visits a dummy page, and then clicks on a `react-server` `Link` to visit the `url` and returns a document object once all the the client JavaScript has run. Does not create a Jasmine spec. Generally, you will use `testWithDocument`, but `getTransitionDocument` is useful if you know you don't want to test on server or client first load.
 
 ### `getServerWindow(url: String, callback: Function(document))`
 
@@ -197,7 +195,7 @@ Visits the `url` and returns a window object once all the the client JavaScript 
 
 ### `getTransitionWindow(url: String, callback: Function(window))`
 
-Visits a dummy page, and then clicks on a triton `Link` to visit the `url` and returns a window object once all the the client JavaScript has run. Does not create a Jasmine spec. Generally, you will use `testWithWindow`, but `getTransitionWindow` is useful if you know you don't want to test on client first load.
+Visits a dummy page, and then clicks on a `react-server` `Link` to visit the `url` and returns a window object once all the the client JavaScript has run. Does not create a Jasmine spec. Generally, you will use `testWithWindow`, but `getTransitionWindow` is useful if you know you don't want to test on client first load.
 
 ### `getServerBrowser(url: String, callback: Function(browser))`
 
@@ -209,8 +207,8 @@ Visits the `url` and returns a Zombie browser object once all the the client Jav
 
 ### `getTransitionBrowser(url: String, callback: Function(browser))`
 
-Visits a dummy page, and then clicks on a triton `Link` to visit the `url` and returns a Zombie browser object once all the the client JavaScript has run. Does not create a Jasmine spec.
+Visits a dummy page, and then clicks on a `react-server` `Link` to visit the `url` and returns a Zombie browser object once all the the client JavaScript has run. Does not create a Jasmine spec.
 
 ### `getPort`
 
-Returns the port number being used to launch triton servers. Useful if you want to manually fire up a Zombie browser and point it at the server.
+Returns the port number being used to launch `react-server` servers. Useful if you want to manually fire up a Zombie browser and point it at the server.

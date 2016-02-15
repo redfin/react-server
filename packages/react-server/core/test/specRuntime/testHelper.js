@@ -152,7 +152,7 @@ var routesArrayToMap = function (routesArray) {
 
 // starts a simple triton server.
 // routes is of the form {url: pathToPageCode} or [pathToPageCode]
-var startTritonServer = function (specFile, routes, cb) {
+var startServer = function (specFile, routes, cb) {
 	// if we got an array, normalize it to a map of URLs to file paths.
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
@@ -179,7 +179,7 @@ var startTritonServer = function (specFile, routes, cb) {
 	});
 };
 
-var stopTritonServer = function (server, done) {
+var stopServer = function (server, done) {
 	server.close(done);
 };
 
@@ -309,7 +309,7 @@ var testWithDocument = function (url, testFn) {
 var testSetupFn = function (specFile, routes) {
 	return (done) => {
 		try {
-			startTritonServer(specFile, routes, s => {
+			startServer(specFile, routes, s => {
 				servers.push(s);
 				done();
 			});
@@ -322,7 +322,7 @@ var testSetupFn = function (specFile, routes) {
 }
 
 var testTeardownFn = function (done) {
-	stopTritonServer(servers.pop(), done);
+	stopServer(servers.pop(), done);
 };
 
 // convenience function to start a triton server before each test. make sure to
@@ -351,8 +351,8 @@ var stopServerAfterAll = function () {
 
 module.exports = {
 	getPort,
-	startTritonServer,
-	stopTritonServer,
+	startServer,
+	stopServer,
 	getServerDocument,
 	getClientDocument,
 	getTransitionDocument,
