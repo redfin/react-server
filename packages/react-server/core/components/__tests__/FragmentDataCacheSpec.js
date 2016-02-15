@@ -1,21 +1,20 @@
 
 var TritonAgent = require("../../TritonAgent")
-,	superagent = require("superagent")
-,	cheerio = require("cheerio")
-,	React = require("react")
-,	ReactDOMServer = require("react-dom/server")
-,	FragmentDataCache = require("../../components/FragmentDataCache")
-,	isArray = require("lodash/lang/isArray")
+,   cheerio = require("cheerio")
+,   React = require("react")
+,   ReactDOMServer = require("react-dom/server")
+,   FragmentDataCache = require("../FragmentDataCache")
+,   isArray = require("lodash/lang/isArray")
 ;
 
 var {
 	makeServer,
 	withRlsContext
-} = require("../TritonAgent/setup");
+} = require("../../test/util/tritonAgentSupport");
 
 describe("FragmentDataCache", () => {
 
-		var server;
+	var server;
 
 	beforeAll( (done) => {
 		makeServer( (createdServer) => {

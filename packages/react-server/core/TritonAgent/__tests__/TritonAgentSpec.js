@@ -10,7 +10,7 @@ var {
 	addJsonParserForContentType,
 	removeJsonParserForContentType,
 	SIMPLE_SUCCESS
-} = require("./setup");
+} = require("../../test/util/tritonAgentSupport");
 
 
 describe("TritonAgent", () => {

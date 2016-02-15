@@ -15,20 +15,43 @@ var servers = [];
 function getBrowser(opts) {
 	var browser = new Browser(opts);
 	browser.silent = (!process.env.DEBUG);
+	browser.on('error', function (e) {
+		console.error("An error occurred running zombie tests", e);
+	})
 	return browser;
 }
 
 var getPort = function () { return PORT };
 
-var writeRoutesFile = function (routes, tempDir, clientOrServer) {
+var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 	// clientOrServer = ["client"|"server"];
+
+	let specDir = path.dirname(specFile);
+	let relativeRoutePathRoot = specDir;
+	if (clientOrServer === 'client') {
+		// if we're writing for the client, we need to correct for
+		// the fact that `specFile` will be coming from target/server
+		let relativePathToServer = path.relative(specDir, path.join(tempDir, '../server/'));
+		let relativePathToSpec = path.relative(path.join(tempDir, '../server/'), specDir);
+
+		relativeRoutePathRoot = path.resolve(specDir, relativePathToServer, '../client/', relativePathToSpec);
+	}
+
+	let specRuntimePath = path.join(tempDir, `../${clientOrServer}/test/specRuntime`);
+	let scriptsMiddlewareAbsPath = `${specRuntimePath}/ScriptsMiddleware`;
+	let transitionPageAbsPath = `${specRuntimePath}/TransitionPage`;
 
 	// first we convert our simple routes format to a triton routes file.
 	var routesForTriton = `module.exports = {
-			middleware: [require("../../${clientOrServer}/test/specRuntime/ScriptsMiddleware")],
+			middleware: [require("${scriptsMiddlewareAbsPath}")],
 			routes: {`;
 
 	Object.keys(routes).forEach((url, index) => {
+
+		let routeAbsPath = path.isAbsolute(routes[url])
+			? routes[url]
+			: path.normalize(path.join(relativeRoutePathRoot, `${routes[url]}`));
+
 		routesForTriton += `
 			route${index}: {
 				path: ["${url}"],
@@ -36,7 +59,7 @@ var writeRoutesFile = function (routes, tempDir, clientOrServer) {
 				page: function () {
 					return {
 						done: function (cb) {
-							cb(require("../../${clientOrServer}/test/${routes[url]}"));
+							cb(require("${routeAbsPath}"));
 						}
 					};
 				}
@@ -52,20 +75,19 @@ var writeRoutesFile = function (routes, tempDir, clientOrServer) {
 			page: function() {
 				return {
 					done: function(cb) {
-						cb(require("../../${clientOrServer}/test/specRuntime/TransitionPage"));
+						cb(require("${transitionPageAbsPath}"));
 					}
 				};
 			}
 		}}};`;
 	mkdirp.sync(tempDir);
-	fs.writeFileSync(tempDir + `/routes-${clientOrServer}.js`, routesForTriton);
+	fs.writeFileSync(path.join(tempDir, `routes-${clientOrServer}.js`), routesForTriton);
 }
 
 var writeEntrypointFile = function (tempDir) {
 	mkdirp.sync(tempDir);
 	fs.writeFileSync(tempDir + "/entrypoint.js", `
-		var ClientController = require("triton").ClientController;
-
+		var ClientController = require("react-server").ClientController;
 		window.rfBootstrap = function () {
 			var controller = new ClientController({
 				routes: require("./routes-client.js")
@@ -80,19 +102,25 @@ var writeEntrypointFile = function (tempDir) {
 var buildClientCode = function (tempDir, cb) {
 
 	webpack({
+		target: "web",
 		context: tempDir,
 		entry: "./entrypoint.js",
 		output: {
 			path: tempDir,
 			filename: "rollup.js",
 		},
+		debug: true,
+		bail: true,
 		resolve: {
 			alias: {
-				"triton": process.cwd(),  // this works because package.json points it at /target/client/client.js
+				"react-server": process.cwd(), // this works because package.json points it at /target/client/client.js,
 			},
 		},
 	}, function(err, stats) { //eslint-disable-line no-unused-vars
-		if(err) throw new Error("Error during webpack build.", err);
+		if(err) {
+			console.error(err);
+			throw new Error("Error during webpack build.");
+		}
 		cb();
 	});
 }
@@ -111,6 +139,10 @@ var routesArrayToMap = function (routesArray) {
 	var result = {};
 	routesArray.forEach((file) => {
 		var fileName = path.basename(file);
+		if (path.extname(fileName)) {
+			// strip extension from filename, if given
+			fileName = fileName.substr(0, fileName.length - path.extname(fileName).length);
+		}
 		if (fileName.length >=4 && fileName.substr(-4) === "Page") fileName = fileName.substr(0, fileName.length - 4);
 		if (fileName.length > 0) fileName = fileName.substr(0, 1).toLowerCase() + fileName.substr(1);
 		result["/" + fileName] = file;
@@ -120,17 +152,18 @@ var routesArrayToMap = function (routesArray) {
 
 // starts a simple triton server.
 // routes is of the form {url: pathToPageCode} or [pathToPageCode]
-var startTritonServer = function (routes, cb) {
+var startTritonServer = function (specFile, routes, cb) {
 	// if we got an array, normalize it to a map of URLs to file paths.
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
-	var testTempDir = path.join(__dirname, "../../test-temp");
-	writeRoutesFile(routes, testTempDir, "client");
-	writeRoutesFile(routes, testTempDir, "server");
+	var testTempDir = path.join(__dirname, "../../../test-temp");
+
+	writeRoutesFile(specFile, routes, testTempDir, "client");
+	writeRoutesFile(specFile, routes, testTempDir, "server");
 	writeEntrypointFile(testTempDir);
 	buildClientCode(testTempDir, () => {
 		var server = express();
-		process.env.TRITON_CONFIGS = path.join(process.cwd(), "core/test");
+		process.env.TRITON_CONFIGS = path.join(__dirname, "../../test");
 
 		server.use('/rollups', express.static(testTempDir));
 
@@ -273,12 +306,18 @@ var testWithDocument = function (url, testFn) {
 
 }
 
-var testSetupFn = function (routes) {
+var testSetupFn = function (specFile, routes) {
 	return (done) => {
-		startTritonServer(routes, s => {
-			servers.push(s);
-			done();
-		});
+		try {
+			startTritonServer(specFile, routes, s => {
+				servers.push(s);
+				done();
+			});
+		} catch (e) {
+			console.error("Failed to start server", e.stack);
+			servers.forEach(s => s.close());
+			process.exit(1); //eslint-disable-line no-process-exit
+		}
 	}
 }
 
@@ -288,14 +327,14 @@ var testTeardownFn = function (done) {
 
 // convenience function to start a triton server before each test. make sure to
 // call stopServerAfterEach so that the server is stopped.
-var startServerBeforeEach = function (routes) {
-	beforeEach(testSetupFn(routes));
+var startServerBeforeEach = function (specFile, routes) {
+	beforeEach(testSetupFn(specFile, routes));
 }
 
 // convenience function to start a triton server before all the tests. make sure to
 // call stopServerAfterEach so that the server is stopped.
-var startServerBeforeAll = function (routes) {
-	beforeAll(testSetupFn(routes));
+var startServerBeforeAll = function (specFile, routes) {
+	beforeAll(testSetupFn(specFile, routes));
 }
 
 // convenience function to stop a triton server after each test. to be paired

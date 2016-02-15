@@ -1,11 +1,11 @@
-var helper = require("../specRuntime/testHelper");
+var helper = require("../../../test/specRuntime/testHelper");
 
 describe("A basic page", () => {
 
-	helper.startServerBeforeAll([
-		"./simpleRender/HelloWorldPage", 
-		"./simpleRender/GoodbyeWorldPage", 
-		"./simpleRender/MultiElementPage"
+	helper.startServerBeforeAll(__filename, [
+		"./HelloWorldPage",
+		"./GoodbyeWorldPage",
+		"./MultiElementPage",
 	]);
 
 	helper.stopServerAfterAll();
