@@ -1,5 +1,6 @@
 
 var React = require('react'),
+	ReactDOM = require('react-dom'),
 	MobileDetect = require('mobile-detect'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
@@ -384,7 +385,7 @@ class ClientController extends EventEmitter {
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
-			React.render(element, root);
+			ReactDOM.render(element, root);
 
 			totalRenderTime += timer.stop();
 
@@ -616,4 +617,3 @@ function buildContext(routes) {
 }
 
 module.exports = ClientController;
-
