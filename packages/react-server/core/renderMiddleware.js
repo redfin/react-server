@@ -1,6 +1,7 @@
 
 var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react'),
+	ReactDOMServer = require('react-dom/server'),
 	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -735,7 +736,7 @@ function renderElement(res, element, context) {
 
 	try {
 		if (element !== null) {
-			html = React.renderToString(
+			html = ReactDOMServer.renderToString(
 				React.cloneElement(element, { context: context })
 			);
 		}
