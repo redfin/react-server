@@ -30,12 +30,13 @@ export default (routes,{
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute);
 	const entrypointBase = hot ? [`webpack-dev-server/client?${outputUrl}`,"webpack/hot/only-dev-server"] : [];
 	let entrypoints = {};
-	for (let routeName in routes.routes) {
-		if (routes.routes.hasOwnProperty(routeName)) {
-			let route = routes.routes[routeName];
-			var absolutePathToPage = path.resolve(routesDirAbsolute, route.page);
+	for (let routeName of Object.keys(routes.routes)) {
+		let route = routes.routes[routeName];
+		let formats = normalizeRoutesPage(route.page);
+		for (let format of Object.keys(formats)) {
+			const absolutePathToPage = path.resolve(routesDirAbsolute, formats[format]);
 
-			entrypoints[routeName] = [
+			entrypoints[`${routeName}${format !== "default" ? "-" + format : ""}`] = [
 				...entrypointBase,
 				bootstrapFile,
 				absolutePathToPage,
@@ -131,19 +132,24 @@ module.exports = {
 	],
 	routes:{`);
 
-	for (let routeName in routes.routes) {
-		if (routes.routes.hasOwnProperty(routeName)) {
-			let route = routes.routes[routeName];
-			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, route.page));
+	for (let routeName of Object.keys(routes.routes)) {
+		let route = routes.routes[routeName];
 
+		routesOutput.push(`
+		${routeName}: {`);
+		for (let name of ["path", "method"]) {
 			routesOutput.push(`
-			${routeName}: {`);
-			for (let name of ["path", "method"]) {
-				routesOutput.push(`
-				${name}: "${route[name]}",`);
-			}
+			${name}: "${route[name]}",`);
+		}
+
+		let formats = normalizeRoutesPage(route.page);
+		routesOutput.push(`
+			page: {`);
+		for (let format of Object.keys(formats)) {
+			const formatModule = formats[format];
+			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule));
 			routesOutput.push(`
-				page: function() {
+				${format}: function() {
 					return {
 						done: function(cb) {`);
 			if (isClient) {
@@ -158,9 +164,11 @@ module.exports = {
 			routesOutput.push(`
 						}
 					};
-				},
-			},`);
+				},`);
 		}
+		routesOutput.push(`
+			},
+		}`);
 	}
 	routesOutput.push(`
 	}
@@ -171,6 +179,17 @@ module.exports = {
 
 	return routesFilePath;
 };
+
+
+// the page value for routes.routes["SomeRoute"] can either be a string for the default
+// module name or an object mapping format names to module names. This method normalizes
+// the value to an object.
+const normalizeRoutesPage = (page) => {
+	if (typeof page === "string") {
+		return {default: page};
+	}
+	return page;
+}
 
 // writes out a bootstrap file for the client which in turn includes the client
 // routes file. note that outputDir must be the same directory as the client routes
