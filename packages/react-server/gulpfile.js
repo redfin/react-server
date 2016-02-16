@@ -105,6 +105,7 @@ gulp.task("test", ["compileServer", "compileClient"], function() {
 gulp.task("eslint", [], function() {
 	var srcMinusTest = src.concat([
 		"!core/**/__tests__/**/*",
+		"!**/*.json",
 	]);
 	return gulp.src(srcMinusTest)
         // eslint() attaches the lint output to the eslint property
