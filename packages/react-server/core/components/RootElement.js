@@ -85,6 +85,21 @@ RootElement.isRootElement = function(element) {
 	return element && element.props && element.props._isRootElement;
 }
 
+RootElement.getRootElementAttributes = function(element) {
+	var props = element.props;
+	var attrs = {};
+
+	if (props.className) attrs.class = props.className;
+
+	// TODO: Others?
+	[
+		'id',
+		'style',
+	].forEach(k => props[k] && (attrs[k] = props[k]));
+
+	return attrs;
+}
+
 RootElement.ensureRootElementWithContainer = function(element, container) {
 
 	// If it's _already_ a root element, pass it along.

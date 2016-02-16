@@ -15,6 +15,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
+	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
@@ -733,12 +734,14 @@ function renderElement(res, element, context) {
 	,   start = RLS().startTime
 	,   timer = logger.timer(`renderElement.individual.${name}`)
 	,   html  = ''
+	,   attrs = {}
 
 	try {
 		if (element !== null) {
 			html = ReactDOMServer.renderToString(
 				React.cloneElement(element, { context: context })
 			);
+			attrs = getRootElementAttributes(element);
 		}
 	} catch (err) {
 		// A component failing to render is not fatal.  We've already
@@ -760,7 +763,7 @@ function renderElement(res, element, context) {
 	RLS().renderTime || (RLS().renderTime = 0);
 	RLS().renderTime += individualTime;
 
-	return html;
+	return { html, attrs };
 }
 
 // Write as many elements out in a row as possible and then flush output.
@@ -817,7 +820,9 @@ function writeElement(res, element, i){
 		} data-triton-timing-offset="${
 			// Mark when we sent it.
 			new Date - RLS().timingDataT0
-		}">${element}</div>`);
+		}"${
+			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
+		}>${element.html}</div>`);
 	}
 }
 

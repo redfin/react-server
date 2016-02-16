@@ -13,6 +13,7 @@ var React = require('react'),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
 	FramebackController = require('./FramebackController'),
+	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
@@ -386,6 +387,11 @@ class ClientController extends EventEmitter {
 
 			element = React.cloneElement(element, { context: this.context });
 			ReactDOM.render(element, root);
+
+			_.forEach(
+				getRootElementAttributes(element),
+				(v, k) => root.setAttribute(k, v)
+			);
 
 			totalRenderTime += timer.stop();
 
