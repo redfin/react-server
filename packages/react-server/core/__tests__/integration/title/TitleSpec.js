@@ -1,13 +1,13 @@
-var helper = require("../specRuntime/testHelper");
+var helper = require("../../../test/specRuntime/testHelper");
 
 describe("A page with a title", () => {
 
-	helper.startServerBeforeAll([
-		"./title/SimpleTitlePage",
-		"./title/UnicodeTitlePage",
-		"./title/NullTitlePage",
-		"./title/AsyncTitlePage",
-		"./title/AsyncServerTimeoutTitlePage",
+	helper.startServerBeforeAll(__filename, [
+		"./SimpleTitlePage",
+		"./UnicodeTitlePage",
+		"./NullTitlePage",
+		"./AsyncTitlePage",
+		"./AsyncServerTimeoutTitlePage",
 	]);
 
 	helper.stopServerAfterAll();

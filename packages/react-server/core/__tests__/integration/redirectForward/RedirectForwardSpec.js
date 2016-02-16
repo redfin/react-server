@@ -1,12 +1,12 @@
-var helper = require("../specRuntime/testHelper"),
+var helper = require("../../../test/specRuntime/testHelper"),
 	Browser = require("zombie");
 
 describe("A redirect page", () => {
 
-	helper.startServerBeforeAll([
-		"./redirectForward/TemporaryRedirectPage",
-		"./redirectForward/PermanentRedirectPage",
-		"./redirectForward/FinalPage",
+	helper.startServerBeforeAll(__filename, [
+		"./TemporaryRedirectPage",
+		"./PermanentRedirectPage",
+		"./FinalPage",
 	]);
 
 	helper.stopServerAfterAll();
@@ -60,9 +60,9 @@ describe("A redirect page", () => {
 
 describe("A forward page", () => {
 
-	helper.startServerBeforeAll([
-		"./redirectForward/FinalPage",
-		"./redirectForward/ForwardPage",
+	helper.startServerBeforeAll(__filename, [
+		"./FinalPage",
+		"./ForwardPage",
 	]);
 
 	helper.stopServerAfterAll();

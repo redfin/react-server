@@ -11,7 +11,7 @@ module.exports = {
 	makeServer,
 	addJsonParserForContentType,
 	removeJsonParserForContentType,
-	SIMPLE_SUCCESS
+	SIMPLE_SUCCESS,
 }
 
 function withRlsContext (runTest) {
@@ -74,7 +74,7 @@ function makeServer (cb, { port = PORT } = {}) {
 	});
 
 	var httpServer = http.createServer(server);
-	httpServer.listen(PORT, () => cb(httpServer));
+	httpServer.listen(port, () => cb(httpServer));
 
 }
 
