@@ -306,6 +306,11 @@ var testWithDocument = function (url, testFn) {
 
 }
 
+// Factor out some boilerplate if when just looking for an element.
+var testWithElement = (url, query, testFn) => testWithDocument(
+	url, document => testFn(document.querySelector(query))
+);
+
 var testSetupFn = function (specFile, routes) {
 	return (done) => {
 		try {
@@ -357,6 +362,7 @@ module.exports = {
 	getClientDocument,
 	getTransitionDocument,
 	testWithDocument,
+	testWithElement,
 	getServerBrowser,
 	getClientBrowser,
 	getTransitionBrowser,
