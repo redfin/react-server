@@ -14,9 +14,24 @@ describe("A page's root elements", () => {
 		"/singlePromiseInArray"     : "promise in an array",
 		"/singleRootElementNoArray" : "RootElement with no array",
 		"/singleRootElementInArray" : "RootElement in an array",
-	}, (txt, url) => desc(`can be a single ${txt}`, url, element =>
-		expect(element.innerHTML).toMatch('foo')
-	));
+	}, makeSingleDesc(0));
+
+	// Single elements in containers.
+	_.forEach({
+		"/singleRootContainerNoArray" : "RootContainer with no array",
+		"/singleRootContainerInArray" : "RootContainer in an array",
+	}, makeSingleDesc(0));
+
+	// The first root element won't always be at index zero, since
+	// containers might burn slots.
+	function makeSingleDesc(idx) {
+		return (txt, url) => desc(
+			`can be a single ${txt}`,
+			url,
+			element => expect(element.innerHTML).toMatch('foo'),
+			idx
+		)
+	}
 
 	// Some machinery to factor out commonality.
 	function desc(txt, url, fn, idx=0) {
