@@ -5,6 +5,24 @@ describe("A page's root elements", () => {
 	var pages = [];
 	var seen = {};
 
+	// Verify that we get our attributes set where they need to go.
+	_.forEach({
+		'RootElement'   : "[data-triton-root-id]",
+		'RootContainer' : "[data-triton-container]",
+	}, (query, root) => {
+		_.forEach({
+			'id'    : 'foo',
+			'class' : 'bar',
+			'style' : 'baz',
+		}, (value, attr) => desc(
+			`can have "${attr}" attribute on ${root}`,
+			'/attributesOn'+root,
+			element => expect(element.getAttribute(attr)).toBe(value),
+			query
+		));
+	});
+
+
 	// Single elements of various types.
 	// All should resolve to a single `<div>foo</div>`.
 	_.forEach({
