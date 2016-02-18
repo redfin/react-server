@@ -105,16 +105,25 @@ module.exports = function(server, routes) {
 			navigateDfd.resolve();
 
 			if (err) {
-				logger.log("onNavigate received a non-2xx HTTP code", err);
-				handleResponseComplete(req, res, context, start, page);
-				if (err.status && err.status === 404) {
-					next();
-				} else if (err.status === 301 || err.status === 302 || err.status === 307) {
+				// The page can elect to proceed to render
+				// even with a non-2xx response.  If it
+				// _doesn't_ do so then we're done.
+				var done = !(page && page.getHaveDocument());
+
+				if (err.status === 301 || err.status === 302 || err.status === 307) {
 					res.redirect(err.status, err.redirectUrl);
-				} else {
-					next(err);
+				} else if (done) {
+					if (err.status === 404) {
+						next();
+					} else {
+						next(err);
+					}
 				}
-				return;
+				if (done) {
+					logger.log("onNavigate received a non-2xx HTTP code", err);
+					handleResponseComplete(req, res, context, start, page);
+					return;
+				}
 			}
 
 			renderPage(req, res, context, start, page);

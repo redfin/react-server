@@ -27,6 +27,7 @@ var PAGE_MIXIN = {
 	getExpressResponse : makeGetter('expressResponse'), // Only available with `isRawResponse`.
 	getRequest         : makeGetter('request'),
 	getConfig          : key => PageConfig.get(key),
+	setHaveDocument    : makeSetter('haveDocument'), // Proceed to render with non-200 code.
 };
 
 // Each item here represents a method that page/middleware objects may override.
@@ -92,6 +93,8 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setExpressRequest  : makeSetter('expressRequest'),
 	setExpressResponse : makeSetter('expressResponse'),
 	setRequest         : makeSetter('request'),
+	getHaveDocument    : makeGetter('haveDocument'),
+	setHaveDocument    : makeSetter('haveDocument'),
 
 	// TODO: Kill these.  They're only used to patch the status code
 	// through from navigator to renderMiddleware within triton itself.
