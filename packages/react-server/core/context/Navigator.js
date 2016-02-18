@@ -161,7 +161,10 @@ class Navigator extends EventEmitter {
 
 		// call page.handleRoute(), and use the resulting code to decide how to
 		// respond.
-		page.handleRoute().then(handleRouteResult => {
+		// We call it in a promise handler so any exception that
+		// arises will get converted to a rejection that we can handle
+		// below.
+		Q().then(page.handleRoute).then(handleRouteResult => {
 
 			page.setStatus(handleRouteResult.code);
 

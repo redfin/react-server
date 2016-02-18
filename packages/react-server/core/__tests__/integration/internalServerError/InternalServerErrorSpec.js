@@ -16,7 +16,7 @@ describe("A 500 internal server error page", () => {
 
 	a500("can result from an exception during `handleRoute()`", '/internalServerErrorException', txt => {
 		expect(txt).toBe('[object Object]\n')
-	}, xit); // Pending... why doesn't this work?
+	});
 
 	a500("can result from a rejection from `handleRoute()`", '/internalServerErrorRejection', txt => {
 		expect(txt).toBe('[object Object]\n')
