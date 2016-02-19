@@ -3,8 +3,9 @@ import React from "react"
 export default class InternalServerErrorException {
 	handleRoute() {
 
-		// Not throwing an `Error` since this is easier to match.
-		throw "died";
+		// Need to throw a real error here, since CLS is going to
+		// assign a property to the error to track its source context.
+		throw new Error("died");
 
 		return {code: 200};
 	}
