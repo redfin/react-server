@@ -111,7 +111,15 @@ module.exports = function(server, routes) {
 				var done = !(page && page.getHasDocument());
 
 				if (err.status === 301 || err.status === 302 || err.status === 307) {
-					res.redirect(err.status, err.redirectUrl);
+					if (done){
+						// This adds a boilerplate body.
+						res.redirect(err.status, err.redirectUrl);
+					} else {
+						// This expects our page to
+						// render a body.  Hope they
+						// know what they're doing.
+						res.set('Location', err.redirectUrl);
+					}
 				} else if (done) {
 					if (err.status === 404) {
 						next();

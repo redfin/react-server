@@ -5,7 +5,9 @@ describe("A redirect page", () => {
 
 	helper.startServerBeforeAll(__filename, [
 		"./TemporaryRedirectPage",
+		"./TemporaryRedirectWithDocumentPage",
 		"./PermanentRedirectPage",
+		"./PermanentRedirectWithDocumentPage",
 		"./FinalPage",
 	]);
 
@@ -34,6 +36,34 @@ describe("A redirect page", () => {
 		browser.visit(`http://localhost:${helper.getPort()}/temporaryRedirect`);
 	});
 
+	it("gets the right body for a temp redirect", done => {
+		(new Browser).on("redirect", (req, res) => {
+			res.text().then(text => {
+				expect(text).toMatch('<p>Found. Redirecting to <a href="/final">/final</a></p>');
+				expect(text).not.toMatch('TemporaryRedirectPage');
+				done();
+			});
+		})
+		.visit(`http://localhost:${helper.getPort()}/temporaryRedirect`);
+	});
+
+	it("gets the right body for a temp redirect with document", done => {
+		(new Browser).on("redirect", (req, res) => {
+			res.text().then(text => {
+				expect(text).not.toMatch('<p>Found. Redirecting to <a href="/final">/final</a></p>');
+				expect(text).toMatch('TemporaryRedirectWithDocumentPage');
+				done();
+			});
+		})
+		.visit(`http://localhost:${helper.getPort()}/temporaryRedirectWithDocument`);
+	});
+
+	describe("redirects temporarily to the right page with document", () => {
+		helper.testWithDocument("/temporaryRedirectWithDocument", (document) => {
+			expect(document.location.pathname).toMatch("/final");
+		});
+	});
+
 	describe("redirects permanently to the right page", () => {
 		helper.testWithDocument("/permanentRedirect", (document) => {
 			expect(document.location.pathname).toMatch("/final");
@@ -56,6 +86,36 @@ describe("A redirect page", () => {
 		});
 		browser.visit(`http://localhost:${helper.getPort()}/permanentRedirect`);
 	});
+
+	it("gets the right body for a permanent redirect", done => {
+		(new Browser).on("redirect", (req, res) => {
+			res.text().then(text => {
+				expect(text).toMatch('<p>Moved Permanently. Redirecting to <a href="/final">/final</a></p>');
+				expect(text).not.toMatch('PermanentRedirectPage');
+				done();
+			});
+		})
+		.visit(`http://localhost:${helper.getPort()}/permanentRedirect`);
+	});
+
+	it("gets the right body for a permanent redirect with document", done => {
+		(new Browser).on("redirect", (req, res) => {
+			res.text().then(text => {
+				expect(text).not.toMatch('<p>Moved Permanently. Redirecting to <a href="/final">/final</a></p>');
+				expect(text).toMatch('PermanentRedirectWithDocumentPage');
+				done();
+			});
+		})
+		.visit(`http://localhost:${helper.getPort()}/permanentRedirectWithDocument`);
+	});
+
+	describe("redirects permanently to the right page with document", () => {
+		helper.testWithDocument("/permanentRedirectWithDocument", (document) => {
+			expect(document.location.pathname).toMatch("/final");
+		});
+	});
+
+
 });
 
 describe("A forward page", () => {
