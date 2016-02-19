@@ -11,7 +11,7 @@ describe("A 404 not found page", () => {
 		expect(txt).toBe('Cannot GET /notFoundNoDocument\n')
 	});
 
-	a404("has a body with `haveDocument(true)`", '/notFoundWithDocument', txt => {
+	a404("has a body with `hasDocument: true`", '/notFoundWithDocument', txt => {
 		expect(txt).not.toMatch('Cannot GET /notFoundNoDocument')
 		expect(txt).toMatch('foo</title>')
 		expect(txt).toMatch('foo</div>')

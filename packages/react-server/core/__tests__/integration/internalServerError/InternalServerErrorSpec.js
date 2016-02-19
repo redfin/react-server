@@ -8,7 +8,7 @@ describe("A 500 internal server error page", () => {
 		expect(txt).toBe('[object Object]\n')
 	});
 
-	a500("has a body with `haveDocument(true)`", '/internalServerErrorWithDocument', txt => {
+	a500("has a body with `hasDocument: true`", '/internalServerErrorWithDocument', txt => {
 		expect(txt).not.toMatch('Cannot GET /internalServerErrorNoDocument')
 		expect(txt).toMatch('foo</title>')
 		expect(txt).toMatch('foo</div>')

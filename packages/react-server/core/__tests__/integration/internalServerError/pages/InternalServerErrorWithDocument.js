@@ -2,8 +2,10 @@ import React from "react"
 
 export default class InternalServerErrorWithDocumentPage {
 	handleRoute() {
-		this.setHaveDocument(true);
-		return {code: 500};
+		return {
+			code        : 500,
+			hasDocument : true,
+		};
 	}
 
 	getTitle() {

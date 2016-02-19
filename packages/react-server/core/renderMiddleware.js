@@ -108,7 +108,7 @@ module.exports = function(server, routes) {
 				// The page can elect to proceed to render
 				// even with a non-2xx response.  If it
 				// _doesn't_ do so then we're done.
-				var done = !(page && page.getHaveDocument());
+				var done = !(page && page.getHasDocument());
 
 				if (err.status === 301 || err.status === 302 || err.status === 307) {
 					res.redirect(err.status, err.redirectUrl);

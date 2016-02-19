@@ -2,8 +2,10 @@ import React from "react"
 
 export default class NotFoundWithDocumentPage {
 	handleRoute() {
-		this.setHaveDocument(true);
-		return {code: 404};
+		return {
+			code        : 404,
+			hasDocument : true,
+		};
 	}
 
 	getTitle() {
