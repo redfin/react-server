@@ -165,10 +165,12 @@ class Navigator extends EventEmitter {
 
 			page.setStatus(handleRouteResult.code);
 
+			page.setHasDocument(handleRouteResult.hasDocument);
+
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && ((handleRouteResult.code / 100)|0) !== 2) {
-				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, null, request.getUrl(), type);
+				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, page, request.getUrl(), type);
 				return;
 			}
 			if (handleRouteResult.page) {
@@ -182,6 +184,7 @@ class Navigator extends EventEmitter {
 			this.emit('navigateDone', null, page, request.getUrl(), type);
 		}).catch(err => {
 			logger.error("Error while handling route", err);
+
 			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type);
 		});
 

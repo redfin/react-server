@@ -93,15 +93,21 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setExpressResponse : makeSetter('expressResponse'),
 	setRequest         : makeSetter('request'),
 
-	// TODO: Kill these.  They're only used to patch the status code
+	// TODO: Kill these?  They're only used to patch values
 	// through from navigator to renderMiddleware within triton itself.
 	// They don't need to be exposed publicly.
 	//
 	// The way to set a response code for your page is to return it from
 	// `handleRoute()` as e.g. `{code: 200}`.
 	//
+	// The way to opt-in to rendering a document for a non-2xx response
+	// code is to include `hasDocument: true` in your `handleRoute()`
+	// response object.
+	//
 	getStatus          : makeGetter('status'),
 	setStatus          : makeSetter('status'),
+	getHasDocument     : makeGetter('hasDocument'),
+	setHasDocument     : makeSetter('hasDocument'),
 };
 
 // We log all method calls on the page chain for debugging purposes.
