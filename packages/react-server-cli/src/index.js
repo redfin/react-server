@@ -18,7 +18,7 @@ const logging = require("react-server").logging,
 
 // Logging setup. This typically wouldn't be handled here,
 // but the application integration stuff isn't part of this project
-logging.setLevel('main',  argv.loglevel);
+logging.setLevel('main',  argv.logLevel);
 if (!isProduction) {
 	logging.setLevel('time',  'fast');
 	logging.setLevel('gauge', 'ok');
@@ -27,7 +27,7 @@ if (!isProduction) {
 // if the server is being launched with some bad practices for production mode, then we
 // should output a warning. if arg.jsurl is set, then hot and minify are moot, since
 // we aren't serving JavaScript & CSS at all.
-if ((!argv.jsurl && (argv.hot || !argv.minify)) ||  process.env.NODE_ENV !== "production") { //eslint-disable-line no-process-env
+if ((!argv.jsUrl && (argv.hot || !argv.minify)) ||  process.env.NODE_ENV !== "production") { //eslint-disable-line no-process-env
 	logger.warning("PRODUCTION WARNING: the following current settings are discouraged in production environments. (If you are developing, carry on!):");
 	if (argv.hot) {
 		logger.warning("-- Hot reload is enabled. Pass --hot=false, pass --production, or set NODE_ENV=production to turn off.");
@@ -42,11 +42,4 @@ if ((!argv.jsurl && (argv.hot || !argv.minify)) ||  process.env.NODE_ENV !== "pr
 	}
 }
 
-startServer(argv.routes, {
-	port: argv.port,
-	jsPort: argv.jsPort,
-	hot: argv.hot,
-	minify: argv.minify,
-	compileOnly: argv.compileonly,
-	jsUrl: argv.jsurl,
-});
+startServer(argv.routes, argv);
