@@ -1,9 +1,11 @@
-var eslint = require("gulp-eslint"),
-	gulp = require("gulp"),
-	babel = require("gulp-babel");
+import eslint from "gulp-eslint";
+import gulp from "gulp";
+import babel from "gulp-babel";
+import logging from "react-server-gulp-module-tagger";
 
 gulp.task("default", () => {
 	return gulp.src("src/**/*.js")
+		.pipe(logging())
 		.pipe(babel({presets: ["es2015", "react"], plugins: ["transform-runtime"]}))
 		.pipe(gulp.dest("target"));
 });

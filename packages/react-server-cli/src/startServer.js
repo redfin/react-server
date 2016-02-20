@@ -1,4 +1,4 @@
-import triton from "react-server"
+import triton, { logging } from "react-server"
 import http from "http"
 import express from "express"
 import path from "path"
@@ -6,9 +6,7 @@ import compression from "compression"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "./compileClient"
 
-const logging = triton.logging;
-// TODO: do we need a post-processor here?
-const logger = logging.getLogger({name: "react-server-cli/startServer.js", color: {server: 9}});
+const logger = logging.getLogger(__LOGGER__);
 
 export default function(routesRelativePath, {
 		port = 3000,

@@ -4,9 +4,9 @@ import mkdirp from "mkdirp"
 import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 
-// commented out to please eslint, but readd if logging is needed in this file.
-//import reactServer from "react-server"
-//const logger = reactServer.logging.getLogger({name: "react-server-cli/compileClient.js", color: {server: 164}});
+// commented out to please eslint, but re-add if logging is needed in this file.
+//import {logging} from "react-server"
+//const logger = logging.getLogger(__LOGGER__);
 /**
  * Compiles the routes file in question for browser clients using webpack.
  */

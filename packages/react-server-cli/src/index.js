@@ -13,7 +13,7 @@ const argv = parseCliArgs(isProduction);
 // these require calls are after the argument parsing because we want to set NODE_ENV
 // before they get loaded.
 const logging = require("react-server").logging,
-	logger = logging.getLogger({name: "react-server-cli/index.js", color: {server: 9}}),
+	logger = logging.getLogger(__LOGGER__),
 	startServer = require("./startServer").default;
 
 // Logging setup. This typically wouldn't be handled here,
