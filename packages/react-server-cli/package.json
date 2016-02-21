@@ -8,6 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sasha Aickin",
+  "bin": {
+    "react-server-cli": "./bin/react-server-cli"
+  },
   "license": "Apache-2.0",
   "dependencies": {
     "babel-core": "~6.5.1",
