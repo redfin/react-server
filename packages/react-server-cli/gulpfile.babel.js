@@ -10,7 +10,7 @@ gulp.task("default", () => {
 		.pipe(gulp.dest("target"));
 });
 
-gulp.task("eslint", [], function() {
+gulp.task("eslint", [], () => {
 	return gulp.src("src/*.js")
         // eslint() attaches the lint output to the eslint property
         // of the file object so it can be used by other modules.

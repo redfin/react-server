@@ -7,10 +7,13 @@ import ExtractTextPlugin from "extract-text-webpack-plugin"
 // commented out to please eslint, but re-add if logging is needed in this file.
 //import {logging} from "react-server"
 //const logger = logging.getLogger(__LOGGER__);
-/**
- * Compiles the routes file in question for browser clients using webpack.
- */
- // TODO: add options for sourcemaps.
+
+// compiles the routes file for browser clients using webpack.
+// returns a tuple of { compiler, serverRoutes }. compiler is a webpack compiler
+// that is ready to have run called, and serverRoutes is a path to the transpiled
+// server routes file, which can be required and passed in to
+// reactServer.middleware().
+// TODO: add options for sourcemaps.
 export default (routes,{
 	workingDir = "./__clientTemp",
 	routesDir = ".",
@@ -98,11 +101,14 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 	}
 
 	if (hot) {
-		webpackConfig.module.loaders.unshift({
-			test: /\.jsx?$/,
-			loader: "react-hot",
-			exclude: /node_modules/,
-		});
+		webpackConfig.module.loaders = [
+			{
+				test: /\.jsx?$/,
+				loader: "react-hot",
+				exclude: /node_modules/,
+			},
+			...webpackConfig.module.loaders,
+		];
 		webpackConfig.plugins = [
 			...webpackConfig.plugins,
 			new webpack.HotModuleReplacementPlugin(),

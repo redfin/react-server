@@ -9,7 +9,6 @@ if (isProduction && !process.env.NODE_ENV) { //eslint-disable-line no-process-en
 }
 const argv = parseCliArgs(isProduction);
 
-// TODO: do we need a post-processor for logger here?
 // these require calls are after the argument parsing because we want to set NODE_ENV
 // before they get loaded.
 const logging = require("react-server").logging,
