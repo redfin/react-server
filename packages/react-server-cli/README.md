@@ -61,6 +61,16 @@ We are also considering completely getting rid of server-side rendering in devel
 
 Production mode's priority is optimization at the expense of startup time. A separate code bundle is generated for every entry point into your app so that there is at most just one JS and one CSS file loaded by the framework. All code is minified, and hot reloading is turned off.
 
+####Building static files for production use
+
+In many production configurations, you may not want `react-server-cli` to serve up your static JavaScript and CSS files. Typically, this is because you have a more performant static file server already set up or because you upload all your static files to a CDN server.
+
+To use `react-server-cli` in this sort of production setup, follow these steps:
+
+1. `react-server-cli --production --compile-only` compiles the JavaScript and CSS files into the directory `__clientTemp/build`.
+1. Upload the contents of `__clientTemp/build` to your static file server.
+1. `react-server-cli --production --js-url="http://mystaticfileserver.com/somedirectory/"` to start your HTML server depending on JavaScript and CSS files from your static file server.
+
 ###Setting Options Manually
 
 While development and production mode are good starting points, you can of course choose to override any of the setup by passing in options at the command line:
@@ -93,12 +103,10 @@ Defaults to **false** in development mode and **true** in production.
 #### --compile-only
 Compile the client JavaScript only, and don't start any servers. This is what you want to do if you are building the client JavaScript to be hosted on a CDN or separate server. Unless you have a very specific reason, it's almost always a good idea to only do this in production mode.
 
-For maximum compatibility between servers and compiled JavaScript, this option implies --bundleperroute.
-
 Defaults to **false**.
 
 #### --js-url
-A URL base for the pre-compiled client JavaScript; usually this is a base URL on a CDN or separate server. Setting a value for jsurl means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any of the client JavaScript. Obviously, this means that --jsurl overrides all of the options related to JavaScript compilation: --hot, --minify, and --bundleperroute.
+A URL base for the pre-compiled client JavaScript; usually this is a base URL on a CDN or separate server. Setting a value for js-url means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any of the client JavaScript. Obviously, this means that --js-url overrides and ignores all of the options related to JavaScript compilation and serving: --hot, --js-port, and --minify.
 
 Defaults to **null**.
 
@@ -120,4 +128,6 @@ Here are a few of the things on the unordered wishlist to add to `react-server-c
 * A programmatic API.
 * Automatic compilation of SASS and LESS.
 * Ability to opt out of Babel compilation.
+* Inclusion of CSS Modules
+* Best practices for static file HTTP caching (last-mod, filename hashes, etags, etc.)
 * Help with proxying API endpoints.
