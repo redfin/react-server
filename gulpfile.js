@@ -9,7 +9,7 @@ gulp.task('travis-ci', ['test', 'eslint']);
 	'eslint',
 ].map(task => {
 	gulp.task(task, () => gulp
-		.src('./packages/*/gulpfile.js', {read: false})
+		.src(['./packages/*/gulpfile.js', './packages/*/gulpfile.babel.js'], {read: false})
 		.pipe(chug({ tasks: [task] }))
 	)
 });
