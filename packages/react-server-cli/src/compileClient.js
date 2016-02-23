@@ -174,7 +174,7 @@ module.exports = {
 		}
 		routesOutput.push(`
 			},
-		}`);
+		},`);
 	}
 	routesOutput.push(`
 	}
