@@ -84,6 +84,10 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 		},
 		plugins: [
 			new ExtractTextPlugin("[name].css"),
+			new webpack.optimize.CommonsChunkPlugin({
+				name:"common",
+				filename: "common.js",
+			}),
 		],
 	};
 

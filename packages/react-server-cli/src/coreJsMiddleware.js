@@ -4,6 +4,7 @@ export default (pathToStatic) => {
 			const routeName = this.getRequest().getRouteName();
 			const baseUrl = pathToStatic || "/";
 			return [
+				`${baseUrl}common.js`,
 				`${baseUrl}${routeName}.bundle.js`,
 				{
 					type: "text/javascript",
