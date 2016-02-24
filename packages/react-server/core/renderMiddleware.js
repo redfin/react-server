@@ -63,9 +63,6 @@ module.exports = function(server, routes) {
 
 		initResponseCompletePromise(res);
 
-		// Just to keep an eye out for leaks.
-		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
-
 		// monkey-patch `res.write` so that we don't try to write to the stream if it's
 		// already closed
 		var origWrite = res.write;
