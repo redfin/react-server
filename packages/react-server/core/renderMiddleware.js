@@ -760,7 +760,7 @@ function renderElement(res, element, context) {
 	} catch (err) {
 		// A component failing to render is not fatal.  We've already
 		// started the page with a 200 response.  We've even opened
-		// the `data-triton-root-id` div for this component.  We need
+		// the `data-react-server-root-id` div for this component.  We need
 		// to close it out and move on.  This is a bummer, and we'll
 		// log it, but it's too late to totally bail out.
 		logger.error(`Error rendering element ${name}`, err);
@@ -829,7 +829,7 @@ function writeElement(res, element, i){
 	} else if (element.containerClose) {
 		res.write('</div>');
 	} else {
-		res.write(`<div data-triton-root-id=${
+		res.write(`<div data-react-server-root-id=${
 			i
 		} data-triton-timing-offset="${
 			// Mark when we sent it.

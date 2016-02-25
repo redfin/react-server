@@ -23,7 +23,7 @@ var _ = {
 // for dev tools
 window.React = React;
 
-var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
+var TRITON_DATA_ATTRIBUTE = "data-react-server-root-id";
 
 /**
  * Set up a Q error handler to make sure that errors that bubble
@@ -459,7 +459,7 @@ class ClientController extends EventEmitter {
 				mountNode.querySelectorAll(`div[${TRITON_DATA_ATTRIBUTE}]`)
 			).forEach(root => {
 
-				// Since this node has a "data-triton-root-id"
+				// Since this node has a "data-react-server-root-id"
 				// attribute, we can assume that we created it
 				// and should destroy it. Destruction means
 				// first unmounting from React and then
