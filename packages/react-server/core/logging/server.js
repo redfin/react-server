@@ -34,7 +34,7 @@ var makeLogger = function(group, opts){
 
 	logger.setLevels(config.levels);
 
-	logger.addRewriter(errorInterceptor);
+	logger.rewriters.push(errorInterceptor);
 
 	logger.stack = common.stack;
 
@@ -123,7 +123,7 @@ var addTransport = function(group, transport){
 }
 
 var addRewriter = function(rewriter){
-	common.forEachLogger(logger => logger.addRewriter(rewriter));
+	common.forEachLogger(logger => logger.rewriters.push(rewriter));
 }
 
 var setTimestamp = function(bool){
