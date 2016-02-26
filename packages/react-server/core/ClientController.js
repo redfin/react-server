@@ -11,7 +11,7 @@ var React = require('react'),
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
-	TritonAgent = require('./TritonAgent'),
+	ReactServerAgent = require('./ReactServerAgent'),
 	FramebackController = require('./FramebackController'),
 	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
@@ -23,7 +23,7 @@ var _ = {
 // for dev tools
 window.React = React;
 
-var TRITON_DATA_ATTRIBUTE = "data-react-server-root-id";
+var REACT_SERVER_DATA_ATTRIBUTE = "data-react-server-root-id";
 
 /**
  * Set up a Q error handler to make sure that errors that bubble
@@ -39,9 +39,9 @@ class ClientController extends EventEmitter {
 	constructor ({routes}) {
 		super();
 
-		var wakeTime = new Date - window.__tritonTimingStart;
+		var wakeTime = new Date - window.__reactServerTimingStart;
 
-		var dehydratedState = window.__tritonState;
+		var dehydratedState = window.__reactServerState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
@@ -55,7 +55,7 @@ class ClientController extends EventEmitter {
 		}
 
 		this.context = buildContext(routes);
-		TritonAgent.cache().rehydrate(dehydratedState.InitialContext['TritonAgent.cache']);
+		ReactServerAgent.cache().rehydrate(dehydratedState.InitialContext['ReactServerAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
 		this._setupFramebackController();
@@ -291,7 +291,7 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
-		var tStart = window.__tritonTimingStart;
+		var tStart = window.__reactServerTimingStart;
 		var t0 = new Date;
 		var retval = Q.defer();
 
@@ -374,7 +374,7 @@ class ClientController extends EventEmitter {
 
 					// Need a new root element in our
 					// current mountNode.
-					root = this._createTritonRootNode(mountNode, index)
+					root = this._createReactServerRootNode(mountNode, index)
 				}
 			}
 
@@ -396,7 +396,7 @@ class ClientController extends EventEmitter {
 			totalRenderTime += timer.stop();
 
 			if (!this._previouslyRendered){
-				var tDisplay = root.getAttribute('data-triton-timing-offset');
+				var tDisplay = root.getAttribute('data-react-server-timing-offset');
 				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
 				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
 
@@ -456,7 +456,7 @@ class ClientController extends EventEmitter {
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${TRITON_DATA_ATTRIBUTE}]`)
+				mountNode.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
 			).forEach(root => {
 
 				// Since this node has a "data-react-server-root-id"
@@ -484,9 +484,9 @@ class ClientController extends EventEmitter {
 	/**
 	 * This method creates a new div to render a ReactElement in to at the end of the mount node.
 	 */
-	_createTritonRootNode(mountNode, index) {
+	_createReactServerRootNode(mountNode, index) {
 		var root = document.createElement("div");
-		root.setAttribute(TRITON_DATA_ATTRIBUTE, index);
+		root.setAttribute(REACT_SERVER_DATA_ATTRIBUTE, index);
 		mountNode.appendChild(root);
 		return root;
 	}
@@ -524,7 +524,7 @@ class ClientController extends EventEmitter {
 
 		// If we're running without client navigation then we don't
 		// need a 'popstate' listener.
-		if (window.__tritonDisableClientNavigation) return;
+		if (window.__reactServerDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
 			if (this.framebackController.isActive()){
@@ -562,9 +562,9 @@ class ClientController extends EventEmitter {
 	_setupArrivalHandlers () {
 		// used by <script> callbacks to register data sent down on the
 		// initial connection after initial render
-		window.__tritonDataArrival = this.dataArrival.bind(this);
-		window.__tritonNodeArrival = this.nodeArrival.bind(this);
-		window.__tritonFailArrival = this.failArrival.bind(this);
+		window.__reactServerDataArrival = this.dataArrival.bind(this);
+		window.__reactServerNodeArrival = this.nodeArrival.bind(this);
+		window.__reactServerFailArrival = this.failArrival.bind(this);
 	}
 
 	_ensureRootNodeDfd (index) {
@@ -575,7 +575,7 @@ class ClientController extends EventEmitter {
 	}
 
 	dataArrival (url, dehydratedEntry) {
-		TritonAgent.cache().lateArrival(url, dehydratedEntry);
+		ReactServerAgent.cache().lateArrival(url, dehydratedEntry);
 	}
 
 	nodeArrival (index) {
@@ -586,7 +586,7 @@ class ClientController extends EventEmitter {
 		// we're going to mount into it.
 		this._ensureRootNodeDfd(index).resolve(
 			this.mountNode.querySelector(
-				`div[${TRITON_DATA_ATTRIBUTE}="${index}"]`
+				`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 			)
 		);
 	}

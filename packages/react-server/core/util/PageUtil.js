@@ -87,7 +87,7 @@ var PAGE_HOOKS = {
 
 
 // These methods are only defined on the page _chain_ which is used internally
-// within triton.  Page/middleware authers can ignore this.
+// within react-server.  Page/middleware authers can ignore this.
 var PAGE_CHAIN_PROTOTYPE = {
 	setExpressRequest  : makeSetter('expressRequest'),
 	setExpressResponse : makeSetter('expressResponse'),
@@ -95,7 +95,7 @@ var PAGE_CHAIN_PROTOTYPE = {
 	getRequest         : makeGetter('request'),
 
 	// TODO: Kill these?  They're only used to patch values
-	// through from navigator to renderMiddleware within triton itself.
+	// through from navigator to renderMiddleware within react-server itself.
 	// They don't need to be exposed publicly.
 	//
 	// The way to set a response code for your page is to return it from

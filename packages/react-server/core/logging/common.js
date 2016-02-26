@@ -13,9 +13,9 @@ var LOG_LEVELS = {
 	debug     : 7,
 }
 
-// Need these to be shared across triton and corvair (can actually be modified
+// Need these to be shared across react-server and corvair (can actually be modified
 // by the logging modules).
-var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
+var config = (global._REACT_SERVER_CONFIG || (global._REACT_SERVER_CONFIG = {
 	main: {
 		baseLevel: 'error',
 		levels: LOG_LEVELS,
@@ -68,8 +68,8 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 	},
 }));
 
-// These need to be shared across triton and corvair, too.
-var loggers = (global._TRITON_LOGGERS || (global._TRITON_LOGGERS = {}));
+// These need to be shared across react-server and corvair, too.
+var loggers = (global._REACT_SERVER_LOGGERS || (global._REACT_SERVER_LOGGERS = {}));
 
 // We may have loggers with the same name in different groups, so we'll give
 // each group its own container.

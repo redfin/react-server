@@ -33,8 +33,8 @@ new tab or the same tab (by setting the 'target' attribute of anchors.)
 You can use this functionality by simply adding a `frameback={true}` attribute
 to your `<Link>` element.
 
-The details page linked to need not itself be a triton page.  If it _is_ a
-triton page it will have its client-navigation disabled.  Any navigation away
+The details page linked to need not itself be a react-server page.  If it _is_ a
+react-server page it will have its client-navigation disabled.  Any navigation away
 from the details page will result in a full navigation of the outer window
 away from the master.  Thus only the master=>details=>back navigation is
 speeded up.
@@ -48,7 +48,7 @@ var Q      = require('q')
 ,   RLS    = require('./util/RequestLocalStorage').getNamespace()
 
 // This is an attribute that's added to the main content div that contains all
-// triton elements.
+// react-server elements.
 var {PAGE_CONTENT_NODE_ID} = require('./constants');
 
 // Cover the whole viewport.
@@ -158,10 +158,10 @@ class FramebackController extends EventEmitter {
 			// frameback navigation _after_ the _first_ for the
 			// page.  This guards against double-wiring our `load`
 			// handler. :goberzerk:
-			if (this.frame.contentWindow.__tritonIsFrame) return;
+			if (this.frame.contentWindow.__reactServerIsFrame) return;
 
-			// Disable triton client navigation in the frame.
-			this.frame.contentWindow.__tritonIsFrame = true;
+			// Disable react-server client navigation in the frame.
+			this.frame.contentWindow.__reactServerIsFrame = true;
 
 			// Add our load handler now that we've got a fresh
 			// `window` during navigation.

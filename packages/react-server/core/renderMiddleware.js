@@ -13,7 +13,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	expressState = require('express-state'),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
-	TritonAgent = require('./TritonAgent'),
+	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
 	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
@@ -51,7 +51,7 @@ module.exports = function(server, routes) {
 
 	// sets the namespace that data will be exposed into client-side
 	// TODO: express-state doesn't do much for us until we're using a templating library
-	server.set('state namespace', '__tritonState');
+	server.set('state namespace', '__reactServerState');
 
 	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
@@ -319,7 +319,7 @@ function renderTimingInit(pageObject, res) {
 	// the element arrived (when it's actually when we _sent_ it).
 	//
 	RLS().timingDataT0 = new Date;
-	renderScriptsSync([{text:`__tritonTimingStart=new Date`}], res)
+	renderScriptsSync([{text:`__reactServerTimingStart=new Date`}], res)
 }
 
 function renderDebugComments (pageObject, res) {
@@ -700,7 +700,7 @@ function writeBody(req, res, context, start, page) {
 		RLS().lateArrivals = undefined;
 
 		// Let the client know it's not getting any more data.
-		renderScriptsAsync([{ text: `__tritonFailArrival()` }], res)
+		renderScriptsAsync([{ text: `__reactServerFailArrival()` }], res)
 	});
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
@@ -807,12 +807,12 @@ function writeElements(res, elements) {
 			// now we can let the client start waking nodes up.
 			bootstrapClient(res)
 			for (var j = 0; j <= i; j++){
-				renderScriptsAsync([{ text: `__tritonNodeArrival(${j})` }], res)
+				renderScriptsAsync([{ text: `__reactServerNodeArrival(${j})` }], res)
 			}
 		} else if (i >= RLS().atfCount){
 
 			// Let the client know it's there.
-			renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
+			renderScriptsAsync([{ text: `__reactServerNodeArrival(${i})` }], res)
 		}
 	}
 
@@ -831,7 +831,7 @@ function writeElement(res, element, i){
 	} else {
 		res.write(`<div data-react-server-root-id=${
 			i
-		} data-triton-timing-offset="${
+		} data-react-server-timing-offset="${
 			// Mark when we sent it.
 			new Date - RLS().timingDataT0
 		}"${
@@ -842,7 +842,7 @@ function writeElement(res, element, i){
 
 function bootstrapClient(res) {
 	var initialContext = {
-		'TritonAgent.cache': TritonAgent.cache().dehydrate(),
+		'ReactServerAgent.cache': ReactServerAgent.cache().dehydrate(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
@@ -863,18 +863,18 @@ function bootstrapClient(res) {
 
 function setupLateArrivals(res) {
 	var start = RLS().startTime;
-	var notLoaded = TritonAgent.cache().getPendingRequests();
+	var notLoaded = ReactServerAgent.cache().getPendingRequests();
 
 	// This is for reporting purposes.  We're going to log how many late
 	// requests there were, but we won't actually emit the log line until
 	// all of the requests have resolved.
-	TritonAgent.cache().markLateRequests();
+	ReactServerAgent.cache().markLateRequests();
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.whenDataReadyInternal().then( () => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
-				text: `__tritonDataArrival(${
+				text: `__reactServerDataArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
@@ -904,8 +904,8 @@ function endResponse(req, res) {
 }
 
 function logRequestStats(req, res, context, start){
-	var allRequests = TritonAgent.cache().getAllRequests()
-	,   notLoaded   = TritonAgent.cache().getLateRequests()
+	var allRequests = ReactServerAgent.cache().getAllRequests()
+	,   notLoaded   = ReactServerAgent.cache().getLateRequests()
 	,   sock        = req.socket
 	,   stash       = context.getServerStash()
 
