@@ -8,7 +8,7 @@
   "author": "Navtej",
   "license": "Apache License 2.0",
   "scripts": {
-    "prepublish": "gulp build && gulp test",
+    "prepublish": "gulp build",
     "test": "gulp test"
   },
   "files": [
