@@ -11,10 +11,6 @@
     "prepublish": "gulp build",
     "test": "gulp test"
   },
-  "files": [
-    "buildutils",
-    "target"
-  ],
   "dependencies": {
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",

@@ -1,3 +1,16 @@
+# Goal: include everything in target/, buildutils/, _except_ for __tests__ dirs
 
-**/__tests__/**
+# test-specific dirs
+**/__tests__/
+/target/test-temp
+/target/*/test/
 
+# source/docs dirs
+/core
+/docs
+
+# individual files
+gulpfile.js
+
+# .eslintrc, .npmignore
+.*
