@@ -1,6 +1,6 @@
 {
   "name": "react-server",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "React Server",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
