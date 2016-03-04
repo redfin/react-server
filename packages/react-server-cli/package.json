@@ -39,5 +39,9 @@
     "gulp-babel": "~6.1.2",
     "gulp-eslint": "0.15.0",
     "react-server-gulp-module-tagger": "0.0.8"
+  },
+  "peerDependencies": {
+    "babel-loader": "~6.2",
+    "babel-runtime": "~6.3"
   }
 }
