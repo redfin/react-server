@@ -1,7 +1,7 @@
 import yargs from "yargs"
 
 export default (isProduction, args = process.argv) => {
-	return yargs(args)
+	var parsedArgs = yargs(args)
 		.usage('Usage: $0 [options]')
 		.option("routes", {
 			default: "./routes.js",
@@ -13,7 +13,7 @@ export default (isProduction, args = process.argv) => {
 			describe: "Port to start listening for react-server",
 			type: "number",
 		})
-		.option("jsPort", {
+		.option("js-port", {
 			default: 3001,
 			describe: "Port to start listening for react-server's JavaScript",
 			type: "number",
@@ -30,17 +30,17 @@ export default (isProduction, args = process.argv) => {
 			describe: "Optimize client JS when option is present. Takes a bit longer to compile. Default is true in production mode, false otherwise.",
 			type: "boolean",
 		})
-		.option("loglevel", {
+		.option("log-level", {
 			default: isProduction ? "notice" : "debug",
 			describe: "Set the severity level for the logs being reported. Values are, in ascending order of severity: 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'. Default is 'notice' in production mode, 'debug' otherwise.",
 			type: "string",
 		})
-		.option("compileonly", {
+		.option("compile-only", {
 			default: false,
 			describe: "Compile the client JavaScript only, and don't start any servers. This is what you want to do if you are building the client JavaScript to be hosted on a CDN. Unless you have a very specific reason, it's almost alway a good idea to only do this in production mode. Defaults to false.",
 			type: "boolean",
 		})
-		.option("jsurl", {
+		.option("js-url", {
 			describe: "A URL base for the pre-compiled client JavaScript. Setting a value for jsurl means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any JavaScript. Obviously, this means that --jsurl overrides all of the options related to JavaScript compilation: --hot, --minify, and --bundleperroute.",
 			type: "string",
 		})
@@ -53,4 +53,21 @@ export default (isProduction, args = process.argv) => {
 		.alias('?', 'help')
 		.demand(0)
 		.argv;
+
+	return camelize(parsedArgs);
+}
+
+const camelize = (input) => {
+	const inputCopy = Object.assign({}, input)
+
+	const replaceFn = (match, character) => { return character.toUpperCase() }
+	for (let key in Object.keys(inputCopy)) {
+		if (key.indexOf("-") !== -1) {
+			const newKey = key.replace(/-(.)/g, replaceFn);
+			inputCopy[newKey] = inputCopy[key];
+			delete inputCopy[key];
+		}
+	}
+
+	return inputCopy;
 }

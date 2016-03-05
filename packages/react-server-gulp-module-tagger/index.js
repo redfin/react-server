@@ -5,7 +5,7 @@ var replace = require("gulp-replace")
 //   - "__LOGGER__"
 //   - "__LOGGER__({ /* options */ })"
 var isWindows = ('win32' === process.platform)
-,   REPLACE_TOKEN = /(?:__LOGGER__|__CHANNEL__)(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
+,   REPLACE_TOKEN = /(?:__LOGGER__|__CHANNEL__|__CACHE__)(?:\(\s*(\{[\s\S]*?\})\s*\))?/g
 ,   THIS_MODULE   = isWindows
 	? /(?:[^\\]+\\node_modules\\)?react-server-gulp-module-tagger\\index\.js$/
 	: /(?:[^\/]+\/node_modules\/)?react-server-gulp-module-tagger\/index\.js$/

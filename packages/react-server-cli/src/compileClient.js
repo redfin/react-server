@@ -4,13 +4,16 @@ import mkdirp from "mkdirp"
 import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 
-// commented out to please eslint, but readd if logging is needed in this file.
-//import reactServer from "react-server"
-//const logger = reactServer.logging.getLogger({name: "react-server-cli/compileClient.js", color: {server: 164}});
-/**
- * Compiles the routes file in question for browser clients using webpack.
- */
- // TODO: add options for sourcemaps.
+// commented out to please eslint, but re-add if logging is needed in this file.
+//import {logging} from "react-server"
+//const logger = logging.getLogger(__LOGGER__);
+
+// compiles the routes file for browser clients using webpack.
+// returns a tuple of { compiler, serverRoutes }. compiler is a webpack compiler
+// that is ready to have run called, and serverRoutes is a path to the transpiled
+// server routes file, which can be required and passed in to
+// reactServer.middleware().
+// TODO: add options for sourcemaps.
 export default (routes,{
 	workingDir = "./__clientTemp",
 	routesDir = ".",
@@ -30,12 +33,13 @@ export default (routes,{
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute);
 	const entrypointBase = hot ? [`webpack-dev-server/client?${outputUrl}`,"webpack/hot/only-dev-server"] : [];
 	let entrypoints = {};
-	for (let routeName in routes.routes) {
-		if (routes.routes.hasOwnProperty(routeName)) {
-			let route = routes.routes[routeName];
-			var absolutePathToPage = path.resolve(routesDirAbsolute, route.page);
+	for (let routeName of Object.keys(routes.routes)) {
+		let route = routes.routes[routeName];
+		let formats = normalizeRoutesPage(route.page);
+		for (let format of Object.keys(formats)) {
+			const absolutePathToPage = path.resolve(routesDirAbsolute, formats[format]);
 
-			entrypoints[routeName] = [
+			entrypoints[`${routeName}${format !== "default" ? "-" + format : ""}`] = [
 				...entrypointBase,
 				bootstrapFile,
 				absolutePathToPage,
@@ -80,6 +84,10 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 		},
 		plugins: [
 			new ExtractTextPlugin("[name].css"),
+			new webpack.optimize.CommonsChunkPlugin({
+				name:"common",
+				filename: "common.js",
+			}),
 		],
 	};
 
@@ -97,11 +105,14 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 	}
 
 	if (hot) {
-		webpackConfig.module.loaders.unshift({
-			test: /\.jsx?$/,
-			loader: "react-hot",
-			exclude: /node_modules/,
-		});
+		webpackConfig.module.loaders = [
+			{
+				test: /\.jsx?$/,
+				loader: "react-hot",
+				exclude: /node_modules/,
+			},
+			...webpackConfig.module.loaders,
+		];
 		webpackConfig.plugins = [
 			...webpackConfig.plugins,
 			new webpack.HotModuleReplacementPlugin(),
@@ -131,19 +142,24 @@ module.exports = {
 	],
 	routes:{`);
 
-	for (let routeName in routes.routes) {
-		if (routes.routes.hasOwnProperty(routeName)) {
-			let route = routes.routes[routeName];
-			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, route.page));
+	for (let routeName of Object.keys(routes.routes)) {
+		let route = routes.routes[routeName];
 
+		routesOutput.push(`
+		${routeName}: {`);
+		for (let name of ["path", "method"]) {
 			routesOutput.push(`
-			${routeName}: {`);
-			for (let name of ["path", "method"]) {
-				routesOutput.push(`
-				${name}: "${route[name]}",`);
-			}
+			${name}: "${route[name]}",`);
+		}
+
+		let formats = normalizeRoutesPage(route.page);
+		routesOutput.push(`
+			page: {`);
+		for (let format of Object.keys(formats)) {
+			const formatModule = formats[format];
+			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule));
 			routesOutput.push(`
-				page: function() {
+				${format}: function() {
 					return {
 						done: function(cb) {`);
 			if (isClient) {
@@ -158,9 +174,11 @@ module.exports = {
 			routesOutput.push(`
 						}
 					};
-				},
-			},`);
+				},`);
 		}
+		routesOutput.push(`
+			},
+		},`);
 	}
 	routesOutput.push(`
 	}
@@ -171,6 +189,17 @@ module.exports = {
 
 	return routesFilePath;
 };
+
+
+// the page value for routes.routes["SomeRoute"] can either be a string for the default
+// module name or an object mapping format names to module names. This method normalizes
+// the value to an object.
+const normalizeRoutesPage = (page) => {
+	if (typeof page === "string") {
+		return {default: page};
+	}
+	return page;
+}
 
 // writes out a bootstrap file for the client which in turn includes the client
 // routes file. note that outputDir must be the same directory as the client routes

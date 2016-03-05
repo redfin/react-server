@@ -1,4 +1,4 @@
-var React = require("react"),
+var React = require("react"),  //eslint-disable-line no-unused-vars
 	Link = require("../../components/Link");
 
 class TransitionPage {

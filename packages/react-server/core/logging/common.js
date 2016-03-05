@@ -3,14 +3,14 @@ var stats = require('./stats')
 // These are the primary log levels.
 // Your logger object has a method for each of these.
 var LOG_LEVELS = {
-	emergency : 7,
-	alert     : 6,
-	critical  : 5,
-	error     : 4,
-	warning   : 3,
-	notice    : 2,
-	info      : 1,
-	debug     : 0,
+	emergency : 0,
+	alert     : 1,
+	critical  : 2,
+	error     : 3,
+	warning   : 4,
+	notice    : 5,
+	info      : 6,
+	debug     : 7,
 }
 
 // Need these to be shared across triton and corvair (can actually be modified
@@ -37,10 +37,10 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 		// this to 'slow' in production to surface performance issues.
 		baseLevel: 'none',
 		levels: {
-			none: 3, // Not used.  Disables in production.
-			slow: 2,
-			fine: 1,
-			fast: 0,
+			none: 0, // Not used.  Disables in production.
+			slow: 1,
+			fine: 2,
+			fast: 3,
 		},
 		colors: {
 			slow: 'red',
@@ -55,10 +55,10 @@ var config = (global._TRITON_CONFIG || (global._TRITON_CONFIG = {
 		// set this to 'lo' in production to surface issues.
 		baseLevel: 'no',
 		levels: {
-			no: 3, // Not used.  Disables in production.
-			hi: 2,
-			lo: 1,
-			ok: 0,
+			no: 0, // Not used.  Disables in production.
+			hi: 1,
+			lo: 2,
+			ok: 3,
 		},
 		colors: {
 			hi: 'red',

@@ -1,8 +1,10 @@
-var helper = require("../specRuntime/testHelper");
+var helper = require("../../../test/specRuntime/testHelper");
 
 describe("A page with async elements", () => {
 
-	helper.startServerBeforeAll(["./asyncRender/AsyncElementPage", "./asyncRender/ServerTimeoutElementPage"]);
+	helper.startServerBeforeAll(__filename, [
+		"./AsyncElementPage",
+		"./ServerTimeoutElementPage"]);
 
 	helper.stopServerAfterAll();
 

@@ -1,20 +1,20 @@
 
 var TritonAgent = require("../../TritonAgent")
-,	superagent = require("superagent")
-,	cheerio = require("cheerio")
-,	React = require("react")
-,	FragmentDataCache = require("../../components/FragmentDataCache")
-,	isArray = require("lodash/lang/isArray")
+,   cheerio = require("cheerio")
+,   React = require("react")
+,   ReactDOMServer = require("react-dom/server")
+,   FragmentDataCache = require("../FragmentDataCache")
+,   isArray = require("lodash/lang/isArray")
 ;
 
 var {
 	makeServer,
 	withRlsContext
-} = require("../TritonAgent/setup");
+} = require("../../test/util/tritonAgentSupport");
 
 describe("FragmentDataCache", () => {
 
-		var server;
+	var server;
 
 	beforeAll( (done) => {
 		makeServer( (createdServer) => {
@@ -35,7 +35,7 @@ describe("FragmentDataCache", () => {
 
 			TritonAgent.get(URL)
 				.then(res => {
-					var $ = cheerio.load(React.renderToStaticMarkup(<FragmentDataCache />));
+					var $ = cheerio.load(ReactDOMServer.renderToStaticMarkup(<FragmentDataCache />));
 
 					var dataStr = $("#triton-fragment-data-cache").attr("data-triton-data-cache");
 					var parsedData = JSON.parse(dataStr);
@@ -65,7 +65,7 @@ describe("FragmentDataCache", () => {
 
 			TritonAgent.get(URL)
 				.then(res => {
-					var htmlStr = React.renderToStaticMarkup(<FragmentDataCache cacheNodeId="fooBarBaz" />);
+					var htmlStr = ReactDOMServer.renderToStaticMarkup(<FragmentDataCache cacheNodeId="fooBarBaz" />);
 					var $ = cheerio.load(htmlStr);
 
 					var node
@@ -102,19 +102,19 @@ describe("FragmentDataCache", () => {
 	});
 
 	describe("FragmentDataCache.createWhenReady", () => {
-		
+
 		it("resolves with a FragmentDataCache when TritonAgent resolves", withRlsContext(done => {
 			var URL = "/describe";
 
 			TritonAgent.get(URL)
 				.then(res => {
-					// do nothing here	
+					// do nothing here
 				});
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 				expect(fragmentComponent).toBeDefined();
 
-				var htmlStr = React.renderToStaticMarkup(fragmentComponent);
+				var htmlStr = ReactDOMServer.renderToStaticMarkup(fragmentComponent);
 				var $ = cheerio.load(htmlStr);
 
 				var node
@@ -150,13 +150,13 @@ describe("FragmentDataCache", () => {
 
 			TritonAgent.get(URL)
 				.then(res => {
-					// do nothing here	
+					// do nothing here
 				});
 
 			FragmentDataCache.createWhenReady({cacheNodeId: 'fooBarBaz'}).then(fragmentComponent => {
 				expect(fragmentComponent).toBeDefined();
 
-				var htmlStr = React.renderToStaticMarkup(fragmentComponent);
+				var htmlStr = ReactDOMServer.renderToStaticMarkup(fragmentComponent);
 				var $ = cheerio.load(htmlStr);
 
 				var node
@@ -196,10 +196,10 @@ describe("FragmentDataCache", () => {
 			TritonAgent.get("/error").then(res => {});
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
-				
+
 				expect(fragmentComponent).toBeDefined();
 
-				var htmlStr = React.renderToStaticMarkup(fragmentComponent);
+				var htmlStr = ReactDOMServer.renderToStaticMarkup(fragmentComponent);
 				var $ = cheerio.load(htmlStr);
 
 				var node
@@ -222,7 +222,7 @@ describe("FragmentDataCache", () => {
 				expect(getSingleEntry(parsedData, "/error").err).toBeDefined();
 				expect(getSingleEntry(parsedData, "/error").err.response).toBeDefined();
 				expect(getSingleEntry(parsedData, "/error").err.response.body).toBeDefined();
-				
+
 				// it should include the res.body prop only
 				expect(Object.keys(getSingleEntry(parsedData, "/describe").res).length).toBe(1);
 				expect(Object.keys(getSingleEntry(parsedData, "/error").err.response).length).toBe(1);
@@ -250,7 +250,7 @@ describe("FragmentDataCache", () => {
 
 				expect(fragmentComponent).toBeDefined();
 
-				var htmlStr = React.renderToStaticMarkup(fragmentComponent);
+				var htmlStr = ReactDOMServer.renderToStaticMarkup(fragmentComponent);
 				var $ = cheerio.load(htmlStr);
 
 				var node
@@ -294,7 +294,7 @@ describe("FragmentDataCache", () => {
 
 				expect(fragmentComponent).toBeDefined();
 
-				var htmlStr = React.renderToStaticMarkup(fragmentComponent);
+				var htmlStr = ReactDOMServer.renderToStaticMarkup(fragmentComponent);
 				var $ = cheerio.load(htmlStr);
 
 				var node

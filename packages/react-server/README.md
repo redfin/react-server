@@ -155,12 +155,13 @@ We welcome contributions to react-server!  To contribute, follow these steps:
 
 // TODO: Concepts
 // TODO: routing guide
-// TODO: page guide
-// TODO: generator 
 
 ## What is "triton"? Why do I see that in code comments?
 
 Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know). It has always seemed like a preeeety big coincidence to us that they were first to market with a product named `triton`, and they are also one floor above our San Francisco engineering office...
+
+[![Dependency Status](https://david-dm.org/redfin/react-server.svg)](https://david-dm.org/redfin/react-server)
+[![devDependency Status](https://david-dm.org/redfin/react-server/dev-status.svg)](https://david-dm.org/redfin/react-server#info=devDependencies)
 
 [npm-badge-img]: https://badge.fury.io/js/react-server.png
 [npm-url]: https://npmjs.org/package/react-server

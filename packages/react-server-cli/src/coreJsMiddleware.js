@@ -1,10 +1,10 @@
-
-module.exports = function(pathToStatic) {
+export default (pathToStatic) => {
 	return class CoreJsMiddleware {
 		getSystemScripts(next) {
 			const routeName = this.getRequest().getRouteName();
 			const baseUrl = pathToStatic || "/";
 			return [
+				`${baseUrl}common.js`,
 				`${baseUrl}${routeName}.bundle.js`,
 				{
 					type: "text/javascript",

@@ -1,6 +1,7 @@
 
 var logger = require('./logging').getLogger(__LOGGER__),
 	React = require('react'),
+	ReactDOMServer = require('react-dom/server'),
 	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -14,6 +15,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
+	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
@@ -61,9 +63,6 @@ module.exports = function(server, routes) {
 
 		initResponseCompletePromise(res);
 
-		// Just to keep an eye out for leaks.
-		logger.gauge("requestLocalStorageNamespaces", RequestLocalStorage.getCountNamespaces());
-
 		// monkey-patch `res.write` so that we don't try to write to the stream if it's
 		// already closed
 		var origWrite = res.write;
@@ -103,16 +102,33 @@ module.exports = function(server, routes) {
 			navigateDfd.resolve();
 
 			if (err) {
-				logger.log("onNavigate received a non-2xx HTTP code", err);
-				handleResponseComplete(req, res, context, start, page);
-				if (err.status && err.status === 404) {
-					next();
-				} else if (err.status === 301 || err.status === 302 || err.status === 307) {
-					res.redirect(err.status, err.redirectUrl);
-				} else {
-					next(err);
+				// The page can elect to proceed to render
+				// even with a non-2xx response.  If it
+				// _doesn't_ do so then we're done.
+				var done = !(page && page.getHasDocument());
+
+				if (err.status === 301 || err.status === 302 || err.status === 307) {
+					if (done){
+						// This adds a boilerplate body.
+						res.redirect(err.status, err.redirectUrl);
+					} else {
+						// This expects our page to
+						// render a body.  Hope they
+						// know what they're doing.
+						res.set('Location', err.redirectUrl);
+					}
+				} else if (done) {
+					if (err.status === 404) {
+						next();
+					} else {
+						next(err);
+					}
 				}
-				return;
+				if (done) {
+					logger.log("onNavigate received a non-2xx HTTP code", err);
+					handleResponseComplete(req, res, context, start, page);
+					return;
+				}
 			}
 
 			renderPage(req, res, context, start, page);
@@ -732,12 +748,14 @@ function renderElement(res, element, context) {
 	,   start = RLS().startTime
 	,   timer = logger.timer(`renderElement.individual.${name}`)
 	,   html  = ''
+	,   attrs = {}
 
 	try {
 		if (element !== null) {
-			html = React.renderToString(
+			html = ReactDOMServer.renderToString(
 				React.cloneElement(element, { context: context })
 			);
+			attrs = getRootElementAttributes(element);
 		}
 	} catch (err) {
 		// A component failing to render is not fatal.  We've already
@@ -759,7 +777,7 @@ function renderElement(res, element, context) {
 	RLS().renderTime || (RLS().renderTime = 0);
 	RLS().renderTime += individualTime;
 
-	return html;
+	return { html, attrs };
 }
 
 // Write as many elements out in a row as possible and then flush output.
@@ -816,7 +834,9 @@ function writeElement(res, element, i){
 		} data-triton-timing-offset="${
 			// Mark when we sent it.
 			new Date - RLS().timingDataT0
-		}">${element}</div>`);
+		}"${
+			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
+		}>${element.html}</div>`);
 	}
 }
 

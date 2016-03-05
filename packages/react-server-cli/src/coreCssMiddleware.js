@@ -1,5 +1,4 @@
-
-module.exports = function(pathToStatic) {
+export default (pathToStatic) => {
 	return class CoreCssMiddleware {
 		getHeadStylesheets(next) {
 			const routeName = this.getRequest().getRouteName();

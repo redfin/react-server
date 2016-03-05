@@ -1,5 +1,5 @@
 var React = require("react"),
-	Link = require("../../components/Link");
+	Link = require("../../../components/Link");
 
 class SimpleTitlePage {
 	getTitle() {

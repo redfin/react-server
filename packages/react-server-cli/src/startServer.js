@@ -1,4 +1,4 @@
-import triton from "react-server"
+import reactServer, { logging } from "react-server"
 import http from "http"
 import https from "https"
 import express from "express"
@@ -8,11 +8,9 @@ import compression from "compression"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "./compileClient"
 
-const logging = triton.logging;
-// TODO: do we need a post-processor here?
-const logger = logging.getLogger({name: "react-server-cli/startServer.js", color: {server: 9}});
+const logger = logging.getLogger(__LOGGER__);
 
-export default function(routesRelativePath, {
+export default (routesRelativePath, {
 		port = 3000,
 		jsPort = 3001,
 		hot = true,
@@ -20,7 +18,7 @@ export default function(routesRelativePath, {
 		compileOnly = false,
 		jsUrl,
 		httpsOptions = true,
-	} = {}) {
+} = {}) => {
 
 	const routesPath = path.join(process.cwd(), routesRelativePath);
 	const routes = require(routesPath);
@@ -37,7 +35,6 @@ export default function(routesRelativePath, {
 		logger.notice("Starting compilation of client JavaScript...");
 		compiler.run((err, stats) => {
 			handleCompilationErrors(err, stats);
-
 			logger.notice("Successfully compiled client JavaScript.");
 		});
 	} else {
@@ -51,7 +48,7 @@ export default function(routesRelativePath, {
 			])
 			.then(
 				() => logger.notice(`Ready for requests on port ${port}.`),
-				(e) => {throw e}
+				(e) => { throw e; }
 			);
 		}
 
@@ -66,13 +63,16 @@ export default function(routesRelativePath, {
 	}
 }
 
+// given the server routes file and a port, start a react-server HTML server at
+// http://localhost:port/. returns a promise that resolves when the server has
+// started.
 const startHtmlServer = (serverRoutes, port, {key, cert} = {}) => {
 	return new Promise((resolve) => {
 		logger.info("Starting HTML server...");
 
 		const server = express();
 		server.use(compression());
-		triton.middleware(server, require(serverRoutes));
+		reactServer.middleware(server, require(serverRoutes));
 
 		if (key && cert) {
 			https.createServer({key, cert}, server).listen(port, () => {
@@ -88,9 +88,13 @@ const startHtmlServer = (serverRoutes, port, {key, cert} = {}) => {
 	});
 };
 
+// given a webpack compiler and a port, compile the JavaScript code to static
+// files and start up a web server at http://localhost:port/ that serves the
+// static compiled JavaScript. returns a promise that resolves when the server
+// has started.
 const startStaticJsServer = (compiler, port, {key, cert} = {}) => {
 	return new Promise((resolve) => {
-		compiler.run(function(err, stats) {
+		compiler.run((err, stats) => {
 			handleCompilationErrors(err, stats);
 
 			logger.debug("Successfully compiled static JavaScript.");
@@ -105,7 +109,7 @@ const startStaticJsServer = (compiler, port, {key, cert} = {}) => {
 					resolve();
 				});
 			} else {
-				http.createServer(server).listen(port, function() {
+				http.createServer(server).listen(port, () => {
 					logger.info(`Started static JavaScript server over HTTP on port ${port}`);
 					resolve();
 				});
@@ -114,6 +118,10 @@ const startStaticJsServer = (compiler, port, {key, cert} = {}) => {
 	});
 };
 
+// given a webpack compiler and a port, start a webpack dev server that is ready
+// for hot reloading at http://localhost:port/. note that the webpack compiler
+// must have been configured correctly for hot reloading. returns a promise that
+// resolves when the server has started.
 const startHotLoadJsServer = (compiler, port, httpsOptions) => {
 	logger.info("Starting hot reload JavaScript server...");
 	const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));

@@ -1,5 +1,6 @@
 
 var React = require('react'),
+	ReactDOM = require('react-dom'),
 	MobileDetect = require('mobile-detect'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
@@ -12,6 +13,7 @@ var React = require('react'),
 	PageUtil = require("./util/PageUtil"),
 	TritonAgent = require('./TritonAgent'),
 	FramebackController = require('./FramebackController'),
+	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
@@ -384,7 +386,12 @@ class ClientController extends EventEmitter {
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
-			React.render(element, root);
+			ReactDOM.render(element, root);
+
+			_.forEach(
+				getRootElementAttributes(element),
+				(v, k) => root.setAttribute(k, v)
+			);
 
 			totalRenderTime += timer.stop();
 
@@ -616,4 +623,3 @@ function buildContext(routes) {
 }
 
 module.exports = ClientController;
-
