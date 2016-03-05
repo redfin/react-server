@@ -82,6 +82,16 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 				},
 			],
 		},
+		resolve: {
+			root: [
+				path.resolve("./node_modules/react-server-cli/node_modules"),
+			],
+		},
+		resolveLoader: {
+			root: [
+				path.resolve("./node_modules/react-server-cli/node_modules"),
+			],
+		},
 		plugins: [
 			new ExtractTextPlugin("[name].css"),
 		],
