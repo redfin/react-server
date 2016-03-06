@@ -10,19 +10,32 @@ import compileClient from "./compileClient"
 
 const logger = logging.getLogger(__LOGGER__);
 
+// start up a react-server instance.
+// host: the hostname for the server.
+// port: the port number for the server.
+// jsPort: the port number for JavaScript and CSS on the server.
+// hot: enable hot reloading. do not use in production.
+// minify: minify the client-side JavaScript.
+// compileOnly: just compile the client-side JavaScript; don't start up a server.
+// jsUrl: serve up the HTML, but don't serve up the JavaScript and CSS; instead point the
+//   JS & CSS URLs at this URL.
+// https: if falsey, serve the content over HTTP. if true, serve the content over HTTPS
+//   with a self-signed certificate. if an object, it can include any of the options that can
+//   be passed to https.createServer.
 export default (routesRelativePath, {
+		host = "localhost",
 		port = 3000,
 		jsPort = 3001,
 		hot = true,
 		minify = false,
 		compileOnly = false,
 		jsUrl,
-		httpsOptions = true,
+		https: httpsOptions = false,
 } = {}) => {
 
 	const routesPath = path.join(process.cwd(), routesRelativePath);
 	const routes = require(routesPath);
-	const outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://localhost:${jsPort}/`;
+	const outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
 
 	const {serverRoutes, compiler} = compileClient(routes, {
 		routesDir: path.dirname(routesPath),
@@ -52,12 +65,18 @@ export default (routesRelativePath, {
 			);
 		}
 
-		if (httpsOptions) {
+		if (httpsOptions === true) {
+			// if httpsOptions was true (and so didn't send in keys), generate keys.
 			pem.createCertificate({days:1, selfSigned:true}, (err, keys) => {
 				if (err) throw err;
 				startServers({key: keys.serviceKey, cert:keys.certificate});
 			});
+		} else if (httpsOptions) {
+			// in this case, we assume that httpOptions is an object that can be passed
+			// in to https.createServer as options.
+			startServers(httpsOptions);
 		} else {
+			// use http.
 			startServers();
 		}
 	}
@@ -66,7 +85,7 @@ export default (routesRelativePath, {
 // given the server routes file and a port, start a react-server HTML server at
 // http://localhost:port/. returns a promise that resolves when the server has
 // started.
-const startHtmlServer = (serverRoutes, port, {key, cert} = {}) => {
+const startHtmlServer = (serverRoutes, port, httpsOptions) => {
 	return new Promise((resolve) => {
 		logger.info("Starting HTML server...");
 
@@ -74,8 +93,8 @@ const startHtmlServer = (serverRoutes, port, {key, cert} = {}) => {
 		server.use(compression());
 		reactServer.middleware(server, require(serverRoutes));
 
-		if (key && cert) {
-			https.createServer({key, cert}, server).listen(port, () => {
+		if (httpsOptions) {
+			https.createServer(httpsOptions, server).listen(port, () => {
 				logger.info(`Started HTML server over HTTPS on port ${port}`);
 				resolve();
 			});
@@ -92,7 +111,7 @@ const startHtmlServer = (serverRoutes, port, {key, cert} = {}) => {
 // files and start up a web server at http://localhost:port/ that serves the
 // static compiled JavaScript. returns a promise that resolves when the server
 // has started.
-const startStaticJsServer = (compiler, port, {key, cert} = {}) => {
+const startStaticJsServer = (compiler, port, httpsOptions) => {
 	return new Promise((resolve) => {
 		compiler.run((err, stats) => {
 			handleCompilationErrors(err, stats);
@@ -103,8 +122,8 @@ const startStaticJsServer = (compiler, port, {key, cert} = {}) => {
 			server.use('/', compression(), express.static('__clientTemp/build'));
 			logger.info("Starting static JavaScript server...");
 
-			if (key && cert) {
-				https.createServer({key, cert}, server).listen(port, () => {
+			if (httpsOptions) {
+				https.createServer(httpsOptions, server).listen(port, () => {
 					logger.info(`Started static JavaScript server over HTTPS on port ${port}`);
 					resolve();
 				});
@@ -129,7 +148,10 @@ const startHotLoadJsServer = (compiler, port, httpsOptions) => {
 		noInfo: true,
 		hot: true,
 		headers: { 'Access-Control-Allow-Origin': '*' },
-		https: httpsOptions,
+		https: !!httpsOptions,
+		key: httpsOptions ? httpsOptions.key : undefined,
+		cert: httpsOptions ? httpsOptions.cert : undefined,
+		ca: httpsOptions ? httpsOptions.ca : undefined,
 	});
 	const serverStartedPromise = new Promise((resolve) => {
 		jsServer.listen(port, () => resolve() );

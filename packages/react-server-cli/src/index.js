@@ -1,4 +1,5 @@
 import parseCliArgs from "./parseCliArgs"
+import fs from "fs"
 
 // weirdly, we parse the args twice. the first time we are just looking for --production, which
 // affects the default values for the other args.
@@ -21,6 +22,23 @@ logging.setLevel('main',  argv.logLevel);
 if (!isProduction) {
 	logging.setLevel('time',  'fast');
 	logging.setLevel('gauge', 'ok');
+}
+
+if (argv.https && (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase)) {
+	throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
+}
+if ((argv.httpsKey || argv.httpsCert || argv.httpsCa) && argv.httpsPfx) {
+	throw new Error("If you set https-pfx, you can't set https-key, https-cert, or https-ca.");
+}
+
+if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase) {
+	argv.https = {
+		key: argv.httpsKey ? fs.readFileSync(argv.httpsKey) : undefined,
+		cert: argv.httpsCert ? fs.readFileSync(argv.httpsCert) : undefined,
+		ca: argv.httpsCa ? fs.readFileSync(argv.httpsCa) : undefined,
+		pfx: argv.httpsPfx ? fs.readFileSync(argv.httpsPfx) : undefined,
+		passphrase: argv.httpsPassphrase,
+	}
 }
 
 // if the server is being launched with some bad practices for production mode, then we

@@ -13,10 +13,40 @@ export default (isProduction, args = process.argv) => {
 			describe: "Port to start listening for react-server",
 			type: "number",
 		})
+		.option("host", {
+			default: "localhost",
+			describe: "Hostname to start listening for react-server",
+			type: "string",
+		})
 		.option("js-port", {
 			default: 3001,
 			describe: "Port to start listening for react-server's JavaScript",
 			type: "number",
+		})
+		.option("https", {
+			default: false,
+			describe: "If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed. Default is false.",
+			type: "boolean",
+		})
+		.option("https-key", {
+			describe: "Start the server using HTTPS with this private key file in PEM format. Requires https-cert to be set as well. Default is none.",
+			type: "string",
+		})
+		.option("https-cert", {
+			describe: "Start the server using HTTPS with this cert file in PEM format. Requires https-key to be set as well. Default is none.",
+			type: "string",
+		})
+		.option("https-ca", {
+			describe: "Start the server using HTTPS with this certificate authority file in PEM format. Also requires https-key and https-cert to start the server. Default is none.",
+			type: "string",
+		})
+		.option("https-pfx", {
+			describe: "Start the server using HTTPS with this file containing the private key, certificate and CA certs of the server in PFX or PKCS12 format. Mutually exclusive with https-key, https-cert, and https-ca. Default is none.",
+			type: "string",
+		})
+		.option("https-passphrase", {
+			describe: "A passphrase for the private key or pfx. Requires https-key or https-pfx to be set. Default is none.",
+			type: "string",
 		})
 		.option("h", {
 			alias: "hot",
