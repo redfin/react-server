@@ -2,6 +2,7 @@ var superagent = require('superagent')
 ,	logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	Plugins = require("./Plugins")
+,	CacheEntry = require("./CacheEntry")
 ,	{ mixin } = require("./util")
 ;
 
@@ -101,6 +102,27 @@ Request.prototype.type = function (type) {
 	return this;
 }
 
+Request.prototype.noCacheResponse = function () {
+	this._noCacheResponse = true;
+	return this;
+}
+
+Request.prototype.getCacheEntry = function() {
+	if(this._noCacheResponse) {
+		return new CacheEntry(
+			null,
+			this._getCacheAffectingData(),
+			this._cacheWhitelist
+		)
+	} else {
+		return this._cache.entry(
+			this._getCacheAffectingData(),
+			SERVER_SIDE, // createIfMissing
+			this._cacheWhitelist
+		)
+	}
+}
+
 /**
  * Wrap superagent's end() method to create an entry in a request-local
  * data cache that will be serialized to the client and replayed in the
@@ -137,7 +159,8 @@ Request.prototype.end = function (fn) {
 	// the cache key here needs to be the same server-side and client-side, so the full URL, complete
 	// with host (which can vary between client and server) is not usable. The URL path (without the
 	// host) works fine though.
-	var entry = this._cache.entry(this._getCacheAffectingData(), SERVER_SIDE /* createIfMissing */, this._cacheWhitelist);
+	var entry = this.getCacheEntry();
+
 	if (!SERVER_SIDE && !entry) {
 		return executeRequest(wrapResponseCallback(fn));
 	}
