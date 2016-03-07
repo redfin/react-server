@@ -92,6 +92,7 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setExpressRequest  : makeSetter('expressRequest'),
 	setExpressResponse : makeSetter('expressResponse'),
 	setRequest         : makeSetter('request'),
+	getRequest         : makeGetter('request'),
 
 	// TODO: Kill these?  They're only used to patch values
 	// through from navigator to renderMiddleware within triton itself.
