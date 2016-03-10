@@ -34,6 +34,14 @@ Q.onerror = (err) => {
 	logger.error("Unhandled exception in Q promise", err);
 }
 
+var CURRENT_STATE_FRAME = 0;
+var NEXT_STATE_FRAME = 0;
+
+function pushFrame() {
+	CURRENT_STATE_FRAME = ++NEXT_STATE_FRAME;
+	return CURRENT_STATE_FRAME;
+}
+
 class ClientController extends EventEmitter {
 
 	constructor ({routes}) {
@@ -88,7 +96,23 @@ class ClientController extends EventEmitter {
 			var url = request.getUrl();
 
 			if (type === History.events.PUSHSTATE) {
-				this._history.pushState({frameback:true}, null, url);
+				// Sorry folks.  If we need to do a client
+				// transition, then we're going to clobber
+				// your state.  You must be able to render
+				// from URL, anyway, so if you're set up right
+				// it won't affect user experience.  It means,
+				// though, that there exists a navigation path
+				// to an extraneous full-page rebuild.
+				// Such is life.
+				if (!(history.state||{}).reactServerFrame){
+					this._history.replaceState({
+						reactServerFrame: pushFrame(),
+					}, null, location.path);
+				}
+				this._history.pushState({
+					reactServerFrame : pushFrame(),
+					frameback        : true,
+				}, null, url);
 			}
 
 			this.framebackController.navigateTo(url).then(() => {
@@ -136,7 +160,19 @@ class ClientController extends EventEmitter {
 			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to
 			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
 			if (type === History.events.PUSHSTATE && this._history) {
-				this._history.pushState(null, null, path);
+				// See "Sorry folks", above.
+				if (!(history.state||{}).reactServerFrame){
+					this._history.replaceState({
+						reactServerFrame: pushFrame(),
+					}, null, location.path);
+				}
+				this._history.pushState({
+					reactServerFrame: pushFrame(),
+				}, null, path);
+			} else if (type === History.events.PAGELOAD && this._history && this._history.canClientNavigate()) {
+				this._history.replaceState({
+					reactServerFrame: pushFrame(),
+				}, null, path);
 			}
 
 			if (err) {
@@ -527,6 +563,16 @@ class ClientController extends EventEmitter {
 		if (window.__tritonDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
+			var frame = state.reactServerFrame;
+
+			// Not our frame.
+			if (!frame) return;
+
+			// We're already there.
+			if (frame === CURRENT_STATE_FRAME) return;
+
+			CURRENT_STATE_FRAME = frame;
+
 			if (this.framebackController.isActive()){
 				this.framebackController.navigateBack();
 			} else {
