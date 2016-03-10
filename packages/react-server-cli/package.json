@@ -1,6 +1,6 @@
 {
   "name": "react-server-cli",
-  "version": "0.0.22",
+  "version": "0.0.27",
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
