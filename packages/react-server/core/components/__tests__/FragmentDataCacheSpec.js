@@ -1,5 +1,5 @@
 
-var TritonAgent = require("../../TritonAgent")
+var ReactServerAgent = require("../../ReactServerAgent")
 ,   cheerio = require("cheerio")
 ,   React = require("react")
 ,   ReactDOMServer = require("react-dom/server")
@@ -9,8 +9,8 @@ var TritonAgent = require("../../TritonAgent")
 
 var {
 	makeServer,
-	withRlsContext
-} = require("../../test/util/tritonAgentSupport");
+	withRlsContext,
+} = require("../../test/util/reactServerAgentSupport"); // dbw this doesn't seem to exist anymore?
 
 describe("FragmentDataCache", () => {
 
@@ -29,15 +29,15 @@ describe("FragmentDataCache", () => {
 	});
 
 	describe("component", () => {
-		it("serializes to data-triton-data-cache as JSON", withRlsContext(done => {
+		it("serializes to data-react-server-data-cache as JSON", withRlsContext(done => {
 
 			var URL = "/describe";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then(res => {
 					var $ = cheerio.load(ReactDOMServer.renderToStaticMarkup(<FragmentDataCache />));
 
-					var dataStr = $("#triton-fragment-data-cache").attr("data-triton-data-cache");
+					var dataStr = $("#react-server-fragment-data-cache").attr("data-react-server-data-cache");
 					var parsedData = JSON.parse(dataStr);
 
 					expect(parsedData).toBeDefined();
@@ -63,7 +63,7 @@ describe("FragmentDataCache", () => {
 
 			var URL = "/describe";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then(res => {
 					var htmlStr = ReactDOMServer.renderToStaticMarkup(<FragmentDataCache cacheNodeId="fooBarBaz" />);
 					var $ = cheerio.load(htmlStr);
@@ -72,13 +72,13 @@ describe("FragmentDataCache", () => {
 					,	dataStr
 					,	parsedData;
 
-					node = $("#triton-fragment-data-cache");
+					node = $("#react-server-fragment-data-cache");
 					expect(node.length).toBe(0);
 
 					node = $('#fooBarBaz');
 					expect(node.length).toBe(1);
 
-					dataStr = node.attr("data-triton-data-cache");
+					dataStr = node.attr("data-react-server-data-cache");
 					parsedData = JSON.parse(dataStr);
 
 					expect(parsedData).toBeDefined();
@@ -103,10 +103,10 @@ describe("FragmentDataCache", () => {
 
 	describe("FragmentDataCache.createWhenReady", () => {
 
-		it("resolves with a FragmentDataCache when TritonAgent resolves", withRlsContext(done => {
+		it("resolves with a FragmentDataCache when ReactServerAgent resolves", withRlsContext(done => {
 			var URL = "/describe";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then(res => {
 					// do nothing here
 				});
@@ -121,10 +121,10 @@ describe("FragmentDataCache", () => {
 				,	dataStr
 				,	parsedData;
 
-				node = $("#triton-fragment-data-cache");
+				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
 
-				dataStr = node.attr("data-triton-data-cache");
+				dataStr = node.attr("data-react-server-data-cache");
 				parsedData = JSON.parse(dataStr);
 
 				expect(parsedData).toBeDefined();
@@ -148,7 +148,7 @@ describe("FragmentDataCache", () => {
 		it("passes additional props to FragmentDataCache via options object", withRlsContext(done => {
 			var URL = "/describe";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then(res => {
 					// do nothing here
 				});
@@ -163,13 +163,13 @@ describe("FragmentDataCache", () => {
 				,	dataStr
 				,	parsedData;
 
-				node = $("#triton-fragment-data-cache");
+				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(0);
 
 				node = $('#fooBarBaz');
 				expect(node.length).toBe(1);
 
-				dataStr = node.attr("data-triton-data-cache");
+				dataStr = node.attr("data-react-server-data-cache");
 				parsedData = JSON.parse(dataStr);
 
 				expect(parsedData).toBeDefined();
@@ -192,8 +192,8 @@ describe("FragmentDataCache", () => {
 
 		it("does something reasonable when a request errors", withRlsContext(done => {
 
-			TritonAgent.get("/describe").then(res => {});
-			TritonAgent.get("/error").then(res => {});
+			ReactServerAgent.get("/describe").then(res => {});
+			ReactServerAgent.get("/error").then(res => {});
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -206,10 +206,10 @@ describe("FragmentDataCache", () => {
 				,	dataStr
 				,	parsedData;
 
-				node = $("#triton-fragment-data-cache");
+				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
 
-				dataStr = node.attr("data-triton-data-cache");
+				dataStr = node.attr("data-react-server-data-cache");
 				parsedData = JSON.parse(dataStr);
 
 				expect(parsedData).toBeDefined();
@@ -240,8 +240,8 @@ describe("FragmentDataCache", () => {
 
 		it("does something reasonable when a request times out", withRlsContext(done => {
 
-			TritonAgent.get("/describe").then(res => {});
-			TritonAgent.get("/timeout")
+			ReactServerAgent.get("/describe").then(res => {});
+			ReactServerAgent.get("/timeout")
 				.query({ delay: 1000 })
 				.timeout(100)
 				.then(res => {});
@@ -257,10 +257,10 @@ describe("FragmentDataCache", () => {
 				,	dataStr
 				,	parsedData;
 
-				node = $("#triton-fragment-data-cache");
+				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
 
-				dataStr = node.attr("data-triton-data-cache");
+				dataStr = node.attr("data-react-server-data-cache");
 				parsedData = JSON.parse(dataStr);
 
 				expect(parsedData).toBeDefined();
@@ -287,8 +287,8 @@ describe("FragmentDataCache", () => {
 
 		it("dehydrates an array of entries when two requests are made to the same URL", withRlsContext(done => {
 
-			TritonAgent.get("/describe").query({"foo": "bar"}).then(res => res);
-			TritonAgent.get("/describe").query({"foo": "baz"}).then(res => res);
+			ReactServerAgent.get("/describe").query({"foo": "bar"}).then(res => res);
+			ReactServerAgent.get("/describe").query({"foo": "baz"}).then(res => res);
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -301,10 +301,10 @@ describe("FragmentDataCache", () => {
 				,	dataStr
 				,	parsedData;
 
-				node = $("#triton-fragment-data-cache");
+				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
 
-				dataStr = node.attr("data-triton-data-cache");
+				dataStr = node.attr("data-react-server-data-cache");
 				parsedData = JSON.parse(dataStr);
 
 				expect(parsedData).toBeDefined();

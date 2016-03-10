@@ -1,12 +1,12 @@
 
-var TritonAgent = require("../TritonAgent"),
+var ReactServerAgent = require("../ReactServerAgent"),
 	React = require("react");
 
 /**
- * FragmentDataCache writes out a serialized form of the TritonAgent request
- * data cache into the `data-triton-data-cache` attribute of a `<div>`
+ * FragmentDataCache writes out a serialized form of the ReactServerAgent request
+ * data cache into the `data-react-server-data-cache` attribute of a `<div>`
  * with an id attribute set to the value of the `cacheNodeId` prop. (Defaults
- * to `triton-fragment-data-cache`)
+ * to `react-server-fragment-data-cache`)
  *
  * This component should _only_ be used when rendering fragments. Full-page
  * full-page renders have their data cache serialized by `renderMiddleware`.
@@ -16,8 +16,8 @@ var TritonAgent = require("../TritonAgent"),
  * Example (post-fragment-render) :
  *
  * ```javascript
- * var dataCacheStr = document.getElementById('triton-fragment-data-cache')
- * 			.getAttribute('data-triton-data-cache');
+ * var dataCacheStr = document.getElementById('react-server-fragment-data-cache')
+ * 			.getAttribute('data-react-server-data-cache');
  *
  * var parsedData = JSON.parse(dataCacheStr);
  *
@@ -25,7 +25,7 @@ var TritonAgent = require("../TritonAgent"),
  * if (entry.err) {
  * 		// there was an error.
  * 		console.log(entry.err.response);	// if 500-error from server: { body: ...JSON... }
- * 		console.log(entry.err.timeout);		// if there was a `.timeout(...)` specified to TritonAgent
+ * 		console.log(entry.err.timeout);		// if there was a `.timeout(...)` specified to ReactServerAgent
  *											// that was exceeded
  * } else {
  *		console.log(entry.res); // { body: }
@@ -46,7 +46,7 @@ var FragmentDataCache = module.exports = React.createClass({
 
 	getDefaultProps: function () {
 		return {
-			cacheNodeId: "triton-fragment-data-cache",
+			cacheNodeId: "react-server-fragment-data-cache",
 		}
 	},
 
@@ -54,7 +54,7 @@ var FragmentDataCache = module.exports = React.createClass({
 		return (
 			<div
 				id={this.props.cacheNodeId}
-				data-triton-data-cache={JSON.stringify(TritonAgent.cache().dehydrate({ responseBodyOnly: true }))}>
+				data-react-server-data-cache={JSON.stringify(ReactServerAgent.cache().dehydrate({ responseBodyOnly: true }))}>
 			</div>
 		);
 	},
@@ -66,7 +66,7 @@ var FragmentDataCache = module.exports = React.createClass({
  * when all pending data requests have resolved.
  */
 FragmentDataCache.createWhenReady = function (fragmentDataCacheProps = {}) {
-	return TritonAgent.cache().whenAllPendingResolve().then(() => {
+	return ReactServerAgent.cache().whenAllPendingResolve().then(() => {
 		return <FragmentDataCache {...fragmentDataCacheProps} />;
 	});
 }

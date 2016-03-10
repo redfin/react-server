@@ -1,8 +1,8 @@
 /**
- * Wrapper class around RLS-scoped TritonAgent plugins to avoid
- * a circular dependency between TritonAgent and TritonAgent/Request.
+ * Wrapper class around RLS-scoped ReactServerAgent plugins to avoid
+ * a circular dependency between ReactServerAgent and ReactServerAgent/Request.
  *
- * Note: It's possible that this module shouldn't exist at all. TritonAgent
+ * Note: It's possible that this module shouldn't exist at all. ReactServerAgent
  * plugins maybe shouldn't be request-scoped; they could be set statically,
  * and get their data from RLS if they wanted, instead. i.e., store something
  * in RLS, then have the plugin retrieve it, and that way the code being

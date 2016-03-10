@@ -1,4 +1,4 @@
-var TritonAgent = require("../../TritonAgent");
+var ReactServerAgent = require("../../ReactServerAgent");
 var superagent = require("superagent");
 var Q = require("q");
 var isArray = require("lodash/lang/isArray");
@@ -10,10 +10,10 @@ var {
 	addJsonParserForContentType,
 	removeJsonParserForContentType,
 	SIMPLE_SUCCESS
-} = require("../../test/util/tritonAgentSupport");
+} = require("../../test/util/reactServerAgentSupport");
 
 
-describe("TritonAgent", () => {
+describe("ReactServerAgent", () => {
 
 	var server;
 
@@ -32,8 +32,8 @@ describe("TritonAgent", () => {
 	describe("simple GET request", () => {
 
 		function simpleGet() {
-			return TritonAgent.get("/simple");
-		} 
+			return ReactServerAgent.get("/simple");
+		}
 
 		it("loads successfully using .end()", withRlsContext( (done) => {
 			simpleGet().end( (err, res) => {
@@ -47,7 +47,7 @@ describe("TritonAgent", () => {
 		}));
 
 		it("end() should pass err object on error HTTP status", withRlsContext(done => {
-			TritonAgent.get("/error").end( (err, res) => {
+			ReactServerAgent.get("/error").end( (err, res) => {
 				expect(err).not.toBeNull();
 				done();
 			});
@@ -55,7 +55,7 @@ describe("TritonAgent", () => {
 		}));
 
 		it("end() should treat 500 as error", withRlsContext(done => {
-			TritonAgent.get("/error").query({status: 500}).end( (err, res) => {
+			ReactServerAgent.get("/error").query({status: 500}).end( (err, res) => {
 				expect(err).not.toBeNull();
 				expect(err.status).toBe(500);
 				expect(err.response.body).toBeDefined();
@@ -76,7 +76,7 @@ describe("TritonAgent", () => {
 		}));
 
 		it("should call catch() callback on error()", withRlsContext(done => {
-			TritonAgent.get("/error").then(res => {
+			ReactServerAgent.get("/error").then(res => {
 				// this shouldn't be called. if it is, this should error
 				expect(res).toBeUndefined();
 				done();
@@ -102,7 +102,7 @@ describe("TritonAgent", () => {
 		}));
 
 		it("calls error callback successfully when using .asPromise()", withRlsContext(done => {
-			TritonAgent.get("/error").asPromise().then(res => {
+			ReactServerAgent.get("/error").asPromise().then(res => {
 				// this shouldn't be called. if it is, this should error
 				expect(res).toBeUndefined();
 				done();
@@ -119,7 +119,7 @@ describe("TritonAgent", () => {
 	describe("general GET requests", () => {
 
 		it("pass query params", withRlsContext( (done) => {
-			TritonAgent.get('/describe')
+			ReactServerAgent.get('/describe')
 				.query({'foo': 'bar', 'baz': 'qux'})
 				.query('fish=water&88&cow=land')
 				.query({'a': 'b'})
@@ -144,7 +144,7 @@ describe("TritonAgent", () => {
 		}));
 
 		it("passes through headers", withRlsContext( (done) => {
-			TritonAgent.get('/describe')
+			ReactServerAgent.get('/describe')
 				.set({
 					'x-foo-bar-baz': 'foo'
 				})
@@ -172,7 +172,7 @@ describe("TritonAgent", () => {
 	describe("general POST requests", () => {
 
 		it("defaults to application/json", withRlsContext( (done) => {
-			TritonAgent.post("/describe")
+			ReactServerAgent.post("/describe")
 				.then( res => {
 					// lowercase
 					expect(res.body.req.headers['content-type']).toBe("application/json");
@@ -182,7 +182,7 @@ describe("TritonAgent", () => {
 		}));
 
 		it("can be set to form-encoded", withRlsContext( (done) => {
-			TritonAgent.post("/describe")
+			ReactServerAgent.post("/describe")
 				.type("form")
 				.then(res => {
 					// lowercase
@@ -195,7 +195,7 @@ describe("TritonAgent", () => {
 
 		// TODO: need a body parser middleware set up for this to work
 		// it("sends post params", withRlsContext( (done) => {
-		// 	TritonAgent.post('/describe')
+		// 	ReactServerAgent.post('/describe')
 		// 		.send({ "hello": "world" })
 		// 		.then( (res, err) => {
 
@@ -206,7 +206,7 @@ describe("TritonAgent", () => {
 		// }));
 
 		it("times out as expected", withRlsContext( (done) => {
-			TritonAgent.get('/timeout')
+			ReactServerAgent.get('/timeout')
 				.query({ delay: 1000 })
 				.timeout(100)
 				.then(res => {
@@ -233,11 +233,11 @@ describe("TritonAgent", () => {
 			addJsonParserForContentType(superagent, FAKE_CONTENT_TYPE);
 
 			// only GET requests are cached at the moment
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.query({ type: FAKE_CONTENT_TYPE })
 				.then( (res) => {
 
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 
 					// only one entry, can just grab it via index
@@ -248,10 +248,10 @@ describe("TritonAgent", () => {
 					expect(entry.res.body).toBeDefined();
 
 					// make sure that the cache is empty
-					TritonAgent._clearCache();
+					ReactServerAgent._clearCache();
 
 					// verify that cache can be rehydrated
-					TritonAgent.cache().rehydrate(dehydrated);
+					ReactServerAgent.cache().rehydrate(dehydrated);
 
 					// only one entry; just grab it via index
 					entry = cache.dataCache[URL][0];
@@ -271,11 +271,11 @@ describe("TritonAgent", () => {
 				})
 				.done();
 
-			// verify that things got written to the cache 
-			var cache = TritonAgent.cache();
+			// verify that things got written to the cache
+			var cache = ReactServerAgent.cache();
 			expect(cache.getPendingRequests().length).toBe(1);
 			var dehydrated = cache.dehydrate();
-			expect(dehydrated.dataCache[URL]).toBeDefined();	
+			expect(dehydrated.dataCache[URL]).toBeDefined();
 		}));
 
 		it("excludes body property when content-type is application/json", withRlsContext( (done) => {
@@ -283,10 +283,10 @@ describe("TritonAgent", () => {
 			var URL = "/describe";
 
 			// only GET requests are cached at the moment
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then( (res) => {
 
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -295,10 +295,10 @@ describe("TritonAgent", () => {
 					expect(entry.res.body).toBeUndefined();
 
 					// make sure that the cache is empty
-					TritonAgent._clearCache();
+					ReactServerAgent._clearCache();
 
 					// verify that cache can be rehydrated
-					TritonAgent.cache().rehydrate(dehydrated);
+					ReactServerAgent.cache().rehydrate(dehydrated);
 
 					// after hydration, .body should be available again
 					var entry = cache.dataCache[URL][0];
@@ -316,8 +316,8 @@ describe("TritonAgent", () => {
 				})
 				.done();
 
-			// verify that things got written to the cache 
-			var cache = TritonAgent.cache();
+			// verify that things got written to the cache
+			var cache = ReactServerAgent.cache();
 			expect(cache.getPendingRequests().length).toBe(1);
 			var dehydrated = cache.dehydrate();
 			expect(dehydrated.dataCache[URL]).toBeDefined();
@@ -329,10 +329,10 @@ describe("TritonAgent", () => {
 			var URL = "/describe";
 
 			// only GET requests are cached at the moment
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then( (res) => {
 
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -358,7 +358,7 @@ describe("TritonAgent", () => {
 		it("includes entry for endpoint that timed out", withRlsContext(done => {
 			var URL = "/timeout";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.query({ delay: 1000 })
 				.timeout(100)
 				.then(res => {
@@ -367,7 +367,7 @@ describe("TritonAgent", () => {
 					done();
 				})
 				.catch(err => {
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -384,17 +384,17 @@ describe("TritonAgent", () => {
 		}));
 
 		it("includes entry for endpoint that gets server error", withRlsContext(done => {
-			
+
 			var URL = "/error";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then(res => {
 					// this is a failure
 					expect(res).toBeUndefined();
 					done();
 				})
 				.catch(err => {
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -413,17 +413,17 @@ describe("TritonAgent", () => {
 		}));
 
 		it("only includes response body error objects on server error when flag passed to dehydrate()", withRlsContext(done => {
-			
+
 			var URL = "/error";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then(res => {
 					// this is a failure
 					expect(res).toBeUndefined();
 					done();
 				})
 				.catch(err => {
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -449,10 +449,10 @@ describe("TritonAgent", () => {
 
 			var URL = "/describe";
 
-			TritonAgent.get(URL)
+			ReactServerAgent.get(URL)
 				.then( (res) => {
 
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -475,10 +475,10 @@ describe("TritonAgent", () => {
 
 			var URL = "/describe";
 
-			TritonAgent.get(URL).withHeaderInResponse()
+			ReactServerAgent.get(URL).withHeaderInResponse()
 				.then( (res) => {
 
-					var cache = TritonAgent.cache();
+					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
 
@@ -497,14 +497,14 @@ describe("TritonAgent", () => {
 			var URL = "/describe";
 
 			Q.all([
-				TritonAgent.get(URL).then(res => res),
-				TritonAgent.get(URL).then(res => res),
+				ReactServerAgent.get(URL).then(res => res),
+				ReactServerAgent.get(URL).then(res => res),
 			]).then(results => {
 				var [res1, res2] = results;
 
 				expect(res1).toBe(res2);
 
-				var cache = TritonAgent.cache();
+				var cache = ReactServerAgent.cache();
 				var dehydrated = cache.dehydrate();
 
 				// single entry; not an array
@@ -522,10 +522,10 @@ describe("TritonAgent", () => {
 			var URL = "/describe";
 
 			Q.all([
-				TritonAgent.get(URL)
+				ReactServerAgent.get(URL)
 					.query({"foo": "bar"})
 					.then(res => res),
-				TritonAgent.get(URL)
+				ReactServerAgent.get(URL)
 					.query({"foo": "bar"})
 					.then(res => res),
 			]).then(results => {
@@ -533,7 +533,7 @@ describe("TritonAgent", () => {
 
 				expect(res1).toBe(res2);
 
-				var cache = TritonAgent.cache();
+				var cache = ReactServerAgent.cache();
 				var dehydrated = cache.dehydrate();
 
 				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
@@ -550,8 +550,8 @@ describe("TritonAgent", () => {
 			var URL = "/describe";
 
 			Q.all([
-				TritonAgent.get(URL).then(res => res),
-				TritonAgent.post(URL).then(res => res),
+				ReactServerAgent.get(URL).then(res => res),
+				ReactServerAgent.post(URL).then(res => res),
 			]).then(results => {
 				var [res1, res2] = results;
 				expect(res1).not.toBe(res2);
@@ -568,8 +568,8 @@ describe("TritonAgent", () => {
 
 			Q.all([
 				// default is whatever 'form data' normally is
-				TritonAgent.get(URL).then(res => res),
-				TritonAgent.post(URL).type("application/json").then(res => res),
+				ReactServerAgent.get(URL).then(res => res),
+				ReactServerAgent.post(URL).type("application/json").then(res => res),
 			]).then(results => {
 				var [res1, res2] = results;
 				expect(res1).not.toBe(res2);
@@ -584,11 +584,11 @@ describe("TritonAgent", () => {
 
 			var URL = "/describe";
 
-			var p1 = TritonAgent.get(URL)
+			var p1 = ReactServerAgent.get(URL)
 						.query({ "foo": "bar" })
 						.then(res => res);
 
-			var p2 = TritonAgent.get(URL)
+			var p2 = ReactServerAgent.get(URL)
 						.query({ "foo": "baz"})
 						.then(res => res);
 
@@ -612,11 +612,11 @@ describe("TritonAgent", () => {
 
 			var URL = "/describe";
 
-			var p1 = TritonAgent.post(URL)
+			var p1 = ReactServerAgent.post(URL)
 						.send({ "foo": {"bar": 1} })
 						.then(res => res);
 
-			var p2 = TritonAgent.post(URL)
+			var p2 = ReactServerAgent.post(URL)
 						.send({ "foo": {"bar": "baz"} })
 						.then(res => res);
 
@@ -645,4 +645,3 @@ describe("TritonAgent", () => {
 	}
 
 });
-

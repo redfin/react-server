@@ -93,7 +93,7 @@ Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-t
 			routes = require("./routes");
 
 		// TODO: Move this into rs.setConfig()
-		process.env.TRITON_CONFIGS = __dirname;
+		process.env.REACT_SERVER_CONFIGS = __dirname;
 
 		// By instantiating Express directly, you can use other Express middleware,
 		// or even multiple instances of react-server middleware.
@@ -155,10 +155,11 @@ We welcome contributions to react-server!  To contribute, follow these steps:
 
 // TODO: Concepts
 // TODO: routing guide
+// TODO: generator
 
-## What is "triton"? Why do I see that in code comments?
+## What is "triton"? Why do I see that in the git history?
 
-Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know). It has always seemed like a preeeety big coincidence to us that they were first to market with a product named `triton`, and they are also one floor above our San Francisco engineering office...
+Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know).
 
 [![Dependency Status](https://david-dm.org/redfin/react-server.svg)](https://david-dm.org/redfin/react-server)
 [![devDependency Status](https://david-dm.org/redfin/react-server/dev-status.svg)](https://david-dm.org/redfin/react-server#info=devDependencies)

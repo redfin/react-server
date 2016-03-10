@@ -215,7 +215,7 @@ function buildSuperagentRequest() {
 			}
 			postParams = formData;
 		} else {
-			throw new Error(`TritonAgent.type("form-data") not allowed server-side`);
+			throw new Error(`ReactServerAgent.type("form-data") not allowed server-side`);
 		}
 	}
 
@@ -284,7 +284,7 @@ function logRequestError(err) {
 
 	var {response} = err;
 	if (!response) {
-		logger.warning(`TritonAgent raised exception for URL ${this._urlPath}`, err);
+		logger.warning(`ReactServerAgent raised exception for URL ${this._urlPath}`, err);
 	} else if (response.notFound) {
 		// 404? don't care about response
 		logger.warning(`Resource not found on server: ${this._urlPath}`);

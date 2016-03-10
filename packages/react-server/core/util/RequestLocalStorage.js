@@ -10,7 +10,7 @@
  *
  * Example:
  *
- *   var RLS = require('triton').RequestLocalStorage.getNamespace();
+ *   var RLS = require('react-server').RequestLocalStorage.getNamespace();
  *
  *   var getInstance = function(){
  *
@@ -26,7 +26,7 @@
  */
 
 if (SERVER_SIDE){
-	var key          = '_triton_request_local_storage_'
+	var key          = '_react_server_request_local_storage_'
 	,   cls          = require('continuation-local-storage').createNamespace(key)
 	,   bind         = cls.bind.bind(cls)
 	,   getContainer = () => cls.get(key)

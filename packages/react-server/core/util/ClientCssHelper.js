@@ -10,7 +10,7 @@ module.exports = {
 		if (SERVER_SIDE) {
 			throw new Error("ClientCssHelper.registerPageLoad can't be called server-side");
 		}
-		// for each css node in the head that the Triton server wrote to the response, note it down in the cache, so that
+		// for each css node in the head that the react-server server wrote to the response, note it down in the cache, so that
 		// we can remove it on a page to page transition.
 		var serverWrittenLinkNodes = document.head.querySelectorAll(`link[${PAGE_CSS_NODE_ID}],style[${PAGE_CSS_NODE_ID}]`);
 		for (var i = 0; i < serverWrittenLinkNodes.length; i++) {

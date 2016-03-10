@@ -1,7 +1,7 @@
 var RLS = require('./util/RequestLocalStorage').getNamespace()
-,	Cache = require("./TritonAgent/Cache")
-,	Request = require("./TritonAgent/Request")
-,	Plugins = require("./TritonAgent/Plugins")
+,	Cache = require("./ReactServerAgent/Cache")
+,	Request = require("./ReactServerAgent/Request")
+,	Plugins = require("./ReactServerAgent/Plugins")
 ;
 
 
@@ -47,7 +47,7 @@ var API = {
 	},
 
 	/**
-	 * Exposes the TritonAgent request data cache from RequestLocalStorage.
+	 * Exposes the ReactServerAgent request data cache from RequestLocalStorage.
 	 */
 	cache () {
 		var cache = RLS().cache;
@@ -69,7 +69,7 @@ var API = {
 	 * The callback function will take the Request instance as a parameter:
 	 * ```
 	 * var defaultHeaders = { ... };
-	 * TritonAgent.plugRequest(function (request) {
+	 * ReactServerAgent.plugRequest(function (request) {
 	 *     // e.g.
 	 *     request.set(defaultHeaders)
 	 * })
@@ -86,7 +86,7 @@ var API = {
 	 * The callback function will take err and response as parameters
 	 * (like the callback to `end()`), and the request as well:
 	 * ```
-	 * TritonAgent.plugResponse(function (err, response, request) {
+	 * ReactServerAgent.plugResponse(function (err, response, request) {
 	 *     // e.g.
 	 *     console.log("Response received!", res.body);
 	 *     res.wasLogged = true; // or whatever

@@ -53,7 +53,7 @@ With these terms, let's chart out what a typical data flow would look like:
 ```
     var updateCalculationAction = require("./calcActions").update;
 
-    module.exports = TritonData.createStore({
+    module.exports = ReactServerData.createStore({
       init: function() {
         listenTo(updateCalculationAction, this.updateCalc);
       },
@@ -99,7 +99,7 @@ var MyStore = require("./MyStore");
 
 module.exports = class MyPage {
   handleRoute(request) {
-    this.store = MyStore("foo"); 
+    this.store = MyStore("foo");
   }
 };
 ```

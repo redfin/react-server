@@ -1,5 +1,5 @@
 /**
- * Utilities related to TritonAgent
+ * Utilities related to ReactServerAgent
  */
 module.exports = {
 
