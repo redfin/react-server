@@ -88,7 +88,7 @@ class ClientController extends EventEmitter {
 
 	_startRequest({request, type}) {
 
-		if (request.getFrameback()){
+		if (request.getFrameback() && this.context.canFrameback()){
 
 			// Tell the navigator we got this one.
 			this.context.navigator.ignoreCurrentNavigation();
