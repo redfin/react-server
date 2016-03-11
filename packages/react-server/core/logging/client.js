@@ -15,7 +15,7 @@ var _console = ['log','error','warn','debug','info'].reduce((m,v) => {
 	// IE9 also needs a real function for `apply` to work.
 	m[v] = (typeof console === 'undefined')
 		?() => {}
-		:Function.prototype.bind.call(console[v], console)
+		:Function.prototype.bind.call(console[v]||console.log, console)
 	return m;
 }, {});
 
