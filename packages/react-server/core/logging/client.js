@@ -10,23 +10,14 @@
 
 var common = require('./common')
 
-var _console = (typeof console === 'undefined')
-	?{
-		// IE9 doesn't even _define_ console unless the dev tools are open.
-		log   : () => {},
-		error : () => {},
-		warn  : () => {},
-		debug : () => {},
-		info  : () => {},
-	}
-	:{
-		// IE9 also needs a real function for `apply` to work.
-		log   : Function.prototype.bind.call(console.log,   console),
-		error : Function.prototype.bind.call(console.error, console),
-		warn  : Function.prototype.bind.call(console.warn,  console),
-		debug : Function.prototype.bind.call(console.debug, console),
-		info  : Function.prototype.bind.call(console.info,  console),
-	};
+var _console = ['log','error','warn','debug','info'].reduce((m,v) => {
+	// IE9 doesn't even _define_ console unless the dev tools are open.
+	// IE9 also needs a real function for `apply` to work.
+	m[v] = (typeof console === 'undefined')
+		?() => {}
+		:Function.prototype.bind.call(console[v], console)
+	return m;
+}, {});
 
 var lvl_map = {
 	emergency : 'error',
