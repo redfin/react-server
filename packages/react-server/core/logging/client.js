@@ -10,13 +10,35 @@
 
 var common = require('./common')
 
-// IE9 doesn't even _define_ console unless the dev tools are open.
 var _console = (typeof console === 'undefined')
-	?{log:()=>{}}
-	:console;
+	?{
+		// IE9 doesn't even _define_ console unless the dev tools are open.
+		log   : () => {},
+		error : () => {},
+		warn  : () => {},
+		debug : () => {},
+		info  : () => {},
+	}
+	:{
+		// IE9 also needs a real function for `apply` to work.
+		log   : Function.prototype.bind.call(console.log,   console),
+		error : Function.prototype.bind.call(console.error, console),
+		warn  : Function.prototype.bind.call(console.warn,  console),
+		debug : Function.prototype.bind.call(console.debug, console),
+		info  : Function.prototype.bind.call(console.info,  console),
+	};
 
-// This is just so we have a real function to work with in IE9.
-var console_log = Function.prototype.bind.call(_console.log, _console);
+var lvl_map = {
+	emergency : 'error',
+	alert     : 'error',
+	critical  : 'error',
+	error     : 'error',
+	warning   : 'warn',
+	notice    : 'warn',
+	debug     : 'debug',
+	info      : 'info',
+};
+var clog = lvl => _console[lvl_map[lvl] || 'log'];
 
 // IE9 also doesn't support color.
 var monochrome = typeof _console.log == "object";
@@ -49,7 +71,7 @@ var makeLogger = function(group, opts){
 
 			if (config.levels[level] > config.levels[this.level]) return;
 
-			console_log.apply(
+			clog(level).apply(
 				_console,
 				(monochrome?[`${level}: [${opts.name}]`]:[
 					'%c'+level+'%c: [%c'+opts.name+'%c]',
