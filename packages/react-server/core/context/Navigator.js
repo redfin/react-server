@@ -157,6 +157,7 @@ class Navigator extends EventEmitter {
 		PageUtil.PageConfig.initFromPageWithDefaults(page, {
 			isFragment    : false,
 			isRawResponse : false,
+			preloadJS     : false,
 		});
 
 		// call page.handleRoute(), and use the resulting code to decide how to

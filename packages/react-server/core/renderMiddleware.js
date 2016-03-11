@@ -421,6 +421,15 @@ function renderBaseTag(pageObject, res) {
 	});
 }
 
+function renderPreloadScripts(scripts, res) {
+	if (!scripts.length) return;
+	scripts
+		.filter(script => script && script.href)
+		.forEach(script => {
+			res.write(`<link rel="preload" href="${script.href.src || script.href}" as="script" ${script.crossOrigin ? "crossorigin" : ""} />`);
+		});
+}
+
 function renderScriptsSync(scripts, res) {
 
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
@@ -552,6 +561,10 @@ function renderScripts(pageObject, res) {
 	// Want to gather these into one list of scripts, because we care if
 	// there are any non-JS scripts in the whole bunch.
 	var scripts = pageObject.getSystemScripts().concat(pageObject.getScripts());
+
+	if (PageUtil.PageConfig.get('preloadJS')) {
+		renderPreloadScripts(scripts, res);
+	}
 
 	var thereIsAtLeastOneNonJSScript = scripts.filter(
 		script => script.type && script.type !== "text/javascript"
