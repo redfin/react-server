@@ -43,6 +43,12 @@ class RequestContext {
 		return this.mobileDetect;
 	}
 
+	canFrameback () {
+		// Layout is messed up on iPhone right now.  Just disable on
+		// all phones until we can figure it out.
+		return !this.mobileDetect.phone();
+	}
+
 	getCurrentPath () {
 		return this.navigator.getCurrentRoute().url;
 	}
