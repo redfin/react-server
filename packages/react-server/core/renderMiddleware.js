@@ -822,6 +822,15 @@ function writeElements(res, elements) {
 }
 
 function writeElement(res, element, i){
+	if (!element) {
+		// A falsy element was a render error.  We've gotta
+		// emit a root for it, so we'll cook up an empty
+		// element object.
+		element = {
+			attrs : {},
+			html  : '',
+		}
+	}
 	if (element.containerOpen) {
 		res.write(`<div ${PAGE_CONTAINER_NODE_ID}=${i}${
 			_.map(element.containerOpen, (v, k) => ` ${k}="${attrfy(v)}"`)
