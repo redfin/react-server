@@ -829,6 +829,15 @@ function writeElement(res, element, i){
 	} else if (element.containerClose) {
 		res.write('</div>');
 	} else {
+		if (!element) {
+			// A falsy element was a render error.  We've gotta
+			// emit a root for it, so we'll cook up an empty
+			// element object.
+			element = {
+				attrs : {},
+				html  : '',
+			}
+		}
 		res.write(`<div data-react-server-root-id=${
 			i
 		} data-react-server-timing-offset="${
