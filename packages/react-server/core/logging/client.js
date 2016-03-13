@@ -43,11 +43,11 @@ var makeLogger = function(group, opts){
 			if (meta !== void 0) args.push(meta);
 
 			this.transports.forEach(transport => {
-				if (config.levels[level] < config.levels[transport.level]) return;
+				if (config.levels[level] > config.levels[transport.level]) return;
 				setTimeout(transport.log.bind(transport, level, msg, meta, noop), 0);
 			});
 
-			if (config.levels[level] < config.levels[this.level]) return;
+			if (config.levels[level] > config.levels[this.level]) return;
 
 			console_log.apply(
 				_console,

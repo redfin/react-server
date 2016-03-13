@@ -34,7 +34,7 @@ var makeLogger = function(group, opts){
 
 	logger.setLevels(config.levels);
 
-	logger.addRewriter(errorInterceptor);
+	logger.rewriters.push(errorInterceptor);
 
 	logger.stack = common.stack;
 
@@ -123,7 +123,7 @@ var addTransport = function(group, transport){
 }
 
 var addRewriter = function(rewriter){
-	common.forEachLogger(logger => logger.addRewriter(rewriter));
+	common.forEachLogger(logger => logger.rewriters.push(rewriter));
 }
 
 var setTimestamp = function(bool){
@@ -131,7 +131,11 @@ var setTimestamp = function(bool){
 	global.TIMESTAMP_TRITON_LOG_OUTPUT = bool;
 
 	// Update any loggers that are alredy set up.
-	common.forEachLogger(logger => logger.transports.file.timestamp = bool);
+	common.forEachLogger(logger => {
+		if (logger.transports.file) {
+			logger.transports.file.timestamp = bool;
+		}
+	});
 }
 
 var setColorize = function(bool){
@@ -139,7 +143,11 @@ var setColorize = function(bool){
 	global.COLORIZE_TRITON_LOG_OUTPUT = bool;
 
 	// Update any loggers that are alredy set up.
-	common.forEachLogger(logger => logger.updateColorize());
+	common.forEachLogger(logger => {
+		if (logger.updateColorize) {
+			logger.updateColorize();
+		}
+	});
 }
 
 // Default is only if we're directly attached to a terminal.

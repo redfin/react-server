@@ -6,7 +6,7 @@ var gulp = require("gulp"),
 	changed = require("gulp-changed"),
 	jasmine = require("gulp-jasmine"),
 	common = require("./buildutils/gulp-common"),
-	logging = require("./buildutils/logger-loader"),
+	logging = require("react-server-gulp-module-tagger"),
 	istanbul = require('gulp-istanbul'),
 	gulpif = require("gulp-if"),
 	minimist = require("minimist"),
@@ -45,7 +45,7 @@ function getSpecGlob (prefix) {
 	return specs;
 }
 
-var src = ["core/**/*", "core/**/*"];
+var src = ["core/**/*.js", "core/**/*.jsx", "core/**/*.json"];
 
 function compile(serverSide) {
 	var codeFilter = filter(["**/*.js", "**/*.jsx"]);
@@ -96,15 +96,17 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 		});
 });
 
-gulp.task("test", ["compileServer", "compileClient"], function(cb) {
+gulp.task("test", ["compileServer", "compileClient"], function() {
 
-	return gulp.src(getSpecGlob("target/server/test/**/"))
+	return gulp.src(getSpecGlob("target/server/**/__tests__/**/"))
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
 });
 
 gulp.task("eslint", [], function() {
-	var srcMinusTest = src;
-	srcMinusTest.push("!core/test/**/*");
+	var srcMinusTest = src.concat([
+		"!core/**/__tests__/**/*",
+		"!**/*.json",
+	]);
 	return gulp.src(srcMinusTest)
         // eslint() attaches the lint output to the eslint property
         // of the file object so it can be used by other modules.
