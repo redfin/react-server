@@ -5,7 +5,7 @@ var React = require('react'),
 	logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
-	Q = require('q'),
+	Promise = require('bluebird'),
 	cssHelper = require('./util/ClientCssHelper'),
 	EventEmitter = require("events").EventEmitter,
 	ClientRequest = require("./ClientRequest"),
@@ -26,13 +26,18 @@ window.React = React;
 var REACT_SERVER_DATA_ATTRIBUTE = "data-react-server-root-id";
 
 /**
- * Set up a Q error handler to make sure that errors that bubble
+ * Set up a Promise error handler to make sure that errors that bubble
  * up are logged via our logger. Note: This will affect all unhandled
- * Q promise rejections, not just the ones in this file.
+ * Promise rejections, not just the ones in this file.
  */
-Q.onerror = (err) => {
-	logger.error("Unhandled exception in Q promise", err);
-}
+
+window.addEventListener("unhandledrejection", err => {
+	// NOTE: e.preventDefault() must be manually called to prevent the
+	// default action which is to log the stack trace to console.warn
+	err.preventDefault();
+
+	logger.error("Unhandled promise rejection", err);
+});
 
 var CURRENT_STATE_FRAME = 0;
 var NEXT_STATE_FRAME = 0;
@@ -72,7 +77,7 @@ class ClientController extends EventEmitter {
 
 		this._previouslyRendered = false;
 		this._rootNodeDfds = [];
-		this._failDfd = Q.defer();
+		this._failPromise = new Promise(res => this._fail = res);
 
 		// Log this after loglevel is set.
 		logger.time('wakeFromStart', wakeTime);
@@ -329,7 +334,8 @@ class ClientController extends EventEmitter {
 	_render (page) {
 		var tStart = window.__reactServerTimingStart;
 		var t0 = new Date;
-		var retval = Q.defer();
+		var resolve;
+		var retval = new Promise(res => resolve = res);
 
 		logger.debug('React Rendering');
 
@@ -363,7 +369,7 @@ class ClientController extends EventEmitter {
 			// until we've actually got our elements, since some
 			// items in the elements array may be container
 			// control.
-			rootNodePromises = elementPromises.map(() => Q())
+			rootNodePromises = elementPromises.map(() => Promise.resolve())
 		} else {
 
 			// On our _first_ render we want to mount to the DOM
@@ -455,15 +461,15 @@ class ClientController extends EventEmitter {
 				.then(root => renderElement(element, root, index))
 				.catch(e => logger.error(`Error with element render ${index}`, e))
 			).catch(e => logger.error(`Error with element promise ${index}`, e))
-		), Q()).then(retval.resolve);
+		), Promise.resolve()).then(resolve);
 
 		// Look out for a failsafe timeout from the server on our
 		// first render.
 		if (!this._previouslyRendered){
-			this._failDfd.promise.then(retval.resolve);
+			this._failPromise.then(resolve);
 		}
 
-		return retval.promise.then(() => {
+		return retval.then(() => {
 
 			// This first one is just for historical continuity.
 			logger.time('render', new Date - t0);
@@ -615,7 +621,11 @@ class ClientController extends EventEmitter {
 
 	_ensureRootNodeDfd (index) {
 		if (!this._rootNodeDfds[index]){
-			this._rootNodeDfds[index] = Q.defer();
+			var dfd = this._rootNodeDfds[index] = {};
+			dfd.promise = new Promise((res, rej) => {
+				dfd.resolve = res;
+				dfd.reject = rej;
+			});
 		}
 		return this._rootNodeDfds[index];
 	}
@@ -638,7 +648,7 @@ class ClientController extends EventEmitter {
 	}
 
 	failArrival () {
-		this._failDfd.resolve();
+		this._fail();;
 	}
 
 }

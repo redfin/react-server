@@ -43,7 +43,7 @@ speeded up.
 
 var EventEmitter = require('events').EventEmitter;
 
-var Q      = require('q')
+var Promise= require('bluebird')
 ,   logger = require('./logging').getLogger(__LOGGER__)
 ,   RLS    = require('./util/RequestLocalStorage').getNamespace()
 
@@ -113,7 +113,7 @@ class FramebackController extends EventEmitter {
 		// we'll just abandon the frame.  If that causes some issue
 		// then we'll have to return a promise attached to a deferred
 		// that gets resolved in `_handleFrameLoad()`.
-		return Q();
+		return Promise.resolve();
 	}
 
 	navigateBack(){

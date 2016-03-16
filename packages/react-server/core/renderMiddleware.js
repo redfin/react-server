@@ -7,7 +7,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
 	LABString = require('./util/LABString'),
-	Q = require('q'),
+	Promise = require('bluebird'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
 	expressState = require('express-state'),
@@ -58,6 +58,12 @@ module.exports = function(server, routes) {
 
 		var start = RLS().startTime = new Date();
 		var startHR = process.hrtime();
+		var resolve, reject;
+
+		var navigatePromise = new Promise((res, rej) => {
+			resolve = res;
+			reject  = rej;
+		});
 
 		logger.debug(`Incoming request for ${req.path}`);
 
@@ -90,7 +96,7 @@ module.exports = function(server, routes) {
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
-			if (!navigateDfd.promise.isPending()) {
+			if (!navigatePromise.isPending()) {
 				logger.error("Finished navigation after FAILSAFE_ROUTER_TIMEOUT", {
 					page: context.page,
 					path: req.path,
@@ -99,7 +105,7 @@ module.exports = function(server, routes) {
 			}
 
 			// Success.
-			navigateDfd.resolve();
+			resolve();
 
 			if (err) {
 				// The page can elect to proceed to render
@@ -136,34 +142,32 @@ module.exports = function(server, routes) {
 		});
 
 
-		var navigateDfd = Q.defer();
+		setTimeout(reject, FAILSAFE_ROUTER_TIMEOUT);
 
-		setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
+		context.navigate(new ExpressServerRequest(req));
 
 		// If we fail to navigate, we'll throw a 500 and move on.
-		navigateDfd.promise.catch(() => {
+		navigatePromise.catch(() => {
 			logger.error("Failed to navigate after FAILSAFE_ROUTER_TIMEOUT", {
-				page: context.navigator.getCurrentRoute().name,
+				page: (context.navigator.getCurrentRoute()||{}).name,
 				path: req.path,
 			});
 			handleResponseComplete(req, res, context, start, context.page);
 			next({status: 500});
 		});
 
-		context.navigate(new ExpressServerRequest(req));
 
+		return navigatePromise
 	})});
 }
 
 module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
 function initResponseCompletePromise(res){
-	var dfd = Q.defer();
-
-	res.on('close',  dfd.resolve);
-	res.on('finish', dfd.resolve);
-
-	RLS().responseCompletePromise = dfd.promise;
+	RLS().responseCompletePromise = new Promise(resolve => {
+		res.on('close',  resolve);
+		res.on('finish', resolve);
+	});
 }
 
 function handleResponseComplete(req, res, context, start, page) {
@@ -231,7 +235,7 @@ function renderPage(req, res, context, start, page) {
 
 function rawResponseLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
+		Promise.resolve(), // NOOP lead-in to prime the reduction
 		setContentType,
 		writeResponseData,
 		handleResponseComplete,
@@ -241,7 +245,7 @@ function rawResponseLifecycle () {
 
 function fragmentLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
+		Promise.resolve(), // NOOP lead-in to prime the reduction
 		setContentType,
 		writeDebugComments,
 		writeBody,
@@ -252,7 +256,7 @@ function fragmentLifecycle () {
 
 function pageLifecycle() {
 	return [
-		Q(), // This is just a NOOP lead-in to prime the reduction.
+		Promise.resolve(), // This is just a NOOP lead-in to prime the reduction.
 		setContentType,
 		writeHeader,
 		startBody,
@@ -276,7 +280,7 @@ function writeHeader(req, res, context, start, pageObject) {
 
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
-	return Q.all([
+	return Promise.all([
 		renderDebugComments(pageObject, res),
 		renderTimingInit(pageObject, res),
 		renderTitle(pageObject, res),
@@ -333,11 +337,11 @@ function renderDebugComments (pageObject, res) {
 	});
 
 	// resolve immediately.
-	return Q("");
+	return Promise.resolve("");
 }
 
 function writeDebugComments (req, res, context, start, pageObject) {
-	return Q(renderDebugComments(pageObject, res));
+	return Promise.resolve(renderDebugComments(pageObject, res));
 }
 
 function renderTitle (pageObject, res) {
@@ -378,7 +382,7 @@ function renderMetaTags (pageObject, res) {
 		}));
 	});
 
-	return Q.all(metaTagsRendered);
+	return Promise.all(metaTagsRendered);
 }
 
 function renderLinkTags (pageObject, res) {
@@ -399,7 +403,7 @@ function renderLinkTags (pageObject, res) {
 		}));
 	});
 
-	return Q.all(linkTagsRendered);
+	return Promise.all(linkTagsRendered);
 }
 
 function renderBaseTag(pageObject, res) {
@@ -570,7 +574,7 @@ function renderScripts(pageObject, res) {
 	}
 
 	// resolve immediately.
-	return Q("");
+	return Promise.resolve("");
 }
 
 function renderStylesheets (pageObject, res) {
@@ -585,7 +589,7 @@ function renderStylesheets (pageObject, res) {
 	});
 
 	// resolve immediately.
-	return Q("");
+	return Promise.resolve("");
 }
 
 function startBody(req, res, context, start, page) {
@@ -623,7 +627,11 @@ function writeBody(req, res, context, start, page) {
 	// maintain an array of deferreds that we punch out as we render
 	// elements and we'll return a promise that resolves when they've all
 	// been hit.
-	var dfds = elementPromises.map(() => Q.defer());
+	var dfds = elementPromises.map(() => {
+		var dfd = {}
+		dfd.promise = new Promise(resolve => dfd.resolve = resolve);
+		return dfd;
+	});
 
 	var doElement = (element, index) => {
 
@@ -685,11 +693,32 @@ function writeBody(req, res, context, start, page) {
 	var totalWait     = req.query._debug_render_timeout || FAILSAFE_RENDER_TIMEOUT
 	,   timeRemaining = totalWait - (new Date - start)
 
-	var retval = Q.defer();
+	var retval = new Promise((resolve, reject) => {
+
+		Promise.all(dfds.map(dfd => dfd.promise)).then(resolve);
+
+		setTimeout(() => {
+			// give some additional information when we time out
+			reject({
+				message: "Timed out rendering.",
+				// `timeRemaining` is how long we waited before timing out
+				timeWaited: timeRemaining,
+				elements: rendered.map(val => {
+					if (val === ELEMENT_ALREADY_WRITTEN) {
+						return 'W'; // written
+					} else if (val === ELEMENT_PENDING) {
+						return 'P'; // not rendered
+					} else {
+						return 'R'; // rendered, not yet written
+					}
+				}),
+			});
+		}, timeRemaining);
+	})
 
 	// If we exceed the timeout then we'll just send empty elements for
 	// anything that hadn't rendered yet.
-	retval.promise.catch(() => {
+	retval.catch(() => {
 
 		// Write out what we've got.
 		writeElements(res, rendered.map(
@@ -703,27 +732,8 @@ function writeBody(req, res, context, start, page) {
 		renderScriptsAsync([{ text: `__reactServerFailArrival()` }], res)
 	});
 
-	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
 
-	setTimeout(() => {
-		// give some additional information when we time out
-		retval.reject({
-			message: "Timed out rendering.",
-			// `timeRemaining` is how long we waited before timing out
-			timeWaited: timeRemaining,
-			elements: rendered.map(val => {
-				if (val === ELEMENT_ALREADY_WRITTEN) {
-					return 'W'; // written
-				} else if (val === ELEMENT_PENDING) {
-					return 'P'; // not rendered
-				} else {
-					return 'R'; // rendered, not yet written
-				}
-			}),
-		});
-	}, timeRemaining);
-
-	return retval.promise;
+	return retval;
 }
 
 function writeResponseData(req, res, context, start, page) {
@@ -894,8 +904,8 @@ function setupLateArrivals(res) {
 	});
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
-	var promises = notLoaded.map( result => result.entry.dfd.promise );
-	RLS().lateArrivals = Q.allSettled(promises)
+	var promises = notLoaded.map( result => result.entry.promise );
+	RLS().lateArrivals = Promise.all(promises).catch(() => {})
 }
 
 function wrapUpLateArrivals(){
@@ -904,12 +914,12 @@ function wrapUpLateArrivals(){
 
 function closeBody(req, res) {
 	res.write("</div></body></html>");
-	return Q();
+	return Promise.resolve();
 }
 
 function endResponse(req, res) {
 	res.end();
-	return Q();
+	return Promise.resolve();
 }
 
 function logRequestStats(req, res, context, start){
@@ -948,7 +958,7 @@ function logRequestStats(req, res, context, start){
 		logger.time("totalRequestTimeWithLateArrivals", time);
 	}
 
-	return Q();
+	return Promise.resolve();
 }
 
 function getNonInternalConfigs() {

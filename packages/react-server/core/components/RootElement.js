@@ -1,5 +1,5 @@
 var React = require('react');
-var Q = require('q');
+var Promise = require('bluebird');
 
 var logger = require('../logging').getLogger(__LOGGER__);
 
@@ -124,9 +124,10 @@ RootElement.ensureRootElement = function(element){
 
 RootElement.scheduleRender = function(element) {
 	var listen = ((element||{}).props||{}).listen;
-	if (!listen) return Q(element).then(RootElement.ensureRootElement);
-	var dfd = Q.defer();
+	if (!listen) return Promise.resolve(element).then(RootElement.ensureRootElement);
+	var resolve;
 	var updater;
+	var promise = new Promise(res => resolve = res);
 	var unsubscribe = listen(childProps => {
 
 		// Once the component has mounted it will provide an updater.
@@ -136,8 +137,8 @@ RootElement.scheduleRender = function(element) {
 
 		// The promise itself will only resolve once, but we don't
 		// want to _clone_ multiple times.
-		if (dfd.promise.isPending()) {
-			dfd.resolve(React.cloneElement(element, {
+		if (promise.isPending()) {
+			resolve(React.cloneElement(element, {
 				childProps,
 				subscribe,
 				unsubscribe,
@@ -145,5 +146,5 @@ RootElement.scheduleRender = function(element) {
 		}
 	});
 	var subscribe = callback => updater = callback;
-	return dfd.promise
+	return promise
 }

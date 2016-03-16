@@ -1,5 +1,5 @@
 var React = require("react")
-,	Q = require("q")
+,	Promise = require("bluebird")
 ;
 
 var ELEMENT_DELAY = 150
@@ -13,7 +13,7 @@ class AsyncElementPage {
 
 	getElements() {
 		// this is less than the server timeout for rendering, so it should render server-side.
-		return Q(<div id="main">rendered!</div>).delay(ELEMENT_DELAY);
+		return Promise.resolve(<div id="main">rendered!</div>).delay(ELEMENT_DELAY);
 	}
 }
 
