@@ -648,7 +648,7 @@ class ClientController extends EventEmitter {
 	}
 
 	failArrival () {
-		this._fail();;
+		this._fail();
 	}
 
 }
