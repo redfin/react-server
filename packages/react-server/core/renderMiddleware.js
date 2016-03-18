@@ -905,7 +905,7 @@ function setupLateArrivals(res) {
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
 	var promises = notLoaded.map( result => result.entry.promise );
-	RLS().lateArrivals = Promise.all(promises).catch(() => {})
+	RLS().lateArrivals = Promise.all(promises.map(p => p.reflect()));
 }
 
 function wrapUpLateArrivals(){
