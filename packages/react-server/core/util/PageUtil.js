@@ -183,11 +183,11 @@ function standardizeDebugComments(debugComments) {
 }
 
 function standardizeMetaTags(metaTags) {
-	return PageUtil.makeArray(metaTags).map(metaTag => Promise.resolve(metaTag));
+	return PageUtil.makeArray(metaTags).map(Promise.resolve);
 }
 
 function standardizeLinkTags(linkTags) {
-	return PageUtil.makeArray(linkTags).map(linkTag => Promise.resolve(linkTag));
+	return PageUtil.makeArray(linkTags).map(Promise.resolve);
 }
 
 function standardizeScripts(scripts) {
