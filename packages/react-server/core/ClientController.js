@@ -563,7 +563,7 @@ class ClientController extends EventEmitter {
 		if (window.__reactServerDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
-			var frame = state.reactServerFrame;
+			var frame = state ? state.reactServerFrame : null;
 
 			// Not our frame.
 			if (!frame) return;
