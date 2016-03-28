@@ -271,7 +271,7 @@ class ClientController extends EventEmitter {
 					currentBaseTag = document.createElement("base");
 					document.head.appendChild(currentBaseTag);
 				}
-				currentBaseTag.href = base.href;
+				if (base.href) currentBaseTag.href = base.href;
 				if (base.target) currentBaseTag.target = base.target;
 			}
 
