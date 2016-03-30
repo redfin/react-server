@@ -88,6 +88,8 @@ class ClientController extends EventEmitter {
 
 	_startRequest({request, type}) {
 
+		this._reuseDom = request.getReuseDom();
+
 		if (request.getFrameback()){
 
 			// Tell the navigator we got this one.
@@ -342,10 +344,6 @@ class ClientController extends EventEmitter {
 		// Need this to be an integer value greater than zero.
 		var aboveTheFoldCount = Math.max(page.getAboveTheFoldCount()|0, 1)
 
-		// if we were previously rendered on the client, clean up the old divs and
-		// their ReactComponents.
-		this._cleanupPreviousRender(this.mountNode);
-
 		// These resolve with React elements when their data
 		// dependencies are fulfilled.
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
@@ -391,31 +389,49 @@ class ClientController extends EventEmitter {
 
 			// During client transitions we create our root
 			// elements as we go.
-			if (!root && this._previouslyRendered){
-				if (element.containerOpen){
-
-					// If we're opening a container that's
-					// our new mountNode.
-					mountNode = this._createContainerNode(
-						mountNode,
-						element.containerOpen,
-						index
+			if (!root && this._previouslyRendered) {
+				if (this._reuseDom) {
+					var oldRootElement = document.querySelector(
+						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 					);
-				} else if (element.containerClose) {
-
-					// If we're closing a container its
-					// parent is once again our mountNode.
-					mountNode = mountNode.parentNode;
-				} else {
-
-					// Need a new root element in our
-					// current mountNode.
-					root = this._createReactServerRootNode(mountNode, index)
+					var oldRootContainer = document.querySelector(
+						`div[${PAGE_CONTAINER_NODE_ID}="${index}"]`
+					);
 				}
-			}
 
-			if (element.containerOpen || element.containerClose){
-				return; // Nothing left to do.
+				if (this._reuseDom && element.containerOpen && oldRootContainer) {
+					mountNode = oldRootContainer;
+				}	else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
+					mountNode = mountNode.parentNode;
+				} else if (this._reuseDom && oldRootElement) {
+					root = oldRootElement;
+				} else {
+					this._cleanupPreviousRender(index);
+					if (element.containerOpen){
+
+						// If we're opening a container that's
+						// our new mountNode.
+						mountNode = this._createContainerNode(
+							mountNode,
+							element.containerOpen,
+							index
+						);
+					} else if (element.containerClose) {
+
+						// If we're closing a container its
+						// parent is once again our mountNode.
+						mountNode = mountNode.parentNode;
+					} else {
+
+						// Need a new root element in our
+						// current mountNode.
+						root = this._createReactServerRootNode(mountNode, index)
+					}
+				}
+
+				if (element.containerOpen || element.containerClose){
+					return; // Nothing left to do.
+				}
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
@@ -487,25 +503,26 @@ class ClientController extends EventEmitter {
 	 * Cleans up a previous React render in the document. Unmounts all the components and destoys the mounting
 	 * DOM node(s) that were created.
 	 */
-	_cleanupPreviousRender(mountNode) {
+	_cleanupPreviousRender(index) {
 		if (this._previouslyRendered) {
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
-			).forEach(root => {
-
-				// Since this node has a "data-react-server-root-id"
-				// attribute, we can assume that we created it
-				// and should destroy it. Destruction means
-				// first unmounting from React and then
-				// destroying the DOM node.
-				React.unmountComponentAtNode(root);
-				root.parentNode.removeChild(root);
+				document.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
+			).forEach((root, i) => {
+				if (i >= index) {
+					// Since this node has a "data-react-server-root-id"
+					// attribute, we can assume that we created it
+					// and should destroy it. Destruction means
+					// first unmounting from React and then
+					// destroying the DOM node.
+					React.unmountComponentAtNode(root);
+					root.parentNode.removeChild(root);
+				}
 			});
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
+				document.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
 			).forEach(root => {
 
 				// Gotta get rid of our containers, too.
