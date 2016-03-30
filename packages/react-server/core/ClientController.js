@@ -88,12 +88,12 @@ class ClientController extends EventEmitter {
 
 	_startRequest({request, type}) {
 
+		const url = request.getUrl();
+
 		if (request.getFrameback()){
 
 			// Tell the navigator we got this one.
 			this.context.navigator.ignoreCurrentNavigation();
-
-			var url = request.getUrl();
 
 			if (type === History.events.PUSHSTATE) {
 				// Sorry folks.  If we need to do a client
@@ -134,6 +134,11 @@ class ClientController extends EventEmitter {
 			if (this._previouslyRendered){
 
 				RequestLocalStorage.startRequest();
+
+				// If we've got a preload bundle let's inflate
+				// it and avoid firing off a bunch of xhr
+				// requests during `handleRoute`.
+				ReactServerAgent._checkForPreload(url);
 
 				// we need to re-register the request context
 				// as a RequestLocal.

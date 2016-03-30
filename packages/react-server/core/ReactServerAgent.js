@@ -10,6 +10,8 @@ function makeRequest (method, url) {
 	return new Request(method, url, API.cache());
 }
 
+const PRELOADS = {};
+
 var API = {
 
 	get (url, data) {
@@ -95,6 +97,17 @@ var API = {
 	 */
 	plugResponse (pluginFunc) {
 		Plugins.forResponse().add(pluginFunc);
+	},
+
+	preloadDataForURL (url) {
+		return this.get(url, {_react_server_preload_bundle: 1})
+			.then(data => PRELOADS[url] = data.body); // eslint-disable-line no-return-assign
+	},
+
+	_checkForPreload (url) {
+		if (PRELOADS[url]) {
+			API.cache().rehydrate(PRELOADS[url]);
+		}
 	},
 
 }
