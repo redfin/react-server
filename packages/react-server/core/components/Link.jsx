@@ -9,7 +9,8 @@ module.exports = React.createClass({
 
 	propTypes: {
 		path: React.PropTypes.string.isRequired,
-                frameback: React.PropTypes.bool,
+		frameback: React.PropTypes.bool,
+		children: React.PropTypes.object,
 	},
 
 	getDefaultProps(){

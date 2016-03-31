@@ -1,8 +1,9 @@
 {
   "private": true,
   "devDependencies": {
-    "eslint": "0.24.1",
-    "eslint-plugin-react": "3.0.0",
+    "babel-eslint": "^6.0.1",
+    "eslint": "2.7.0",
+    "eslint-plugin-react": "4.3.0",
     "gulp": "3.9.1",
     "gulp-chug": "0.5.1",
     "lerna": "^1.1.1"

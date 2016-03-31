@@ -1,5 +1,6 @@
 import entrypoints from "../entrypoints";
 import _ from "lodash";
+import React from "React";
 
 export default class IndexPage {
 	getElements() {

@@ -4,6 +4,8 @@ var Q = require('q');
 var logger = require('../logging').getLogger(__LOGGER__);
 
 class RootElement extends React.Component {
+	displayName: 'react-server.RootElement'
+
 	componentDidMount() {
 		if (this.props.subscribe) {
 			this.props.subscribe(childProps => {
@@ -76,6 +78,9 @@ RootElement.propTypes = {
 	when: React.PropTypes.object, // A promise.
 	childProps: React.PropTypes.object,
 	_isRootElement: React.PropTypes.bool,
+	subscribe: React.PropTypes.func,
+	unsubscribe: React.PropTypes.func,
+	children: React.PropTypes.object,
 }
 
 RootElement.defaultProps = {
@@ -101,7 +106,7 @@ RootElement.getRootElementAttributes = function(element) {
 	return attrs;
 }
 
-RootElement.ensureRootElementWithContainer = function(element, container) {
+RootElement.ensureRootElementWithContainer = function(element, container) { // eslint-disable-line react/display-name
 
 	// If it's _already_ a root element, pass it along.
 	if (RootElement.isRootElement(element) || (
@@ -144,6 +149,7 @@ RootElement.installListener = function(element, listen) {
 				unsubscribe,
 			}));
 		}
+		return undefined;
 	});
 	var subscribe = callback => updater = callback;
 	return dfd.promise

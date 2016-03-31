@@ -84,4 +84,3 @@ class RequestContextBuilder {
 
 module.exports = RequestContext;
 module.exports.Builder = RequestContextBuilder;
-

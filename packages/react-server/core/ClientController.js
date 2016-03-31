@@ -557,7 +557,7 @@ class ClientController extends EventEmitter {
 					// and should destroy it. Destruction means
 					// first unmounting from React and then
 					// destroying the DOM node.
-					React.unmountComponentAtNode(root);
+					ReactDOM.unmountComponentAtNode(root);
 					root.parentNode.removeChild(root);
 				}
 			});

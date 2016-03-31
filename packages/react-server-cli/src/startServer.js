@@ -168,7 +168,7 @@ const startHotLoadJsServer = (compiler, port, httpsOptions) => {
 };
 
 const handleCompilationErrors = (err, stats) => {
-	if(err) {
+	if (err) {
 		logger.error("Error during webpack build.");
 		logger.error(err);
 		throw new Error(err);
