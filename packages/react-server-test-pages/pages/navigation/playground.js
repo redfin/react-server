@@ -50,10 +50,21 @@ class ClientRenderIndicator extends React.Component {
 		super(props);
 		this.state = {ready: false};
 	}
+	_handleNavEvent(evt) {
+		if (!this._mounted) return;
+		this.setState({ready: evt === 'loadComplete'});
+	}
 	componentDidMount() {
+		this._mounted = true;
 		this.setState({ready: true});
-		window.__reactServerClientController.context
-			.onNavigateStart(() => this.setState({ready: false}));
+		const nav = window.__reactServerClientController.context.navigator;
+		this._navListeners = ['navigateStart', 'loadComplete']
+			.reduce((m,e) => (nav.on(e, m[e] = this._handleNavEvent.bind(this, e)), m), {});
+	}
+	componentWillUnmount() {
+		this._mounted = false;
+		const nav = window.__reactServerClientController.context.navigator;
+		_.forEach(this._navListeners, (v,k) => nav.removeListener(k, v));
 	}
 	componentWillReceiveProps() {
 		this.setState({ready: true});
