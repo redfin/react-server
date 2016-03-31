@@ -100,6 +100,7 @@ var API = {
 	},
 
 	preloadDataForURL (url) {
+		if (PRELOADS[url]) return PRELOADS[url];
 		return this.get(url, {_react_server_preload_bundle: 1})
 			.then(data => PRELOADS[url] = data.body); // eslint-disable-line no-return-assign
 	},
