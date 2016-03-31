@@ -34,12 +34,13 @@ Q.onerror = (err) => {
 	logger.error("Unhandled exception in Q promise", err);
 }
 
-var CURRENT_STATE_FRAME = 0;
+var SESSION_START_PREFIX = (new Date()).getTime() + '_';
 var NEXT_STATE_FRAME = 0;
+var CURRENT_STATE_FRAME = SESSION_START_PREFIX + NEXT_STATE_FRAME;
 
 function pushFrame() {
-	CURRENT_STATE_FRAME = ++NEXT_STATE_FRAME;
-	return CURRENT_STATE_FRAME;
+    CURRENT_STATE_FRAME = SESSION_START_PREFIX + ++NEXT_STATE_FRAME;
+    return CURRENT_STATE_FRAME;
 }
 
 class ClientController extends EventEmitter {
