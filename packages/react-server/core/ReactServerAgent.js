@@ -107,11 +107,13 @@ var API = {
 	preloadDataForURL (url) {
 		if (SERVER_SIDE) throw new Error("Can't preload server-side");
 		if (!BUNDLE_CACHE[url]){
-			BUNDLE_CACHE[url] = this.get(url, BUNDLE_OPTS)
-				.then(data => data.body);
-
+			BUNDLE_CACHE[url] = API._fetchPreloadData(url);
 		}
 		return BUNDLE_CACHE[url];
+	},
+
+	_fetchPreloadData(url) {
+		return this.get(url, BUNDLE_OPTS).then(data => data.body);
 	},
 
 	_rehydratePreloadData(url) {
