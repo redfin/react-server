@@ -1,4 +1,5 @@
 var RLS = require('./util/RequestLocalStorage').getNamespace()
+,	Q = require("q")
 ,	Cache = require("./ReactServerAgent/Cache")
 ,	Request = require("./ReactServerAgent/Request")
 ,	Plugins = require("./ReactServerAgent/Plugins")
@@ -10,9 +11,13 @@ function makeRequest (method, url) {
 	return new Request(method, url, API.cache());
 }
 
-const PRELOADS = {};
+const BUNDLE_CACHE     = {};
+const BUNDLE_PARAMETER = '_react_server_preload_bundle';
+const BUNDLE_OPTS      = {[BUNDLE_PARAMETER]: 1};
 
 var API = {
+
+	BUNDLE_PARAMETER,
 
 	get (url, data) {
 		var req = makeRequest('GET', url);
@@ -100,15 +105,21 @@ var API = {
 	},
 
 	preloadDataForURL (url) {
-		if (PRELOADS[url]) return PRELOADS[url];
-		return this.get(url, {_react_server_preload_bundle: 1})
-			.then(data => PRELOADS[url] = data.body); // eslint-disable-line no-return-assign
+		if (SERVER_SIDE) throw new Error("Can't preload server-side");
+		if (!BUNDLE_CACHE[url]){
+			BUNDLE_CACHE[url] = this.get(url, BUNDLE_OPTS)
+				.then(data => data.body);
+
+		}
+		return BUNDLE_CACHE[url];
 	},
 
-	_checkForPreload (url) {
-		if (PRELOADS[url]) {
-			API.cache().rehydrate(PRELOADS[url]);
-		}
+	_rehydratePreloadData(url) {
+		// If we don't have any then we can't use it.
+		if (!BUNDLE_CACHE[url]) return Q();
+
+		return BUNDLE_CACHE[url]
+			.then(data => API.cache().rehydrate(data));
 	},
 
 }

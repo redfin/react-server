@@ -135,11 +135,6 @@ class ClientController extends EventEmitter {
 
 				RequestLocalStorage.startRequest();
 
-				// If we've got a preload bundle let's inflate
-				// it and avoid firing off a bunch of xhr
-				// requests during `handleRoute`.
-				ReactServerAgent._checkForPreload(url);
-
 				// we need to re-register the request context
 				// as a RequestLocal.
 				this.context.registerRequestLocal();
