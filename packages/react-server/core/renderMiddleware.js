@@ -700,7 +700,7 @@ function writeBody(req, res, context, start, page) {
 		RLS().lateArrivals = undefined;
 
 		// Let the client know it's not getting any more data.
-		renderScriptsAsync([{ text: `__reactServerFailArrival()` }], res)
+		renderScriptsAsync([{ text: `__reactServerClientController.failArrival()` }], res)
 	});
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
@@ -807,12 +807,12 @@ function writeElements(res, elements) {
 			// now we can let the client start waking nodes up.
 			bootstrapClient(res)
 			for (var j = 0; j <= i; j++){
-				renderScriptsAsync([{ text: `__reactServerNodeArrival(${j})` }], res)
+				renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${j})` }], res)
 			}
 		} else if (i >= RLS().atfCount){
 
 			// Let the client know it's there.
-			renderScriptsAsync([{ text: `__reactServerNodeArrival(${i})` }], res)
+			renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${i})` }], res)
 		}
 	}
 
@@ -883,7 +883,7 @@ function setupLateArrivals(res) {
 		pendingRequest.entry.whenDataReadyInternal().then( () => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
-				text: `__reactServerDataArrival(${
+				text: `__reactServerClientController.dataArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))

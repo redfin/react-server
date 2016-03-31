@@ -608,9 +608,7 @@ class ClientController extends EventEmitter {
 	_setupArrivalHandlers () {
 		// used by <script> callbacks to register data sent down on the
 		// initial connection after initial render
-		window.__reactServerDataArrival = this.dataArrival.bind(this);
-		window.__reactServerNodeArrival = this.nodeArrival.bind(this);
-		window.__reactServerFailArrival = this.failArrival.bind(this);
+		window.__reactServerClientController = this;
 	}
 
 	_ensureRootNodeDfd (index) {
