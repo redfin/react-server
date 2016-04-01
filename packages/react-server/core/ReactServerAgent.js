@@ -113,7 +113,7 @@ var API = {
 	},
 
 	_fetchPreloadData(url) {
-		return this.get(url, BUNDLE_OPTS).then(data => data.body);
+		return this.get(url, BUNDLE_OPTS).then(data => JSON.stringify(data.body));
 	},
 
 	_rehydratePreloadData(url) {
@@ -121,7 +121,7 @@ var API = {
 		if (!BUNDLE_CACHE[url]) return Q();
 
 		return BUNDLE_CACHE[url]
-			.then(data => API.cache().rehydrate(data));
+			.then(data => API.cache().rehydrate(JSON.parse(data)));
 	},
 
 }
