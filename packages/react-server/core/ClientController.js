@@ -119,6 +119,13 @@ class ClientController extends EventEmitter {
 				this.context.navigator.finishRoute();
 			});
 
+		} else if (this.framebackController.isActive()) {
+
+			// Tell the navigator we got this one, too.
+			this.context.navigator.ignoreCurrentNavigation();
+			this.framebackController.navigateBack();
+			this.context.navigator.finishRoute();
+
 		} else {
 
 			// If this is a secondary request (client transition)
@@ -573,22 +580,18 @@ class ClientController extends EventEmitter {
 
 			CURRENT_STATE_FRAME = frame;
 
-			if (this.framebackController.isActive()){
-				this.framebackController.navigateBack();
-			} else {
-				var frameback = (state||{}).frameback;
-				if (context) {
-					var path = this._history.getPath();
+			var frameback = (state||{}).frameback;
+			if (context) {
+				var path = this._history.getPath();
 
-					// Pass in "popstate" because this is
-					// when a user clicks the forward/back
-					// button.
-					context.navigate(
-						new ClientRequest(path, {frameback}),
-						History.events.POPSTATE
-					);
+				// Pass in "popstate" because this is
+				// when a user clicks the forward/back
+				// button.
+				context.navigate(
+					new ClientRequest(path, {frameback}),
+					History.events.POPSTATE
+				);
 
-				}
 			}
 		};
 
