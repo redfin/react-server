@@ -1,6 +1,6 @@
 var ReactServerAgent = require("../../ReactServerAgent");
 var superagent = require("superagent");
-var Q = require("q");
+var Promise = require("bluebird");
 var isArray = require("lodash/lang/isArray");
 
 
@@ -265,7 +265,7 @@ describe("ReactServerAgent", () => {
 					console.log(err.stack);
 					// this will fail the test
 					expect(err).toBeUndefined();
-				}).fin( () => {
+				}).finally( () => {
 					removeJsonParserForContentType(superagent, FAKE_CONTENT_TYPE);
 					done();
 				})
@@ -488,7 +488,7 @@ describe("ReactServerAgent", () => {
 					done();
 				})
 				.catch(err => fail(err.stack))
-				.fin(done)
+				.finally(done)
 				.done();
 
 		}));
@@ -496,7 +496,7 @@ describe("ReactServerAgent", () => {
 		it("does return the same response for two requesters of the same URL", withRlsContext(done => {
 			var URL = "/describe";
 
-			Q.all([
+			Promise.all([
 				ReactServerAgent.get(URL).then(res => res),
 				ReactServerAgent.get(URL).then(res => res),
 			]).then(results => {
@@ -513,7 +513,7 @@ describe("ReactServerAgent", () => {
 
 			})
 			.catch(err => fail(err.stack))
-			.fin(done)
+			.finally(done)
 			.done();
 
 		}));
@@ -521,7 +521,7 @@ describe("ReactServerAgent", () => {
 		it("does return the sam response for two requesters with the same URL and query params", withRlsContext(done => {
 			var URL = "/describe";
 
-			Q.all([
+			Promise.all([
 				ReactServerAgent.get(URL)
 					.query({"foo": "bar"})
 					.then(res => res),
@@ -541,7 +541,7 @@ describe("ReactServerAgent", () => {
 
 			})
 			.catch(err => fail(err.stack))
-			.fin(done)
+			.finally(done)
 			.done();
 		}));
 
@@ -549,7 +549,7 @@ describe("ReactServerAgent", () => {
 
 			var URL = "/describe";
 
-			Q.all([
+			Promise.all([
 				ReactServerAgent.get(URL).then(res => res),
 				ReactServerAgent.post(URL).then(res => res),
 			]).then(results => {
@@ -557,7 +557,7 @@ describe("ReactServerAgent", () => {
 				expect(res1).not.toBe(res2);
 			})
 			.catch(err => fail(err.stack))
-			.fin(done)
+			.finally(done)
 			.done();
 
 		}));
@@ -566,7 +566,7 @@ describe("ReactServerAgent", () => {
 
 			var URL = "/describe";
 
-			Q.all([
+			Promise.all([
 				// default is whatever 'form data' normally is
 				ReactServerAgent.get(URL).then(res => res),
 				ReactServerAgent.post(URL).type("application/json").then(res => res),
@@ -575,7 +575,7 @@ describe("ReactServerAgent", () => {
 				expect(res1).not.toBe(res2);
 			})
 			.catch(err => fail(err.stack))
-			.fin(done)
+			.finally(done)
 			.done();
 
 		}));
@@ -592,7 +592,7 @@ describe("ReactServerAgent", () => {
 						.query({ "foo": "baz"})
 						.then(res => res);
 
-			Q.all([p1, p2]).then(results => {
+			Promise.all([p1, p2]).then(results => {
 				var [res1, res2] = results;
 
 				expect(res1).not.toBe(res2);
@@ -603,7 +603,7 @@ describe("ReactServerAgent", () => {
 				console.log(errors);
 				fail("An error occurred", errors);
 			})
-			.fin(done)
+			.finally(done)
 			.done();
 
 		}));
@@ -620,7 +620,7 @@ describe("ReactServerAgent", () => {
 						.send({ "foo": {"bar": "baz"} })
 						.then(res => res);
 
-			Q.all([p1, p2]).then(results => {
+			Promise.all([p1, p2]).then(results => {
 				var [res1, res2] = results;
 
 				expect(res1).not.toBe(res2);
@@ -631,7 +631,7 @@ describe("ReactServerAgent", () => {
 				console.log(errors);
 				fail("An error occurred", errors);
 			})
-			.fin(done)
+			.finally(done)
 			.done();
 
 		}));

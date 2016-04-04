@@ -1,6 +1,6 @@
 var superagent = require('superagent')
 ,	logger = require('../logging').getLogger(__LOGGER__)
-,	Q = require('q')
+,	Promise = require('bluebird')
 ,	Plugins = require("./Plugins")
 ,	{ mixin } = require("./util")
 ;
@@ -273,10 +273,9 @@ Request.prototype.then = function (/*arguments*/) {
  * the request results in an error.
  */
 Request.prototype.asPromise = function () {
-	var dfd = Q.defer();
-	dfd.promise.catch(logRequestError.bind(this));
-	this.end(dfd.makeNodeResolver());
-	return dfd.promise;
+	var promise = Promise.promisify(this.end).call(this);
+	promise.catch(logRequestError.bind(this));
+	return promise;
 }
 
 // private method; 'this' bound to request object

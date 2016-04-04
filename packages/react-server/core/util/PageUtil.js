@@ -1,4 +1,4 @@
-var Q = require("q"),
+var Promise = require("bluebird"),
 	React = require('react'),
 	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace();
@@ -48,21 +48,21 @@ var PAGE_MIXIN = {
 // short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
-	handleRoute        : [() => ({code: 200}), Q],
+	handleRoute        : [() => ({code: 200}), Promise.resolve],
 	getContentType     : [() => "text/html; charset=utf-8", _ => _],
-	getTitle           : [() => "", Q],
+	getTitle           : [() => "", Promise.resolve],
 	getScripts         : [() => [], standardizeScripts],
 	getSystemScripts   : [() => [], standardizeScripts],
-	getBodyStartContent: [() => [], Q],
+	getBodyStartContent: [() => [], Promise.resolve],
 	getHeadStylesheets : [() => [], standardizeStyles],
 	getDebugComments   : [() => [], standardizeDebugComments],
 	getMetaTags        : [() => [], standardizeMetaTags],
 	getLinkTags        : [() => [], standardizeLinkTags],
-	getBase            : [() => null, Q],
-	getBodyClasses     : [() => [], Q],
+	getBase            : [() => null, Promise.resolve],
+	getBodyClasses     : [() => [], Promise.resolve],
 	getElements        : [() => [], standardizeElements],
 	getAboveTheFoldCount : [() => 1, _ => _],
-	getResponseData    : [() => "", Q],
+	getResponseData    : [() => "", Promise.resolve],
 };
 
 // These are similar to `PAGE_METHODS`, but differ as follows:
@@ -183,11 +183,11 @@ function standardizeDebugComments(debugComments) {
 }
 
 function standardizeMetaTags(metaTags) {
-	return PageUtil.makeArray(metaTags).map(metaTag => Q(metaTag));
+	return PageUtil.makeArray(metaTags).map(Promise.resolve);
 }
 
 function standardizeLinkTags(linkTags) {
-	return PageUtil.makeArray(linkTags).map(linkTag => Q(linkTag));
+	return PageUtil.makeArray(linkTags).map(Promise.resolve);
 }
 
 function standardizeScripts(scripts) {

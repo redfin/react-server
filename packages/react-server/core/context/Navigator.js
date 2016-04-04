@@ -2,7 +2,7 @@
 var EventEmitter = require('events').EventEmitter,
 	logger = require('../logging').getLogger(__LOGGER__),
 	Router = require('routr'),
-	Q = require('q'),
+	Promise = require('bluebird'),
 	History = require("../components/History"),
 	PageUtil = require("../util/PageUtil");
 
@@ -164,7 +164,7 @@ class Navigator extends EventEmitter {
 		// We call it in a promise handler so any exception that
 		// arises will get converted to a rejection that we can handle
 		// below.
-		Q().then(page.handleRoute).then(handleRouteResult => {
+		Promise.try(page.handleRoute).then(handleRouteResult => {
 
 			page.setStatus(handleRouteResult.code);
 
@@ -226,7 +226,7 @@ class Navigator extends EventEmitter {
 		// If we're being called with a requested route, we'll need to
 		// tell the caller when they can proceed with their
 		// navigation.
-		var dfd, promise;
+		var resolve, promise;
 
 		// We need to handle the case where routes are requested while
 		// we're handling the previous navigation.  This can happen if
@@ -245,9 +245,9 @@ class Navigator extends EventEmitter {
 			// laying around as we discard bypassed pages.
 			if (this._nextRoute) this._nextRoute[1].reject();
 
-			dfd = Q.defer(), promise = dfd.promise;
+			promise = new Promise(res => resolve = res);
 
-			this._nextRoute = [route, request, type, dfd];
+			this._nextRoute = [route, request, type, resolve];
 		}
 
 		// If we're _currently_ navigating, we'll wait to start the
@@ -255,7 +255,7 @@ class Navigator extends EventEmitter {
 		// navigation causes all kinds of havoc.
 		if (!this._loading && this._nextRoute){
 
-			[route, request, type, dfd] = this._nextRoute;
+			[route, request, type, resolve] = this._nextRoute;
 
 			this._loading      = true;
 			this._currentRoute = route;
@@ -265,7 +265,7 @@ class Navigator extends EventEmitter {
 
 			// This allows the actual navigation to
 			// proceed.
-			dfd.resolve();
+			resolve();
 		}
 
 		return promise;

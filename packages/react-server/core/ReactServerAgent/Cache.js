@@ -1,6 +1,6 @@
 
 var logger = require('../logging').getLogger(__LOGGER__)
-,	Q = require('q')
+,	Promise = require('bluebird')
 ,	{ mixin } = require("./util")
 ,	isEqual = require("lodash/lang/isEqual")
 ,	isArray = require("lodash/lang/isArray")
@@ -36,10 +36,13 @@ class CacheEntry {
 		this.cache = cache;
 		this.cacheWhitelist = cacheWhitelist;
 		this.requesters = 0;
-		this.dfd = Q.defer();
 		this.loaded = false;
 		this.res = undefined;
 		this.err = undefined;
+		this.promise = new Promise((res, rej) => {
+			this.resolve = res;
+			this.reject = rej;
+		})
 		// copy the rest of the properties from input requestData
 		// to this.requestData
 
@@ -188,7 +191,7 @@ class CacheEntry {
 			res = JSON.parse(JSON.stringify(res));
 		}
 
-		this.dfd.resolve(res);
+		this.resolve(res);
 	}
 
 	setError (err) {
@@ -211,7 +214,7 @@ class CacheEntry {
 			err = JSON.parse(JSON.stringify(err));
 		}
 
-		this.dfd.reject(err);
+		this.reject(err);
 	}
 
 	whenDataReady () {
@@ -219,18 +222,18 @@ class CacheEntry {
 			// server-side, we increment the number of requesters
 			// we expect to retrieve the data on the frontend
 			this.requesters += 1;
-			return this.dfd.promise;
+			return this.promise;
 		} else {
 			// client-side, whenever someone retrieves data from the cache,
 			// we decrement the number of retrievals expected, and when we
 			// hit zero, remove the cache entry.
-			return this._requesterDecrementingPromise(this.dfd.promise);
+			return this._requesterDecrementingPromise(this.promise);
 		}
 	}
 
 	// for internal (react-server middleware) calls
 	whenDataReadyInternal () {
-		return this.dfd.promise;
+		return this.promise;
 	}
 
 	decrementRequesters () {
@@ -250,7 +253,7 @@ class CacheEntry {
 		// regardless of whether we're resolved with a 'res' or 'err',
 		// we want to decrement requests. the appropriate 'success' or 'error'
 		// callback will be executed on whatever is chained after this method
-		return promise.fin( resOrErr => {
+		return promise.finally( resOrErr => {
 			this.decrementRequesters();
 			return resOrErr;
 		});
@@ -455,15 +458,18 @@ class RequestDataCache {
 	}
 
 	whenAllPendingResolve () {
-		var promises = this.getAllRequests().map(req => req.entry.dfd.promise);
-		return Q.allSettled(promises);
+		var promises = this.getAllRequests().map(req => req.entry.promise);
+		return Promise.all(promises).catch(() => {});
 	}
 
 	/**
 	 * Fires when the cache has been completely depleted, which is used as a signal to render when there was a timeout on the server.
 	 */
 	whenCacheDepleted () {
-		this.whenCacheDepletedDfd = this.whenCacheDepletedDfd || Q.defer();
+		if (!this.whenCacheDepletedDfd) {
+			var dfd = {};
+			dfd.promise = new Promise(res => dfd.resolve = res);
+		}
 
 		this.checkCacheDepleted();
 
