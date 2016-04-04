@@ -15,9 +15,6 @@
   ],
   "author": "Doug Wade <doug.wade@redfin.com>",
   "license": "Apache License 2.0",
-  "publishConfig": {
-    "registry": "http://qa-compile-1.redfintest.com:4873"
-  },
   "dependencies": {
     "babel-plugin-transform-es2015-arrow-functions": "^6.3.13",
     "babel-plugin-transform-es2015-block-scoping": "^6.3.13",
