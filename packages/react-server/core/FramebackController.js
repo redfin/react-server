@@ -92,6 +92,8 @@ class FramebackController extends EventEmitter {
 		logger.debug(`Navigating to ${url}`);
 
 		this.active = true;
+		// update master title in case the title has changed since initialization
+		this.masterTitle = document.title;
 
 		this.hideMaster();
 
