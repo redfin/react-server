@@ -205,7 +205,7 @@ function renderPage(req, res, context, start, page) {
 		lifecycleMethods = fragmentLifecycle();
 	} else if (PageUtil.PageConfig.get('isRawResponse')){
 		lifecycleMethods = rawResponseLifecycle();
-	} else if (req.query._react_server_preload_bundle) {
+	} else if (req.query[ReactServerAgent.DATA_BUNDLE_PARAMETER]) {
 		lifecycleMethods = preloadBundleLifecycle();
 	} else {
 		lifecycleMethods = pageLifecycle();
