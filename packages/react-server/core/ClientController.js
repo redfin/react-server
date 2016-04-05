@@ -523,13 +523,14 @@ class ClientController extends EventEmitter {
 
 			[].slice.call(
 				document.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
-			).forEach(root => {
-
-				// Gotta get rid of our containers, too.
-				// Need to do this _after_ killing the
-				// elements, since they might live within
-				// these containers.
-				root.parentNode.removeChild(root);
+			).forEach((root, i) => {
+				if (i >= index) {
+					// Gotta get rid of our containers,
+					// too.  Need to do this _after_
+					// killing the elements, since they
+					// might live within these containers.
+					root.parentNode.removeChild(root);
+				}
 			});
 		}
 	}
