@@ -206,7 +206,7 @@ function renderPage(req, res, context, start, page) {
 	} else if (PageUtil.PageConfig.get('isRawResponse')){
 		lifecycleMethods = rawResponseLifecycle();
 	} else if (req.query[ReactServerAgent.DATA_BUNDLE_PARAMETER]) {
-		lifecycleMethods = preloadBundleLifecycle();
+		lifecycleMethods = dataBundleLifecycle();
 	} else {
 		lifecycleMethods = pageLifecycle();
 	}
@@ -252,7 +252,7 @@ function fragmentLifecycle () {
 	];
 }
 
-function preloadBundleLifecycle () {
+function dataBundleLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
 		setDataBundleContentType,
