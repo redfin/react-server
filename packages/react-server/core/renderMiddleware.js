@@ -255,8 +255,8 @@ function fragmentLifecycle () {
 function preloadBundleLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
-		setPreloadBundleContentType,
-		writePreloadBundle,
+		setDataBundleContentType,
+		writeDataBundle,
 		handleResponseComplete,
 		endResponse,
 	];
@@ -280,7 +280,7 @@ function setContentType(req, res, context, start, pageObject) {
 	res.set('Content-Type', pageObject.getContentType());
 }
 
-function setPreloadBundleContentType(req, res) {
+function setDataBundleContentType(req, res) {
 	res.set('Content-Type', 'application/json');
 }
 
@@ -752,7 +752,7 @@ function writeResponseData(req, res, context, start, page) {
 	});
 }
 
-function writePreloadBundle(req, res) {
+function writeDataBundle(req, res) {
 
 	const cache = ReactServerAgent.cache();
 

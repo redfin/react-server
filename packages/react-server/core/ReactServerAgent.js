@@ -11,13 +11,13 @@ function makeRequest (method, url) {
 	return new Request(method, url, API.cache());
 }
 
-const BUNDLE_CACHE     = {};
-const BUNDLE_PARAMETER = '_react_server_preload_bundle';
-const BUNDLE_OPTS      = {[BUNDLE_PARAMETER]: 1};
+const DATA_BUNDLE_CACHE     = {};
+const DATA_BUNDLE_PARAMETER = '_react_server_data_bundle';
+const DATA_BUNDLE_OPTS      = {[DATA_BUNDLE_PARAMETER]: 1};
 
 var API = {
 
-	BUNDLE_PARAMETER,
+	DATA_BUNDLE_PARAMETER,
 
 	get (url, data) {
 		var req = makeRequest('GET', url);
@@ -106,21 +106,21 @@ var API = {
 
 	preloadDataForURL (url) {
 		if (SERVER_SIDE) throw new Error("Can't preload server-side");
-		if (!BUNDLE_CACHE[url]){
-			BUNDLE_CACHE[url] = API._fetchPreloadData(url);
+		if (!DATA_BUNDLE_CACHE[url]){
+			DATA_BUNDLE_CACHE[url] = API._fetchDataBundle(url);
 		}
-		return BUNDLE_CACHE[url];
+		return DATA_BUNDLE_CACHE[url];
 	},
 
-	_fetchPreloadData(url) {
-		return this.get(url, BUNDLE_OPTS).then(data => JSON.stringify(data.body));
+	_fetchDataBundle(url) {
+		return this.get(url, DATA_BUNDLE_OPTS).then(data => JSON.stringify(data.body));
 	},
 
-	_rehydratePreloadData(url) {
+	_rehydrateDataBundle(url) {
 		// If we don't have any then we can't use it.
-		if (!BUNDLE_CACHE[url]) return Q();
+		if (!DATA_BUNDLE_CACHE[url]) return Q();
 
-		return BUNDLE_CACHE[url]
+		return DATA_BUNDLE_CACHE[url]
 			.then(data => API.cache().rehydrate(JSON.parse(data)));
 	},
 

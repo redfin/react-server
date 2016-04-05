@@ -71,7 +71,7 @@ class Navigator extends EventEmitter {
 
 		// If we've got a preload bundle let's inflate it and avoid
 		// firing off a bunch of xhr requests during `handleRoute`.
-		.then(() => ReactServerAgent._rehydratePreloadData(request.getUrl()))
+		.then(() => ReactServerAgent._rehydrateDataBundle(request.getUrl()))
 
 		.then(() => {
 			if (this._ignoreCurrentNavigation){
