@@ -20,6 +20,8 @@ var _ = {
 	forEach: require('lodash/collection/forEach'),
 };
 
+var RLS = RequestLocalStorage.getNamespace();
+
 // for dev tools
 window.React = React;
 
@@ -504,7 +506,11 @@ class ClientController extends EventEmitter {
 	 * DOM node(s) that were created.
 	 */
 	_cleanupPreviousRender(index) {
-		if (this._previouslyRendered) {
+		if (this._previouslyRendered && !RLS().haveCleanedPreviousRender) {
+
+			// Only need to do this once per request.
+			RLS().haveCleanedPreviousRender = true;
+
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
