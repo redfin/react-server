@@ -88,12 +88,12 @@ class ClientController extends EventEmitter {
 
 	_startRequest({request, type}) {
 
-		const url = request.getUrl();
-
 		if (request.getFrameback()){
 
 			// Tell the navigator we got this one.
 			this.context.navigator.ignoreCurrentNavigation();
+
+			var url = request.getUrl();
 
 			if (type === History.events.PUSHSTATE) {
 				// Sorry folks.  If we need to do a client
