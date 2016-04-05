@@ -401,7 +401,7 @@ class ClientController extends EventEmitter {
 
 				if (this._reuseDom && element.containerOpen && oldRootContainer) {
 					mountNode = oldRootContainer;
-				}	else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
+				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
 					mountNode = mountNode.parentNode;
 				} else if (this._reuseDom && oldRootElement) {
 					root = oldRootElement;
