@@ -14,7 +14,7 @@ function makeRequest (method, url) {
 // REALLY don't want to accidentally cache data across requests on the server.
 // We throw an error if `preloadDataForURL` is called server-side, but it's
 // worth being doubly cautious here.
-const DATA_BUNDLE_CACHE     = SERVER_SIDE?undefined:{};
+const DATA_BUNDLE_CACHE     = SERVER_SIDE?Object.freeze({}):{};
 const DATA_BUNDLE_PARAMETER = '_react_server_data_bundle';
 const DATA_BUNDLE_OPTS      = {[DATA_BUNDLE_PARAMETER]: 1};
 
