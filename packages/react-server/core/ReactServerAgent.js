@@ -1,4 +1,5 @@
 var RLS = require('./util/RequestLocalStorage').getNamespace()
+,	Q = require("q")
 ,	Cache = require("./ReactServerAgent/Cache")
 ,	Request = require("./ReactServerAgent/Request")
 ,	Plugins = require("./ReactServerAgent/Plugins")
@@ -10,7 +11,16 @@ function makeRequest (method, url) {
 	return new Request(method, url, API.cache());
 }
 
+// REALLY don't want to accidentally cache data across requests on the server.
+// We throw an error if `preloadDataForURL` is called server-side, but it's
+// worth being doubly cautious here.
+const DATA_BUNDLE_CACHE     = SERVER_SIDE?Object.freeze({}):{};
+const DATA_BUNDLE_PARAMETER = '_react_server_data_bundle';
+const DATA_BUNDLE_OPTS      = {[DATA_BUNDLE_PARAMETER]: 1};
+
 var API = {
+
+	DATA_BUNDLE_PARAMETER,
 
 	get (url, data) {
 		var req = makeRequest('GET', url);
@@ -95,6 +105,26 @@ var API = {
 	 */
 	plugResponse (pluginFunc) {
 		Plugins.forResponse().add(pluginFunc);
+	},
+
+	preloadDataForURL (url) {
+		if (SERVER_SIDE) throw new Error("Can't preload server-side");
+		if (!DATA_BUNDLE_CACHE[url]){
+			DATA_BUNDLE_CACHE[url] = API._fetchDataBundle(url);
+		}
+		return DATA_BUNDLE_CACHE[url];
+	},
+
+	_fetchDataBundle(url) {
+		return this.get(url, DATA_BUNDLE_OPTS).then(data => JSON.stringify(data.body));
+	},
+
+	_rehydrateDataBundle(url) {
+		// If we don't have any then we can't use it.
+		if (!DATA_BUNDLE_CACHE[url]) return Q();
+
+		return DATA_BUNDLE_CACHE[url]
+			.then(data => API.cache().rehydrate(JSON.parse(data)));
 	},
 
 }

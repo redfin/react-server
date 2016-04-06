@@ -205,6 +205,8 @@ function renderPage(req, res, context, start, page) {
 		lifecycleMethods = fragmentLifecycle();
 	} else if (PageUtil.PageConfig.get('isRawResponse')){
 		lifecycleMethods = rawResponseLifecycle();
+	} else if (req.query[ReactServerAgent.DATA_BUNDLE_PARAMETER]) {
+		lifecycleMethods = dataBundleLifecycle();
 	} else {
 		lifecycleMethods = pageLifecycle();
 	}
@@ -250,6 +252,16 @@ function fragmentLifecycle () {
 	];
 }
 
+function dataBundleLifecycle () {
+	return [
+		Q(), // NOOP lead-in to prime the reduction
+		setDataBundleContentType,
+		writeDataBundle,
+		handleResponseComplete,
+		endResponse,
+	];
+}
+
 function pageLifecycle() {
 	return [
 		Q(), // This is just a NOOP lead-in to prime the reduction.
@@ -266,6 +278,10 @@ function pageLifecycle() {
 
 function setContentType(req, res, context, start, pageObject) {
 	res.set('Content-Type', pageObject.getContentType());
+}
+
+function setDataBundleContentType(req, res) {
+	res.set('Content-Type', 'application/json');
 }
 
 function writeHeader(req, res, context, start, pageObject) {
@@ -734,6 +750,15 @@ function writeResponseData(req, res, context, start, page) {
 			res.write(data);
 		}
 	});
+}
+
+function writeDataBundle(req, res) {
+
+	const cache = ReactServerAgent.cache();
+
+	return Q.allSettled(
+		cache.getPendingRequests().map(v => v.entry.dfd.promise)
+	).then(() => res.write(JSON.stringify(cache.dehydrate())));
 }
 
 function renderElement(res, element, context) {
