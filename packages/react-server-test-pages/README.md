@@ -7,5 +7,9 @@ it), it's for interactive testing during development.
 Run it thusly:
 
 ```bash
-$ gulp build && node index.js
+$ npm start
 ```
+
+Then hit http://localhost:3000/ to see what's available.
+
+Add pages in `entrypoints.js`.  Instructions are at the top.
