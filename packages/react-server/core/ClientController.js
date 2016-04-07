@@ -392,6 +392,12 @@ class ClientController extends EventEmitter {
 			// During client transitions we create our root
 			// elements as we go.
 			if (!root && this._previouslyRendered) {
+
+				// If the _previous_ render had elements that
+				// we can re-use we'll render into them.
+				//
+				// DOM re-use is currently opt-in.
+				//
 				if (this._reuseDom) {
 					var oldRootElement = document.querySelector(
 						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
@@ -401,6 +407,14 @@ class ClientController extends EventEmitter {
 					);
 				}
 
+				// The current strategy for re-use is: So long
+				// as the _shape_ of the root structure is the
+				// same, we'll re-use.  Once the new page's
+				// shape diverges, we'll blow away the
+				// remaining elements left over from the
+				// previous page and create everything for the
+				// new page as we go.
+				//
 				if (this._reuseDom && element.containerOpen && oldRootContainer) {
 					mountNode = oldRootContainer;
 				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
