@@ -1,0 +1,5 @@
+src/
+lib/dev/
+test/
+gulpfile.babel.js
+.* # dot files
