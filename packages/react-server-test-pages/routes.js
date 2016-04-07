@@ -9,5 +9,10 @@ module.exports = {
 			method: "get",
 			page: "./pages/index",
 		},
+		DataDelay: {
+			path: ["/data/delay"],
+			method: "get",
+			page: "./pages/data/delay",
+		},
 	},
 }
