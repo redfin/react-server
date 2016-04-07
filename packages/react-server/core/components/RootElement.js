@@ -73,6 +73,7 @@ module.exports = RootElement;
 
 RootElement.propTypes = {
 	listen: React.PropTypes.func,
+	when: React.PropTypes.object, // A promise.
 	childProps: React.PropTypes.object,
 	_isRootElement: React.PropTypes.bool,
 }
@@ -115,16 +116,16 @@ RootElement.ensureRootElementWithContainer = function(element, container) {
 		return element;
 	}
 
-	return <RootElement listen={container.props.listen}>{element}</RootElement>;
+        const {listen, when} = container.props;
+
+	return <RootElement listen={listen} when={when}>{element}</RootElement>;
 }
 
 RootElement.ensureRootElement = function(element){
 	return RootElement.ensureRootElementWithContainer(element, {props:{}});
 }
 
-RootElement.scheduleRender = function(element) {
-	var listen = ((element||{}).props||{}).listen;
-	if (!listen) return Q(element).then(RootElement.ensureRootElement);
+RootElement.installListener = function(element, listen) {
 	var dfd = Q.defer();
 	var updater;
 	var unsubscribe = listen(childProps => {
@@ -146,4 +147,27 @@ RootElement.scheduleRender = function(element) {
 	});
 	var subscribe = callback => updater = callback;
 	return dfd.promise
+}
+
+RootElement.scheduleRender = function(element) {
+	var {listen, when} = (element||{}).props||{};
+	if (!(listen||when)) {
+		return Q(element).then(RootElement.ensureRootElement);
+	}
+
+	// This is what we'll ultimately resolve our return promise with.
+	// It may be changed by the output of `listen` or `when`.
+	var rendered = element;
+
+	// Install the listener right away to start gathering props.
+	// It may be a gated emitter, but we want to make sure we squeeze
+	// props out of it from the beginning if it's not.
+	// Finally gate on the `when`.
+	return Q(listen && RootElement.installListener(element, listen))
+		.then(el => el && (rendered = el))
+		.then(() => when)
+		.then(childProps => childProps
+			?React.cloneElement(rendered, {childProps})
+			:rendered
+		)
 }
