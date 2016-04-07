@@ -1,4 +1,4 @@
-// the common object model of triton on server and client -sra.
+// the common object model of react-server on server and client -sra.
 
 module.exports = {
 	RootContainer: require("./components/RootContainer"),
@@ -16,5 +16,5 @@ module.exports = {
 	PageUtil: require("./util/PageUtil"),
 	logging: require("./logging"),
 	config: require("./config"),
-	TritonAgent: require('./TritonAgent'),
+	ReactServerAgent: require('./ReactServerAgent'),
 }

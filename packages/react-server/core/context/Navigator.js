@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter,
 	Router = require('routr'),
 	Q = require('q'),
 	History = require("../components/History"),
+	ReactServerAgent = require("../ReactServerAgent"),
 	PageUtil = require("../util/PageUtil");
 
 var _ = {
@@ -40,7 +41,7 @@ class Navigator extends EventEmitter {
 		// If we're running without client navigation and this is a
 		// navigation away from the initial page we'll just let the
 		// browser handle this request as a normal page load.
-		if (global.__tritonDisableClientNavigation && this._haveInitialized){
+		if (global.__reactServerDisableClientNavigation && this._haveInitialized){
 			window.location.href = request.getUrl();
 			return;
 		}
@@ -65,7 +66,14 @@ class Navigator extends EventEmitter {
 		// The promise returned from `startRoute()` will be rejected
 		// if we're not going to proceed, so resources will be freed.
 		//
-		this.startRoute(route, request, type).then(() => {
+		this
+		.startRoute(route, request, type)
+
+		// If we've got a preload bundle let's inflate it and avoid
+		// firing off a bunch of xhr requests during `handleRoute`.
+		.then(() => ReactServerAgent._rehydrateDataBundle(request.getUrl()))
+
+		.then(() => {
 			if (this._ignoreCurrentNavigation){
 				// This is a one-time deal.
 				this._ignoreCurrentNavigation = false;

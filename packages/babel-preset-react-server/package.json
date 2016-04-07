@@ -1,0 +1,33 @@
+{
+  "name": "babel-preset-react-server",
+  "version": "0.1.5",
+  "description": "A recommended Babel config for working with react-server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "redfin/react-server",
+  "keywords": [
+    "babel",
+    "react-server",
+    "react",
+    "preset"
+  ],
+  "author": "Doug Wade <doug.wade@redfin.com>",
+  "license": "Apache License 2.0",
+  "dependencies": {
+    "babel-plugin-transform-es2015-arrow-functions": "^6.3.13",
+    "babel-plugin-transform-es2015-block-scoping": "^6.3.13",
+    "babel-plugin-transform-es2015-classes": "^6.3.13",
+    "babel-plugin-transform-es2015-computed-properties": "^6.3.13",
+    "babel-plugin-transform-es2015-constants": "^6.1.4",
+    "babel-plugin-transform-es2015-destructuring": "^6.3.13",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.3.13",
+    "babel-plugin-transform-es2015-parameters": "^6.3.13",
+    "babel-plugin-transform-es2015-shorthand-properties": "^6.3.13",
+    "babel-plugin-transform-es2015-spread": "^6.3.13",
+    "babel-plugin-transform-es2015-template-literals": "^6.3.13",
+    "babel-plugin-transform-object-rest-spread": "^6.3.13",
+    "babel-preset-react": "^6.5.0"
+  }
+}

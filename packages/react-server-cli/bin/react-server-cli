@@ -5,4 +5,4 @@ require.extensions['.css'] = function(module, filename) {
   return module._compile("", filename);
 };
 
-require("../target/index.js");
+require("../target/cli.js");

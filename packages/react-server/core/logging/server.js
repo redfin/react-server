@@ -17,7 +17,7 @@ var makeLogger = function(group, opts){
 		level     : config.baseLevel,
 		stream    : process.stdout,
 		json      : false,
-		timestamp : global.TIMESTAMP_TRITON_LOG_OUTPUT,
+		timestamp : global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT,
 	});
 
 	var logger = new (winston.Logger)({
@@ -29,7 +29,7 @@ var makeLogger = function(group, opts){
 	// Need to be able to refresh this.
 	(logger.updateColorize = function(){
 		logger.transports.file.label = colorizeName(opts);
-		logger.transports.file.colorize = global.COLORIZE_TRITON_LOG_OUTPUT;
+		logger.transports.file.colorize = global.COLORIZE_REACT_SERVER_LOG_OUTPUT;
 	})();
 
 	logger.setLevels(config.levels);
@@ -94,7 +94,7 @@ var getLogger = common.makeGetLogger(makeLogger);
 var colorizeName = function(opts){
 
 	// Only colorize if we're attached to a terminal.
-	if (!global.COLORIZE_TRITON_LOG_OUTPUT) return opts.name;
+	if (!global.COLORIZE_REACT_SERVER_LOG_OUTPUT) return opts.name;
 
 	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
 }
@@ -128,7 +128,7 @@ var addRewriter = function(rewriter){
 
 var setTimestamp = function(bool){
 
-	global.TIMESTAMP_TRITON_LOG_OUTPUT = bool;
+	global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT = bool;
 
 	// Update any loggers that are alredy set up.
 	common.forEachLogger(logger => {
@@ -140,7 +140,7 @@ var setTimestamp = function(bool){
 
 var setColorize = function(bool){
 
-	global.COLORIZE_TRITON_LOG_OUTPUT = bool;
+	global.COLORIZE_REACT_SERVER_LOG_OUTPUT = bool;
 
 	// Update any loggers that are alredy set up.
 	common.forEachLogger(logger => {

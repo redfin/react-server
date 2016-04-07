@@ -103,7 +103,7 @@ class CacheEntry {
 			} else {
 				if ("body" === prop) {
 					// 'parseable' must be false. we should log a warning
-					logger.warning(`TritonAgent needs responseBodyParser for content-type: ${res.type} to avoid duplicating data in cache body`);
+					logger.warning(`ReactServerAgent needs responseBodyParser for content-type: ${res.type} to avoid duplicating data in cache body`);
 				}
 				resCopy[prop] = res[prop];
 			}
@@ -148,7 +148,7 @@ class CacheEntry {
 
 			var parse = responseBodyParsers[res.type];
 			if (!parse) {
-				logger.warning(`Unparseable content type for ${this.url}: ${res.type}, but response._hasBody was true. (This may be a bug in TritonAgent)`);
+				logger.warning(`Unparseable content type for ${this.url}: ${res.type}, but response._hasBody was true. (This may be a bug in ReactServerAgent)`);
 			}
 			res.body = parse && res.text && res.text.length
 				? parse(res.text)
@@ -228,7 +228,7 @@ class CacheEntry {
 		}
 	}
 
-	// for internal (triton middleware) calls
+	// for internal (react-server middleware) calls
 	whenDataReadyInternal () {
 		return this.dfd.promise;
 	}
@@ -383,7 +383,7 @@ class RequestDataCache {
 			throw new Error("Missing requestData.urlPath");
 		}
 
-		logger.debug(`Getting TritonAgent request data cache entry for ${requestData.urlPath}`)
+		logger.debug(`Getting ReactServerAgent request data cache entry for ${requestData.urlPath}`)
 
 		var cacheEntry = this._findEntry(requestData);
 		if (!cacheEntry && createIfMissing) {

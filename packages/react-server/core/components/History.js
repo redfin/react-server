@@ -3,9 +3,9 @@
  * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
  */
  /*
-  * Changes for use in triton:
+  * Changes for use in react-server:
   * - Disables history navigation in a frameback child based on presence of
-  *   `window.__tritonIsFrame` flag.
+  *   `window.__reactServerIsFrame` flag.
   */
 /*global window */
 
@@ -100,12 +100,12 @@ History.prototype = {
 	},
 
 	canClientNavigate: function() {
-		return this._hasPushState && !this.win.__tritonIsFrame;
+		return this._hasPushState && !this.win.__reactServerIsFrame;
 	},
 
 	navigationWindow: function() {
 		var win = this.win;
-		if (win.__tritonIsFrame){
+		if (win.__reactServerIsFrame){
 			return win.parent;
 		} else {
 			return win;

@@ -13,7 +13,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	expressState = require('express-state'),
 	cookieParser = require('cookie-parser'),
 	PageUtil = require("./util/PageUtil"),
-	TritonAgent = require('./TritonAgent'),
+	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
 	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
@@ -51,7 +51,7 @@ module.exports = function(server, routes) {
 
 	// sets the namespace that data will be exposed into client-side
 	// TODO: express-state doesn't do much for us until we're using a templating library
-	server.set('state namespace', '__tritonState');
+	server.set('state namespace', '__reactServerState');
 
 	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
@@ -205,6 +205,8 @@ function renderPage(req, res, context, start, page) {
 		lifecycleMethods = fragmentLifecycle();
 	} else if (PageUtil.PageConfig.get('isRawResponse')){
 		lifecycleMethods = rawResponseLifecycle();
+	} else if (req.query[ReactServerAgent.DATA_BUNDLE_PARAMETER]) {
+		lifecycleMethods = dataBundleLifecycle();
 	} else {
 		lifecycleMethods = pageLifecycle();
 	}
@@ -250,6 +252,16 @@ function fragmentLifecycle () {
 	];
 }
 
+function dataBundleLifecycle () {
+	return [
+		Q(), // NOOP lead-in to prime the reduction
+		setDataBundleContentType,
+		writeDataBundle,
+		handleResponseComplete,
+		endResponse,
+	];
+}
+
 function pageLifecycle() {
 	return [
 		Q(), // This is just a NOOP lead-in to prime the reduction.
@@ -266,6 +278,10 @@ function pageLifecycle() {
 
 function setContentType(req, res, context, start, pageObject) {
 	res.set('Content-Type', pageObject.getContentType());
+}
+
+function setDataBundleContentType(req, res) {
+	res.set('Content-Type', 'application/json');
 }
 
 function writeHeader(req, res, context, start, pageObject) {
@@ -319,7 +335,7 @@ function renderTimingInit(pageObject, res) {
 	// the element arrived (when it's actually when we _sent_ it).
 	//
 	RLS().timingDataT0 = new Date;
-	renderScriptsSync([{text:`__tritonTimingStart=new Date`}], res)
+	renderScriptsSync([{text:`__reactServerTimingStart=new Date`}], res)
 }
 
 function renderDebugComments (pageObject, res) {
@@ -700,7 +716,7 @@ function writeBody(req, res, context, start, page) {
 		RLS().lateArrivals = undefined;
 
 		// Let the client know it's not getting any more data.
-		renderScriptsAsync([{ text: `__tritonFailArrival()` }], res)
+		renderScriptsAsync([{ text: `__reactServerClientController.failArrival()` }], res)
 	});
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
@@ -736,6 +752,15 @@ function writeResponseData(req, res, context, start, page) {
 	});
 }
 
+function writeDataBundle(req, res) {
+
+	const cache = ReactServerAgent.cache();
+
+	return Q.allSettled(
+		cache.getPendingRequests().map(v => v.entry.dfd.promise)
+	).then(() => res.write(JSON.stringify(cache.dehydrate())));
+}
+
 function renderElement(res, element, context) {
 
 	if (element.containerOpen || element.containerClose){
@@ -760,7 +785,7 @@ function renderElement(res, element, context) {
 	} catch (err) {
 		// A component failing to render is not fatal.  We've already
 		// started the page with a 200 response.  We've even opened
-		// the `data-triton-root-id` div for this component.  We need
+		// the `data-react-server-root-id` div for this component.  We need
 		// to close it out and move on.  This is a bummer, and we'll
 		// log it, but it's too late to totally bail out.
 		logger.error(`Error rendering element ${name}`, err);
@@ -807,12 +832,12 @@ function writeElements(res, elements) {
 			// now we can let the client start waking nodes up.
 			bootstrapClient(res)
 			for (var j = 0; j <= i; j++){
-				renderScriptsAsync([{ text: `__tritonNodeArrival(${j})` }], res)
+				renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${j})` }], res)
 			}
 		} else if (i >= RLS().atfCount){
 
 			// Let the client know it's there.
-			renderScriptsAsync([{ text: `__tritonNodeArrival(${i})` }], res)
+			renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${i})` }], res)
 		}
 	}
 
@@ -822,6 +847,15 @@ function writeElements(res, elements) {
 }
 
 function writeElement(res, element, i){
+	if (!element) {
+		// A falsy element was a render error.  We've gotta
+		// emit a root for it, so we'll cook up an empty
+		// element object.
+		element = {
+			attrs : {},
+			html  : '',
+		}
+	}
 	if (element.containerOpen) {
 		res.write(`<div ${PAGE_CONTAINER_NODE_ID}=${i}${
 			_.map(element.containerOpen, (v, k) => ` ${k}="${attrfy(v)}"`)
@@ -829,9 +863,9 @@ function writeElement(res, element, i){
 	} else if (element.containerClose) {
 		res.write('</div>');
 	} else {
-		res.write(`<div data-triton-root-id=${
+		res.write(`<div data-react-server-root-id=${
 			i
-		} data-triton-timing-offset="${
+		} data-react-server-timing-offset="${
 			// Mark when we sent it.
 			new Date - RLS().timingDataT0
 		}"${
@@ -842,7 +876,7 @@ function writeElement(res, element, i){
 
 function bootstrapClient(res) {
 	var initialContext = {
-		'TritonAgent.cache': TritonAgent.cache().dehydrate(),
+		'ReactServerAgent.cache': ReactServerAgent.cache().dehydrate(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
@@ -863,18 +897,18 @@ function bootstrapClient(res) {
 
 function setupLateArrivals(res) {
 	var start = RLS().startTime;
-	var notLoaded = TritonAgent.cache().getPendingRequests();
+	var notLoaded = ReactServerAgent.cache().getPendingRequests();
 
 	// This is for reporting purposes.  We're going to log how many late
 	// requests there were, but we won't actually emit the log line until
 	// all of the requests have resolved.
-	TritonAgent.cache().markLateRequests();
+	ReactServerAgent.cache().markLateRequests();
 
 	notLoaded.forEach( pendingRequest => {
 		pendingRequest.entry.whenDataReadyInternal().then( () => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
-				text: `__tritonDataArrival(${
+				text: `__reactServerClientController.dataArrival(${
 					JSON.stringify(pendingRequest.url)
 				}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
@@ -904,8 +938,8 @@ function endResponse(req, res) {
 }
 
 function logRequestStats(req, res, context, start){
-	var allRequests = TritonAgent.cache().getAllRequests()
-	,   notLoaded   = TritonAgent.cache().getLateRequests()
+	var allRequests = ReactServerAgent.cache().getAllRequests()
+	,   notLoaded   = ReactServerAgent.cache().getLateRequests()
 	,   sock        = req.socket
 	,   stash       = context.getServerStash()
 

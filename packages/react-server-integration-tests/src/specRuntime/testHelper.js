@@ -41,8 +41,8 @@ var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 	let scriptsMiddlewareAbsPath = `${specRuntimePath}/ScriptsMiddleware`;
 	let transitionPageAbsPath = `${specRuntimePath}/TransitionPage`;
 
-	// first we convert our simple routes format to a triton routes file.
-	var routesForTriton = `module.exports = {
+	// first we convert our simple routes format to a react-server routes file.
+	var routesForReactServer = `module.exports = {
 			middleware: [require("${scriptsMiddlewareAbsPath}")],
 			routes: {`;
 
@@ -52,7 +52,7 @@ var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 			? routes[url]
 			: path.normalize(path.join(relativeRoutePathRoot, `${routes[url]}`));
 
-		routesForTriton += `
+		routesForReactServer += `
 			route${index}: {
 				path: ["${url}"],
 				method: 'get',
@@ -74,7 +74,7 @@ var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 
 	// make sure we add a route for a page that will let us do client-side
 	// transitions.
-	routesForTriton += `
+	routesForReactServer += `
 		transitionPage: {
 			path: ["/__transition"],
 			method: "get",
@@ -87,7 +87,7 @@ var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 			}
 		}}};`;
 	mkdirp.sync(tempDir);
-	fs.writeFileSync(path.join(tempDir, `routes-${clientOrServer}.js`), routesForTriton);
+	fs.writeFileSync(path.join(tempDir, `routes-${clientOrServer}.js`), routesForReactServer);
 }
 
 var writeEntrypointFile = function (tempDir) {
@@ -127,7 +127,7 @@ var buildClientCode = function (tempDir, cb) {
 }
 
 // this is a helper function that takes in an array of files to make routes for.
-// it will emit a routes map suitable for handing to startTritonServer where
+// it will emit a routes map suitable for handing to startReactServer where
 // all the page classes will be automatically assigned a URL. the URL will be
 // the file name (stripped of directories), first letter lower-cased, assigned
 // "Page" removed from the end if it is there. Examples (in the format class name
@@ -151,7 +151,7 @@ var routesArrayToMap = function (routesArray) {
 	return result;
 }
 
-// starts a simple triton server.
+// starts a simple react-server server.
 // routes is of the form {url: pathToPageCode} or [pathToPageCode]
 var startServer = function (specFile, routes, cb) {
 	// if we got an array, normalize it to a map of URLs to file paths.
@@ -164,7 +164,7 @@ var startServer = function (specFile, routes, cb) {
 	writeEntrypointFile(testTempDir);
 	buildClientCode(testTempDir, () => {
 		var server = express();
-		process.env.TRITON_CONFIGS = path.join(__dirname, "../../");
+		process.env.REACT_SERVER_CONFIGS = path.join(__dirname, "../../");
 
 		server.use('/rollups', express.static(testTempDir));
 
@@ -355,25 +355,25 @@ var testTeardownFn = function (done) {
 	stopServer(servers.pop(), done);
 };
 
-// convenience function to start a triton server before each test. make sure to
+// convenience function to start a react-server server before each test. make sure to
 // call stopServerAfterEach so that the server is stopped.
 var startServerBeforeEach = function (specFile, routes) {
 	beforeEach(testSetupFn(specFile, routes));
 }
 
-// convenience function to start a triton server before all the tests. make sure to
+// convenience function to start a react-server server before all the tests. make sure to
 // call stopServerAfterEach so that the server is stopped.
 var startServerBeforeAll = function (specFile, routes) {
 	beforeAll(testSetupFn(specFile, routes));
 }
 
-// convenience function to stop a triton server after each test. to be paired
+// convenience function to stop a react-server server after each test. to be paired
 // with startServerBeforeEach.
 var stopServerAfterEach = function () {
 	afterEach(testTeardownFn);
 }
 
-// convenience function to stop a triton server after all the tests. to be paired
+// convenience function to stop a react-server server after all the tests. to be paired
 // with startServerBeforeAll.
 var stopServerAfterAll = function () {
 	afterAll(testTeardownFn);

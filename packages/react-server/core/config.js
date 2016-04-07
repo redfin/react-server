@@ -11,10 +11,10 @@ if (SERVER_SIDE) {
 		// only read out the config once, and then cache it. -sra.
 		if (null === config) {
 			/*eslint-disable no-process-env */
-			if (process.env.TRITON_CONFIGS) {
+			if (process.env.REACT_SERVER_CONFIGS) {
 				var fs = require("fs");
 				/*eslint-disable no-process-env */
-				var configFile = fs.readFileSync(process.env.TRITON_CONFIGS + "/config.json");
+				var configFile = fs.readFileSync(process.env.REACT_SERVER_CONFIGS + "/config.json");
 				/*eslint-disable no-process-env */
 				config = Object.freeze(JSON.parse(configFile));
 			} else {
