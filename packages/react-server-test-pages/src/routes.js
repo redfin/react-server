@@ -4,7 +4,7 @@ module.exports = {
 
 	// this maps URLs to modules that export a Page class.
 	routes: {
-		Home: {
+		Index: {
 			path: ["/"],
 			method: "get",
 			page: "./pages/index",
