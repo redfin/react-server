@@ -115,12 +115,6 @@ Sets the severity level for the logs being reported. Values are, in ascending or
 
 Default is **'debug'** in development mode and **'notice'** in production.
 
-#### --global-react
-
-Expose `React` as a global variable so modules that use JSX don't have to import it (without obviously using it).
-
-Defaults to **false**.
-
 #### --help, -?
 Shows command line options.
 

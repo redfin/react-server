@@ -5,16 +5,17 @@
   "main": "index.js",
   "scripts": {
     "prepublish": "gulp build",
-    "start": "react-server-cli --global-react",
+    "start": "react-server-cli",
     "test": "gulp test"
   },
   "author": "Bo Borgerson",
   "license": "Apache-2.0",
   "dependencies": {
     "react-server": "^0.1.5",
-    "react-server-cli": "^0.1.6"
+    "react-server-cli": "^0.1.5"
   },
   "devDependencies": {
+    "babel-plugin-react-require": "^2.1.0",
     "babel-preset-es2015": "~6.5.0",
     "babel-preset-react": "^6.5.0",
     "eslint": "2.7.0",
