@@ -250,7 +250,11 @@ module.exports = {
 							});`);
 			} else {
 				routesOutput.push(`
-							cb(unwrapEs6Module(require("${relativePathToPage}")));`);
+							try {
+								cb(unwrapEs6Module(require("${relativePathToPage}")));
+							} catch (e) {
+								console.error('Failed to load page at "${relativePathToPage}"', e.stack);
+							}`);
 			}
 			routesOutput.push(`
 						}
