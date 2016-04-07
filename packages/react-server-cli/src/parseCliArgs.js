@@ -44,6 +44,11 @@ export default (isProduction, args = process.argv) => {
 			describe: "A URL base for the pre-compiled client JavaScript. Setting a value for jsurl means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any JavaScript. Obviously, this means that --jsurl overrides all of the options related to JavaScript compilation: --hot, --minify, and --bundleperroute.",
 			type: "string",
 		})
+		.option("global-react", {
+			default: false,
+			describe: "Expose `React` as a global variable so modules that use JSX don't have to import it (without obviously using it).",
+			type: "boolean",
+		})
 		.option("production", {
 			default: false,
 			describe: "Forces production mode. If this is not set (or set to false), the CLI falls back to NODE_ENV to determine what mode we are in. Note that production mode only affects the default settings for other options; individual options can still be overridden by setting them directly.",

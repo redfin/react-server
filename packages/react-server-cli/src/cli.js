@@ -1,4 +1,5 @@
 import parseCliArgs from "./parseCliArgs"
+import React from "react";
 
 // weirdly, we parse the args twice. the first time we are just looking for --production, which
 // affects the default values for the other args.
@@ -21,6 +22,10 @@ logging.setLevel('main',  argv.logLevel);
 if (!isProduction) {
 	logging.setLevel('time',  'fast');
 	logging.setLevel('gauge', 'ok');
+}
+
+if (argv.globalReact) {
+	global.React = React;
 }
 
 // if the server is being launched with some bad practices for production mode, then we
