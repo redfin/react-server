@@ -44,19 +44,19 @@ const BundleDataAndReuseDom = ({row}) => <Link bundleData={true} reuseDom={true}
 class ClientRenderIndicator extends React.Component {
 	constructor(props){
 		super(props);
-		this.state = {emoji: "⌛️"};
+		this.state = {ready: false};
 	}
 	componentDidMount() {
-		this.setState({emoji: "✓"});
+		this.setState({ready: true});
 		window.__reactServerClientController.context
-			.onNavigateStart(() => this.setState({emoji: "⌛️"}));
+			.onNavigateStart(() => this.setState({ready: false}));
 	}
 	componentWillReceiveProps() {
-		this.setState({emoji: "✓"});
+		this.setState({ready: true});
 	}
 	render() {
 		return <div className="render-indicator">
-			{this.state.emoji}
+			{this.state.ready?"✓":"⌛️"}
 		</div>
 	}
 }
