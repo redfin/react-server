@@ -32,6 +32,8 @@ const NormalLink = ({row}) => <a href={`${BASE}?page=${row}`}>Normal Link</a>
 
 const ClientTransitionLink = ({row}) => <Link path={`${BASE}?page=${row}`}>Client Transition</Link>
 
+const FramebackLink = ({row}) => <Link frameback={true} path={`${BASE}?page=${row}`}>Frameback</Link>
+
 class ClientRenderIndicator extends React.Component {
 	constructor(props){
 		super(props);
@@ -62,6 +64,7 @@ export default class NavigationPlaygroundPage {
 			<ClientRenderIndicator />
 			<NormalLink />
 			<ClientTransitionLink />
+			<FramebackLink/>
 		</RootContainer>);
 	}
 }
