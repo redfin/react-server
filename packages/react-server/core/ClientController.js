@@ -457,9 +457,10 @@ class ClientController extends EventEmitter {
 					}
 				}
 
-				if (element.containerOpen || element.containerClose){
-					return; // Nothing left to do.
-				}
+			}
+
+			if (element.containerOpen || element.containerClose){
+				return; // Nothing left to do.
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
