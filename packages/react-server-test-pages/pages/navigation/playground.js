@@ -9,6 +9,10 @@ import {
 
 require('./playground.css');
 
+// Each row listens to `navigateStart'.
+// Give ourselves some buffer.
+require('events').EventEmitter.defaultMaxListeners = 128;
+
 const ROWS = _.range(32);
 const BASE = "/navigation/playground";
 const LINK = row => `${BASE}?page=${row}`
