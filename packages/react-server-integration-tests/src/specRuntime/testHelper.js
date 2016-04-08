@@ -1,16 +1,13 @@
 /* eslint-disable no-process-env */
-var renderMiddleware = require("react-server").middleware,
-	express = require("express"),
-	http = require("http"),
-	fs = require("fs"),
+var	fs = require("fs"),
 	mkdirp = require("mkdirp"),
-	webpack = require("webpack"),
 	path = require("path"),
-	Browser = require('zombie');
+	Browser = require('zombie'),
+	start = require('react-server-cli').start;
 
 var PORT = process.env.PORT || 8769;
 
-var servers = [];
+var stopFns = [];
 
 function getBrowser(opts) {
 	var browser = new Browser(opts);
@@ -23,27 +20,15 @@ function getBrowser(opts) {
 
 var getPort = function () { return PORT };
 
-var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
-	// clientOrServer = ["client"|"server"];
-
+var writeRoutesFile = function (specFile, routes, tempDir) {
 	let specDir = path.dirname(specFile);
 	let relativeRoutePathRoot = specDir;
-	if (clientOrServer === 'client') {
-		// if we're writing for the client, we need to correct for
-		// the fact that `specFile` will be coming from target/server
-		let relativePathToServer = path.relative(specDir, path.join(tempDir, '../server/'));
-		let relativePathToSpec = path.relative(path.join(tempDir, '../server/'), specDir);
-
-		relativeRoutePathRoot = path.resolve(specDir, relativePathToServer, '../client/', relativePathToSpec);
-	}
 
 	let specRuntimePath = path.join(tempDir, `../target/specRuntime`);
-	let scriptsMiddlewareAbsPath = `${specRuntimePath}/ScriptsMiddleware`;
 	let transitionPageAbsPath = `${specRuntimePath}/TransitionPage`;
 
 	// first we convert our simple routes format to a react-server routes file.
 	var routesForReactServer = `module.exports = {
-			middleware: [require("${scriptsMiddlewareAbsPath}")],
 			routes: {`;
 
 	Object.keys(routes).forEach((url, index) => {
@@ -56,19 +41,7 @@ var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 			route${index}: {
 				path: ["${url}"],
 				method: 'get',
-				page: function () {
-					return {
-						done: function (cb) {
-							try{
-								var module = require("${routeAbsPath}");
-								cb(module.__esModule ? module.default : module);
-							} catch (e) {
-								console.log("ERRROR IN done")
-								console.log(e)
-							}
-						}
-					};
-				}
+				page: "${routeAbsPath}",
 			},`;
 	});
 
@@ -78,52 +51,12 @@ var writeRoutesFile = function (specFile, routes, tempDir, clientOrServer) {
 		transitionPage: {
 			path: ["/__transition"],
 			method: "get",
-			page: function() {
-				return {
-					done: function(cb) {
-						cb(require("${transitionPageAbsPath}"));
-					}
-				};
-			}
+			page: "${transitionPageAbsPath}",
 		}}};`;
 	mkdirp.sync(tempDir);
-	fs.writeFileSync(path.join(tempDir, `routes-${clientOrServer}.js`), routesForReactServer);
-}
-
-var writeEntrypointFile = function (tempDir) {
-	mkdirp.sync(tempDir);
-	fs.writeFileSync(tempDir + "/entrypoint.js", `
-		var ClientController = require("react-server").ClientController;
-		window.rfBootstrap = function () {
-			var controller = new ClientController({
-				routes: require("./routes-client.js")
-			});
-
-			controller.init();
-		};`
-	);
-}
-
-
-var buildClientCode = function (tempDir, cb) {
-
-	webpack({
-		target: "web",
-		context: tempDir,
-		entry: "./entrypoint.js",
-		output: {
-			path: tempDir,
-			filename: "rollup.js",
-		},
-		debug: true,
-		bail: true,
-	}, function(err, stats) { //eslint-disable-line no-unused-vars
-		if(err) {
-			console.error(err);
-			throw new Error("Error during webpack build.");
-		}
-		cb();
-	});
+	var routesFilePath = path.join(tempDir, `routes.js`);
+	fs.writeFileSync(routesFilePath, routesForReactServer);
+	return routesFilePath;
 }
 
 // this is a helper function that takes in an array of files to make routes for.
@@ -151,56 +84,22 @@ var routesArrayToMap = function (routesArray) {
 	return result;
 }
 
-// starts a simple react-server server.
-// routes is of the form {url: pathToPageCode} or [pathToPageCode]
-var startServer = function (specFile, routes, cb) {
-	// if we got an array, normalize it to a map of URLs to file paths.
+var startServer = function (specFile, routes) {
+  // if we got an array, normalize it to a map of URLs to file paths.
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
 	var testTempDir = path.join(__dirname, "../../test-temp");
 
-	writeRoutesFile(specFile, routes, testTempDir, "client");
-	writeRoutesFile(specFile, routes, testTempDir, "server");
-	writeEntrypointFile(testTempDir);
-	buildClientCode(testTempDir, () => {
-		var server = express();
-		process.env.REACT_SERVER_CONFIGS = path.join(__dirname, "../../");
+	var routesFile = writeRoutesFile(specFile, routes, testTempDir);
 
-		server.use('/rollups', express.static(testTempDir));
+	// we may have changed the routes file since the last test run, so the old
+	// routes file may be in the require cache. this code may not be ideal in node
+	// (mucking with the require cache); if it causes problems, we should change the code
+	// to add a hash to the end of the module name.
+	delete require.cache[require.resolve(testTempDir + "/routes")]
 
-		// we may have changed the routes file since the last test run, so the old
-		// routes file may be in the require cache. this code may not be ideal in node
-		// (mucking with the require cache); if it causes problems, we should change the code
-		// to add a hash to the end of the module name.
-		delete require.cache[require.resolve(testTempDir + "/routes-server")]
-		renderMiddleware(server, require(testTempDir + "/routes-server"));
-		var httpServer = http.createServer(server);
-		httpServer.on('error', (e) => {
-			if (e.code === 'EADDRINUSE') {
-				console.log('Address in use, retrying...');
-				setTimeout(() => {
-					httpServer.close(() => {
-						httpServer.listen(PORT, () => cb(httpServer));
-					});
-				}, 1000);
-			} else {
-				console.log("Error starting up server");
-				console.error(e);
-			}
-		});
-		httpServer.listen(PORT, () => cb(httpServer));
-	});
-};
-
-var stopServer = function (server, done) {
-	server.close((e) => {
-		if (e) {
-			console.log("Error shutting down server:");
-			console.error(e);
-		}
-		done();
-	});
-};
+	return start(routesFile, {hot: false, port:PORT});
+}
 
 var getServerBrowser = function (url, cb) {
 	var browser = getBrowser({runScripts:false});
@@ -339,20 +238,26 @@ var testWithElement = (url, query, testFn) => testWithDocument(
 var testSetupFn = function (specFile, routes) {
 	return (done) => {
 		try {
-			startServer(specFile, routes, s => {
-				servers.push(s);
-				done();
+			const {stop, started} = startServer(specFile, routes);
+			started.then(done, (e) => {
+				console.error("There was an error while starting the server.");
+				throw e;
 			});
+			stopFns.push(stop);
 		} catch (e) {
 			console.error("Failed to start server", e.stack);
-			servers.forEach(s => s.close());
+			stopFns.forEach(stop => stop());
 			process.exit(1); //eslint-disable-line no-process-exit
 		}
 	}
 }
 
 var testTeardownFn = function (done) {
-	stopServer(servers.pop(), done);
+	const stopFn = stopFns.pop();
+	stopFn().then(done, (e) => {
+		console.log("Error shutting down server:");
+		console.error(e);
+	});
 };
 
 // convenience function to start a react-server server before each test. make sure to
@@ -381,8 +286,6 @@ var stopServerAfterAll = function () {
 
 module.exports = {
 	getPort,
-	startServer,
-	stopServer,
 	getServerDocument,
 	getClientDocument,
 	getTransitionDocument,
