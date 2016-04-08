@@ -1,5 +1,6 @@
 .row {
 	border: 1px solid black;
+	height: 36px;
 }
 
 .row div {
@@ -18,6 +19,7 @@
 
 .render-indicator {
 	width: 16px;
+	line-height: 16px;
 }
 
 .page-pointer {

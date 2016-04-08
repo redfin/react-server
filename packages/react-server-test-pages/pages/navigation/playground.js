@@ -44,6 +44,11 @@ class ClientRenderIndicator extends React.Component {
 	}
 	componentDidMount() {
 		this.setState({emoji: "✓"});
+		window.__reactServerClientController.context
+			.onNavigateStart(() => this.setState({emoji: "⌛️"}));
+	}
+	componentWillReceiveProps() {
+		this.setState({emoji: "✓"});
 	}
 	render() {
 		return <div className="render-indicator">
