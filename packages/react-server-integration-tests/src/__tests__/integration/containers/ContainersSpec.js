@@ -17,7 +17,7 @@ describe("A page's root elements", () => {
 		}, (value, attr) => desc(
 			`can have "${attr}" attribute on ${root}`,
 			'/attributesOn'+root,
-			element => expect(element.getAttribute(attr)).toBe(value),
+			element => expect(element).toBeTruthy() && expect(element.getAttribute(attr)).toBe(value),
 			query
 		));
 	});
@@ -61,7 +61,7 @@ describe("A page's root elements", () => {
 	// Expect the contents of the first root element to be 'foo'.
 	function makeSingleDesc(prefix) {
 		return (txt, url) => desc(`${prefix} ${txt}`, url,
-			element => expect(element.innerHTML).toMatch('foo')
+			element => expect(element).toBeTruthy() && expect(element.innerHTML).toMatch('foo')
 		)
 	}
 

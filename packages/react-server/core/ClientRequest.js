@@ -6,9 +6,10 @@ var cookie = require("cookie"),
  */
 class ClientRequest {
 
-	constructor(url, {frameback}={}) {
+	constructor(url, {frameback, reuseDom}={}) {
 		this._url = url;
 		this._frameback = frameback;
+		this._reuseDom = reuseDom;
 	}
 
 	setRoute(route) {
@@ -21,6 +22,10 @@ class ClientRequest {
 
 	getFrameback() {
 		return this._frameback;
+	}
+
+	getReuseDom() {
+		return this._reuseDom;
 	}
 
 	getQuery() {

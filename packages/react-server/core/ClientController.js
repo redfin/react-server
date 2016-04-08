@@ -20,6 +20,8 @@ var _ = {
 	forEach: require('lodash/collection/forEach'),
 };
 
+var RLS = RequestLocalStorage.getNamespace();
+
 // for dev tools
 window.React = React;
 
@@ -88,6 +90,8 @@ class ClientController extends EventEmitter {
 	}
 
 	_startRequest({request, type}) {
+
+		this._reuseDom = request.getReuseDom();
 
 		if (request.getFrameback()){
 
@@ -350,10 +354,6 @@ class ClientController extends EventEmitter {
 		// Need this to be an integer value greater than zero.
 		var aboveTheFoldCount = Math.max(page.getAboveTheFoldCount()|0, 1)
 
-		// if we were previously rendered on the client, clean up the old divs and
-		// their ReactComponents.
-		this._cleanupPreviousRender(this.mountNode);
-
 		// These resolve with React elements when their data
 		// dependencies are fulfilled.
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
@@ -393,37 +393,73 @@ class ClientController extends EventEmitter {
 
 		var mountNode = this.mountNode;
 
+		// These are only used if we're going to try to re-use the
+		// existing DOM structure.
+		var oldRootElement, oldRootContainer;
+
 		// Once we've got an element and a root DOM node to mount it
 		// in we can finally render.
 		var renderElement = (element, root, index) => {
 
 			// During client transitions we create our root
 			// elements as we go.
-			if (!root && this._previouslyRendered){
-				if (element.containerOpen){
+			if (!root && this._previouslyRendered) {
 
-					// If we're opening a container that's
-					// our new mountNode.
-					mountNode = this._createContainerNode(
-						mountNode,
-						element.containerOpen,
-						index
+				// If the _previous_ render had elements that
+				// we can re-use we'll render into them.
+				//
+				// DOM re-use is currently opt-in.
+				//
+				if (this._reuseDom) {
+					oldRootElement = document.querySelector(
+						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 					);
-				} else if (element.containerClose) {
-
-					// If we're closing a container its
-					// parent is once again our mountNode.
-					mountNode = mountNode.parentNode;
-				} else {
-
-					// Need a new root element in our
-					// current mountNode.
-					root = this._createReactServerRootNode(mountNode, index)
+					oldRootContainer = document.querySelector(
+						`div[${PAGE_CONTAINER_NODE_ID}="${index}"]`
+					);
 				}
-			}
 
-			if (element.containerOpen || element.containerClose){
-				return; // Nothing left to do.
+				// The current strategy for re-use is: So long
+				// as the _shape_ of the root structure is the
+				// same, we'll re-use.  Once the new page's
+				// shape diverges, we'll blow away the
+				// remaining elements left over from the
+				// previous page and create everything for the
+				// new page as we go.
+				//
+				if (this._reuseDom && element.containerOpen && oldRootContainer) {
+					mountNode = oldRootContainer;
+				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
+					mountNode = mountNode.parentNode;
+				} else if (this._reuseDom && oldRootElement) {
+					root = oldRootElement;
+				} else {
+					this._cleanupPreviousRender(index);
+					if (element.containerOpen){
+
+						// If we're opening a container that's
+						// our new mountNode.
+						mountNode = this._createContainerNode(
+							mountNode,
+							element.containerOpen,
+							index
+						);
+					} else if (element.containerClose) {
+
+						// If we're closing a container its
+						// parent is once again our mountNode.
+						mountNode = mountNode.parentNode;
+					} else {
+
+						// Need a new root element in our
+						// current mountNode.
+						root = this._createReactServerRootNode(mountNode, index)
+					}
+				}
+
+				if (element.containerOpen || element.containerClose){
+					return; // Nothing left to do.
+				}
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
@@ -495,32 +531,38 @@ class ClientController extends EventEmitter {
 	 * Cleans up a previous React render in the document. Unmounts all the components and destoys the mounting
 	 * DOM node(s) that were created.
 	 */
-	_cleanupPreviousRender(mountNode) {
-		if (this._previouslyRendered) {
+	_cleanupPreviousRender(index) {
+		if (this._previouslyRendered && !RLS().haveCleanedPreviousRender) {
+
+			// Only need to do this once per request.
+			RLS().haveCleanedPreviousRender = true;
+
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
-			).forEach(root => {
-
-				// Since this node has a "data-react-server-root-id"
-				// attribute, we can assume that we created it
-				// and should destroy it. Destruction means
-				// first unmounting from React and then
-				// destroying the DOM node.
-				React.unmountComponentAtNode(root);
-				root.parentNode.removeChild(root);
+				document.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
+			).forEach((root, i) => {
+				if (i >= index) {
+					// Since this node has a "data-react-server-root-id"
+					// attribute, we can assume that we created it
+					// and should destroy it. Destruction means
+					// first unmounting from React and then
+					// destroying the DOM node.
+					React.unmountComponentAtNode(root);
+					root.parentNode.removeChild(root);
+				}
 			});
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
-			).forEach(root => {
-
-				// Gotta get rid of our containers, too.
-				// Need to do this _after_ killing the
-				// elements, since they might live within
-				// these containers.
-				root.parentNode.removeChild(root);
+				document.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
+			).forEach((root, i) => {
+				if (i >= index) {
+					// Gotta get rid of our containers,
+					// too.  Need to do this _after_
+					// killing the elements, since they
+					// might live within these containers.
+					root.parentNode.removeChild(root);
+				}
 			});
 		}
 	}

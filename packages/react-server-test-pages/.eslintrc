@@ -1,0 +1,12 @@
+{
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "rules": {
+    "space-return-throw-case": 0,
+    "keyword-spacing": 2
+  }
+}
