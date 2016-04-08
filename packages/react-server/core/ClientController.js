@@ -385,6 +385,10 @@ class ClientController extends EventEmitter {
 
 		var mountNode = this.mountNode;
 
+		// These are only used if we're going to try to re-use the
+		// existing DOM structure.
+		var oldRootElement, oldRootContainer;
+
 		// Once we've got an element and a root DOM node to mount it
 		// in we can finally render.
 		var renderElement = (element, root, index) => {
@@ -399,10 +403,10 @@ class ClientController extends EventEmitter {
 				// DOM re-use is currently opt-in.
 				//
 				if (this._reuseDom) {
-					var oldRootElement = document.querySelector(
+					oldRootElement = document.querySelector(
 						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 					);
-					var oldRootContainer = document.querySelector(
+					oldRootContainer = document.querySelector(
 						`div[${PAGE_CONTAINER_NODE_ID}="${index}"]`
 					);
 				}
