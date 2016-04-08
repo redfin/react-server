@@ -5,6 +5,9 @@
     },
     "sourceType": "module"
   },
+  "plugins": [
+    "react"
+  ],
   "rules": {
     "space-return-throw-case": 0,
     "keyword-spacing": 2
