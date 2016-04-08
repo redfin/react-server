@@ -52,6 +52,10 @@ class ExpressServerRequest {
 		return this._wrappedRequest.body;
 	}
 
+	getBundleData() {
+		return false; // Not on the server.
+	}
+
 }
 
 module.exports = ExpressServerRequest;

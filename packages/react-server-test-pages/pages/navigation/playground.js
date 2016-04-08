@@ -37,6 +37,10 @@ const FramebackLink = ({row}) => <Link frameback={true} path={LINK(row)}>Frameba
 
 const ReuseDom = ({row}) => <Link reuseDom={true} path={LINK(row)}>Reuse DOM</Link>
 
+const BundleData = ({row}) => <Link bundleData={true} path={LINK(row)}>Bundle Data</Link>
+
+const BundleDataAndReuseDom = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>Bundle AND Reuse</Link>
+
 class ClientRenderIndicator extends React.Component {
 	constructor(props){
 		super(props);
@@ -72,8 +76,10 @@ export default class NavigationPlaygroundPage {
 			<ClientRenderIndicator />
 			<NormalLink />
 			<ClientTransitionLink />
-			<FramebackLink />
 			<ReuseDom />
+			<BundleData />
+			<BundleDataAndReuseDom />
+			<FramebackLink />
 		</RootContainer>);
 	}
 }
