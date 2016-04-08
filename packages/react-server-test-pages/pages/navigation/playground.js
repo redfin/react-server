@@ -11,6 +11,7 @@ require('./playground.css');
 
 const ROWS = _.range(32);
 const BASE = "/navigation/playground";
+const LINK = row => `${BASE}?page=${row}`
 
 function GET(row) {
 	const ms  = row*16;
@@ -28,13 +29,13 @@ const PagePointer = ({page, row}) => <div className="page-pointer">
 	{+page === +row ? "➟" : ""}
 </div>;
 
-const NormalLink = ({row}) => <a href={`${BASE}?page=${row}`}>Normal Link</a>
+const NormalLink = ({row}) => <a href={LINK(row)}>Normal Link</a>
 
-const ClientTransitionLink = ({row}) => <Link path={`${BASE}?page=${row}`}>Client Transition</Link>
+const ClientTransitionLink = ({row}) => <Link path={LINK(row)}>Client Transition</Link>
 
-const FramebackLink = ({row}) => <Link frameback={true} path={`${BASE}?page=${row}`}>Frameback</Link>
+const FramebackLink = ({row}) => <Link frameback={true} path={LINK(row)}>Frameback</Link>
 
-const ReuseDom = ({row}) => <Link reuseDom={true} path={`${BASE}?page=${row}`}>Reuse DOM</Link>
+const ReuseDom = ({row}) => <Link reuseDom={true} path={LINK(row)}>Reuse DOM</Link>
 
 class ClientRenderIndicator extends React.Component {
 	constructor(props){
