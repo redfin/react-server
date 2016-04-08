@@ -15,6 +15,7 @@ module.exports = React.createClass({
 	getDefaultProps(){
 		return {
 			frameback: false,
+			reuseDom: false,
 		}
 	},
 
@@ -32,8 +33,12 @@ module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
+			const {frameback, reuseDom} = this.props;
 			getCurrentRequestContext().navigate(
-				new ClientRequest(this.props.path, {frameback:this.props.frameback}),
+				new ClientRequest(this.props.path, {
+					frameback,
+					reuseDom,
+				}),
 				History.events.PUSHSTATE
 			);
 		} else {

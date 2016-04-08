@@ -34,6 +34,8 @@ const ClientTransitionLink = ({row}) => <Link path={`${BASE}?page=${row}`}>Clien
 
 const FramebackLink = ({row}) => <Link frameback={true} path={`${BASE}?page=${row}`}>Frameback</Link>
 
+const ReuseDom = ({row}) => <Link reuseDom={true} path={`${BASE}?page=${row}`}>Reuse DOM</Link>
+
 class ClientRenderIndicator extends React.Component {
 	constructor(props){
 		super(props);
@@ -64,7 +66,8 @@ export default class NavigationPlaygroundPage {
 			<ClientRenderIndicator />
 			<NormalLink />
 			<ClientTransitionLink />
-			<FramebackLink/>
+			<FramebackLink />
+			<ReuseDom />
 		</RootContainer>);
 	}
 }
