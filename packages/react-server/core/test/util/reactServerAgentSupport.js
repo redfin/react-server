@@ -1,5 +1,5 @@
-var ReactServerAgent = require("react-server").ReactServerAgent
-,	RLS = require("react-server").RequestLocalStorage
+var ReactServerAgent = require("../../ReactServerAgent")
+,	RLS = require("../../util/RequestLocalStorage")
 ;
 
 var PORT = 4221
