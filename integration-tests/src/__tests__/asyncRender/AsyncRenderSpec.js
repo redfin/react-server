@@ -1,4 +1,4 @@
-var helper = require("../../../specRuntime/testHelper");
+var helper = require("../../specRuntime/testHelper");
 
 describe("A page with async elements", () => {
 

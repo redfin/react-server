@@ -1,4 +1,4 @@
-var helper = require("../../../specRuntime/testHelper"),
+var helper = require("../../specRuntime/testHelper"),
 	Browser = require("zombie");
 
 describe("A redirect page", () => {

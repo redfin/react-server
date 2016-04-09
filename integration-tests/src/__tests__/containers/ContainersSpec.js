@@ -1,4 +1,4 @@
-var helper = require("../../../specRuntime/testHelper");
+var helper = require("../../specRuntime/testHelper");
 var _ = require('lodash');
 
 describe("A page's root elements", () => {

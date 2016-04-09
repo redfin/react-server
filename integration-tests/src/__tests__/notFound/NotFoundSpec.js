@@ -1,4 +1,4 @@
-var helper = require("../../../specRuntime/testHelper");
+var helper = require("../../specRuntime/testHelper");
 var Browser = require("zombie");
 
 describe("A 404 not found page", () => {
