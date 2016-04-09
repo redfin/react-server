@@ -1,11 +1,12 @@
 # Testing `react-server`
 
-This directory contains integration tests that test the core features of `react-server` as a server and client framework. Tests for specific modules can be found in `__tests__` subdirectories as siblings of those modules.
+This directory contains integration tests that test the core features of `react-server` and `react-server-cli` as a server and client framework. Tests code can be found in the `react-server/integration-tests/src/__tests__` subdirectory.
 
 ## To run all the tests
 
-1. cd to the `react-server/packages/react-server` directory.
+1. cd to the `react-server/integration-tests` directory.
 1. If you haven't ever run tests before: `npm install -g gulp`.
+1. `npm install`
 1. `gulp test`
 
 You should see something like:
@@ -25,25 +26,25 @@ Finished in 0 seconds
 [09:31:27] Finished 'test' after 13 s
 ```
 
-Each little green dot is a test spec that passed. Every red "F" is a test that failed, but you probably know that if you have written Jasmine tests before.
+Each little green dot is a test spec that passed. Every red "F" is a test that failed, but you probably know that if you have written Jasmine tests before. There may be a few errors logged to the console as part of tests that expect an error. As long as it says "0 failures", the tests passed.
 
 ## Tutorial: Writing an integration test
 
 We're using [Jasmine 2.3.x](http://jasmine.github.io/2.3/introduction.html) as our test runner. Most tests take the following form:
 
-1. Create a `Page` class that exercises the `react-server `functionality that you want to test.
+1. Create a `Page` class that exercises the `react-server` functionality that you want to test.
 1. Write a Jasmine spec that starts up a server with that page and then fires up a [Zombie](https://github.com/assaf/zombie) browser to make assertions about the rendered content.
 
 ### Creating a `Page` class that exercises `react-server`
 
 Let's say that we wanted to just test that `react-server` will render a simple "Hello, world!" page.
 
-First, make a subdirectory of `core/__tests__/integration`, called "helloWorld". By convention, Spec files and Page files should not be placed in the `integration` directory. I expect that most of these directories will have one Spec file and one or more Page files, but it's certainly reasonable to put multiple related Spec files in a directory together.
+First, make a subdirectory of `react-server/integration-tests/src/__tests__`, called "helloWorld". Please don't put Spec files and Page files directly in the `__tests__` directory. I expect that most of the `__tests__` sub-directories will have one Spec file and one or more Page files, but it's certainly reasonable to put multiple related Spec files in a directory together.
 
 Next, we'd write a `Page` class that exercises the  functionality we want to test in `react-server`:
 
 ```
-// react-server/core/__tests__/integration/helloWorld/HelloWorldPage.js
+// react-server/integration-tests/src/__tests__/helloWorld/HelloWorldPage.js
 
 // React is required because we have JSX.
 var React = require("react");
@@ -65,18 +66,18 @@ Next, write a `Spec` file that will:
 
 1. start up a server running `react-server`,
 1. instantiate a Zombie browser against the page,
-1. run some assertions against the browser before the client-side JavaScript runs, after the client-side JavaScript runs, and after a client-side transition.
+1. run some assertions against the browser before the client-side JavaScript runs, after the client-side JavaScript runs, and after a client-side transition to the page in question.
 
-Luckily, there are a lot of helper functions wrapped up in `core/test/specRuntime/testHelper` that do most of the heavy lifting:
+Luckily, there are a lot of helper functions wrapped up in `testHelper` that do most of the heavy lifting:
 
 ```
-// react-server/core/__tests__/integration/helloWorld/HelloWorldSpec.js
-var helper = require("../../../test/specRuntime/testHelper");
+// react-server/integration-tests/src/__tests__/helloWorld/HelloWorldSpec.js
+var helper = require("../../../specRuntime/testHelper");
 
 describe("A basic page", () => {
 
   // starts up a server once before all the tests run
-  // and maps the url "/hello" to HelloWorldPage.
+  // and maps the url "/helloWorld" to HelloWorldPage (based on the filename).
   helper.startServerBeforeAll(__filename, [
     "./HelloWorldPage",
   ]);
@@ -85,7 +86,7 @@ describe("A basic page", () => {
   helper.stopServerAfterAll();
 
   describe("can say 'Hello, world!'", () => {
-    // run an assertion against the doducment on the server-rendered
+    // run an assertion against the docment on the server-rendered
     // HTML, the client-rendered HTML, and the client transition-
     // rendered HTML.
     helper.testWithDocument("/helloWorld", (document) =>{
@@ -97,7 +98,7 @@ describe("A basic page", () => {
 
 The helper method `startServerBeforeAll` fires up an Express server with the pages you hand to it, and it automatically makes a URL for the page based on the name of the page class (although you can hand it custom URLs if you like; see below).
 
-The other interesting method here is `testWithDocument`; that method creates three different Jasmine test specs, one for each of the environments where `react-server` can render a page: server, client, and client transition. `testWithDocument` runs the callback passed to it once for each test. So, although it look like you only wrote one test, here, there are actually three Jasmine specs, and you can be sure that Hello World rendering is working in all three environments.
+The other interesting method here is `testWithDocument`; that method creates three different Jasmine test specs, one for each of the environments where `react-server` can render a page: server, client, and client-side transition. `testWithDocument` runs the callback passed to it once for each test. So, although it look like you only wrote one test, here, there are actually three Jasmine specs, and you can be sure that Hello World rendering is working in all three environments.
 
 Note that the file must end with "Spec.js" or "spec.js" to be recognized as a test by the framework.
 
@@ -145,7 +146,7 @@ helper.startServerBeforeAll([
 
 The port used is either `process.env.PORT` or a predetermined hard-coded value. Whatever the value is, it will be used in all the `getXXXBrowser`/`getXXXWindow`/`getXXXDocument` calls.
 
-### `stopServerAfterAll`
+### `stopServerAfterAll()`
 
 This method should be called inside a `describe` function where `startServerBeforeAll` was called. It will clean up the server that was started after all the specs finish.
 
@@ -155,13 +156,13 @@ These are just like `startServerBeforeAll` and `stopServerAfterAll`, except that
 
 ### `testWithDocument(url: String, testCallback:Function(document, done?))`
 
-The primary method for testing what HTML has been generated by `react-server`. This method creates three specs (one each for server-generate HTML, client-generated HTML, and client transition-generated HTML), and it runs `testCallback` on the resulting HTML document once per spec.
+The primary method for testing what HTML has been generated by `react-server`. This method creates three specs (one each for server-generated HTML, client-generated HTML, and client transition-generated HTML), and it runs `testCallback` on the resulting HTML document once per spec.
 
 You can use any standard DOM operations on the document, such as querySelectorAll or innerHTML, to examine the resulting document tree.
 
 Note that this method is really best for testing rendered HTML. If you want to test a side effect of the client-side JavaScript, this is the wrong method to use because the server-generated HTML spec has JavaScript turned off. For those kinds of tests, use `testWithWindow`.
 
-If you have a `done` argument in your callback, the specs will be asynchronous, and you are responsible for making sure `done` gets called.
+If you have a `done` argument in your callback, the specs will be asynchronous, and just as in any other Jasmine test, you are responsible for making sure `done` gets called.
 
 ### `testWithWindow(url: String, testCallback:Function(window, done?))`
 
@@ -171,7 +172,7 @@ The `testCallback` will be called after all asynchronous methods have executed i
 
 Note that this method is really best for testing effects of the client-side JavaScript. If you want to test the structure of the HTML rendered by a `Page`, this is the wrong method to use because the server-generated HTML will not be tested. For those kinds of tests, use `testWithDocument`.
 
-If you have a `done` argument in your callback, the specs will be asynchronous, and you are responsible for making sure `done` gets called.
+If you have a `done` argument in your callback, the specs will be asynchronous, and just as in any other Jasmine test, you are responsible for making sure `done` gets called.
 
 ### `getServerDocument(url: String, callback: Function(document))`
 
