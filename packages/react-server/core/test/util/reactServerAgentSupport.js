@@ -1,4 +1,4 @@
-var TritonAgent = require("../../TritonAgent")
+var ReactServerAgent = require("../../ReactServerAgent")
 ,	RLS = require("../../util/RequestLocalStorage")
 ;
 
@@ -17,7 +17,7 @@ module.exports = {
 function withRlsContext (runTest) {
 	return function (done) {
 		RLS.startRequest( () => {
-			TritonAgent.plugRequest( (request) => {
+			ReactServerAgent.plugRequest( (request) => {
 				request.urlPrefix(`http://localhost:${PORT}`);
 			});
 

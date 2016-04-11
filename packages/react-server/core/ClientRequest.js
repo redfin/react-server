@@ -2,13 +2,14 @@ var cookie = require("cookie"),
 	decode = require("querystring/decode");
 
 /**
- * This class implements the Triton Request API for client-side transitions.
+ * This class implements the react-server request API for client-side transitions.
  */
 class ClientRequest {
 
-	constructor(url, {frameback}={}) {
+	constructor(url, {frameback, reuseDom}={}) {
 		this._url = url;
 		this._frameback = frameback;
+		this._reuseDom = reuseDom;
 	}
 
 	setRoute(route) {
@@ -21,6 +22,10 @@ class ClientRequest {
 
 	getFrameback() {
 		return this._frameback;
+	}
+
+	getReuseDom() {
+		return this._reuseDom;
 	}
 
 	getQuery() {

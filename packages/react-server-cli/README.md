@@ -160,6 +160,25 @@ Default is **'debug'** in development mode and **'notice'** in production.
 #### --help, -?
 Shows command line options.
 
+## API
+
+You can also call `react-server-cli` programmatically. The module has a single named export, `start`, which takes has the following signature:
+
+```javascript
+import {start} from `react-server-cli`
+
+start(routesRelativePath, {
+		port: 3000,
+		jsPort: 3001,
+		hot: true,
+		minify: false,
+		compileOnly: false,
+		jsUrl: null,
+})
+```
+
+All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above.
+
 ##Future Directions
 
 Here are a few of the things on the unordered wishlist to add to `react-server-cli`:

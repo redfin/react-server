@@ -11,7 +11,7 @@ var React = require('react'),
 	ClientRequest = require("./ClientRequest"),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
-	TritonAgent = require('./TritonAgent'),
+	ReactServerAgent = require('./ReactServerAgent'),
 	FramebackController = require('./FramebackController'),
 	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
@@ -20,10 +20,12 @@ var _ = {
 	forEach: require('lodash/collection/forEach'),
 };
 
+var RLS = RequestLocalStorage.getNamespace();
+
 // for dev tools
 window.React = React;
 
-var TRITON_DATA_ATTRIBUTE = "data-triton-root-id";
+var REACT_SERVER_DATA_ATTRIBUTE = "data-react-server-root-id";
 
 /**
  * Set up a Q error handler to make sure that errors that bubble
@@ -34,14 +36,23 @@ Q.onerror = (err) => {
 	logger.error("Unhandled exception in Q promise", err);
 }
 
+var SESSION_START_PREFIX = (new Date()).getTime() + '_';
+var NEXT_STATE_FRAME = 0;
+var CURRENT_STATE_FRAME;
+
+function pushFrame() {
+	CURRENT_STATE_FRAME = SESSION_START_PREFIX + ++NEXT_STATE_FRAME;
+	return CURRENT_STATE_FRAME;
+}
+
 class ClientController extends EventEmitter {
 
 	constructor ({routes}) {
 		super();
 
-		var wakeTime = new Date - window.__tritonTimingStart;
+		var wakeTime = new Date - window.__reactServerTimingStart;
 
-		var dehydratedState = window.__tritonState;
+		var dehydratedState = window.__reactServerState;
 
 		checkNotEmpty(dehydratedState, 'InitialContext');
 		checkNotEmpty(dehydratedState, 'Config');
@@ -55,7 +66,7 @@ class ClientController extends EventEmitter {
 		}
 
 		this.context = buildContext(routes);
-		TritonAgent.cache().rehydrate(dehydratedState.InitialContext['TritonAgent.cache']);
+		ReactServerAgent.cache().rehydrate(dehydratedState.InitialContext['ReactServerAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
 		this._setupFramebackController();
@@ -80,6 +91,8 @@ class ClientController extends EventEmitter {
 
 	_startRequest({request, type}) {
 
+		this._reuseDom = request.getReuseDom();
+
 		if (request.getFrameback()){
 
 			// Tell the navigator we got this one.
@@ -88,12 +101,35 @@ class ClientController extends EventEmitter {
 			var url = request.getUrl();
 
 			if (type === History.events.PUSHSTATE) {
-				this._history.pushState({frameback:true}, null, url);
+				// Sorry folks.  If we need to do a client
+				// transition, then we're going to clobber
+				// your state.  You must be able to render
+				// from URL, anyway, so if you're set up right
+				// it won't affect user experience.  It means,
+				// though, that there exists a navigation path
+				// to an extraneous full-page rebuild.
+				// Such is life.
+				if (!(history.state||{}).reactServerFrame){
+					this._history.replaceState({
+						reactServerFrame: pushFrame(),
+					}, null, location.path);
+				}
+				this._history.pushState({
+					reactServerFrame : pushFrame(),
+					frameback        : true,
+				}, null, url);
 			}
 
 			this.framebackController.navigateTo(url).then(() => {
 				this.context.navigator.finishRoute();
 			});
+
+		} else if (this.framebackController.isActive()) {
+
+			// Tell the navigator we got this one, too.
+			this.context.navigator.ignoreCurrentNavigation();
+			this.framebackController.navigateBack();
+			this.context.navigator.finishRoute();
 
 		} else {
 
@@ -136,7 +172,19 @@ class ClientController extends EventEmitter {
 			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to
 			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
 			if (type === History.events.PUSHSTATE && this._history) {
-				this._history.pushState(null, null, path);
+				// See "Sorry folks", above.
+				if (!(history.state||{}).reactServerFrame){
+					this._history.replaceState({
+						reactServerFrame: pushFrame(),
+					}, null, location.path);
+				}
+				this._history.pushState({
+					reactServerFrame: pushFrame(),
+				}, null, path);
+			} else if (type === History.events.PAGELOAD && this._history && this._history.canClientNavigate()) {
+				this._history.replaceState({
+					reactServerFrame: pushFrame(),
+				}, null, path);
 			}
 
 			if (err) {
@@ -235,7 +283,7 @@ class ClientController extends EventEmitter {
 					currentBaseTag = document.createElement("base");
 					document.head.appendChild(currentBaseTag);
 				}
-				currentBaseTag.href = base.href;
+				if (base.href) currentBaseTag.href = base.href;
 				if (base.target) currentBaseTag.target = base.target;
 			}
 
@@ -291,7 +339,7 @@ class ClientController extends EventEmitter {
 	}
 
 	_render (page) {
-		var tStart = window.__tritonTimingStart;
+		var tStart = window.__reactServerTimingStart;
 		var t0 = new Date;
 		var retval = Q.defer();
 
@@ -305,10 +353,6 @@ class ClientController extends EventEmitter {
 		// all elements that we expect to be above the fold.
 		// Need this to be an integer value greater than zero.
 		var aboveTheFoldCount = Math.max(page.getAboveTheFoldCount()|0, 1)
-
-		// if we were previously rendered on the client, clean up the old divs and
-		// their ReactComponents.
-		this._cleanupPreviousRender(this.mountNode);
 
 		// These resolve with React elements when their data
 		// dependencies are fulfilled.
@@ -349,37 +393,73 @@ class ClientController extends EventEmitter {
 
 		var mountNode = this.mountNode;
 
+		// These are only used if we're going to try to re-use the
+		// existing DOM structure.
+		var oldRootElement, oldRootContainer;
+
 		// Once we've got an element and a root DOM node to mount it
 		// in we can finally render.
 		var renderElement = (element, root, index) => {
 
 			// During client transitions we create our root
 			// elements as we go.
-			if (!root && this._previouslyRendered){
-				if (element.containerOpen){
+			if (!root && this._previouslyRendered) {
 
-					// If we're opening a container that's
-					// our new mountNode.
-					mountNode = this._createContainerNode(
-						mountNode,
-						element.containerOpen,
-						index
+				// If the _previous_ render had elements that
+				// we can re-use we'll render into them.
+				//
+				// DOM re-use is currently opt-in.
+				//
+				if (this._reuseDom) {
+					oldRootElement = document.querySelector(
+						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 					);
-				} else if (element.containerClose) {
-
-					// If we're closing a container its
-					// parent is once again our mountNode.
-					mountNode = mountNode.parentNode;
-				} else {
-
-					// Need a new root element in our
-					// current mountNode.
-					root = this._createTritonRootNode(mountNode, index)
+					oldRootContainer = document.querySelector(
+						`div[${PAGE_CONTAINER_NODE_ID}="${index}"]`
+					);
 				}
-			}
 
-			if (element.containerOpen || element.containerClose){
-				return; // Nothing left to do.
+				// The current strategy for re-use is: So long
+				// as the _shape_ of the root structure is the
+				// same, we'll re-use.  Once the new page's
+				// shape diverges, we'll blow away the
+				// remaining elements left over from the
+				// previous page and create everything for the
+				// new page as we go.
+				//
+				if (this._reuseDom && element.containerOpen && oldRootContainer) {
+					mountNode = oldRootContainer;
+				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
+					mountNode = mountNode.parentNode;
+				} else if (this._reuseDom && oldRootElement) {
+					root = oldRootElement;
+				} else {
+					this._cleanupPreviousRender(index);
+					if (element.containerOpen){
+
+						// If we're opening a container that's
+						// our new mountNode.
+						mountNode = this._createContainerNode(
+							mountNode,
+							element.containerOpen,
+							index
+						);
+					} else if (element.containerClose) {
+
+						// If we're closing a container its
+						// parent is once again our mountNode.
+						mountNode = mountNode.parentNode;
+					} else {
+
+						// Need a new root element in our
+						// current mountNode.
+						root = this._createReactServerRootNode(mountNode, index)
+					}
+				}
+
+				if (element.containerOpen || element.containerClose){
+					return; // Nothing left to do.
+				}
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
@@ -396,7 +476,7 @@ class ClientController extends EventEmitter {
 			totalRenderTime += timer.stop();
 
 			if (!this._previouslyRendered){
-				var tDisplay = root.getAttribute('data-triton-timing-offset');
+				var tDisplay = root.getAttribute('data-react-server-timing-offset');
 				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
 				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
 
@@ -451,32 +531,38 @@ class ClientController extends EventEmitter {
 	 * Cleans up a previous React render in the document. Unmounts all the components and destoys the mounting
 	 * DOM node(s) that were created.
 	 */
-	_cleanupPreviousRender(mountNode) {
-		if (this._previouslyRendered) {
+	_cleanupPreviousRender(index) {
+		if (this._previouslyRendered && !RLS().haveCleanedPreviousRender) {
+
+			// Only need to do this once per request.
+			RLS().haveCleanedPreviousRender = true;
+
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${TRITON_DATA_ATTRIBUTE}]`)
-			).forEach(root => {
-
-				// Since this node has a "data-triton-root-id"
-				// attribute, we can assume that we created it
-				// and should destroy it. Destruction means
-				// first unmounting from React and then
-				// destroying the DOM node.
-				React.unmountComponentAtNode(root);
-				root.parentNode.removeChild(root);
+				document.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
+			).forEach((root, i) => {
+				if (i >= index) {
+					// Since this node has a "data-react-server-root-id"
+					// attribute, we can assume that we created it
+					// and should destroy it. Destruction means
+					// first unmounting from React and then
+					// destroying the DOM node.
+					React.unmountComponentAtNode(root);
+					root.parentNode.removeChild(root);
+				}
 			});
 
 			[].slice.call(
-				mountNode.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
-			).forEach(root => {
-
-				// Gotta get rid of our containers, too.
-				// Need to do this _after_ killing the
-				// elements, since they might live within
-				// these containers.
-				root.parentNode.removeChild(root);
+				document.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
+			).forEach((root, i) => {
+				if (i >= index) {
+					// Gotta get rid of our containers,
+					// too.  Need to do this _after_
+					// killing the elements, since they
+					// might live within these containers.
+					root.parentNode.removeChild(root);
+				}
 			});
 		}
 	}
@@ -484,9 +570,9 @@ class ClientController extends EventEmitter {
 	/**
 	 * This method creates a new div to render a ReactElement in to at the end of the mount node.
 	 */
-	_createTritonRootNode(mountNode, index) {
+	_createReactServerRootNode(mountNode, index) {
 		var root = document.createElement("div");
-		root.setAttribute(TRITON_DATA_ATTRIBUTE, index);
+		root.setAttribute(REACT_SERVER_DATA_ATTRIBUTE, index);
 		mountNode.appendChild(root);
 		return root;
 	}
@@ -524,25 +610,31 @@ class ClientController extends EventEmitter {
 
 		// If we're running without client navigation then we don't
 		// need a 'popstate' listener.
-		if (window.__tritonDisableClientNavigation) return;
+		if (window.__reactServerDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
-			if (this.framebackController.isActive()){
-				this.framebackController.navigateBack();
-			} else {
-				var frameback = (state||{}).frameback;
-				if (context) {
-					var path = this._history.getPath();
+			var frame = state ? state.reactServerFrame : null;
 
-					// Pass in "popstate" because this is
-					// when a user clicks the forward/back
-					// button.
-					context.navigate(
-						new ClientRequest(path, {frameback}),
-						History.events.POPSTATE
-					);
+			// Not our frame.
+			if (!frame) return;
 
-				}
+			// We're already there.
+			if (frame === CURRENT_STATE_FRAME) return;
+
+			CURRENT_STATE_FRAME = frame;
+
+			var frameback = (state||{}).frameback;
+			if (context) {
+				var path = this._history.getPath();
+
+				// Pass in "popstate" because this is
+				// when a user clicks the forward/back
+				// button.
+				context.navigate(
+					new ClientRequest(path, {frameback}),
+					History.events.POPSTATE
+				);
+
 			}
 		};
 
@@ -562,9 +654,7 @@ class ClientController extends EventEmitter {
 	_setupArrivalHandlers () {
 		// used by <script> callbacks to register data sent down on the
 		// initial connection after initial render
-		window.__tritonDataArrival = this.dataArrival.bind(this);
-		window.__tritonNodeArrival = this.nodeArrival.bind(this);
-		window.__tritonFailArrival = this.failArrival.bind(this);
+		window.__reactServerClientController = this;
 	}
 
 	_ensureRootNodeDfd (index) {
@@ -575,7 +665,7 @@ class ClientController extends EventEmitter {
 	}
 
 	dataArrival (url, dehydratedEntry) {
-		TritonAgent.cache().lateArrival(url, dehydratedEntry);
+		ReactServerAgent.cache().lateArrival(url, dehydratedEntry);
 	}
 
 	nodeArrival (index) {
@@ -586,7 +676,7 @@ class ClientController extends EventEmitter {
 		// we're going to mount into it.
 		this._ensureRootNodeDfd(index).resolve(
 			this.mountNode.querySelector(
-				`div[${TRITON_DATA_ATTRIBUTE}="${index}"]`
+				`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 			)
 		);
 	}

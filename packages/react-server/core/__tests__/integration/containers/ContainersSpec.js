@@ -7,8 +7,8 @@ describe("A page's root elements", () => {
 
 	// Verify that we get our attributes set where they need to go.
 	_.forEach({
-		'RootElement'   : "[data-triton-root-id]",
-		'RootContainer' : "[data-triton-container]",
+		'RootElement'   : "[data-react-server-root-id]",
+		'RootContainer' : "[data-react-server-container]",
 	}, (query, root) => {
 		_.forEach({
 			'id'    : 'foo',
@@ -17,7 +17,7 @@ describe("A page's root elements", () => {
 		}, (value, attr) => desc(
 			`can have "${attr}" attribute on ${root}`,
 			'/attributesOn'+root,
-			element => expect(element.getAttribute(attr)).toBe(value),
+			element => expect(element).toBeTruthy() && expect(element.getAttribute(attr)).toBe(value),
 			query
 		));
 	});
@@ -48,8 +48,8 @@ describe("A page's root elements", () => {
 	//
 	// Note that with the default query this just grabs the first root
 	// element.  Won't always be index zero, since containers burn slots
-	// (but they don't have `data-triton-root-id`).
-	function desc(txt, url, fn, query="[data-triton-root-id]") {
+	// (but they don't have `data-react-server-root-id`).
+	function desc(txt, url, fn, query="[data-react-server-root-id]") {
 		describe(txt, () => helper.testWithElement(url, query, fn));
 		var page = `./pages/${url[0]+url[1].toUpperCase()+url.slice(2)}`;
 		if (!seen[page]){
@@ -61,7 +61,7 @@ describe("A page's root elements", () => {
 	// Expect the contents of the first root element to be 'foo'.
 	function makeSingleDesc(prefix) {
 		return (txt, url) => desc(`${prefix} ${txt}`, url,
-			element => expect(element.innerHTML).toMatch('foo')
+			element => expect(element).toBeTruthy() && expect(element.innerHTML).toMatch('foo')
 		)
 	}
 

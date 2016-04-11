@@ -1,0 +1,31 @@
+{
+  "name": "react-server-test-pages",
+  "version": "0.0.0",
+  "description": "Some pages to test out features of react-server",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "gulp build",
+    "start": "react-server-cli",
+    "test": "gulp test"
+  },
+  "author": "Bo Borgerson",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "lodash": "^4.8.2",
+    "q": "1.4.1",
+    "react-server": "^0.1.5",
+    "react-server-cli": "^0.1.5"
+  },
+  "devDependencies": {
+    "babel-plugin-react-require": "^2.1.0",
+    "babel-preset-es2015": "~6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "eslint": "2.7.0",
+    "eslint-plugin-react": "3.0.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^2.0.0",
+    "gulp-nsp": "^2.4.0",
+    "react-server-gulp-module-tagger": "0.0.8"
+  }
+}
