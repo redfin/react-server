@@ -1,7 +1,7 @@
 # react-server monorepo [![Build Status][build-badge-img]][build-url]
 
 React pages that render on the server for blazing fast page load and in the
-browser for seamless transitions from page to page.
+browser for seamless transitions between pages.
 
 # Just getting started with `react-server`?
 
