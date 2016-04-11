@@ -28,6 +28,11 @@ export default (args = process.argv) => {
 			default: undefined,
 			type: "boolean",
 		})
+		.option("long-term-caching", {
+			describe: "Use long-term cache headers for the static JS & CSS files. Default is true in production mode, false otherwise.",
+			default: undefined,
+			type: "boolean",
+		})
 		.option("log-level", {
 			describe: "Set the severity level for the logs being reported. Values are, in ascending order of severity: 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'. Default is 'notice' in production mode, 'debug' otherwise.",
 			type: "string",

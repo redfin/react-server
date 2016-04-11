@@ -31,6 +31,7 @@ const startImpl = (routesRelativePath, {
 		minify,
 		compileOnly,
 		jsUrl,
+		longTermCaching,
 }) => {
 
 	const routesPath = path.join(process.cwd(), routesRelativePath);
@@ -42,6 +43,7 @@ const startImpl = (routesRelativePath, {
 		hot,
 		minify,
 		outputUrl: compileOnly ? null : outputUrl, // when compiling, never bind the resulting JS to a URL.
+		longTermCaching,
 	});
 
 	if (compileOnly) {

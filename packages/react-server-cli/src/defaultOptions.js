@@ -6,11 +6,13 @@ export default {
 	minify: false,
 	compileOnly: false,
 	logLevel: "debug",
+	longTermCaching: false,
 	env: {
 		production: {
 			hot: false,
 			minify: true,
 			logLevel: "notice",
+			longTermCaching: true,
 		},
 	},
 }

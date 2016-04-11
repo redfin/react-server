@@ -1,11 +1,15 @@
-export default (pathToStatic) => {
+export default (pathToStatic, manifest = typeof window !== "undefined" && window && window.__rsAppManifest) => {
 	return class CoreJsMiddleware {
 		getSystemScripts(next) {
 			const routeName = this.getRequest().getRouteName();
 			const baseUrl = pathToStatic || "/";
 			return [
-				`${baseUrl}common.js`,
-				`${baseUrl}${routeName}.bundle.js`,
+				`${baseUrl}${manifest.entries.common}`,
+				`${baseUrl}${manifest.entries[routeName]}`,
+				{
+					type: "text/javascript",
+					text: `window.webpackManifest = eval(${JSON.stringify(manifest.chunks)});`,
+				},
 				{
 					type: "text/javascript",
 					text: baseUrl ? `

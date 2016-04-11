@@ -3,6 +3,7 @@ import path from "path"
 import mkdirp from "mkdirp"
 import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
+import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
 
 // commented out to please eslint, but re-add if logging is needed in this file.
 //import {logging} from "react-server"
@@ -21,6 +22,7 @@ export default (routes,{
 	outputUrl = "/static/",
 	hot = true,
 	minify = false,
+	longTermCaching = false,
 } = {}) => {
 	const workingDirAbsolute = path.resolve(process.cwd(), workingDir);
 	mkdirp.sync(workingDirAbsolute);
@@ -52,21 +54,33 @@ export default (routes,{
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, true);
 
 	// finally, let's pack this up with webpack.
+	const compiler = webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching));
+
+	compiler.plugin("done", (stats) => {
+		if (longTermCaching) {
+			const manifest = {};
+			for (let chunkName of Object.keys(stats.compilation.namedChunks)) {
+				manifest[chunkName] = stats.compilation.namedChunks[chunkName].files[0];
+			}
+			fs.writeFileSync(path.join(outputDirAbsolute, "entry-manifest.json"), JSON.stringify(manifest));
+		}
+	});
+
 	return {
 		serverRoutes,
-		compiler: webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify)),
+		compiler,
 	};
 }
 
-const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) => {
+const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, longTermCaching) => {
 	const extractTextLoader = require.resolve("./NonCachingExtractTextLoader") + "?{remove:true}!css-loader";
 	let webpackConfig = {
 		entry: entrypoints,
 		output: {
 			path: outputDir,
 			publicPath: outputUrl,
-			filename: "[name].bundle.js",
-			chunkFilename: "[id].bundle.js",
+			filename: `[name]${longTermCaching ? ".[chunkhash]" : ""}.bundle.js`,
+			chunkFilename: `[id]${longTermCaching ? ".[chunkhash]" : ""}.bundle.js`,
 		},
 		module: {
 			loaders: [
@@ -96,7 +110,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 			new ExtractTextPlugin("[name].css"),
 			new webpack.optimize.CommonsChunkPlugin({
 				name:"common",
-				filename: "common.js",
+				filename: `common${longTermCaching ? ".[chunkhash]" : ""}.js`,
 			}),
 		],
 	};
@@ -127,6 +141,18 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify) =
 			...webpackConfig.plugins,
 			new webpack.HotModuleReplacementPlugin(),
 			new webpack.NoErrorsPlugin(),
+		];
+	}
+
+	if (longTermCaching) {
+		webpackConfig.plugins = [
+			...webpackConfig.plugins,
+			// new ManifestPlugin(),
+			new ChunkManifestPlugin({
+				filename: "chunk-manifest.json",
+				manifestVariable: "webpackManifest",
+			}),
+			new webpack.optimize.OccurenceOrderPlugin(),
 		];
 	}
 
