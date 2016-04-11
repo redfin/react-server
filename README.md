@@ -5,12 +5,11 @@ Render in the browser for seamless transitions from page to page.
 
 # Just getting started with `react-server`?
 
-The easiest way to start is with
-[`react-server-cli`](packages/react-server-cli), which will take care of the
-_server_ part and let you get up and running right away.
+Start with [`react-server-cli`](packages/react-server-cli), which will take
+care of the _server_ part and get you up and running right away.
 
-Once you're hungry for more have a look at
-[`react-server`](packages/react-server) itself for more complete info.
+Once you're hungry for more dig into
+[`react-server`](packages/react-server) itself.
 
 # Monorepo?
 
