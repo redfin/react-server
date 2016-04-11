@@ -1,7 +1,7 @@
 # react-server monorepo [![Build Status][build-badge-img]][build-url]
 
-Write pages in `React`.  Render on the server for blazing fast page load.
-Render in the browser for seamless transitions from page to page.
+React pages that render on the server for blazing fast page load and in the
+browser for seamless transitions from page to page.
 
 # Just getting started with `react-server`?
 
