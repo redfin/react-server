@@ -1,6 +1,9 @@
 # react-server monorepo [![Build Status][build-badge-img]][build-url]
 
-## Just getting started with `react-server`?
+Write pages in `React`.  Render on the server for blazing fast page load.
+Render in the browser for seamless transisitions from page to page.
+
+# Just getting started with `react-server`?
 
 The easiest way to get up and running is with
 [`react-server-cli`](packages/react-server-cli), which will take care of the
