@@ -55,7 +55,7 @@ There are three ways to pass options to the CLI, through the command line, `.rea
  1. If there is a `package.json` file in the current directory with an entry named `reactServer`, it is used. Otherwise:
 1. Go back to step 2 in the parent of the current directory. Repeat until you either find a config or hit the root directory.
 
-Note that the programmatic API also searches for config files if you don't pass in an options object.
+Note that the programmatic API also searches for config files, although options sent in explicitly override the config file.
 
 ###JSON options can be set per environment
 
@@ -163,9 +163,7 @@ start(routesRelativePath, {
 })
 ```
 
-All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above.
-
-Note that the programmatic API also searches for config files if you don't pass in an options object. If you want to disable this behavior, send in an empty object as the options object.
+All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above. (Also note that if an option isn't present, the programmatic API will search for a config file in the same way as the CLI.)
 
 ##Future Directions
 

@@ -11,12 +11,11 @@ import findOptionsInFiles from "./findOptionsInFiles"
 
 const logger = logging.getLogger(__LOGGER__);
 
-// if you *don't* send in any options, we will try to find either a .reactserverrc
-// file or a reactServer section in a package.json using findOptionsInFiles.
-export default (routesRelativePath, options = findOptionsInFiles()) => {
-	// for the option properties that weren't sent in or provided in a config file,
-	// we merge in the defaults.
-	options = mergeOptions(defaultOptions, options);
+export default (routesRelativePath, options = {}) => {
+	// for the option properties that weren't sent in, look for a config file
+	// (either .reactserverrc or a reactServer section in a package.json). for
+	// options neither passed in nor in a config file, use the defaults.
+	options = mergeOptions(defaultOptions, findOptionsInFiles() || {}, options);
 
 	setupLogging(options.logLevel);
 	logProductionWarnings(options);
