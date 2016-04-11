@@ -539,7 +539,7 @@ class ClientController extends EventEmitter {
 	 */
 	_cleanupPreviousRender(index) {
 
-		index || (index = 0); // Default to everything.
+		index = index || 0; // Default to everything.
 
 		if (this._previouslyRendered && !RLS().haveCleanedPreviousRender) {
 
