@@ -16,9 +16,9 @@ module.exports = React.createClass({
 
 	getDefaultProps(){
 		return {
-			bunndleData : false,
-			frameback   : false,
-			reuseDom    : false,
+			bundleData : false,
+			frameback  : false,
+			reuseDom   : false,
 		}
 	},
 
