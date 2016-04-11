@@ -5,7 +5,7 @@ Render in the browser for seamless transitions from page to page.
 
 # Just getting started with `react-server`?
 
-The easiest way to get up and running is with
+The easiest way to start is with
 [`react-server-cli`](packages/react-server-cli), which will take care of the
 _server_ part and let you get up and running right away.
 
