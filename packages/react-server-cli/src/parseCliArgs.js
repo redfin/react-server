@@ -19,6 +19,9 @@ export default (args = process.argv) => {
 		.option("h", {
 			alias: "hot",
 			describe: "Load the app so that it can be hot reloaded in the browser. Default is false in production mode, true otherwise.",
+			// we use undefined as the default because unlike other types, booleans
+			// default to "false", making it impossible to distinguish between not
+			// setting the option at the command line and setting --option=false.
 			default: undefined,
 			type: "boolean",
 		})
@@ -46,6 +49,9 @@ export default (args = process.argv) => {
 		.demand(0)
 		.argv;
 
+	// we remove all the options that have undefined as their value; those are the
+	// ones that weren't on the command line, and we don't want them to override
+	// defaults or config files.
 	return camelize(removeUndefinedValues(parsedArgs));
 }
 
