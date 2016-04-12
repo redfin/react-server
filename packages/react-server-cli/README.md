@@ -47,15 +47,16 @@ Smart defaults are the goal, and `react-server-cli` has two base modes: **develo
 
 ###Ways to add options
 
-There are three ways to pass options to the CLI, through the command line, `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json` files. Once `react-server` finds one of these sources of options, it will not search for more. It searches for options this way:
+There are three ways to pass options to the CLI, through the command line, `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json` files. It searches for options this way:
 
-1. If there are any options arguments on the command line, they are used. Otherwise:
+1. If there are any options arguments on the command line, they are used. For the options which aren't specified:
 1. `react-server-cli` looks at the current directory.
- 1. If there is a JSON file named `.reactserverrc` in the directory, it is used. Otherwise:
- 1. If there is a `package.json` file in the current directory with an entry named `reactServer`, it is used. Otherwise:
+ 1. If there is a JSON file named `.reactserverrc` in the directory, its settings are used and we skip to step #4. Otherwise:
+ 1. If there is a `package.json` file in the current directory with an entry named `reactServer`, its settings are used and we skip to step #4. Otherwise:
 1. Go back to step 2 in the parent of the current directory. Repeat until you either find a config or hit the root directory.
+1. If there are any options that still aren't specified, the defaults are used.
 
-Note that the programmatic API also searches for config files, although options sent in explicitly override the config file.
+Note that the programmatic API also searches for config files, although options sent in explicitly to the API function override the config file.
 
 ###JSON options can be set per environment
 
