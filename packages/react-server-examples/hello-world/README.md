@@ -1,12 +1,12 @@
-# react-server-examples/helloworld
+# react-server-examples/hello-world
 
-Very simple example project for `redfin/react-server` which only shows server rendering and interactivity on the client side.
+Very simple example project for `react-server` which only shows server rendering and interactivity on the client side.
 
 To install:
 
 ```
 git clone http://redfin/react-server.git
-cd react-server/packages/react-server-examples/helloworld
+cd react-server/packages/react-server-examples/hello-world
 npm install
 ```
 

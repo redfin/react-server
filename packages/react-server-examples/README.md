@@ -1,6 +1,6 @@
 # react-server-examples
 
-Some very simple example apps for `redfin/react-server`, which use `react-server-cli` to compile the code and run the server.
+Some very simple example apps for `react-server`, which use `react-server-cli` to compile the code and run the server.
 
 Installation and running instructions are in the respective README.md files:
 
