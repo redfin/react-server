@@ -181,7 +181,6 @@ class FramebackController extends EventEmitter {
 	showFrame(){
 		this.emit('showFrame');
 		this.frame.style.display = 'block';
-		this.frame.contentWindow.focus();
 		this.setTitleFromFrame();
 	}
 
@@ -213,6 +212,7 @@ class FramebackController extends EventEmitter {
 
 		// We've got it now, so let's set it.
 		this.setTitleFromFrame();
+		this.frame.contentWindow.focus();
 
 		this.loadTimer.stop();
 
