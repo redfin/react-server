@@ -23,6 +23,7 @@
     "mkdirp": "~0.5.1",
     "node-libs-browser": "~0.5.2",
     "null-loader": "~0.1.1",
+    "pem": "^1.8.1",
     "q": "~1.4.1",
     "react-hot-loader": "~1.3.0",
     "style-loader": "~0.12.3",
