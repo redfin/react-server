@@ -98,7 +98,13 @@ var startServer = function (specFile, routes) {
 	// to add a hash to the end of the module name.
 	delete require.cache[require.resolve(testTempDir + "/routes")]
 
-	return start(routesFile, {hot: false, port:PORT});
+	return start(routesFile, {
+		hot: false,
+		port: PORT,
+		logLevel: "warning",
+		timingLogLevel: "none",
+		gaugeLogLevel: "no",
+	});
 }
 
 var getServerBrowser = function (url, cb) {
