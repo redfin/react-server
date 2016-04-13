@@ -3,7 +3,8 @@ var	fs = require("fs"),
 	mkdirp = require("mkdirp"),
 	path = require("path"),
 	Browser = require('zombie'),
-	start = require('react-server-cli').start;
+	start = require('react-server-cli').start,
+	crypto = require('crypto');
 
 var PORT = process.env.PORT || 8769;
 
@@ -54,7 +55,10 @@ var writeRoutesFile = function (specFile, routes, tempDir) {
 			page: "${transitionPageAbsPath}",
 		}}};`;
 	mkdirp.sync(tempDir);
-	var routesFilePath = path.join(tempDir, `routes.js`);
+	// make a unique file name so that when it is required, there are no collisions
+	// in the module loader between different tests.
+	const routesHash = crypto.createHash('md5').update(routesForReactServer).digest("hex");
+	var routesFilePath = path.join(tempDir, `routes_${routesHash}.js`);
 	fs.writeFileSync(routesFilePath, routesForReactServer);
 	return routesFilePath;
 }
@@ -92,16 +96,10 @@ var startServer = function (specFile, routes) {
 
 	var routesFile = writeRoutesFile(specFile, routes, testTempDir);
 
-	// we may have changed the routes file since the last test run, so the old
-	// routes file may be in the require cache. this code may not be ideal in node
-	// (mucking with the require cache); if it causes problems, we should change the code
-	// to add a hash to the end of the module name.
-	delete require.cache[require.resolve(testTempDir + "/routes")]
-
 	return start(routesFile, {
 		hot: false,
 		port: PORT,
-		logLevel: "warning",
+		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",
 	});
