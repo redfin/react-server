@@ -22,8 +22,8 @@ export default (args = process.argv) => {
 			type: "number",
 		})
 		.option("https", {
-			default: false,
 			describe: "If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed. Default is false.",
+			default: undefined,
 			type: "boolean",
 		})
 		.option("https-key", {

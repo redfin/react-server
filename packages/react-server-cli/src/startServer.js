@@ -75,8 +75,8 @@ const startImpl = (routesRelativePath, {
 			logger.notice("Starting servers...")
 			const jsServer = jsUrl ?
 				{stop:() => Promise.resolve(), started:Promise.resolve()} :
-				startJsServer(compiler, jsPort);
-			const htmlServer = startHtmlServer(serverRoutes, port);
+				startJsServer(compiler, jsPort, keys);
+			const htmlServer = startHtmlServer(serverRoutes, port, keys);
 
 			return {
 				stop: () => Promise.all([jsServer.stop(), htmlServer.stop()])
