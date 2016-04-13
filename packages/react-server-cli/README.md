@@ -43,11 +43,40 @@ It's rare to see a project these days in the JavaScript world that isn't at leas
 To take advantage of the Babel compilation, you need to install the Babel plugins and presets you want and reference them in a `.babelrc` file in your code directory. For more on the `.babelrc` format, see [its documentation here](https://babeljs.io/docs/usage/babelrc/).
 
 ##Options
-Smart defaults are the goal, and `react-server-cli` has two base modes: **development** and **production**. `react-server-cli` will determine which base mode it's in by looking at (in order):
+Smart defaults are the goal, and `react-server-cli` has two base modes: **development** and **production**. `react-server-cli` will determine which base mode it's in by looking at the NODE_ENV environment variable. If it's not "production", then `react-server-cli` will assume we are in development mode.
 
-1. If the `--production` flag was sent in, it's **production**.
-1. If `process.env.NODE_ENV` is `'production'`, it's **production**.
-1. Otherwise, the base mode is **development**.
+###Ways to add options
+
+There are three ways to pass options to the CLI, through the command line, `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json` files. It searches for options this way:
+
+1. If there are any options arguments on the command line, they are used. For the options which aren't specified:
+1. `react-server-cli` looks at the current directory.
+ 1. If there is a JSON file named `.reactserverrc` in the directory, its settings are used and we skip to step #4. Otherwise:
+ 1. If there is a `package.json` file in the current directory with an entry named `reactServer`, its settings are used and we skip to step #4. Otherwise:
+1. Go back to step 2 in the parent of the current directory. Repeat until you either find a config or hit the root directory.
+1. If there are any options that still aren't specified, the defaults are used.
+
+Note that the programmatic API also searches for config files, although options sent in explicitly to the API function override the config file.
+
+###JSON options can be set per environment
+
+If you are using either `.reactserverrc` or `package.json` to set your react-server options, you can provide environment-specific values in a sub-object at the key `env`. It looks like this:
+
+```json
+{
+	"port": "5000",
+	"env": {
+		"staging": {
+			"port": "4000"
+		},
+		"production": {
+			"port": "80"
+		}
+	}
+}
+```
+
+The values in a particular environment override the main settings. In this example configuration `port` will be set to 80 if `process.env.NODE_ENV` is `production`, 4000 if `process.env.NODE_ENV` is `staging`, and 5000 for any other situation.
 
 ###Development mode: making a great DX
 
@@ -73,7 +102,7 @@ To use `react-server-cli` in this sort of production setup, follow these steps:
 
 ###Setting Options Manually
 
-While development and production mode are good starting points, you can of course choose to override any of the setup by passing in options at the command line:
+While development and production mode are good starting points, you can of course choose to override any of the setup by setting the following options:
 
 #### --routes
 The routes file to load.
@@ -177,7 +206,7 @@ start(routesRelativePath, {
 })
 ```
 
-All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above.
+All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above. (Also note that if an option isn't present, the programmatic API will search for a config file in the same way as the CLI.)
 
 ##Future Directions
 

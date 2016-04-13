@@ -5,33 +5,40 @@ import express from "express"
 import path from "path"
 import pem from "pem"
 import compression from "compression"
+import defaultOptions from "./defaultOptions"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "./compileClient"
+import mergeOptions from "./mergeOptions"
+import findOptionsInFiles from "./findOptionsInFiles"
 
 const logger = logging.getLogger(__LOGGER__);
 
 // start up a react-server instance.
-// host: the hostname for the server.
-// port: the port number for the server.
-// jsPort: the port number for JavaScript and CSS on the server.
-// hot: enable hot reloading. do not use in production.
-// minify: minify the client-side JavaScript.
-// compileOnly: just compile the client-side JavaScript; don't start up a server.
-// jsUrl: serve up the HTML, but don't serve up the JavaScript and CSS; instead point the
-//   JS & CSS URLs at this URL.
-// https: if falsey, serve the content over HTTP. if true, serve the content over HTTPS
-//   with a self-signed certificate. if an object, it can include any of the options that can
-//   be passed to https.createServer.
-export default (routesRelativePath, {
-		host = "localhost",
-		port = 3000,
-		jsPort = 3001,
-		hot = true,
-		minify = false,
-		compileOnly = false,
+export default (routesRelativePath, options = {}) => {
+	// for the option properties that weren't sent in, look for a config file
+	// (either .reactserverrc or a reactServer section in a package.json). for
+	// options neither passed in nor in a config file, use the defaults.
+	options = mergeOptions(defaultOptions, findOptionsInFiles() || {}, options);
+
+	setupLogging(options.logLevel);
+	logProductionWarnings(options);
+
+	return startImpl(routesRelativePath, options);
+}
+
+const startImpl = (routesRelativePath, {
+		host,
+		port,
+		jsPort,
+		hot,
+		minify,
+		compileOnly,
 		jsUrl,
-		https: httpsOptions = false,
-} = {}) => {
+		https: httpsOptions,
+}) => {
+	if ((httpsOptions.key || httpsOptions.cert || httpsOptions.ca) && httpsOptions.pfx) {
+		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
+	}
 
 	const routesPath = path.join(process.cwd(), routesRelativePath);
 	const routes = require(routesPath);
@@ -178,4 +185,34 @@ const handleCompilationErrors = (err, stats) => {
 		// TODO: handle this more intelligently, perhaps with a --reportwarnings flag or with different
 		// behavior based on whether or not --minify is set.
 	}
+}
+
+const setupLogging = (logLevel) => {
+	logging.setLevel('main',  logLevel);
+	// TODO: the time and gauge log levels should also be parameters.
+	if (process.env.NODE_ENV !== "production") { //eslint-disable-line no-process-env
+		logging.setLevel('time',  'fast');
+		logging.setLevel('gauge', 'ok');
+	}
+}
+
+const logProductionWarnings = ({hot, minify, jsUrl}) => {
+	// if the server is being launched with some bad practices for production mode, then we
+	// should output a warning. if arg.jsurl is set, then hot and minify are moot, since
+	// we aren't serving JavaScript & CSS at all.
+	if ((!jsUrl && (hot || !minify)) ||  process.env.NODE_ENV !== "production") { //eslint-disable-line no-process-env
+		logger.warning("PRODUCTION WARNING: the following current settings are discouraged in production environments. (If you are developing, carry on!):");
+		if (hot) {
+			logger.warning("-- Hot reload is enabled. Set hot to false or set NODE_ENV=production to turn off.");
+		}
+
+		if (!minify) {
+			logger.warning("-- Minification is disabled. Set minify to true or set NODE_ENV=production to turn on.");
+		}
+
+		if (process.env.NODE_ENV !== "production") { //eslint-disable-line no-process-env
+			logger.warning("-- NODE_ENV is not set to \"production\".");
+		}
+	}
+
 }
