@@ -1,5 +1,6 @@
 {
   "name": "react-server-examples-helloworld",
+	"private": true,
   "version": "0.0.1",
   "description": "",
   "main": "HelloWorld.js",
