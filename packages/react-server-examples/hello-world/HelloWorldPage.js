@@ -3,9 +3,7 @@ import HelloWorld from "./HelloWorld"
 
 export default class SimplePage {
 	getElements () {
-		return [
-			<HelloWorld/>,
-		];
+		return <HelloWorld/>;
 	}
 
 }
