@@ -47,15 +47,16 @@ Smart defaults are the goal, and `react-server-cli` has two base modes: **develo
 
 ###Ways to add options
 
-There are three ways to pass options to the CLI, through the command line, `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json` files. Once `react-server` finds one of these sources of options, it will not search for more. It searches for options this way:
+There are three ways to pass options to the CLI, through the command line, `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json` files. It searches for options this way:
 
-1. If there are any options arguments on the command line, they are used. Otherwise:
+1. If there are any options arguments on the command line, they are used. For the options which aren't specified:
 1. `react-server-cli` looks at the current directory.
- 1. If there is a JSON file named `.reactserverrc` in the directory, it is used. Otherwise:
- 1. If there is a `package.json` file in the current directory with an entry named `reactServer`, it is used. Otherwise:
+ 1. If there is a JSON file named `.reactserverrc` in the directory, its settings are used and we skip to step #4. Otherwise:
+ 1. If there is a `package.json` file in the current directory with an entry named `reactServer`, its settings are used and we skip to step #4. Otherwise:
 1. Go back to step 2 in the parent of the current directory. Repeat until you either find a config or hit the root directory.
+1. If there are any options that still aren't specified, the defaults are used.
 
-Note that the programmatic API also searches for config files if you don't pass in an options object.
+Note that the programmatic API also searches for config files, although options sent in explicitly to the API function override the config file.
 
 ###JSON options can be set per environment
 
@@ -108,6 +109,11 @@ The routes file to load.
 
 Defaults to **"./routes.js"**.
 
+#### --host
+The hostname to use when starting up the server. If `jsUrl` is set, then this argument is ignored, and any host name can be used.
+
+Defaults to **localhost**.
+
 #### --port, -p
 The port to start up the main server, which will serve the pre-rendered HTML files.
 
@@ -138,6 +144,43 @@ A URL base for the pre-compiled client JavaScript; usually this is a base URL on
 
 Defaults to **null**.
 
+
+#### --https
+
+If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed.
+
+Defaults to **false**.
+
+#### --https-key
+
+Start the server using HTTPS with this private key file in PEM format. Requires `https-cert` to be set as well.
+
+ Default is **none**.
+
+#### --https-cert
+
+Start the server using HTTPS with this cert file in PEM format. Requires `https-key` to be set as well.
+
+Default is **none**.
+
+#### --https-ca
+
+Start the server using HTTPS with this certificate authority file in PEM format. Also requires `https-key` and `https-cert` to start the server.
+
+Default is **none**.
+
+#### --https-pfx
+
+Start the server using HTTPS with this file containing the private key, certificate and CA certs of the server in PFX or PKCS12 format. Mutually exclusive with `https-key`, `https-cert`, and `https-ca`.
+
+Default is **none**.
+
+#### --https-passphrase
+
+A passphrase for the private key or pfx file. Requires `https-key` or `https-pfx` to be set.
+
+Default is **none**.
+
 #### --log-level
 Sets the severity level for the logs being reported. Values are, in ascending order of severity: 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'.
 
@@ -163,9 +206,7 @@ start(routesRelativePath, {
 })
 ```
 
-All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above.
-
-Note that the programmatic API also searches for config files if you don't pass in an options object. If you want to disable this behavior, send in an empty object as the options object.
+All of the values in the second argument are optional, and they have the same defaults as the corresponding CLI arguments explained above. (Also note that if an option isn't present, the programmatic API will search for a config file in the same way as the CLI.)
 
 ##Future Directions
 

@@ -1,20 +1,18 @@
 import parseCliArgs from "./parseCliArgs"
-import {start} from "."
+import fs from "fs"
 
-// returns true if there are any options sent to react-server-cli
-const usesCustomArgs = () => {
-	for (let arg of process.argv) {
-		if (arg.length > 0 && arg.charAt(0) === "-") {
-			return true;
-		}
-	}
-	return false;
-}
+import {start} from "."
 
 const argv = parseCliArgs();
 
-if (usesCustomArgs()) {
-	start(argv.routes, argv);
-} else {
-	start(argv.routes);
+if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase) {
+	argv.https = {
+		key: argv.httpsKey ? fs.readFileSync(argv.httpsKey) : undefined,
+		cert: argv.httpsCert ? fs.readFileSync(argv.httpsCert) : undefined,
+		ca: argv.httpsCa ? fs.readFileSync(argv.httpsCa) : undefined,
+		pfx: argv.httpsPfx ? fs.readFileSync(argv.httpsPfx) : undefined,
+		passphrase: argv.httpsPassphrase,
+	}
 }
+
+start(argv.routes, argv);

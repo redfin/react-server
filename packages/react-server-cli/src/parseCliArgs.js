@@ -12,13 +12,46 @@ export default (args = process.argv) => {
 			describe: "Port to start listening for react-server. Default is 3000.",
 			type: "number",
 		})
+		.option("host", {
+			default: "localhost",
+			describe: "Hostname to start listening for react-server",
+			type: "string",
+		})
 		.option("js-port", {
 			describe: "Port to start listening for react-server's JavaScript. Default is 3001.",
 			type: "number",
 		})
+		.option("https", {
+			default: false,
+			describe: "If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed. Default is false.",
+			type: "boolean",
+		})
+		.option("https-key", {
+			describe: "Start the server using HTTPS with this private key file in PEM format. Requires https-cert to be set as well. Default is none.",
+			type: "string",
+		})
+		.option("https-cert", {
+			describe: "Start the server using HTTPS with this cert file in PEM format. Requires https-key to be set as well. Default is none.",
+			type: "string",
+		})
+		.option("https-ca", {
+			describe: "Start the server using HTTPS with this certificate authority file in PEM format. Also requires https-key and https-cert to start the server. Default is none.",
+			type: "string",
+		})
+		.option("https-pfx", {
+			describe: "Start the server using HTTPS with this file containing the private key, certificate and CA certs of the server in PFX or PKCS12 format. Mutually exclusive with https-key, https-cert, and https-ca. Default is none.",
+			type: "string",
+		})
+		.option("https-passphrase", {
+			describe: "A passphrase for the private key or pfx. Requires https-key or https-pfx to be set. Default is none.",
+			type: "string",
+		})
 		.option("h", {
 			alias: "hot",
 			describe: "Load the app so that it can be hot reloaded in the browser. Default is false in production mode, true otherwise.",
+			// we use undefined as the default because unlike other types, booleans
+			// default to "false", making it impossible to distinguish between not
+			// setting the option at the command line and setting --option=false.
 			default: undefined,
 			type: "boolean",
 		})
@@ -51,6 +84,13 @@ export default (args = process.argv) => {
 		.demand(0)
 		.argv;
 
+	if (parsedArgs.https && (parsedArgs.httpsKey || parsedArgs.httpsCert || parsedArgs.httpsCa || parsedArgs.httpsPfx || parsedArgs.httpsPassphrase)) {
+		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
+	}
+
+	// we remove all the options that have undefined as their value; those are the
+	// ones that weren't on the command line, and we don't want them to override
+	// defaults or config files.
 	return camelize(removeUndefinedValues(parsedArgs));
 }
 
