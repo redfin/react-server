@@ -140,6 +140,12 @@ class ClientController extends EventEmitter {
 
 				RequestLocalStorage.startRequest();
 
+				// If we're not going to reuse the DOM, let's
+				// clean up right away to blank the screen.
+				if (!this._reuseDom) {
+					this._cleanupPreviousRender();
+				}
+
 				// we need to re-register the request context
 				// as a RequestLocal.
 				this.context.registerRequestLocal();
@@ -532,6 +538,9 @@ class ClientController extends EventEmitter {
 	 * DOM node(s) that were created.
 	 */
 	_cleanupPreviousRender(index) {
+
+		index = index || 0; // Default to everything.
+
 		if (this._previouslyRendered && !RLS().haveCleanedPreviousRender) {
 
 			// Only need to do this once per request.
