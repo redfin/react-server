@@ -48,7 +48,7 @@ module.exports = {
 
 		// next add the style URLs that weren't already loaded.
 		Object.keys(newCssByKey).forEach(newCssKey => {
-			if(!loadedCss[newCssKey]) {
+			if (!loadedCss[newCssKey]) {
 				// this means that the CSS is not currently present in the
 				// document, so we need to add it.
 				logger.debug("Adding stylesheet: " + newCssKey);

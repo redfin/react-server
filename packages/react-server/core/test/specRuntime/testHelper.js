@@ -117,7 +117,7 @@ var buildClientCode = function (tempDir, cb) {
 			},
 		},
 	}, function(err, stats) { //eslint-disable-line no-unused-vars
-		if(err) {
+		if (err) {
 			console.error(err);
 			throw new Error("Error during webpack build.");
 		}

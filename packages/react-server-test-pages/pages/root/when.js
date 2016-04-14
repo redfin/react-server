@@ -1,4 +1,5 @@
 import {ReactServerAgent, RootElement} from "react-server"; // eslint-disable-line
+import React from 'React';
 
 export default class RootWhenPage {
 	handleRoute(next) {

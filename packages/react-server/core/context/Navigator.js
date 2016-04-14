@@ -120,6 +120,7 @@ class Navigator extends EventEmitter {
 
 					return loaders[format];
 				}
+				return undefined;
 			}, null) || loaders.default;
 
 			loadPage().done(pageConstructor => {

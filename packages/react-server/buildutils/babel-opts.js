@@ -12,7 +12,7 @@ var ecmaScriptTransforms = [
 	"es6.properties.shorthand",
 	"es6.spread",
 	"es6.templateLiterals",
-	// "es6.unicodeRegex", 
+	// "es6.unicodeRegex",
 	"es7.objectRestSpread",
 	// "es7.abstractReferences",
 	// "es7.comprehensions",

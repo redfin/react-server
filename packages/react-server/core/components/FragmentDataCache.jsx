@@ -65,7 +65,7 @@ var FragmentDataCache = module.exports = React.createClass({
  * Return a promise that resolves with the FragmentDataCache component
  * when all pending data requests have resolved.
  */
-FragmentDataCache.createWhenReady = function (fragmentDataCacheProps = {}) {
+FragmentDataCache.createWhenReady = function (fragmentDataCacheProps = {}) { // eslint-disable-line react/display-name
 	return ReactServerAgent.cache().whenAllPendingResolve().then(() => {
 		return <FragmentDataCache {...fragmentDataCacheProps} />;
 	});
