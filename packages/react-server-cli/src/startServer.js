@@ -66,7 +66,7 @@ const startImpl = (routesRelativePath, {
 			logger.notice("Starting servers...")
 			Promise.all([
 				jsUrl ? Promise.resolve() : startJsServer(compiler, jsPort, keys),
-				startHtmlServer(serverRoutes, port, keys),
+				serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, keys)),
 			])
 			.then(
 				() => logger.notice(`Ready for requests on port ${port}.`),

@@ -50,20 +50,24 @@ export default (routes,{
 	}
 
 	// now rewrite the routes file out in a webpack-compatible way.
-	const serverRoutes = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false);
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, true);
 
 	// finally, let's pack this up with webpack.
 	const compiler = webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching));
 
-	compiler.plugin("done", (stats) => {
-		if (longTermCaching) {
-			const manifest = {};
-			for (let chunkName of Object.keys(stats.compilation.namedChunks)) {
-				manifest[chunkName] = stats.compilation.namedChunks[chunkName].files[0];
+	const serverRoutes = new Promise((resolve) => {
+		compiler.plugin("done", (stats) => {
+			let entryManifest = null, chunkManifest = null;
+			if (longTermCaching) {
+				entryManifest = {};
+				for (let chunkName of Object.keys(stats.compilation.namedChunks)) {
+					entryManifest[chunkName] = stats.compilation.namedChunks[chunkName].files;
+				}
+				chunkManifest = JSON.parse(fs.readFileSync(path.join(outputDir, "chunk-manifest.json")));
 			}
-			fs.writeFileSync(path.join(outputDirAbsolute, "entry-manifest.json"), JSON.stringify(manifest));
-		}
+
+			resolve(writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, entryManifest, chunkManifest));
+		});
 	});
 
 	return {
@@ -107,10 +111,9 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 			],
 		},
 		plugins: [
-			new ExtractTextPlugin("[name].css"),
+			new ExtractTextPlugin("[name].[chunkhash].css"),
 			new webpack.optimize.CommonsChunkPlugin({
 				name:"common",
-				filename: `common${longTermCaching ? ".[chunkhash]" : ""}.js`,
 			}),
 		],
 	};
@@ -146,13 +149,12 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 
 	if (longTermCaching) {
 		webpackConfig.plugins = [
-			...webpackConfig.plugins,
-			// new ManifestPlugin(),
 			new ChunkManifestPlugin({
 				filename: "chunk-manifest.json",
 				manifestVariable: "webpackManifest",
 			}),
 			new webpack.optimize.OccurenceOrderPlugin(),
+			...webpackConfig.plugins,
 		];
 	}
 
@@ -160,20 +162,22 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 };
 
 // writes out a routes file that can be used at runtime.
-const writeWebpackCompatibleRoutesFile = (routes, routesDir, workingDirAbsolute, staticUrl, isClient) => {
+const writeWebpackCompatibleRoutesFile = (routes, routesDir, workingDirAbsolute, staticUrl, isClient, entryManifest, chunkManifest) => {
 	let routesOutput = [];
 
 	const existingMiddleware = routes.middleware ? routes.middleware.map((middlewareRelativePath) => {
 		return `unwrapEs6Module(require("${path.relative(workingDirAbsolute, path.resolve(routesDir, middlewareRelativePath))}"))`
 	}) : [];
 	routesOutput.push(`
+var chunkManifest = ${chunkManifest ? JSON.stringify(chunkManifest) : "null"};
+var entryManifest = ${entryManifest ? JSON.stringify(entryManifest) : "null"};
 function unwrapEs6Module(module) { return module.__esModule ? module.default : module }
 var coreJsMiddleware = unwrapEs6Module(require('react-server-cli/target/coreJsMiddleware'));
 var coreCssMiddleware = unwrapEs6Module(require('react-server-cli/target/coreCssMiddleware'));
 module.exports = {
 	middleware:[
-		coreJsMiddleware(${JSON.stringify(staticUrl)}),
-		coreCssMiddleware(${JSON.stringify(staticUrl)}),
+		coreJsMiddleware(${JSON.stringify(staticUrl)}, entryManifest, chunkManifest),
+		coreCssMiddleware(${JSON.stringify(staticUrl)}, entryManifest),
 		${existingMiddleware.join(",")}
 	],
 	routes:{`);
