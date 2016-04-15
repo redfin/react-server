@@ -12,7 +12,7 @@ class ClientRequest {
 		reuseDom,
 		reuseFrame,
 
-		// These is for internal statekeeping.  Don't use it yourself.
+		// These are for internal statekeeping.  Don't use them yourself.
 		_framebackExit,
 		_fromOuterFrame,
 	}={}) {

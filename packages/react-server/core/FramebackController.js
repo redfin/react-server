@@ -196,6 +196,9 @@ class FramebackController extends EventEmitter {
 	}
 
 	navigateFrame(request){
+
+		// This is a request that we're going to send to the navigator
+		// _in our frame_.
 		const frameRequest = new ClientRequest(
 			request.getUrl(),
 			_.assign({}, request.getOpts(), {
@@ -203,6 +206,7 @@ class FramebackController extends EventEmitter {
 				_fromOuterFrame : true,  // Actually navigate in frame.
 			})
 		)
+
 		this.frame.contentWindow
 			.__reactServerClientController
 			.context
