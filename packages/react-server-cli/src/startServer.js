@@ -65,7 +65,7 @@ const startImpl = (routesRelativePath, {
 
 			logger.notice("Starting servers...")
 			Promise.all([
-				jsUrl ? Promise.resolve() : startJsServer(compiler, jsPort, keys),
+				jsUrl ? Promise.resolve() : startJsServer(compiler, jsPort, longTermCaching, keys),
 				serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, keys)),
 			])
 			.then(
@@ -120,7 +120,7 @@ const startHtmlServer = (serverRoutes, port, httpsOptions) => {
 // files and start up a web server at http://localhost:port/ that serves the
 // static compiled JavaScript. returns a promise that resolves when the server
 // has started.
-const startStaticJsServer = (compiler, port, httpsOptions) => {
+const startStaticJsServer = (compiler, port, longTermCaching, httpsOptions) => {
 	return new Promise((resolve) => {
 		compiler.run((err, stats) => {
 			handleCompilationErrors(err, stats);
@@ -128,7 +128,9 @@ const startStaticJsServer = (compiler, port, httpsOptions) => {
 			logger.debug("Successfully compiled static JavaScript.");
 			// TODO: make this parameterized based on what is returned from compileClient
 			let server = express();
-			server.use('/', compression(), express.static('__clientTemp/build'));
+			server.use('/', compression(), express.static('__clientTemp/build', {
+				maxage: longTermCaching ? '365d' : '0s'
+			}));
 			logger.info("Starting static JavaScript server...");
 
 			if (httpsOptions) {
@@ -150,7 +152,7 @@ const startStaticJsServer = (compiler, port, httpsOptions) => {
 // for hot reloading at http://localhost:port/. note that the webpack compiler
 // must have been configured correctly for hot reloading. returns a promise that
 // resolves when the server has started.
-const startHotLoadJsServer = (compiler, port, httpsOptions) => {
+const startHotLoadJsServer = (compiler, port, longTermCaching, httpsOptions) => {
 	logger.info("Starting hot reload JavaScript server...");
 	const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));
 	const jsServer = new WebpackDevServer(compiler, {
