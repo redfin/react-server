@@ -33,17 +33,19 @@ const PagePointer = ({page, row}) => <div className="page-pointer">
 	{+page === +row ? "➟" : ""}
 </div>;
 
-const NormalLink = ({row}) => <a href={LINK(row)}>Normal Link</a>
+const NL       = ({row}) => <a href={LINK(row)}>Normal Link</a>
+const CT       = ({row}) => <Link path={LINK(row)}>CT</Link>
+const RD       = ({row}) => <Link reuseDom={true} path={LINK(row)}>CT/RD</Link>
+const BD       = ({row}) => <Link bundleData={true} path={LINK(row)}>CT/BD</Link>
+const BDRD     = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>CT/BD/RD</Link>
+const FB       = (props) => <FBL {...props}></FBL>
+const FBCT     = (props) => <FBL {...props} link={{reuseFrame:true}}>CT</FBL>
+const FBCTBD   = (props) => <FBL {...props} link={{reuseFrame:true, bundleData:true}}>CT/BD</FBL>
+const FBCTRD   = (props) => <FBL {...props} link={{reuseFrame:true, reuseDom:true}}>CT/RD</FBL>
+const FBCTBDRD = (props) => <FBL {...props} link={{reuseFrame:true, bundleData:true, reuseDom:true}}>CT/BD/RD</FBL>
 
-const ClientTransitionLink = ({row}) => <Link path={LINK(row)}>Client Transition</Link>
-
-const ReuseDom = ({row}) => <Link reuseDom={true} path={LINK(row)}>Reuse DOM</Link>
-
-const BundleData = ({row}) => <Link bundleData={true} path={LINK(row)}>Bundle Data</Link>
-
-const BundleDataAndReuseDom = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>Bundle AND Reuse</Link>
-
-class FramebackCell extends React.Component {
+// Frameback Link.
+class FBL extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {available: true};
@@ -54,31 +56,13 @@ class FramebackCell extends React.Component {
 		}
 	}
 	render() {
-		return <span className={this.state.available?'available':'not-available'}>
-			<Link path={LINK(this.props.row)} frameback={true} {...this.props.link}>{
-				this.props.children
-			}</Link>
-		</span>
+		return <Link path={LINK(this.props.row)} frameback={true} {...this.props.link}>
+			<span className={this.state.available?'available':'not-available'}>FB</span>{
+				this.props.children?['/',...this.props.children]:[]
+			}
+		</Link>
 	}
 }
-
-const FramebackLink = props => <FramebackCell {...props}>Frameback</FramebackCell>
-
-const FramebackCTLink = props => <FramebackCell link={{reuseFrame:true}} {...props}>
-	Frameback with Client Transition
-</FramebackCell>
-
-const FramebackBDLink = props => <FramebackCell link={{reuseFrame:true, bundleData:true}} {...props}>
-	Frameback with Bundle
-</FramebackCell>
-
-const FramebackRDLink = props => <FramebackCell link={{reuseFrame:true, reuseDom:true}} {...props}>
-	Frameback with DOM Reuse
-</FramebackCell>
-
-const FramebackBDRDLink = props => <FramebackCell link={{reuseFrame:true, bundleData:true, reuseDom:true}} {...props}>
-	Frameback with bundle AND Reuse
-</FramebackCell>
 
 
 class ClientRenderIndicator extends React.Component {
@@ -120,21 +104,34 @@ export default class NavigationPlaygroundPage {
 		return next();
 	}
 	getElements() {
-		return this.data.map(promise => <RootContainer when={promise} className="row">
-			<PagePointer />
-			<RowIndex />
-			<RowMS />
-			<ClientRenderIndicator />
-			<NormalLink />
-			<ClientTransitionLink />
-			<ReuseDom />
-			<BundleData />
-			<BundleDataAndReuseDom />
-			<FramebackLink />
-			<FramebackCTLink />
-			<FramebackBDLink />
-			<FramebackRDLink />
-			<FramebackBDRDLink />
-		</RootContainer>);
+		return [
+			<RootContainer>
+				<h1>Navigation Playground</h1>
+				<h2>Legend:</h2>
+				<ul>
+					<li>CT: Client Transition</li>
+					<li>RD: Reuse DOM</li>
+					<li>BD: Bundle Data</li>
+					<li>FB: Frameback</li>
+					<li><span className='not-available'>FB</span>: Frameback disabled (already in a frame)</li>
+				</ul>
+			</RootContainer>,
+			...this.data.map(promise => <RootContainer when={promise} className="row">
+				<PagePointer />
+				<RowIndex />
+				<RowMS />
+				<ClientRenderIndicator />
+				<NL />
+				<CT />
+				<RD />
+				<BD />
+				<BDRD />
+				<FB />
+				<FBCT />
+				<FBCTBD />
+				<FBCTRD />
+				<FBCTBDRD />
+			</RootContainer>),
+		]
 	}
 }
