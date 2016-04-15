@@ -5,7 +5,6 @@ var EventEmitter = require('events').EventEmitter,
 	Q = require('q'),
 	History = require("../components/History"),
 	ReactServerAgent = require("../ReactServerAgent"),
-	FramebackController = require("../FramebackController"),
 	PageUtil = require("../util/PageUtil");
 
 var _ = {
@@ -149,7 +148,7 @@ class Navigator extends EventEmitter {
 
 		// If we're managing a frame's navigation, we want _it_ to
 		// use a data bundle.
-		if (this._ignoreCurrentNavigation) return;
+		if (this._ignoreCurrentNavigation) return Q();
 
 		const url = request.getUrl();
 

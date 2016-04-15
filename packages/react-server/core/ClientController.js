@@ -240,7 +240,7 @@ class ClientController extends EventEmitter {
 		 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
-		context.onNavigate( (err, page, path, type) => {
+		context.onNavigate( (err, page) => {
 			logger.debug('Executing navigate action');
 
 			if (err) {
