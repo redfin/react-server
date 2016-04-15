@@ -102,6 +102,8 @@ class FramebackController extends EventEmitter {
 
 		logger.debug(`Navigating to ${url}`);
 
+		this.loadTimer = logger.timer('loadTime');
+
 		this.active = true;
 		// update master title in case the title has changed since initialization
 		this.masterTitle = document.title;
@@ -216,7 +218,6 @@ class FramebackController extends EventEmitter {
 	}
 
 	createFrame(url){
-		this.loadTimer = logger.timer('loadTime');
 
 		this.frame = document.createElement("iframe");
 
@@ -284,6 +285,16 @@ class FramebackController extends EventEmitter {
 		// frame while we were waiting for the first frame to load.
 		if (frame !== this.frame) return;
 
+		const clientController = frame.contentWindow.__reactServerClientController;
+
+		// If the frame has a client controller we'll listen to when
+		// _it_ tells us it's done loading.
+		if (clientController && !clientController.__parentIsListening) {
+			clientController.__parentIsListening = true;
+			clientController.context.onLoadComplete(this._handleFrameLoad.bind(this, frame));
+			return;
+		}
+
 		[].slice.call(frame.contentDocument.body.querySelectorAll('a')).forEach(link => {
 			if (!link.target) link.target = '_top';
 		});
@@ -291,9 +302,16 @@ class FramebackController extends EventEmitter {
 		// We've got it now, so let's set it.
 		this.setTitleFromFrame();
 
-		this.loadTimer.stop();
+		if (this.loadTimer) {
 
-		logger.debug("Frame loaded");
+			this.loadTimer.stop();
+			delete this.loadTimer;
+
+			logger.debug("Frame loaded");
+		} else {
+			logger.debug("Frame navigated");
+		}
+
 	}
 }
 
