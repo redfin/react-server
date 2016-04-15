@@ -37,13 +37,32 @@ const NormalLink = ({row}) => <a href={LINK(row)}>Normal Link</a>
 
 const ClientTransitionLink = ({row}) => <Link path={LINK(row)}>Client Transition</Link>
 
-const FramebackLink = ({row}) => <Link frameback={true} path={LINK(row)}>Frameback</Link>
-
 const ReuseDom = ({row}) => <Link reuseDom={true} path={LINK(row)}>Reuse DOM</Link>
 
 const BundleData = ({row}) => <Link bundleData={true} path={LINK(row)}>Bundle Data</Link>
 
 const BundleDataAndReuseDom = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>Bundle AND Reuse</Link>
+
+class FramebackCell extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {available: true};
+	}
+	componentDidMount() {
+		if (window.__reactServerIsFrame) {
+			this.setState({available: false});
+		}
+	}
+	render() {
+		return <span className={this.state.available?'available':'not-available'}>
+			<Link path={LINK(this.props.row)} frameback={true} {...this.props.link}>{
+				this.props.children
+			}</Link>
+		</span>
+	}
+}
+
+const FramebackLink = props => <FramebackCell {...props}>Frameback</FramebackCell>
 
 class ClientRenderIndicator extends React.Component {
 	constructor(props){

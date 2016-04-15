@@ -25,3 +25,7 @@
 .page-pointer {
 	width: 16px;
 }
+
+.not-available {
+	text-decoration: line-through;
+}
