@@ -1,18 +1,19 @@
-export default (pathToStatic, entryManifest) => {
+export default (pathToStatic, manifest) => {
 	return class CoreCssMiddleware {
 		getHeadStylesheets(next) {
 			const routeName = this.getRequest().getRouteName();
 			const baseUrl = pathToStatic || (typeof window !== "undefined" ? window.__reactServerBase : "/");
-			const entries = entryManifest || (typeof window !== "undefined" ? window.__reactServerEntryManifest: {});
+			manifest = manifest || (typeof window !== "undefined" ? window.__reactServerManifest: {});
 
-			let fileNames = [];
+			if (!manifest || !manifest.cssChunksByName) {
+				throw new Error("No webpack manifest found while trying to find CSS files.");
+			}
 
-			if (entries && entries[routeName].length >=2) {
+			const fileNames = [];
+			if (manifest.cssChunksByName[routeName]) {
 				// the css file is the second resource in the file array in the manifest;
 				// the js file is the first.
-				fileNames.push(baseUrl + entries[routeName][1]);
-			} else if (!entries) {
-				fileNames.push(baseUrl + routeName);
+				fileNames.push(baseUrl + manifest.cssChunksByName[routeName]);
 			}
 
 			return [

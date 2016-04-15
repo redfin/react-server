@@ -1,4 +1,4 @@
-export default (pathToStatic, entryManifest, chunkManifest) => {
+export default (pathToStatic, manifest) => {
 	return class CoreJsMiddleware {
 		getSystemScripts(next) {
 			const routeName = this.getRequest().getRouteName();
@@ -6,21 +6,15 @@ export default (pathToStatic, entryManifest, chunkManifest) => {
 
 			const scripts = [];
 
-			if (chunkManifest) {
-				scripts.push({
-					type: "text/javascript",
-					text: `window.webpackManifest = ${JSON.stringify(chunkManifest)};`,
-				});
-			}
+			// read out the chunkmap so that the client code knows how to download the
+			// other chunks.
+			scripts.push({
+				type: "text/javascript",
+				text: `window.webpackManifest = ${JSON.stringify(manifest.jsChunksById)};`,
+			});
 
-			if (entryManifest) {
-				scripts.push(`${baseUrl}${entryManifest.common[0]}`);
-				scripts.push(`${baseUrl}${entryManifest[routeName][0]}`);
-			} else {
-				scripts.push(`${baseUrl}common.js`);
-				scripts.push(`${baseUrl}${routeName}.bundle.js`);
-			}
-
+			scripts.push(`${baseUrl}${manifest.jsChunksByName.common}`);
+			scripts.push(`${baseUrl}${manifest.jsChunksByName[routeName]}`);
 
 			return [
 				...scripts,
@@ -29,7 +23,7 @@ export default (pathToStatic, entryManifest, chunkManifest) => {
 					text: baseUrl ? `
 						if (typeof window !== "undefined" && window.__setReactServerBase) {
 							window.__setReactServerBase(${JSON.stringify(baseUrl)});
-							window.__reactServerEntryManifest = ${entryManifest ? JSON.stringify(entryManifest) : "{}"};
+							window.__reactServerManifest = ${manifest ? JSON.stringify(manifest) : "{}"};
 						}` : "",
 				},
 				...next(),
