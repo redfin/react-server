@@ -44,16 +44,12 @@ var CURRENT_STATE_FRAME;
 function getHistoryStateFrame(request) {
 	CURRENT_STATE_FRAME = SESSION_START_PREFIX + ++NEXT_STATE_FRAME;
 
+	// Mark the frame as ours.
+	// Stash the request opts that were used to navigate to this frame.
 	return {
 		reactServerFrame       : CURRENT_STATE_FRAME,
 		reactServerRequestOpts : request&&request.getOpts(),
 	}
-}
-
-function setHistoryRequestOpts(opts) {
-	const state = _.assign({}, history.state);
-	state.reactServerRequestOpts = _.assign(state.reactServerRequestOpts||{}, opts);
-	history.replaceState(state, null, location.path);
 }
 
 class ClientController extends EventEmitter {
@@ -182,7 +178,12 @@ class ClientController extends EventEmitter {
 				// though, that there exists a navigation path
 				// to an extraneous full-page rebuild.
 				// Such is life.
-				if (!(history.state||{}).reactServerFrame){
+				if (
+					// Don't replace state unless we've
+					// got a real history API.
+					this._history.canClientNavigate() &&
+					!(history.state||{}).reactServerFrame
+				){
 					this._history.replaceState(
 						getHistoryStateFrame(),
 						null,
@@ -190,7 +191,7 @@ class ClientController extends EventEmitter {
 					);
 				}
 
-				setHistoryRequestOpts({
+				this._setHistoryRequestOpts({
 
 					// If we're entering a frame, then
 					// when we get back here we need to
@@ -212,6 +213,19 @@ class ClientController extends EventEmitter {
 		}
 
 		this._lastState = history.state;
+	}
+
+	// Update the request options for the _current_ history navigation
+	// state frame prior to pushing a new frame.
+	_setHistoryRequestOpts(opts) {
+
+		// If we don't have a real history API then we don't want to
+		// mess with state since it results in full navigation.
+		if (!this._history.canClientNavigate()) return;
+
+		const state = _.assign({}, history.state);
+		state.reactServerRequestOpts = _.assign(state.reactServerRequestOpts||{}, opts);
+		this._history.replaceState(state, null, location.path);
 	}
 
 	_setupNavigateListener () {
