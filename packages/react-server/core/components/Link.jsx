@@ -8,13 +8,17 @@ module.exports = React.createClass({
 	displayName: 'Link',
 
 	propTypes: {
-		path: React.PropTypes.string.isRequired,
-                frameback: React.PropTypes.bool,
+		path       : React.PropTypes.string.isRequired,
+		bundleData : React.PropTypes.bool,
+		frameback  : React.PropTypes.bool,
+		reuseDom   : React.PropTypes.bool,
 	},
 
 	getDefaultProps(){
 		return {
-			frameback: false,
+			bundleData : false,
+			frameback  : false,
+			reuseDom   : false,
 		}
 	},
 
@@ -32,8 +36,13 @@ module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
+			const {bundleData, frameback, reuseDom} = this.props;
 			getCurrentRequestContext().navigate(
-				new ClientRequest(this.props.path, {frameback:this.props.frameback}),
+				new ClientRequest(this.props.path, {
+					bundleData,
+					frameback,
+					reuseDom,
+				}),
 				History.events.PUSHSTATE
 			);
 		} else {
