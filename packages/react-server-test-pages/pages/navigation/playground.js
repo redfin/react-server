@@ -64,6 +64,23 @@ class FramebackCell extends React.Component {
 
 const FramebackLink = props => <FramebackCell {...props}>Frameback</FramebackCell>
 
+const FramebackCTLink = props => <FramebackCell link={{reuseFrame:true}} {...props}>
+	Frameback with Client Transition
+</FramebackCell>
+
+const FramebackBDLink = props => <FramebackCell link={{reuseFrame:true, bundleData:true}} {...props}>
+	Frameback with Bundle
+</FramebackCell>
+
+const FramebackRDLink = props => <FramebackCell link={{reuseFrame:true, reuseDom:true}} {...props}>
+	Frameback with DOM Reuse
+</FramebackCell>
+
+const FramebackBDRDLink = props => <FramebackCell link={{reuseFrame:true, bundleData:true, reuseDom:true}} {...props}>
+	Frameback with bundle AND Reuse
+</FramebackCell>
+
+
 class ClientRenderIndicator extends React.Component {
 	constructor(props){
 		super(props);
@@ -114,6 +131,10 @@ export default class NavigationPlaygroundPage {
 			<BundleData />
 			<BundleDataAndReuseDom />
 			<FramebackLink />
+			<FramebackCTLink />
+			<FramebackBDLink />
+			<FramebackRDLink />
+			<FramebackBDRDLink />
 		</RootContainer>);
 	}
 }

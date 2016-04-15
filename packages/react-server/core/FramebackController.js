@@ -97,7 +97,9 @@ class FramebackController extends EventEmitter {
 		return this.active;
 	}
 
-	navigateTo(url){
+	navigate(request){
+		const url = request.getUrl();
+
 		logger.debug(`Navigating to ${url}`);
 
 		this.active = true;
@@ -106,11 +108,32 @@ class FramebackController extends EventEmitter {
 
 		this.hideMaster();
 
-		if (this.frame) {
-			this.navigateFrame(url);
-		} else {
-			this.createFrame(url);
+		if (url !== this.url){
+
+			if (this.frame && request.getReuseFrame()) {
+
+				// If we have a frame and the request permits
+				// us to reuse it by performing a client
+				// transition we'll do that.
+				this.navigateFrame(request);
+
+			} else {
+
+				// Otherwise we, unfortunately, can't just
+				// point an existing frame at a new page since
+				// that would be a navigation.  So, we'll
+				// destroy it and create a fresh replacement.
+				if (this.frame){
+					this.destroyFrame();
+				}
+
+				this.createFrame(url);
+			}
 		}
+
+		// One way or another we've got a frame pointed at this URL now.
+		this.url = url;
+
 		this.showFrame();
 
 		// Should we wait for the details page to load?
@@ -141,7 +164,10 @@ class FramebackController extends EventEmitter {
 		// of.
 		request = new ClientRequest(
 			request.getUrl(),
-			_.assign({}, request.getOpts(), {frameback: true})
+			_.assign({}, request.getOpts(), {
+				frameback  : true, // Navigation is _for_ frame.
+				reuseFrame : true, // It's a client transition.
+			})
 		);
 		window.parent.__reactServerClientController.context
 			.navigate(request, type);
@@ -167,23 +193,29 @@ class FramebackController extends EventEmitter {
 		window.focus();
 	}
 
-	navigateFrame(url){
-		if (url === this.url) return;
-
-		this.url = url;
-
+	navigateFrame(request){
+		const frameRequest = new ClientRequest(
+			request.getUrl(),
+			_.assign({}, request.getOpts(), {
+				frameback      : false, // No frameback within frame.
+				fromOuterFrame : true,  // Actually navigate in frame.
+			})
+		)
 		this.frame.contentWindow
 			.__reactServerClientController
 			.context
-			.navigate(
-				new ClientRequest(url, {fromOuterFrame: true}),
+			.navigate(frameRequest,
+
+				// The frame isn't actually managing the
+				// history navigation stack.  We just tell it
+				// that it's always navigating forward
+				// regardless of what sort of navigation
+				// _we're_ performing.
 				History.events.PUSHSTATE
 			);
 	}
 
 	createFrame(url){
-		this.url = url;
-
 		this.loadTimer = logger.timer('loadTime');
 
 		this.frame = document.createElement("iframe");
@@ -240,6 +272,11 @@ class FramebackController extends EventEmitter {
 	hideFrame(){
 		this.emit('hideFrame');
 		this.frame.style.display = 'none';
+	}
+
+	destroyFrame(){
+		document.body.removeChild(this.frame);
+		this.frame = null;
 	}
 
 	_handleFrameLoad(frame){

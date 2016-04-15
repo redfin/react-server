@@ -11,6 +11,7 @@ class ClientRequest {
 		frameback,
 		fromOuterFrame,
 		reuseDom,
+		reuseFrame,
 	}={}) {
 		this._url = url;
 		this._opts = {
@@ -18,6 +19,7 @@ class ClientRequest {
 			frameback,
 			fromOuterFrame,
 			reuseDom,
+			reuseFrame,
 		}
 	}
 
@@ -39,6 +41,10 @@ class ClientRequest {
 
 	getReuseDom() {
 		return this._opts.reuseDom;
+	}
+
+	getReuseFrame() {
+		return this._opts.reuseFrame;
 	}
 
 	getBundleData() {

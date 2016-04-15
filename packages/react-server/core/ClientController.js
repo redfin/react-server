@@ -112,7 +112,7 @@ class ClientController extends EventEmitter {
 				// not a _transition_ to a frame.  When we
 				// reach here we'll just tell the frameback
 				// controller to do its thing.
-				FC.navigateTo(url).then(() => {
+				FC.navigate(request).then(() => {
 					this.context.navigator.finishRoute();
 				});
 

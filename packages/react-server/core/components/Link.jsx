@@ -19,6 +19,7 @@ module.exports = React.createClass({
 			bundleData : false,
 			frameback  : false,
 			reuseDom   : false,
+			reuseFrame : false,
 		}
 	},
 
@@ -36,12 +37,13 @@ module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			const {bundleData, frameback, reuseDom} = this.props;
+			const {bundleData, frameback, reuseDom, reuseFrame} = this.props;
 			getCurrentRequestContext().navigate(
 				new ClientRequest(this.props.path, {
 					bundleData,
 					frameback,
 					reuseDom,
+					reuseFrame,
 				}),
 				History.events.PUSHSTATE
 			);

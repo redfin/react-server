@@ -146,6 +146,11 @@ class Navigator extends EventEmitter {
 	}
 
 	_dealWithDataBundleLoading(request) {
+
+		// If we're managing a frame's navigation, we want _it_ to
+		// use a data bundle.
+		if (this._ignoreCurrentNavigation) return;
+
 		const url = request.getUrl();
 
 		// If the request wants all of the data fetched as a bundle
