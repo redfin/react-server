@@ -9,17 +9,21 @@ class ClientRequest {
 	constructor(url, {
 		bundleData,
 		frameback,
-		fromOuterFrame,
 		reuseDom,
 		reuseFrame,
+
+		// These is for internal statekeeping.  Don't use it yourself.
+		_framebackExit,
+		_fromOuterFrame,
 	}={}) {
 		this._url = url;
 		this._opts = {
 			bundleData,
 			frameback,
-			fromOuterFrame,
 			reuseDom,
 			reuseFrame,
+			_framebackExit,
+			_fromOuterFrame,
 		}
 	}
 
@@ -49,10 +53,6 @@ class ClientRequest {
 
 	getBundleData() {
 		return this._opts.bundleData;
-	}
-
-	isFromOuterFrame() {
-		return this._opts.fromOuterFrame;
 	}
 
 	getQuery() {

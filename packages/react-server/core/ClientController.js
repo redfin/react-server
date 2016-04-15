@@ -18,6 +18,7 @@ var React = require('react'),
 
 var _ = {
 	forEach: require('lodash/collection/forEach'),
+	assign: require('lodash/object/assign'),
 };
 
 var RLS = RequestLocalStorage.getNamespace();
@@ -40,9 +41,19 @@ var SESSION_START_PREFIX = (new Date()).getTime() + '_';
 var NEXT_STATE_FRAME = 0;
 var CURRENT_STATE_FRAME;
 
-function pushFrame() {
+function getHistoryStateFrame(request) {
 	CURRENT_STATE_FRAME = SESSION_START_PREFIX + ++NEXT_STATE_FRAME;
-	return CURRENT_STATE_FRAME;
+
+	return {
+		reactServerFrame       : CURRENT_STATE_FRAME,
+		reactServerRequestOpts : request&&request.getOpts(),
+	}
+}
+
+function setHistoryRequestOpts(opts) {
+	const state = _.assign({}, history.state);
+	state.reactServerRequestOpts = _.assign(state.reactServerRequestOpts||{}, opts);
+	history.replaceState(state, null, location.path);
 }
 
 class ClientController extends EventEmitter {
@@ -91,7 +102,11 @@ class ClientController extends EventEmitter {
 	_startRequest({request, type}) {
 		const url = request.getUrl();
 		const FC = this.context.framebackController;
-		const inFrame = request.getFrameback() || FC.isActive();
+		const isPush = type === History.events.PUSHSTATE;
+		const shouldEnterFrame = request.getFrameback() && (
+			// A push to a frame, or a pop _from_ a previous push.
+			isPush || ((this._lastState||{}).reactServerRequestOpts||{})._framebackExit
+		);
 
 		this._reuseDom = request.getReuseDom();
 
@@ -99,32 +114,28 @@ class ClientController extends EventEmitter {
 		// then we'll delegate navigation to the frameback controller,
 		// which will tell the client controller within the frame what
 		// to do.
-		if (inFrame) {
+		if (shouldEnterFrame || FC.isActive()) {
 
 			// Tell the navigator we got this one.
 			this.context.navigator.ignoreCurrentNavigation();
 
-			if (request.getFrameback()) {
+			// This only happens on a popstate.
+			if (request.getOpts()._framebackExit) {
 
-				// A client transition request originating
-				// from within the frame will wind up with
-				// `frameback` set to true, even though it's
-				// not a _transition_ to a frame.  When we
-				// reach here we'll just tell the frameback
-				// controller to do its thing.
-				FC.navigate(request).then(() => {
+				// That was fun!
+				FC.navigateBack();
+				setTimeout(() => {
+
+					// Need to do this in a new time slice
+					// to get order of events right in
+					// external subscribers.
 					this.context.navigator.finishRoute();
 				});
 
 			} else {
 
-				// If the request _doesn't_ have `frameback`
-				// set, then we're _exiting_ the frame.
-				FC.navigateBack();
-				setTimeout(() => {
-					// Need to do this in a new time slice
-					// to get order of events right in
-					// external subscribers.
+				// Here we go...
+				FC.navigate(request).then(() => {
 					this.context.navigator.finishRoute();
 				});
 			}
@@ -161,7 +172,7 @@ class ClientController extends EventEmitter {
 		//
 		if (this._history && this._history.hasControl()) {
 
-			if (type === History.events.PUSHSTATE) {
+			if (isPush) {
 
 				// Sorry folks.  If we need to do a client
 				// transition, then we're going to clobber
@@ -172,29 +183,35 @@ class ClientController extends EventEmitter {
 				// to an extraneous full-page rebuild.
 				// Such is life.
 				if (!(history.state||{}).reactServerFrame){
-					this._history.replaceState({
-						reactServerFrame: pushFrame(),
-
-						// Only need to mark _current_
-						// history frame with
-						// frameback if we're
-						// _already_ in a frame.
-						frameback: FC.isActive(),
-					}, null, location.path);
+					this._history.replaceState(
+						getHistoryStateFrame(),
+						null,
+						location.path
+					);
 				}
-				this._history.pushState({
-					reactServerFrame : pushFrame(),
-					frameback        : inFrame,
-				}, null, url);
-			} else if (type === History.events.PAGELOAD) {
 
-				// If we just got navigated to or refreshed we
-				// need to mark the current frame as ours.
-				this._history.replaceState({
-					reactServerFrame: pushFrame(),
-				}, null, url);
+				setHistoryRequestOpts({
+
+					// If we're entering a frame, then
+					// when we get back here we need to
+					// exit.
+					_framebackExit: request.getFrameback(),
+
+					// If we're reusing the DOM on the way
+					// forward, then we can also reuse on
+					// the way back.
+					reuseDom: request.getReuseDom(),
+				});
+
+				this._history.pushState(
+					getHistoryStateFrame(request),
+					null,
+					url
+				);
 			}
 		}
+
+		this._lastState = history.state;
 	}
 
 	_setupNavigateListener () {
@@ -652,7 +669,7 @@ class ClientController extends EventEmitter {
 
 			CURRENT_STATE_FRAME = frame;
 
-			var frameback = (state||{}).frameback;
+			const opts = (state||{}).reactServerRequestOpts;
 			if (context) {
 				var path = this._history.getPath();
 
@@ -660,7 +677,7 @@ class ClientController extends EventEmitter {
 				// when a user clicks the forward/back
 				// button.
 				context.navigate(
-					new ClientRequest(path, {frameback}),
+					new ClientRequest(path, opts),
 					History.events.POPSTATE
 				);
 

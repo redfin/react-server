@@ -158,7 +158,7 @@ class FramebackController extends EventEmitter {
 
 		// If the request is coming from the outer frame's frameback
 		// controller, then the navigator should handle it.
-		if (request.isFromOuterFrame()) return false;
+		if (request.getOpts()._fromOuterFrame) return false;
 
 		// Otherwise this is a client transition request from within
 		// our frame, and we need to pass it through the outer frame's
@@ -167,8 +167,8 @@ class FramebackController extends EventEmitter {
 		request = new ClientRequest(
 			request.getUrl(),
 			_.assign({}, request.getOpts(), {
-				frameback  : true, // Navigation is _for_ frame.
-				reuseFrame : true, // It's a client transition.
+				frameback  : false, // Navigation is _for_ frame.
+				reuseFrame : true,  // It's a client transition.
 			})
 		);
 		window.parent.__reactServerClientController.context
@@ -199,8 +199,8 @@ class FramebackController extends EventEmitter {
 		const frameRequest = new ClientRequest(
 			request.getUrl(),
 			_.assign({}, request.getOpts(), {
-				frameback      : false, // No frameback within frame.
-				fromOuterFrame : true,  // Actually navigate in frame.
+				frameback       : false, // No frameback within frame.
+				_fromOuterFrame : true,  // Actually navigate in frame.
 			})
 		)
 		this.frame.contentWindow
