@@ -49,7 +49,7 @@ const startImpl = (routesRelativePath, {
 		routesDir: path.dirname(routesPath),
 		hot,
 		minify,
-		outputUrl: compileOnly ? null : outputUrl, // when compiling, never bind the resulting JS to a URL.
+		outputUrl,
 		longTermCaching,
 	});
 
@@ -65,7 +65,18 @@ const startImpl = (routesRelativePath, {
 
 			logger.notice("Starting servers...")
 			Promise.all([
-				jsUrl ? Promise.resolve() : startJsServer(compiler, jsPort, longTermCaching, keys),
+				jsUrl ? new Promise((resolve, reject) => compiler.run((err, stats)=> {
+					// even though we aren't using the compiled code (we're pointing at jsUrl),
+					// we still need to run the compilation to get the chunk file names.
+					try {
+						handleCompilationErrors(err, stats);
+					} catch(e) {
+						logger.emergency("Failed to compile the local code.", e.stack);
+						reject(e);
+						return;
+					}
+					resolve();
+				})) : startJsServer(compiler, jsPort, longTermCaching, keys),
 				serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, keys)),
 			])
 			.then(
@@ -129,7 +140,7 @@ const startStaticJsServer = (compiler, port, longTermCaching, httpsOptions) => {
 			// TODO: make this parameterized based on what is returned from compileClient
 			let server = express();
 			server.use('/', compression(), express.static('__clientTemp/build', {
-				maxage: longTermCaching ? '365d' : '0s'
+				maxage: longTermCaching ? '365d' : '0s',
 			}));
 			logger.info("Starting static JavaScript server...");
 

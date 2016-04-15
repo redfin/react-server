@@ -20,11 +20,14 @@ export default (pathToStatic, manifest) => {
 				...scripts,
 				{
 					type: "text/javascript",
-					text: baseUrl ? `
-						if (typeof window !== "undefined" && window.__setReactServerBase) {
-							window.__setReactServerBase(${JSON.stringify(baseUrl)});
+					text: `
+						if (typeof window !== "undefined") {
+							if (window.__setReactServerBase) {
+								window.__setReactServerBase(${JSON.stringify(baseUrl)});
+							}
 							window.__reactServerManifest = ${manifest ? JSON.stringify(manifest) : "{}"};
-						}` : "",
+						}
+						`,
 				},
 				...next(),
 			];

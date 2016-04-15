@@ -57,7 +57,7 @@ export default (routes,{
 	}
 
 	// now rewrite the routes file out in a webpack-compatible way.
-	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, true);
+	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
 	// finally, let's pack this up with webpack.
 	const compiler = webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching));
@@ -120,7 +120,8 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 		entry: entrypoints,
 		output: {
 			path: outputDir,
-			publicPath: outputUrl,
+			// other than hot mode, the public path is set at runtime.
+			publicPath: hot ? outputUrl : undefined,
 			filename: `[name]${longTermCaching ? ".[chunkhash]" : ""}.bundle.js`,
 			chunkFilename: `[id]${longTermCaching ? ".[chunkhash]" : ""}.bundle.js`,
 		},
@@ -153,7 +154,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 				filename: "chunk-manifest.json",
 				manifestVariable: "webpackManifest",
 			}),
-			new ExtractTextPlugin("[name].[chunkhash].css"),
+			new ExtractTextPlugin(`[name]${longTermCaching ? ".[chunkhash]" : ""}.css`),
 			new webpack.optimize.CommonsChunkPlugin({
 				name:"common",
 			}),
@@ -290,8 +291,8 @@ const writeClientBootstrapFile = (outputDir) => {
 				// we should never set __webpack_public_path__ when hot module replacement is on.
 				if (!module.hot) {
 					__webpack_public_path__ = path;
-					window.__reactServerBase = path;
 				}
+				window.__reactServerBase = path;
 			}
 		}
 		var reactServer = require("react-server");
