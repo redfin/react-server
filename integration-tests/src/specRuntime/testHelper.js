@@ -6,7 +6,7 @@ var	fs = require("fs"),
 	start = require('react-server-cli').start,
 	crypto = require('crypto');
 
-var PORT = process.env.PORT || 8769;
+var PORT = process.env.PORT || 3000;
 
 var stopFns = [];
 
@@ -288,6 +288,108 @@ var stopServerAfterAll = function () {
 	afterAll(testTeardownFn);
 }
 
+var startClientBeforeEach = function () {
+	beforeEach(function() {
+		this.client = require('webdriverio').remote({
+			user: process.env.SAUCE_USERNAME,
+			key: process.env.SAUCE_ACCESS_KEY,
+			host: "localhost",
+			port: 4445,
+			desiredCapabilities: {
+				browserName: 'chrome',
+
+				// browserName: 'iphone',
+				// platform: 'OS X 10.10',
+				// version: '9.2',
+				// deviceName: 'iPhone 6',
+				// deviceOrientation: 'portrait',
+
+				// browserName: 'android',
+				// platform: 'Linux',
+				// version: '5.1',
+				// deviceName: 'Android Emulator',
+				// deviceType: 'tablet',
+				// deviceOrientation: 'portrait',
+			},
+		}).init();
+	});
+
+	afterEach(function(done) {
+		this.client.end().then(done);
+	});
+}
+
+var itOnClient = function(desc, testFn) {
+	itOnClientRender(desc, testFn);
+	itOnClientTransition(desc, testFn);
+}
+
+var itOnClientRender = function(desc, testFn) {
+	it(`${desc} (on client render)`, function(done) {
+		const oldUrl = this.client.url;
+		this.client.url = (url) => {
+			if (url.indexOf('http') === 0) {
+				return oldUrl.call(this.client, url);
+			}
+			return oldUrl
+				.call(this.client, `http://localhost:${PORT}${url}`);
+		};
+		if (testFn.length >= 2) {
+			testFn(this.client, done);
+		} else {
+			// the client doesn't want the done function, so we should call it.
+			testFn(this.client);
+			done();
+		}
+	})
+}
+
+const itOnClientTransition = function(desc, testFn) {
+	it(`${desc} (on client transition)`, function(done) {
+		const oldUrl = this.client.url;
+		this.client.url = (url) => {
+			if (url.indexOf('http') === 0) {
+				return oldUrl.call(this.client, url);
+			}
+			return oldUrl
+				.call(this.client, `http://localhost:${PORT}/__transition?url=${url}`)
+				.click("=Click me");
+		};
+		if (testFn.length >= 2) {
+			testFn(this.client, done);
+		} else {
+			// the client doesn't want the done function, so we should call it.
+			testFn(this.client);
+			done();
+		}
+	})
+}
+
+const itOnServer = function(desc, testFn) {
+	it(`${desc} (on server render)`, function(done) {
+		const oldUrl = this.client.url;
+		this.client.url = (url) => {
+			if (url.indexOf('http') === 0) {
+				return oldUrl.call(this.client, url);
+			}
+			return oldUrl
+				.call(this.client, `http://localhost:${PORT}${url}${url.indexOf("?") === -1 ? "?" : "&"}_debug_no_system_scripts=true`);
+		};
+		if (testFn.length >= 2) {
+			testFn(this.client, done);
+		} else {
+			// the client doesn't want the done function, so we should call it.
+			testFn(this.client);
+			done();
+		}
+	})
+}
+
+const itOnAllRenders = function(desc, testFn) {
+	itOnServer(desc, testFn);
+	itOnClient(desc, testFn);
+}
+
 module.exports = {
 	getPort,
 	getServerDocument,
@@ -306,4 +408,9 @@ module.exports = {
 	stopServerAfterEach,
 	startServerBeforeAll,
 	stopServerAfterAll,
+	startClientBeforeEach,
+	itOnServer,
+	itOnClient,
+	itOnClientTransition,
+	itOnAllRenders,
 };

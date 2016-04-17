@@ -23,6 +23,7 @@
     "react-server": "file:../packages/react-server",
     "react-server-cli": "file:../packages/react-server-cli",
     "superagent": "1.2.0",
+    "webdriverio": "^4.0.5",
     "webpack": "^1.12.14",
     "zombie": "4.1.0"
   }
