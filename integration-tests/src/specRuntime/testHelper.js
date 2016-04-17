@@ -298,6 +298,24 @@ var startClientBeforeEach = function () {
 			desiredCapabilities: {
 				browserName: 'chrome',
 
+				// browserName: 'firefox',
+
+				// browserName: 'chrome',
+				// platform: 'OS X 10.11',
+
+				// browserName: 'safari',
+				// platform: 'OS X 10.11',
+				// version: '9.0',
+
+				// browserName: 'chrome',
+				// platform: 'Windows 10',
+
+				// browserName: 'MicrosoftEdge',
+				// platform: 'Windows 10',
+
+				// browserName: 'internet explorer',
+				// platform: 'Windows 10',
+
 				// browserName: 'iphone',
 				// platform: 'OS X 10.10',
 				// version: '9.2',
