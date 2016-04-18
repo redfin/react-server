@@ -200,8 +200,8 @@ module.exports = {
 	const routesContent = routesOutput.join("");
 	// make a unique file name so that when it is required, there are no collisions
 	// in the module loader between different invocations.
-	const routesCRC = crypto.createHash('md5').update(routesContent).digest("hex");
-	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server_" + routesCRC}.js`;
+	const routesMD5 = crypto.createHash('md5').update(routesContent).digest("hex");
+	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server_" + routesMD5}.js`;
 	fs.writeFileSync(routesFilePath, routesContent);
 
 	return routesFilePath;
