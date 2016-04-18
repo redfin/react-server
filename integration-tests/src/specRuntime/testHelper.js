@@ -288,49 +288,68 @@ var stopServerAfterAll = function () {
 	afterAll(testTeardownFn);
 }
 
+// browser constants, commented out so ESLint doesn't complain
+const CHROME = {
+	browserName: 'chrome',
+};
+//
+// const FIREFOX = {
+// 	browserName: 'firefox'
+// };
+//
+// const CHROME_OSX = {
+// 	browserName: 'chrome',
+// 	platform: 'OS X 10.11',
+// };
+//
+// const SAFARI_OSX = {
+// 	browserName: 'safari',
+// 	platform: 'OS X 10.11',
+// 	version: '9.0',
+// };
+//
+// const CHROME_WIN10 = {
+// 	browserName: 'chrome',
+// 	platform: 'Windows 10',
+// };
+//
+// const EDGE_WIN10 = {
+// 	browserName: 'MicrosoftEdge',
+// 	platform: 'Windows 10',
+// };
+//
+// const IE_WIN10 = {
+// 	browserName: 'internet explorer',
+// 	platform: 'Windows 10',
+// };
+//
+// const SAFARI_IOS = {
+// 	browserName: 'iphone',
+// 	platform: 'OS X 10.10',
+// 	version: '9.2',
+// 	deviceName: 'iPhone 6',
+// 	deviceOrientation: 'portrait',
+// };
+//
+// const BROWSER_ANDROID = {
+// 	browserName: 'android',
+// 	platform: 'Linux',
+// 	version: '5.1',
+// 	deviceName: 'Android Emulator',
+// 	deviceType: 'tablet',
+// 	deviceOrientation: 'portrait',
+// };
+
 var startClientBeforeEach = function () {
 	beforeEach(function() {
-		this.client = require('webdriverio').remote({
-			// user: process.env.SAUCE_USERNAME,
-			// key: process.env.SAUCE_ACCESS_KEY,
+		const isSauce = (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY);
+		const config = Object.assign({ desiredCapabilities: CHROME}, isSauce ? {
+			user: process.env.SAUCE_USERNAME,
+			key: process.env.SAUCE_ACCESS_KEY,
 			host: "localhost",
-			port: 4444,
-			// port: 4445,
-			desiredCapabilities: {
-				browserName: 'chrome',
-
-				// browserName: 'firefox',
-
-				// browserName: 'chrome',
-				// platform: 'OS X 10.11',
-
-				// browserName: 'safari',
-				// platform: 'OS X 10.11',
-				// version: '9.0',
-
-				// browserName: 'chrome',
-				// platform: 'Windows 10',
-
-				// browserName: 'MicrosoftEdge',
-				// platform: 'Windows 10',
-
-				// browserName: 'internet explorer',
-				// platform: 'Windows 10',
-
-				// browserName: 'iphone',
-				// platform: 'OS X 10.10',
-				// version: '9.2',
-				// deviceName: 'iPhone 6',
-				// deviceOrientation: 'portrait',
-
-				// browserName: 'android',
-				// platform: 'Linux',
-				// version: '5.1',
-				// deviceName: 'Android Emulator',
-				// deviceType: 'tablet',
-				// deviceOrientation: 'portrait',
-			},
-		}).init();
+			port: 4445,
+		} : {});
+		this.client = require('webdriverio').remote(config).init();
 	});
 
 	afterEach(function(done) {
