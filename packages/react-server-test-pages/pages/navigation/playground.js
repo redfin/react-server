@@ -15,7 +15,9 @@ require('events').EventEmitter.defaultMaxListeners = 128;
 
 const ROWS = _.range(32);
 const BASE = "/navigation/playground";
-const LINK = row => `${BASE}?page=${row}`
+const LINK = (page, pick) => `${BASE}?${
+	_.map({page,pick},(v,k)=>v!==void 0?k+'='+v:'').filter(v=>v).join('&')
+}`
 
 function GET(row) {
 	const ms  = row*16;
@@ -32,6 +34,61 @@ const RowMS = ({ms}) => <div className="row-ms">{ms}ms</div>;
 const PagePointer = ({page, row}) => <div className="page-pointer">
 	{+page === +row ? "➟" : ""}
 </div>;
+
+// For simplicity of 'pick' link management.
+// Add a 'pushstate' method.
+;(function() {
+	if (typeof window === 'undefined') return;
+	const pushState = history.pushState;
+	history.pushState = function(state){
+		window.dispatchEvent(_.assign(new Event('pushstate'), {state}));
+		return pushState.apply(this, arguments);
+	}
+})();
+
+// This thing uses non-`react-server` history API manipulation.
+class PickPointer extends React.Component {
+	constructor(props) {
+		super(props);
+		this._init(props);
+	}
+	componentDidMount() {
+		this._listen = ({state}) => {
+			const {pick} = state||{};
+
+			// For the purposes of our test we don't want to
+			// "reset" to nothing picked unless the history nave
+			// frame is _ours_ (it has a "state" property).
+			if (typeof pick === 'undefined') return;
+
+			this.setState({pick});
+		}
+		window.addEventListener('pushstate', this._listen);
+		window.addEventListener('popstate',  this._listen);
+	}
+	componentWillUnmount() {
+		window.removeEventListener('pushstate', this._listen);
+		window.removeEventListener('popstate',  this._listen);
+	}
+	componentWillReceiveProps(props){
+		this._init(props);
+	}
+	_init(props) {
+		// Yep.  State from props.  :japanese_ogre:
+		this.state = _.pick(props, ['pick', 'row', 'page']);
+	}
+	_pick() {
+		const {page, row} = this.state;
+		history.pushState({pick: row}, null, LINK(page, row));
+	}
+	render() {
+		const {pick, row} = this.state;
+		return <div onClick={this._pick.bind(this)} className="pick-pointer">
+			{+pick === +row ? "★" : "☆"}
+		</div>;
+
+	}
+}
 
 const NL       = ({row}) => <a href={LINK(row)}>Normal Link</a>
 const CT       = ({row}) => <Link path={LINK(row)}>CT</Link>
@@ -98,8 +155,8 @@ class ClientRenderIndicator extends React.Component {
 
 export default class NavigationPlaygroundPage {
 	handleRoute(next) {
-		const {page} = this.getRequest().getQuery();
-		this.data = ROWS.map(GET.bind({page}));
+		const {page, pick} = this.getRequest().getQuery();
+		this.data = ROWS.map(GET.bind({page, pick}));
 
 		return next();
 	}
@@ -118,6 +175,7 @@ export default class NavigationPlaygroundPage {
 			</RootContainer>,
 			...this.data.map(promise => <RootContainer when={promise} className="row">
 				<PagePointer />
+				<PickPointer />
 				<RowIndex />
 				<RowMS />
 				<ClientRenderIndicator />
