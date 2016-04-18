@@ -272,11 +272,11 @@ class Navigator extends EventEmitter {
 
 			// We don't want to leave navigation detritus
 			// laying around as we discard bypassed pages.
-			if (this._nextRoute) this._nextRoute[3].reject();
+			if (this._nextRoute) this._nextRoute.dfd.reject();
 
 			dfd = Q.defer(), promise = dfd.promise;
 
-			this._nextRoute = [route, request, type, dfd];
+			this._nextRoute = {route, request, type, dfd};
 		}
 
 		// If we're _currently_ navigating, we'll wait to start the
@@ -284,7 +284,7 @@ class Navigator extends EventEmitter {
 		// navigation causes all kinds of havoc.
 		if (!this._loading && this._nextRoute){
 
-			[route, request, type, dfd] = this._nextRoute;
+			const {route, request, type, dfd} = this._nextRoute;
 
 			this._loading      = true;
 			this._currentRoute = route;
