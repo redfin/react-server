@@ -124,12 +124,17 @@ The port to use when `react-server-cli` is serving up the client JavaScript.
 Defaults to **3001**.
 
 #### --hot, -h
-Use hot reloading of client JavaScript. Modules that export React components will reload without refreshing the browser.
+Use hot reloading of client JavaScript. Modules that export React components will reload without refreshing the browser. This option is incompatible with --long-term-caching.
 
 Defaults to **true** in development mode and **false** in production mode.
 
 #### --minify, -m
 Minify client JavaScript and CSS.
+
+Defaults to **false** in development mode and **true** in production.
+
+#### --long-term-caching
+Adds hashes to all JavaScript and CSS file names output by the build, allowing for the static files to be served with far-future expires headers. This option is incompatible with --hot.
 
 Defaults to **false** in development mode and **true** in production.
 
@@ -142,7 +147,6 @@ Defaults to **false**.
 A URL base for the pre-compiled client JavaScript; usually this is a base URL on a CDN or separate server. Setting a value for js-url means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any of the client JavaScript. Obviously, this means that --js-url overrides and ignores all of the options related to JavaScript compilation and serving: --hot, --js-port, and --minify.
 
 Defaults to **null**.
-
 
 #### --https
 
@@ -202,6 +206,7 @@ start(routesRelativePath, {
 		minify: false,
 		compileOnly: false,
 		jsUrl: null,
+		longTermCaching: true,
 })
 ```
 
@@ -218,5 +223,4 @@ Here are a few of the things on the unordered wishlist to add to `react-server-c
 * Automatic compilation of SASS and LESS.
 * Ability to opt out of Babel compilation.
 * Inclusion of CSS Modules
-* Best practices for static file HTTP caching (last-mod, filename hashes, etags, etc.)
 * Help with proxying API endpoints.

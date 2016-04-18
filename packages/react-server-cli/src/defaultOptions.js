@@ -22,11 +22,13 @@ export default {
 	timingLogLevel: "fast",
 	gaugeLogLevel: "ok",
 	https: false,
+	longTermCaching: false,
 	env: {
 		production: {
 			hot: false,
 			minify: true,
 			logLevel: "notice",
+			longTermCaching: true,
 			timingLogLevel: "none",
 			gaugeLogLevel: "no",
 		},
