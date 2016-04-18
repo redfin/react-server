@@ -212,10 +212,13 @@ class ClientController extends EventEmitter {
 				// an initial `pushState` might not be a
 				// client transition.  It could be a
 				// non-`react-server` use of the history API.
+				//
+				// This also _replaces_ state with the request
+				// URL, which handles client-side redirects.
 				this._history.replaceState(
 					getHistoryStateFrame(),
 					null,
-					location.path
+					url
 				)
 
 				this._setHistoryRequestOpts({
@@ -276,7 +279,6 @@ class ClientController extends EventEmitter {
 							// we're about to load the _next_ page, so we should mark the
 							// redirect navigation finished
 							context.navigator.finishRoute();
-							this._history.replaceState(null, null, err.redirectUrl);
 							context.navigate(new ClientRequest(err.redirectUrl));
 						}, 0);
 					}
