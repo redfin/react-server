@@ -164,11 +164,16 @@ class FramebackController extends EventEmitter {
 		// our frame, and we need to pass it through the outer frame's
 		// navigator to get the history navigation stack taken care
 		// of.
+
+		// Can't reuse the frame if our request is for frameback
+		// without frame reuse.
+		const reuseFrame = request.getReuseFrame() || !request.getFrameback();
+
 		request = new ClientRequest(
 			request.getUrl(),
 			_.assign({}, request.getOpts(), {
-				frameback  : false, // Navigation is _for_ frame.
-				reuseFrame : true,  // It's a client transition.
+				frameback: false, // Navigation is _for_ frame.
+				reuseFrame,
 			})
 		);
 		window.parent.__reactServerClientController.context

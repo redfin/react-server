@@ -202,6 +202,10 @@ class ClientController extends EventEmitter {
 					// forward, then we can also reuse on
 					// the way back.
 					reuseDom: request.getReuseDom(),
+
+					// The same reasoning as for
+					// `reuseDom` also applies here.
+					reuseFrame: request.getReuseFrame(),
 				});
 
 				this._history.pushState(
