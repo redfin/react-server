@@ -37,19 +37,11 @@ Q.onerror = (err) => {
 	logger.error("Unhandled exception in Q promise", err);
 }
 
-var SESSION_START_PREFIX = (new Date()).getTime() + '_';
-var NEXT_STATE_FRAME = 0;
-var CURRENT_STATE_FRAME;
-
 function getHistoryStateFrame(request) {
-	CURRENT_STATE_FRAME = SESSION_START_PREFIX + ++NEXT_STATE_FRAME;
 
 	// Mark the frame as ours.
 	// Stash the request opts that were used to navigate to this frame.
-	return {
-		reactServerFrame       : CURRENT_STATE_FRAME,
-		reactServerRequestOpts : request&&request.getOpts(),
-	}
+	return { reactServerFrame: request?request.getOpts():{} }
 }
 
 class ClientController extends EventEmitter {
@@ -101,7 +93,7 @@ class ClientController extends EventEmitter {
 		const isPush = type === History.events.PUSHSTATE;
 		const shouldEnterFrame = request.getFrameback() && (
 			// A push to a frame, or a pop _from_ a previous push.
-			isPush || ((this._lastState||{}).reactServerRequestOpts||{})._framebackExit
+			isPush || ((this._lastState||{}).reactServerFrame||{})._framebackExit
 		);
 
 		this._reuseDom = request.getReuseDom();
@@ -213,6 +205,33 @@ class ClientController extends EventEmitter {
 					null,
 					url
 				);
+			} else if (type === History.events.PAGELOAD) {
+
+				// This _seems_ redundant with the
+				// `replaceState` above, but keep in mind that
+				// an initial `pushState` might not be a
+				// client transition.  It could be a
+				// non-`react-server` use of the history API.
+				this._history.replaceState(
+					getHistoryStateFrame(),
+					null,
+					location.path
+				)
+
+				this._setHistoryRequestOpts({
+
+					// If we wind up back here without
+					// first client-transitioning away
+					// then presumably we're still on the
+					// same page that just had some
+					// history maniptulation outside of
+					// `react-server`.  In that case we're
+					// ourselves and we should be able to
+					// re-use the DOM.  Maybe
+					// presumptuous, but a nicer
+					// experience than clobbering.
+					reuseDom: true,
+				});
 			}
 		}
 
@@ -228,7 +247,7 @@ class ClientController extends EventEmitter {
 		if (!this._history.canClientNavigate()) return;
 
 		const state = _.assign({}, history.state);
-		state.reactServerRequestOpts = _.assign(state.reactServerRequestOpts||{}, opts);
+		state.reactServerFrame = _.assign(state.reactServerFrame||{}, opts);
 		this._history.replaceState(state, null, location.path);
 	}
 
@@ -677,17 +696,11 @@ class ClientController extends EventEmitter {
 		if (window.__reactServerDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
-			var frame = state ? state.reactServerFrame : null;
+			const opts = (state||{}).reactServerFrame;
 
 			// Not our frame.
-			if (!frame) return;
+			if (!opts) return;
 
-			// We're already there.
-			if (frame === CURRENT_STATE_FRAME) return;
-
-			CURRENT_STATE_FRAME = frame;
-
-			const opts = (state||{}).reactServerRequestOpts;
 			if (context) {
 				var path = this._history.getPath();
 
