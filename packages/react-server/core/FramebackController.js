@@ -47,9 +47,16 @@ var Q      = require('q')
 ,   logger = require('./logging').getLogger(__LOGGER__)
 ,   RLS    = require('./util/RequestLocalStorage').getNamespace()
 
+var ClientRequest = require('./ClientRequest');
+var History = require('./components/History');
+
 // This is an attribute that's added to the main content div that contains all
 // react-server elements.
 var {PAGE_CONTENT_NODE_ID} = require('./constants');
+
+var _ = {
+	assign: require('lodash/object/assign'),
+}
 
 // Cover the whole viewport.
 var FRAME_STYLE = {
@@ -65,6 +72,8 @@ var FRAME_STYLE = {
 
 class FramebackController extends EventEmitter {
 
+	// This is only works from the outer frame.
+	// It's deprecated.  Access via the RequestContext.
 	static getCurrent() {
 		return RLS().instance;
 	}
@@ -88,8 +97,12 @@ class FramebackController extends EventEmitter {
 		return this.active;
 	}
 
-	navigateTo(url){
+	navigate(request){
+		const url = request.getUrl();
+
 		logger.debug(`Navigating to ${url}`);
+
+		this.loadTimer = logger.timer('loadTime');
 
 		this.active = true;
 		// update master title in case the title has changed since initialization
@@ -98,15 +111,31 @@ class FramebackController extends EventEmitter {
 		this.hideMaster();
 
 		if (url !== this.url){
-			// We, unfortunately, can't just point the existing
-			// frame at a new page since that would be a
-			// navigation.  So, we'll destroy it and create a
-			// fresh replacement.
-			if (this.frame){
-				this.destroyFrame();
+
+			if (this.frame && request.getReuseFrame()) {
+
+				// If we have a frame and the request permits
+				// us to reuse it by performing a client
+				// transition we'll do that.
+				this.navigateFrame(request);
+
+			} else {
+
+				// Otherwise we, unfortunately, can't just
+				// point an existing frame at a new page since
+				// that would be a navigation.  So, we'll
+				// destroy it and create a fresh replacement.
+				if (this.frame){
+					this.destroyFrame();
+				}
+
+				this.createFrame(url);
 			}
-			this.createFrame(url);
 		}
+
+		// One way or another we've got a frame pointed at this URL now.
+		this.url = url;
+
 		this.showFrame();
 
 		// Should we wait for the details page to load?
@@ -116,6 +145,41 @@ class FramebackController extends EventEmitter {
 		// then we'll have to return a promise attached to a deferred
 		// that gets resolved in `_handleFrameLoad()`.
 		return Q();
+	}
+
+	willHandle(request, type) {
+
+		// If we're not in a frame, then we've got nothing to do.
+		if (!window.__reactServerIsFrame) return false;
+
+		// If this is the initial page load request then the navigator
+		// should handle it.
+		if (!type || type === History.events.PAGELOAD) return false;
+
+		// If the request is coming from the outer frame's frameback
+		// controller, then the navigator should handle it.
+		if (request.getOpts()._fromOuterFrame) return false;
+
+		// Otherwise this is a client transition request from within
+		// our frame, and we need to pass it through the outer frame's
+		// navigator to get the history navigation stack taken care
+		// of.
+
+		// Can't reuse the frame if our request is for frameback
+		// without frame reuse.
+		const reuseFrame = request.getReuseFrame() || !request.getFrameback();
+
+		request = new ClientRequest(
+			request.getUrl(),
+			_.assign({}, request.getOpts(), {
+				frameback: false, // Navigation is _for_ frame.
+				reuseFrame,
+			})
+		);
+		window.parent.__reactServerClientController.context
+			.navigate(request, type);
+
+		return true;
 	}
 
 	navigateBack(){
@@ -136,10 +200,33 @@ class FramebackController extends EventEmitter {
 		window.focus();
 	}
 
-	createFrame(url){
-		this.url = url;
+	navigateFrame(request){
 
-		this.loadTimer = logger.timer('loadTime');
+		// This is a request that we're going to send to the navigator
+		// _in our frame_.
+		const frameRequest = new ClientRequest(
+			request.getUrl(),
+			_.assign({}, request.getOpts(), {
+				frameback       : false, // No frameback within frame.
+				_fromOuterFrame : true,  // Actually navigate in frame.
+			})
+		)
+
+		this.frame.contentWindow
+			.__reactServerClientController
+			.context
+			.navigate(frameRequest,
+
+				// The frame isn't actually managing the
+				// history navigation stack.  We just tell it
+				// that it's always navigating forward
+				// regardless of what sort of navigation
+				// _we're_ performing.
+				History.events.PUSHSTATE
+			);
+	}
+
+	createFrame(url){
 
 		this.frame = document.createElement("iframe");
 
@@ -207,6 +294,16 @@ class FramebackController extends EventEmitter {
 		// frame while we were waiting for the first frame to load.
 		if (frame !== this.frame) return;
 
+		const clientController = frame.contentWindow.__reactServerClientController;
+
+		// If the frame has a client controller we'll listen to when
+		// _it_ tells us it's done loading.
+		if (clientController && !clientController.__parentIsListening) {
+			clientController.__parentIsListening = true;
+			clientController.context.onLoadComplete(this._handleFrameLoad.bind(this, frame));
+			return;
+		}
+
 		[].slice.call(frame.contentDocument.body.querySelectorAll('a')).forEach(link => {
 			if (!link.target) link.target = '_top';
 		});
@@ -214,9 +311,16 @@ class FramebackController extends EventEmitter {
 		// We've got it now, so let's set it.
 		this.setTitleFromFrame();
 
-		this.loadTimer.stop();
+		if (this.loadTimer) {
 
-		logger.debug("Frame loaded");
+			this.loadTimer.stop();
+			delete this.loadTimer;
+
+			logger.debug("Frame loaded");
+		} else {
+			logger.debug("Frame navigated");
+		}
+
 	}
 }
 

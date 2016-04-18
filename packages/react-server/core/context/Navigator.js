@@ -35,16 +35,17 @@ class Navigator extends EventEmitter {
 	 * Default is History.events.PAGELOAD.
 	 */
 	navigate (request, type) {
-		logger.debug(`Navigating to ${request.getUrl()}`);
-		type = type || History.events.PAGELOAD;
 
-		// If we're running without client navigation and this is a
-		// navigation away from the initial page we'll just let the
-		// browser handle this request as a normal page load.
-		if (global.__reactServerDisableClientNavigation && this._haveInitialized){
-			window.location.href = request.getUrl();
+		// If we're in a frameback frame we might need to make a
+		// round-trip through the outer frame for navigaton to make
+		// sure the history navigation stack of the primary window is
+		// maintained properly.
+		if (this.context.framebackControllerWillHandle(request, type)) {
 			return;
 		}
+
+		logger.debug(`Navigating to ${request.getUrl()}`);
+		type = type || History.events.PAGELOAD;
 
 		this._haveInitialized = true;
 
@@ -144,6 +145,11 @@ class Navigator extends EventEmitter {
 	}
 
 	_dealWithDataBundleLoading(request) {
+
+		// If we're managing a frame's navigation, we want _it_ to
+		// use a data bundle.
+		if (this._ignoreCurrentNavigation) return Q();
+
 		const url = request.getUrl();
 
 		// If the request wants all of the data fetched as a bundle
@@ -296,6 +302,8 @@ class Navigator extends EventEmitter {
 
 	finishRoute () {
 		this._loading = false;
+
+		this.emit('loadComplete');
 
 		// If other routes were queued while we were navigating, we'll
 		// start the next one right off.

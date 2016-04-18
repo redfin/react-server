@@ -6,11 +6,25 @@ var cookie = require("cookie"),
  */
 class ClientRequest {
 
-	constructor(url, {frameback, reuseDom, bundleData}={}) {
+	constructor(url, {
+		bundleData,
+		frameback,
+		reuseDom,
+		reuseFrame,
+
+		// These are for internal statekeeping.  Don't use them yourself.
+		_framebackExit,
+		_fromOuterFrame,
+	}={}) {
 		this._url = url;
-		this._frameback = frameback;
-		this._reuseDom = reuseDom;
-		this._bundleData = bundleData;
+		this._opts = {
+			bundleData,
+			frameback,
+			reuseDom,
+			reuseFrame,
+			_framebackExit,
+			_fromOuterFrame,
+		}
 	}
 
 	setRoute(route) {
@@ -21,16 +35,24 @@ class ClientRequest {
 		return this._url;
 	}
 
+	getOpts() {
+		return this._opts;
+	}
+
 	getFrameback() {
-		return this._frameback;
+		return this._opts.frameback;
 	}
 
 	getReuseDom() {
-		return this._reuseDom;
+		return this._opts.reuseDom;
+	}
+
+	getReuseFrame() {
+		return this._opts.reuseFrame;
 	}
 
 	getBundleData() {
-		return this._bundleData;
+		return this._opts.bundleData;
 	}
 
 	getQuery() {
