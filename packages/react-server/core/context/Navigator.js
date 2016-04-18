@@ -272,7 +272,7 @@ class Navigator extends EventEmitter {
 
 			// We don't want to leave navigation detritus
 			// laying around as we discard bypassed pages.
-			if (this._nextRoute) this._nextRoute[1].reject();
+			if (this._nextRoute) this._nextRoute[3].reject();
 
 			dfd = Q.defer(), promise = dfd.promise;
 
