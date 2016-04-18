@@ -291,10 +291,11 @@ var stopServerAfterAll = function () {
 var startClientBeforeEach = function () {
 	beforeEach(function() {
 		this.client = require('webdriverio').remote({
-			user: process.env.SAUCE_USERNAME,
-			key: process.env.SAUCE_ACCESS_KEY,
+			// user: process.env.SAUCE_USERNAME,
+			// key: process.env.SAUCE_ACCESS_KEY,
 			host: "localhost",
-			port: 4445,
+			port: 4444,
+			// port: 4445,
 			desiredCapabilities: {
 				browserName: 'chrome',
 
@@ -362,6 +363,14 @@ var itOnClientRender = function(desc, testFn) {
 	})
 }
 
+const waitForClientTransition = (client, url) => {
+	return client.waitUntil(
+		() => {
+			return client.execute(function() { return window._debug_current_url })
+				.then(result => (result.value === url));
+		}, 5000);
+};
+
 const itOnClientTransition = function(desc, testFn) {
 	it(`${desc} (on client transition)`, function(done) {
 		const oldUrl = this.client.url;
@@ -371,7 +380,8 @@ const itOnClientTransition = function(desc, testFn) {
 			}
 			return oldUrl
 				.call(this.client, `http://localhost:${PORT}/__transition?url=${url}`)
-				.click("=Click me");
+				.click("=Click me")
+				.then(() => waitForClientTransition(this.client, url));
 		};
 		if (testFn.length >= 2) {
 			testFn(this.client, done);
@@ -429,6 +439,8 @@ module.exports = {
 	startClientBeforeEach,
 	itOnServer,
 	itOnClient,
+	itOnClientRender,
 	itOnClientTransition,
 	itOnAllRenders,
+	waitForClientTransition,
 };
