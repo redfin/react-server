@@ -41,7 +41,6 @@ var writeRoutesFile = function (specFile, routes, tempDir) {
 		routesForReactServer += `
 			route${index}: {
 				path: ["${url}"],
-				method: 'get',
 				page: "${routeAbsPath}",
 			},`;
 	});
@@ -51,7 +50,6 @@ var writeRoutesFile = function (specFile, routes, tempDir) {
 	routesForReactServer += `
 		transitionPage: {
 			path: ["/__transition"],
-			method: "get",
 			page: "${transitionPageAbsPath}",
 		}}};`;
 	mkdirp.sync(tempDir);
