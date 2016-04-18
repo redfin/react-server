@@ -160,7 +160,7 @@ class ClientController extends EventEmitter {
 		// If this is a History.events.PUSHSTATE navigation,
 		// and we have control of the navigation bar (we're
 		// not in a frameback frame) we should change the URL
-		// in the bar location bar before rendering.
+		// in the location bar before rendering.
 		//
 		// Note that for browsers that do not have pushState,
 		// this will result in a window.location change and
