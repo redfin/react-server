@@ -19,12 +19,11 @@ module.exports = {
 	routes: {
 		BazRoute: {
 			path: ["/"],
-			method: "get",
+			method: "get", // optional
 			page: "./BazPage"
 		},
 		BakRoute: {
 			path: ["/bak"],
-			method: "get",
 			page: "./BakPage"
 		}
 	}

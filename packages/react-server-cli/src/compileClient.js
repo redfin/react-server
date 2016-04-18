@@ -4,6 +4,7 @@ import mkdirp from "mkdirp"
 import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
+import crypto from "crypto"
 
 // commented out to please eslint, but re-add if logging is needed in this file.
 //import {logging} from "react-server"
@@ -225,10 +226,12 @@ module.exports = {
 
 		routesOutput.push(`
 		${routeName}: {`);
-		for (let name of ["path", "method"]) {
-			routesOutput.push(`
-			${name}: "${route[name]}",`);
-		}
+		routesOutput.push(`
+			path: "${route.path}",`);
+		// if the route doesn't have a method, we'll assume it's "get". routr doesn't
+		// have a default (method is required), so we set it here.
+		routesOutput.push(`
+			method: "${route.method || "get"}",`);
 
 		let formats = normalizeRoutesPage(route.page);
 		routesOutput.push(`
@@ -262,8 +265,12 @@ module.exports = {
 	}
 };`);
 
-	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server"}.js`;
-	fs.writeFileSync(routesFilePath, routesOutput.join(""));
+	const routesContent = routesOutput.join("");
+	// make a unique file name so that when it is required, there are no collisions
+	// in the module loader between different invocations.
+	const routesMD5 = crypto.createHash('md5').update(routesContent).digest("hex");
+	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server_" + routesMD5}.js`;
+	fs.writeFileSync(routesFilePath, routesContent);
 
 	return routesFilePath;
 };

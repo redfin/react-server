@@ -69,9 +69,9 @@ class Navigator extends EventEmitter {
 		this
 		.startRoute(route, request, type)
 
-		// If we've got a preload bundle let's inflate it and avoid
-		// firing off a bunch of xhr requests during `handleRoute`.
-		.then(() => ReactServerAgent._rehydrateDataBundle(request.getUrl()))
+		// We might have a data bundle on hand, or the request may
+		// have asked us to fetch it one.
+		.then(this._dealWithDataBundleLoading.bind(this, request))
 
 		.then(() => {
 			if (this._ignoreCurrentNavigation){
@@ -141,6 +141,21 @@ class Navigator extends EventEmitter {
 	// navigator.
 	ignoreCurrentNavigation() {
 		this._ignoreCurrentNavigation = true;
+	}
+
+	_dealWithDataBundleLoading(request) {
+		const url = request.getUrl();
+
+		// If the request wants all of the data fetched as a bundle
+		// we'll need to kick off the request for the bundle if we
+		// haven't already.
+		if (request.getBundleData()) {
+			ReactServerAgent.preloadDataForURL(url);
+		}
+
+		// If we've got a preload bundle let's inflate it and avoid
+		// firing off a bunch of xhr requests during `handleRoute`.
+		return ReactServerAgent._rehydrateDataBundle(url);
 	}
 
 	handlePage(pageConstructor, request, type) {

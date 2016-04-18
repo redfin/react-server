@@ -19,6 +19,8 @@ export default {
 	minify: false,
 	compileOnly: false,
 	logLevel: "debug",
+	timingLogLevel: "fast",
+	gaugeLogLevel: "ok",
 	https: false,
 	longTermCaching: false,
 	env: {
@@ -27,6 +29,8 @@ export default {
 			minify: true,
 			logLevel: "notice",
 			longTermCaching: true,
+			timingLogLevel: "none",
+			gaugeLogLevel: "no",
 		},
 	},
 }
