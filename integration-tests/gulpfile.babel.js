@@ -43,19 +43,27 @@ var webdriverManager = null;
 
 gulp.task("startSeleniumServer", ["compile"], (cb) => {
 	webdriverManager = new WebdriverManager(null, null, true);
+	console.log('Starting the Selenium server.');
 	webdriverManager.start({}, cb);
 })
 
 gulp.task("runTests", ["startSeleniumServer"], function() {
+	const stopSeleniumServer = () => {
+		console.log('Stopping the Selenium server.');
+		gulp.run("stopSeleniumServer");
+	};
+
 	return gulp.src(getSpecGlob("target/**/__tests__/**/"))
-		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
+		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}))
+		.on("end", stopSeleniumServer)
+		.on("error", stopSeleniumServer);
 });
 
-gulp.task("stopSeleniumServer", ["runTests"], () => {
+gulp.task("stopSeleniumServer", () => {
 	webdriverManager.stop();
 });
 
-gulp.task("test", ["stopSeleniumServer"]);
+gulp.task("test", ["runTests"]);
 
 gulp.task("eslint", [], function() {
 	// we don't care as much about linting tests.
