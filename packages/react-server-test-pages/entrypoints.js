@@ -9,4 +9,8 @@ module.exports = {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
 	},
+	NavigationPlayground: {
+		entry: "/navigation/playground",
+		description: "Navigation playground",
+	},
 }

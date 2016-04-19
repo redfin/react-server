@@ -7,10 +7,9 @@ export default class DelayDataPage {
 	getContentType() {
 		return 'application/json';
 	}
-	handleRoute(next) {
-		return Q.delay(this.getRequest().getQuery().ms||0).then(next);
-	}
 	getResponseData() {
-		return JSON.stringify({'ok': true});
+		const { ms, val } = this.getRequest().getQuery();
+		return Q.delay(ms||0)
+			.then(() => val||JSON.stringify({'ok':true}));
 	}
 }

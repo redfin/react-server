@@ -34,6 +34,15 @@ class RequestContext {
 		return this.serverStash;
 	}
 
+	setFramebackController (framebackController) {
+		this.framebackController = framebackController;
+		return this;
+	}
+
+	getFramebackController () {
+		return this.framebackController;
+	}
+
 	setMobileDetect (mobileDetect) {
 		this.mobileDetect = mobileDetect;
 		return this;
@@ -55,8 +64,18 @@ class RequestContext {
 		this.navigator.on('navigateStart', callback);
 	}
 
+	onLoadComplete (callback) {
+		this.navigator.on('loadComplete', callback);
+	}
+
 	navigate (request, type) {
 		this.navigator.navigate(request, type);
+	}
+
+	framebackControllerWillHandle (request, type) {
+		const FC = this.framebackController;
+		if (!FC) return false;
+		return FC.willHandle(request, type);
 	}
 
 }

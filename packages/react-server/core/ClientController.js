@@ -18,6 +18,7 @@ var React = require('react'),
 
 var _ = {
 	forEach: require('lodash/collection/forEach'),
+	assign: require('lodash/object/assign'),
 };
 
 var RLS = RequestLocalStorage.getNamespace();
@@ -36,13 +37,11 @@ Q.onerror = (err) => {
 	logger.error("Unhandled exception in Q promise", err);
 }
 
-var SESSION_START_PREFIX = (new Date()).getTime() + '_';
-var NEXT_STATE_FRAME = 0;
-var CURRENT_STATE_FRAME;
+function getHistoryStateFrame(request) {
 
-function pushFrame() {
-	CURRENT_STATE_FRAME = SESSION_START_PREFIX + ++NEXT_STATE_FRAME;
-	return CURRENT_STATE_FRAME;
+	// Mark the frame as ours.
+	// Stash the request opts that were used to navigate to this frame.
+	return { reactServerFrame: request?request.getOpts():{} }
 }
 
 class ClientController extends EventEmitter {
@@ -69,7 +68,6 @@ class ClientController extends EventEmitter {
 		ReactServerAgent.cache().rehydrate(dehydratedState.InitialContext['ReactServerAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
-		this._setupFramebackController();
 		this._setupNavigateListener();
 		this._setupArrivalHandlers();
 
@@ -90,46 +88,45 @@ class ClientController extends EventEmitter {
 	}
 
 	_startRequest({request, type}) {
+		const url = request.getUrl();
+		const FC = this.context.framebackController;
+		const isPush = type === History.events.PUSHSTATE;
+		const shouldEnterFrame = request.getFrameback() && (
+			// A push to a frame, or a pop _from_ a previous push.
+			isPush || ((this._lastState||{}).reactServerFrame||{})._framebackExit
+		);
 
 		this._reuseDom = request.getReuseDom();
 
-		if (request.getFrameback()){
+		// If we're _entering_ a frame or we're _already in_ a frame
+		// then we'll delegate navigation to the frameback controller,
+		// which will tell the client controller within the frame what
+		// to do.
+		if (shouldEnterFrame || FC.isActive()) {
 
 			// Tell the navigator we got this one.
 			this.context.navigator.ignoreCurrentNavigation();
 
-			var url = request.getUrl();
+			// This only happens on a popstate.
+			if (request.getOpts()._framebackExit) {
 
-			if (type === History.events.PUSHSTATE) {
-				// Sorry folks.  If we need to do a client
-				// transition, then we're going to clobber
-				// your state.  You must be able to render
-				// from URL, anyway, so if you're set up right
-				// it won't affect user experience.  It means,
-				// though, that there exists a navigation path
-				// to an extraneous full-page rebuild.
-				// Such is life.
-				if (!(history.state||{}).reactServerFrame){
-					this._history.replaceState({
-						reactServerFrame: pushFrame(),
-					}, null, location.path);
-				}
-				this._history.pushState({
-					reactServerFrame : pushFrame(),
-					frameback        : true,
-				}, null, url);
+				// That was fun!
+				FC.navigateBack();
+				setTimeout(() => {
+
+					// Need to do this in a new time slice
+					// to get order of events right in
+					// external subscribers.
+					this.context.navigator.finishRoute();
+				});
+
+			} else {
+
+				// Here we go...
+				FC.navigate(request).then(() => {
+					this.context.navigator.finishRoute();
+				});
 			}
-
-			this.framebackController.navigateTo(url).then(() => {
-				this.context.navigator.finishRoute();
-			});
-
-		} else if (this.framebackController.isActive()) {
-
-			// Tell the navigator we got this one, too.
-			this.context.navigator.ignoreCurrentNavigation();
-			this.framebackController.navigateBack();
-			this.context.navigator.finishRoute();
 
 		} else {
 
@@ -151,10 +148,110 @@ class ClientController extends EventEmitter {
 				this.context.registerRequestLocal();
 			}
 		}
+
+		// If this is a History.events.PUSHSTATE navigation,
+		// and we have control of the navigation bar (we're
+		// not in a frameback frame) we should change the URL
+		// in the location bar before rendering.
+		//
+		// Note that for browsers that do not have pushState,
+		// this will result in a window.location change and
+		// full browser load.
+		//
+		if (this._history && this._history.hasControl()) {
+
+			if (isPush) {
+
+				// Sorry folks.  If we need to do a client
+				// transition, then we're going to clobber
+				// your state.  You must be able to render
+				// from URL, anyway, so if you're set up right
+				// it won't affect user experience.  It means,
+				// though, that there exists a navigation path
+				// to an extraneous full-page rebuild.
+				// Such is life.
+				if (
+					// Don't replace state unless we've
+					// got a real history API.
+					this._history.canClientNavigate() &&
+					!(history.state||{}).reactServerFrame
+				){
+					this._history.replaceState(
+						getHistoryStateFrame(),
+						null,
+						location.path
+					);
+				}
+
+				this._setHistoryRequestOpts({
+
+					// If we're entering a frame, then
+					// when we get back here we need to
+					// exit.
+					_framebackExit: request.getFrameback(),
+
+					// If we're reusing the DOM on the way
+					// forward, then we can also reuse on
+					// the way back.
+					reuseDom: request.getReuseDom(),
+
+					// The same reasoning as for
+					// `reuseDom` also applies here.
+					reuseFrame: request.getReuseFrame(),
+				});
+
+				this._history.pushState(
+					getHistoryStateFrame(request),
+					null,
+					url
+				);
+			} else if (type === History.events.PAGELOAD) {
+
+				// This _seems_ redundant with the
+				// `replaceState` above, but keep in mind that
+				// an initial `pushState` might not be a
+				// client transition.  It could be a
+				// non-`react-server` use of the history API.
+				//
+				// This also _replaces_ state with the request
+				// URL, which handles client-side redirects.
+				this._history.replaceState(
+					getHistoryStateFrame(),
+					null,
+					url
+				)
+
+				this._setHistoryRequestOpts({
+
+					// If we wind up back here without
+					// first client-transitioning away
+					// then presumably we're still on the
+					// same page that just had some
+					// history maniptulation outside of
+					// `react-server`.  In that case we're
+					// ourselves and we should be able to
+					// re-use the DOM.  Maybe
+					// presumptuous, but a nicer
+					// experience than clobbering.
+					reuseDom: true,
+				});
+			}
+		}
+
+		this._lastState = history.state;
 	}
 
-	_setupFramebackController () {
-		this.framebackController = new FramebackController();
+	// Update the request options for the _current_ history navigation
+	// state frame prior to pushing a new frame.
+	_setHistoryRequestOpts(opts) {
+
+		// If we don't have a real history API then we don't want to
+		// mess with state since it results in full navigation.
+		if (!this._history.canClientNavigate()) return;
+
+		const state = _.assign({}, history.state);
+		state.reactServerFrame = _.assign(state.reactServerFrame||{}, opts);
+		this._history.replaceState(state, null, location.path);
 	}
 
 	_setupNavigateListener () {
@@ -169,29 +266,8 @@ class ClientController extends EventEmitter {
 		 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
-		context.onNavigate( (err, page, path, type) => {
+		context.onNavigate( (err, page) => {
 			logger.debug('Executing navigate action');
-
-			// if this is a History.events.PUSHSTATE navigation, we should change the URL in the bar location bar
-			// before rendering.
-			// note that for browsers that do not have pushState, this will result in a window.location change
-			// and full browser load. It's kind of late to do that, as we may have waited for handleRoute to
-			// finish asynchronously. perhaps we should have an "URLChanged" event that happens before "NavigateDone".
-			if (type === History.events.PUSHSTATE && this._history) {
-				// See "Sorry folks", above.
-				if (!(history.state||{}).reactServerFrame){
-					this._history.replaceState({
-						reactServerFrame: pushFrame(),
-					}, null, location.path);
-				}
-				this._history.pushState({
-					reactServerFrame: pushFrame(),
-				}, null, path);
-			} else if (type === History.events.PAGELOAD && this._history && this._history.canClientNavigate()) {
-				this._history.replaceState({
-					reactServerFrame: pushFrame(),
-				}, null, path);
-			}
 
 			if (err) {
 				// redirects are sent as errors, so let's handle it if that's the case.
@@ -203,7 +279,6 @@ class ClientController extends EventEmitter {
 							// we're about to load the _next_ page, so we should mark the
 							// redirect navigation finished
 							context.navigator.finishRoute();
-							this._history.replaceState(null, null, err.redirectUrl);
 							context.navigate(new ClientRequest(err.redirectUrl));
 						}, 0);
 					}
@@ -463,9 +538,10 @@ class ClientController extends EventEmitter {
 					}
 				}
 
-				if (element.containerOpen || element.containerClose){
-					return; // Nothing left to do.
-				}
+			}
+
+			if (element.containerOpen || element.containerClose){
+				return; // Nothing left to do.
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
@@ -557,7 +633,7 @@ class ClientController extends EventEmitter {
 					// and should destroy it. Destruction means
 					// first unmounting from React and then
 					// destroying the DOM node.
-					React.unmountComponentAtNode(root);
+					ReactDOM.unmountComponentAtNode(root);
 					root.parentNode.removeChild(root);
 				}
 			});
@@ -622,17 +698,11 @@ class ClientController extends EventEmitter {
 		if (window.__reactServerDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
-			var frame = state ? state.reactServerFrame : null;
+			const opts = (state||{}).reactServerFrame;
 
 			// Not our frame.
-			if (!frame) return;
+			if (!opts) return;
 
-			// We're already there.
-			if (frame === CURRENT_STATE_FRAME) return;
-
-			CURRENT_STATE_FRAME = frame;
-
-			var frameback = (state||{}).frameback;
 			if (context) {
 				var path = this._history.getPath();
 
@@ -640,7 +710,7 @@ class ClientController extends EventEmitter {
 				// when a user clicks the forward/back
 				// button.
 				context.navigate(
-					new ClientRequest(path, {frameback}),
+					new ClientRequest(path, opts),
 					History.events.POPSTATE
 				);
 
@@ -717,6 +787,8 @@ function buildContext(routes) {
 		.create();
 
 	context.setMobileDetect(new MobileDetect(navigator.userAgent));
+
+	context.setFramebackController(new FramebackController());
 
 	return context;
 }

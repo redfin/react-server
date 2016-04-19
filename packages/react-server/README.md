@@ -58,7 +58,8 @@ Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-t
 					// The relative path that this route responds to; so for an Express
 					// instance on 127.0.0.1 port 3000, respond to http://127.0.0.1/
 					path: ['/'],
-					// The http verb to respond to, e.g. get, put, post, patch, delete
+					// The http verb to respond to, e.g. get, put, post, patch, delete.
+					// This is optional, and defaults to 'get'.
 					method: 'get',
 					page: function () {
 						// TODO: returning an invalid object here (for instance, returning

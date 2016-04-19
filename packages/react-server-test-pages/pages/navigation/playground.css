@@ -1,0 +1,36 @@
+.row {
+	border: 1px solid black;
+	height: 36px;
+}
+
+.row div {
+	display: inline-block;
+	padding: 4px;
+}
+
+.row-index {
+	width: 64px;
+}
+
+.row-ms {
+	width: 64px;
+	text-align: right;
+}
+
+.render-indicator {
+	width: 16px;
+	line-height: 16px;
+}
+
+.page-pointer {
+	width: 16px;
+}
+
+.pick-pointer {
+	width: 16px;
+	cursor: pointer;
+}
+
+.not-available {
+	text-decoration: line-through;
+}

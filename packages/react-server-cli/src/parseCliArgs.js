@@ -22,8 +22,8 @@ export default (args = process.argv) => {
 			type: "number",
 		})
 		.option("https", {
-			default: false,
 			describe: "If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed. Default is false.",
+			default: undefined,
 			type: "boolean",
 		})
 		.option("https-key", {
@@ -61,8 +61,21 @@ export default (args = process.argv) => {
 			default: undefined,
 			type: "boolean",
 		})
+		.option("long-term-caching", {
+			describe: "Use long-term cache headers for the static JS & CSS files. Default is true in production mode, false otherwise.",
+			default: undefined,
+			type: "boolean",
+		})
 		.option("log-level", {
 			describe: "Set the severity level for the logs being reported. Values are, in ascending order of severity: 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'. Default is 'notice' in production mode, 'debug' otherwise.",
+			type: "string",
+		})
+		.option("timing-log-level", {
+			describe: "Set the severity level for the timing logs. Values are, in ascending order of verbosity: 'none', 'slow', 'fine', 'fast. Default is 'none' in production mode, 'fast' otherwise.",
+			type: "string",
+		})
+		.option("gauge-log-level", {
+			describe: "Set the severity level for the gauge logs. Values are, in ascending order of severity: 'no', 'hi', 'lo', 'ok'. Default is 'no' in production mode, 'ok' otherwise.",
 			type: "string",
 		})
 		.option("compile-only", {
