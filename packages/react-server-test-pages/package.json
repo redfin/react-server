@@ -17,6 +17,7 @@
     "react-dom": "^0.14.2",
     "react-server": "^0.1.5",
     "react-server-cli": "^0.1.5",
+    "react-server-data-bundle-cache": "^0.1.5",
     "superagent": "1.2.0"
   },
   "devDependencies": {
