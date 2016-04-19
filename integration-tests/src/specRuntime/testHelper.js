@@ -289,13 +289,13 @@ var stopServerAfterAll = function () {
 }
 
 // browser constants, commented out so ESLint doesn't complain
-const CHROME = {
-	browserName: 'chrome',
-};
-//
-// const FIREFOX = {
-// 	browserName: 'firefox'
+// const CHROME = {
+// 	browserName: 'chrome',
 // };
+//
+const FIREFOX = {
+	browserName: 'firefox',
+};
 //
 // const CHROME_OSX = {
 // 	browserName: 'chrome',
@@ -343,7 +343,7 @@ const CHROME = {
 var startClientBeforeEach = function () {
 	beforeEach(function() {
 		const isSauce = (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY);
-		const config = Object.assign({ desiredCapabilities: CHROME}, isSauce ? {
+		const config = Object.assign({ desiredCapabilities: FIREFOX}, isSauce ? {
 			user: process.env.SAUCE_USERNAME,
 			key: process.env.SAUCE_ACCESS_KEY,
 			host: "localhost",

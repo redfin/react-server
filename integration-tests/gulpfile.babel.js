@@ -2,6 +2,7 @@ import babel from "gulp-babel"
 import gulp from "gulp"
 import jasmine from "gulp-jasmine"
 import minimist from "minimist"
+import WebdriverManager from "webdriver-manager"
 
 function isVerbose () {
 	return !!options.verbose;
@@ -38,11 +39,23 @@ gulp.task("compile", () => {
 		.pipe(gulp.dest("target"));
 });
 
-gulp.task("test", ["compile"], function() {
+var webdriverManager = null;
 
+gulp.task("startSeleniumServer", ["compile"], (cb) => {
+	webdriverManager = new WebdriverManager(null, null, true);
+	webdriverManager.start({}, cb);
+})
+
+gulp.task("runTests", ["startSeleniumServer"], function() {
 	return gulp.src(getSpecGlob("target/**/__tests__/**/"))
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
 });
+
+gulp.task("stopSeleniumServer", ["runTests"], () => {
+	webdriverManager.stop();
+});
+
+gulp.task("test", ["stopSeleniumServer"]);
 
 gulp.task("eslint", [], function() {
 	// we don't care as much about linting tests.
