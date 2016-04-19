@@ -54,5 +54,6 @@ DataBundleCache.install({
     ttl: 10*60*1000, // Ten minutes.
     max: 10,         // Ten bundles.
 });
+```
 
 That's it!  Enjoy! :rocket:
