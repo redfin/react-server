@@ -23,6 +23,27 @@ const LINK = page => `${BASE}?page=${page}`
 
 const BundleLink = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>Go</Link>
 
+class PreloadLink extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {};
+	}
+	_preload(){
+		this.setState({loading: true});
+		DataBundleCache
+			.preload(LINK(this.props.row))
+			.then(() => this.setState({loading: false}))
+			.catch(err => console.error('preload failed', err));
+	}
+	render() {
+		return <div className="preload">{this.state.loading
+			?'⌛️'
+			:<a className="preload" onClick={this._preload.bind(this)}>Preload</a>
+		}</div>
+
+	}
+}
+
 let _cacheEnabled = false;
 
 class CacheToggle extends React.Component {
@@ -60,6 +81,7 @@ export default class DataBundleCachePage {
 				<RowIndex />
 				<RowMS />
 				<ClientRenderIndicator />
+				<PreloadLink />
 				<BundleLink />
 			</RootContainer>),
 		]

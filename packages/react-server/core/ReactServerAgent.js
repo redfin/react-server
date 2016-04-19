@@ -103,7 +103,7 @@ var API = {
 	},
 
 	_fetchDataBundle(url) {
-		return this.get(url, DATA_BUNDLE_OPTS).then(data => JSON.stringify(data.body));
+		return API.get(url, DATA_BUNDLE_OPTS).then(data => JSON.stringify(data.body));
 	},
 
 	_rehydrateDataBundle(data) {

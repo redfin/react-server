@@ -1,4 +1,9 @@
-.toggle {
+.preload {
+	width: 48px;
+	line-height: 16px;
+}
+.toggle, .preload a {
+	cursor: pointer;
 	text-decoration: underline;
 	color: blue;
 }
