@@ -1,21 +1,17 @@
-import _ from "lodash";
-import {wrap} from "stratocacher";
-import LayerLRU from "stratocacher-layer-lru";
-import {CACHE_NAME, WRAP_OPTS, LRU_OPTS, OVERRIDEABLE_OPTS} from "./constants";
-import {ReactServerAgent} from "react-server";
+import wrap from "./wrap";
+import logEvents from "./log-events";
 
-function getOpts(opts, keys) {
-	return _.pick(_.assign({}, OVERRIDEABLE_OPTS, opts), keys);
-}
+let _didInstall = 0;
+let _logger;
+
+export function setLogger(logger){ _logger = logger }
 
 export default function(opts) {
-	const INTERNAL_OPTS = {
-		name: CACHE_NAME,
-		layers: [ LayerLRU.configure(getOpts(opts, LRU_OPTS)) ],
-	}
 
-	ReactServerAgent._fetchDataBundle = wrap(
-		_.assign(getOpts(opts, WRAP_OPTS), INTERNAL_OPTS),
-		ReactServerAgent._fetchDataBundle
-	);
+	// Only going to wrap once.
+	if (_didInstall++) return;
+
+	wrap(opts);
+
+	logEvents(_logger);
 }

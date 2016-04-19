@@ -156,7 +156,8 @@ class Navigator extends EventEmitter {
 		// If the request wants all of the data fetched as a bundle
 		// we'll need to kick off the request for the bundle.
 		return ReactServerAgent._fetchDataBundle(request.getUrl())
-			.then(ReactServerAgent._rehydrateDataBundle);
+			.then(ReactServerAgent._rehydrateDataBundle)
+			.catch(err => logger.error('Data bundle error', err));
 	}
 
 	handlePage(pageConstructor, request, type) {

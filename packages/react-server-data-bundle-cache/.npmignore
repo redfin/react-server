@@ -1,3 +1,4 @@
 src/
 gulpfile.js
+main.js
 .* # dot files

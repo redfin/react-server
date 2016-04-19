@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "lodash": "^4.11.1",
-    "stratocacher": "0.0.10",
-    "stratocacher-layer-lru": "0.0.11"
+    "stratocacher": "0.0.12",
+    "stratocacher-layer-lru": "0.0.12"
   },
   "peerDependencies": {
     "react-server": "^0.1.5"
@@ -23,6 +23,8 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^2.0.0",
-    "gulp-nsp": "^2.4.0"
+    "gulp-nsp": "^2.4.0",
+    "gulp-rename": "^1.2.2",
+    "react-server-gulp-module-tagger": "0.0.25"
   }
 }

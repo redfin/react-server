@@ -27,6 +27,8 @@ export default class DataBundleCachePage {
 		const {page} = this.getRequest().getQuery();
 		this.data = ROWS.map(GET.bind({page}));
 
+		DataBundleCache.optIn();
+
 		return next();
 	}
 	getElements() {
