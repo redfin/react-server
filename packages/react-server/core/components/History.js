@@ -100,7 +100,13 @@ History.prototype = {
 	},
 
 	canClientNavigate: function() {
-		return this._hasPushState && !this.win.__reactServerIsFrame;
+		return this._hasPushState && this.hasControl();
+	},
+
+	// If we're in a frameback frame we don't have control of the URL bar.
+	// The other page does.
+	hasControl: function() {
+		return !this.win.__reactServerIsFrame;
 	},
 
 	navigationWindow: function() {
