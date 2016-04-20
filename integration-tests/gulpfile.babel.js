@@ -54,7 +54,10 @@ gulp.task("runTests", ["startSeleniumServer"], function() {
 	};
 
 	return gulp.src(getSpecGlob("target/**/__tests__/**/"))
-		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}))
+		.pipe(jasmine(Object.assign(
+			{config: {spec_dir: 'target',helpers:['specRuntime/promisifyJasmine.js']}},
+			isVerbose() ? {verbose:true, includeStackTrace: true} : {}
+		)))
 		.on("end", stopSeleniumServer)
 		.on("error", stopSeleniumServer);
 });
