@@ -1,7 +1,7 @@
 var helper = require("../../specRuntime/testHelper");
 import {
 	itOnClientRender,
-	itOnServer,
+	itOnClient,
 	itOnAllRenders,
 	waitForClientTransition,
 } from "../../specRuntime/testHelper"
@@ -50,8 +50,10 @@ describe("A page with a title", () => {
 			.then(done);
 	});
 
-	itOnServer("can render a title that times out on the server", (client, done) => {
+	itOnClient("can render a title that times out on the server", (client, done) => {
 		client.url("/asyncServerTimeoutTitle")
+			// wait for the title to resolve; takes 500ms for it to come back.
+			.then(() => new Promise(resolve => setTimeout(resolve, 1000)))
 			.getTitle()
 			.then(title => expect(title).toMatch("An asynchonous timeout title"))
 			.then(done);
