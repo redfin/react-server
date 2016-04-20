@@ -8,6 +8,8 @@ var	fs = require("fs"),
 
 var PORT = process.env.PORT || 3000;
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
 var stopFns = [];
 
 function getBrowser(opts) {
@@ -347,11 +349,15 @@ var startClientBeforeEach = function () {
 			host: "localhost",
 			port: 4445,
 		} : {});
-		this.client = require('webdriverio').remote(config).init();
+		this.clientConfig = require('webdriverio').remote(config);
 	});
 
 	afterEach(function(done) {
-		this.client.end().then(done);
+		if (this.client) {
+			this.client.end().then(done);
+		} else {
+			done();
+		}
 	});
 }
 
@@ -362,6 +368,7 @@ var itOnClient = function(desc, testFn) {
 
 var itOnClientRender = function(desc, testFn) {
 	it(`${desc} (on client render)`, function(done) {
+		this.client = this.clientConfig.init();
 		const oldUrl = this.client.url;
 		this.client.url = (url) => {
 			if (url.indexOf('http') === 0) {
@@ -390,6 +397,7 @@ const waitForClientTransition = (client, url) => {
 
 const itOnClientTransition = function(desc, testFn) {
 	it(`${desc} (on client transition)`, function(done) {
+		this.client = this.clientConfig.init();
 		const oldUrl = this.client.url;
 		this.client.url = (url) => {
 			if (url.indexOf('http') === 0) {
@@ -412,6 +420,7 @@ const itOnClientTransition = function(desc, testFn) {
 
 const itOnServer = function(desc, testFn) {
 	it(`${desc} (on server render)`, function(done) {
+		this.client = this.clientConfig.init();
 		const oldUrl = this.client.url;
 		this.client.url = (url) => {
 			if (url.indexOf('http') === 0) {

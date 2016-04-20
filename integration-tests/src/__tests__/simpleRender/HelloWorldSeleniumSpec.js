@@ -6,8 +6,6 @@ import {
 	itOnAllRenders,
 } from "../../specRuntime/testHelper"
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
 describe("A basic page", () => {
 
 	startServerBeforeAll(__filename, [

@@ -3,7 +3,7 @@
   "description": "Integration tests for react-server",
   "scripts": {
     "test": "gulp test",
-		"postinstall": "webdriver-manager update"
+    "postinstall": "webdriver-manager update"
   },
   "devDependencies": {
     "babel": "^6.5.2",
@@ -23,6 +23,7 @@
     "react-dom": "~0.14.2",
     "react-server": "file:../packages/react-server",
     "react-server-cli": "file:../packages/react-server-cli",
+    "request": "^2.72.0",
     "superagent": "1.2.0",
     "webdriver-manager": "^9.0.0",
     "webdriverio": "^4.0.5",
