@@ -268,6 +268,11 @@ class FramebackController extends EventEmitter {
 	showFrame(){
 		this.emit('showFrame');
 		this.frame.style.display = 'block';
+		// We want to put the focus on our child frame
+		// Note that this will fire too soon when we're creating our
+		// child frame for the first time but will cover the case
+		// where we're navigating back to a child frame that's already
+		// been created
 		this.frame.contentWindow.focus();
 		this.setTitleFromFrame();
 	}
@@ -310,6 +315,9 @@ class FramebackController extends EventEmitter {
 
 		// We've got it now, so let's set it.
 		this.setTitleFromFrame();
+
+		// When a frame is created for the first time, we need to wait
+		// for it to load before giving it focus
 		this.frame.contentWindow.focus();
 
 		if (this.loadTimer) {
