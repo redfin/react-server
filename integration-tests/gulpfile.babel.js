@@ -20,7 +20,7 @@ var options = minimist(process.argv.slice(2), availableOptions);
 function getSpecGlob (prefix) {
 	// add a wildcard onto the end if no file extension or wildcard
 	// currently present
-	var specGlob = options.specs || "*[Ss]pec.js";
+	var specGlob = options.specs || "*Selenium[Ss]pec.js";
 	if (!specGlob.endsWith(".js") && !specGlob.endsWith("*")) {
 		specGlob += "*";
 	}
