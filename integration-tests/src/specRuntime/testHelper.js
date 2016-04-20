@@ -352,11 +352,9 @@ var startClientBeforeEach = function () {
 		this.clientConfig = require('webdriverio').remote(config);
 	});
 
-	afterEach(function(done) {
+	afterEach(function() {
 		if (this.client) {
-			this.client.end().then(done);
-		} else {
-			done();
+			return this.client.end();
 		}
 	});
 }
@@ -367,24 +365,25 @@ var itOnClient = function(desc, testFn) {
 }
 
 var itOnClientRender = function(desc, testFn) {
-	it(`${desc} (on client render)`, function(done) {
+	function performTest(done) {
 		this.client = this.clientConfig.init();
 		const oldUrl = this.client.url;
 		this.client.url = (url) => {
 			if (url.indexOf('http') === 0) {
 				return oldUrl.call(this.client, url);
 			}
-			return oldUrl
-				.call(this.client, `http://localhost:${PORT}${url}`);
+			return oldUrl.call(this.client, `http://localhost:${PORT}${url}`);
 		};
-		if (testFn.length >= 2) {
-			testFn(this.client, done);
-		} else {
-			// the client doesn't want the done function, so we should call it.
-			testFn(this.client);
-			done();
-		}
-	})
+		return testFn(this.client, done);
+	}
+	function performTestWithoutDone() {
+		return performTest.call(this);
+	}
+	if (testFn.length >= 2) {
+		it(`${desc} (on client render)`, performTest);
+	} else {
+		it(`${desc} (on client render)`, performTestWithoutDone);
+	}
 }
 
 const waitForClientTransition = (client, url) => {
@@ -396,7 +395,7 @@ const waitForClientTransition = (client, url) => {
 };
 
 const itOnClientTransition = function(desc, testFn) {
-	it(`${desc} (on client transition)`, function(done) {
+	function performTest(done) {
 		this.client = this.clientConfig.init();
 		const oldUrl = this.client.url;
 		this.client.url = (url) => {
@@ -408,18 +407,20 @@ const itOnClientTransition = function(desc, testFn) {
 				.click("=Click me")
 				.then(() => waitForClientTransition(this.client, url));
 		};
-		if (testFn.length >= 2) {
-			testFn(this.client, done);
-		} else {
-			// the client doesn't want the done function, so we should call it.
-			testFn(this.client);
-			done();
-		}
-	})
+		return testFn(this.client, done);
+	}
+	function performTestWithoutDone() {
+		return performTest.call(this);
+	}
+	if (testFn.length >= 2) {
+		it(`${desc} (on client transition)`, performTest);
+	} else {
+		it(`${desc} (on client transition)`, performTestWithoutDone);
+	}
 }
 
 const itOnServer = function(desc, testFn) {
-	it(`${desc} (on server render)`, function(done) {
+	function performTest(done) {
 		this.client = this.clientConfig.init();
 		const oldUrl = this.client.url;
 		this.client.url = (url) => {
@@ -429,14 +430,16 @@ const itOnServer = function(desc, testFn) {
 			return oldUrl
 				.call(this.client, `http://localhost:${PORT}${url}${url.indexOf("?") === -1 ? "?" : "&"}_debug_no_system_scripts=true`);
 		};
-		if (testFn.length >= 2) {
-			testFn(this.client, done);
-		} else {
-			// the client doesn't want the done function, so we should call it.
-			testFn(this.client);
-			done();
-		}
-	})
+		return testFn(this.client, done);
+	}
+	function performTestWithoutDone() {
+		return performTest.call(this);
+	}
+	if (testFn.length >= 2) {
+		it(`${desc} (on server render)`, performTest);
+	} else {
+		it(`${desc} (on server render)`, performTestWithoutDone);
+	}
 }
 
 const itOnAllRenders = function(desc, testFn) {
