@@ -1,0 +1,52 @@
+{
+	"name": "generator-reactserver",
+	"version": "0.0.1",
+	"description": "A yeoman generator for creating react-server projects",
+	"homepage": "http://github.com/redfin/react-server",
+	"author": "Doug Wade",
+	"files": [
+		"generators"
+	],
+	"main": "index.js",
+	"keywords": [
+		"react-server",
+		"isomorphic",
+		"universal",
+		"javascript",
+		"react",
+		"flux",
+		"yeoman",
+		"yeoman-generator"
+	],
+	"scripts": {
+		"test": "gulp",
+		"prepublish": "gulp prepublish"
+	},
+	"license": "Apache License 2.0",
+	"dependencies": {
+		"yeoman-generator": "^0.21.1",
+		"chalk": "^1.0.0",
+		"yosay": "^1.0.2"
+	},
+	"engines": {
+		"node": "4.3.1",
+		"npm": "2.14.12"
+	},
+	"devDependencies": {
+		"yeoman-assert": "^2.0.0",
+		"eslint-config-xo-space": "^0.7.0",
+		"gulp": "^3.9.0",
+		"gulp-eslint": "^1.0.0",
+		"gulp-exclude-gitignore": "^1.0.0",
+		"gulp-istanbul": "^0.10.3",
+		"gulp-mocha": "^2.0.0",
+		"gulp-plumber": "^1.0.0",
+		"gulp-nsp": "^2.1.0",
+		"gulp-coveralls": "^0.1.0"
+	},
+	"eslintConfig": {
+		"env": {
+			"mocha": true
+		}
+	}
+}
