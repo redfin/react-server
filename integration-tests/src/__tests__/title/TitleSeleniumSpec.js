@@ -1,14 +1,16 @@
-var helper = require("../../specRuntime/testHelper");
 import {
 	itOnClientRender,
 	itOnClient,
 	itOnAllRenders,
 	waitForClientTransition,
+	startServerBeforeAll,
+	stopServerAfterAll,
+	startClientBeforeEach,
 } from "../../specRuntime/testHelper"
 
 describe("A page with a title", () => {
 
-	helper.startServerBeforeAll(__filename, [
+	startServerBeforeAll(__filename, [
 		"./SimpleTitlePage",
 		"./UnicodeTitlePage",
 		"./NullTitlePage",
@@ -16,9 +18,9 @@ describe("A page with a title", () => {
 		"./AsyncServerTimeoutTitlePage",
 	]);
 
-	helper.stopServerAfterAll();
+	stopServerAfterAll();
 
-	helper.startClientBeforeEach();
+	startClientBeforeEach();
 
 	itOnAllRenders("has a title", (client, done) => {
 		client.url('http://localhost:3000/simpleTitle')
