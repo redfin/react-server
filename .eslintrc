@@ -91,6 +91,7 @@
       0,
       "double"
     ],
+    "react/jsx-uses-react": 2,
     "semi": [
       0,
       "always"
