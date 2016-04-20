@@ -51,98 +51,85 @@ describe("A redirect page", () => {
 
 	startClientBeforeEach();
 
-	itOnAllRenders("redirects temporarily to the right page", (client, done) => {
-		client.url("/temporaryRedirect")
+	itOnAllRenders("redirects temporarily to the right page", client => {
+		return client.url("/temporaryRedirect")
 			.getUrl()
-			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"))
-			.then(done);
+			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"));
 	});
 
-	itOnAllRenders("contains the correct HTML after temp redirect", (client, done) => {
-		client.url("/temporaryRedirect")
+	itOnAllRenders("contains the correct HTML after temp redirect", client => {
+		return client.url("/temporaryRedirect")
 			.getText("#main")
 			.then(text => expect(text).toMatch("FinalPage"))
 			.getHTML("body", false)
-			.then(html => expect(html).not.toMatch(/TemporaryRedirectPage/))
-			.then(done);
+			.then(html => expect(html).not.toMatch(/TemporaryRedirectPage/));
 	});
 
 	it("gets the right status code for a temp redirect", (done) => {
 		expectStatus("/temporaryRedirect", 302, done);
 	});
 
-	it("gets the right body for a temp redirect", done => {
-		getHttpText("/temporaryRedirect")
+	it("gets the right body for a temp redirect", () => {
+		return getHttpText("/temporaryRedirect")
 			.then(text => {
 				expect(text).toMatch('Found. Redirecting to /final');
 				expect(text).not.toMatch('TemporaryRedirectPage');
-				done();
 			});
 	});
 
-	it("gets the right body for a temp redirect with document", done => {
-		getHttpText("/temporaryRedirectWithDocument")
+	it("gets the right body for a temp redirect with document", () => {
+		return getHttpText("/temporaryRedirectWithDocument")
 			.then(text => {
 				expect(text).not.toMatch('Found. Redirecting to /final');
 				expect(text).toMatch('TemporaryRedirectWithDocumentPage');
-				done();
 			});
 	});
 
-	itOnAllRenders("redirects temporarily to the right page with document", (client, done) => {
-		client.url("/temporaryRedirectWithDocument")
+	itOnAllRenders("redirects temporarily to the right page with document", client => {
+		return client.url("/temporaryRedirectWithDocument")
 			.getUrl()
-			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"))
-			.then(done)
-			.catch(done.fail);
+			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"));
 	});
 
-	itOnAllRenders("redirects permanently to the right page", (client, done) => {
-		client.url("/permanentRedirect")
+	itOnAllRenders("redirects permanently to the right page", client => {
+		return client.url("/permanentRedirect")
 			.getUrl()
-			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"))
-			.then(done);
+			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"));
 	});
 
-	itOnAllRenders("contains the correct HTML after permanent redirect", (client, done) => {
-		client.url("/permanentRedirect")
+	itOnAllRenders("contains the correct HTML after permanent redirect", client => {
+		return client.url("/permanentRedirect")
 			.getText("#main")
 			.then(text => expect(text).toMatch("FinalPage"))
 			.getHTML("body", false)
-			.then(html => expect(html).not.toMatch(/PermanentRedirectPage/))
-			.then(done);
+			.then(html => expect(html).not.toMatch(/PermanentRedirectPage/));
 	});
 
-	it("gets the right status code for a permanent redirect", (done) => {
+	it("gets the right status code for a permanent redirect", done => {
 		expectStatus("/permanentRedirect", 301, done);
 	});
 
-	it("gets the right body for a permanent redirect", done => {
-		getHttpText("/permanentRedirect")
+	it("gets the right body for a permanent redirect", () => {
+		return getHttpText("/permanentRedirect")
 			.then(text => {
 				expect(text).toMatch('Moved Permanently. Redirecting to /final');
 				expect(text).not.toMatch('PermanentRedirectPage');
-				done();
 			});
 	});
 
-	it("gets the right body for a permanent redirect with document", done => {
-		getHttpText("/permanentRedirectWithDocument")
+	it("gets the right body for a permanent redirect with document", () => {
+		return getHttpText("/permanentRedirectWithDocument")
 			.then(text => {
 				expect(text).not.toMatch('Moved Permanently. Redirecting to /final');
 				expect(text).toMatch('PermanentRedirectWithDocumentPage');
-				done();
 			});
 	});
 
-	itOnAllRenders("redirects permanently to the right page with document", (client, done) => {
-		client.url("/permanentRedirectWithDocument")
+	itOnAllRenders("redirects permanently to the right page with document", client => {
+		return client.url("/permanentRedirectWithDocument")
 			.getUrl()
-			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"))
-			.then(done);
+			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/final"));
 	});
-
-
 });
 
 describe("A forward page", () => {
@@ -156,21 +143,18 @@ describe("A forward page", () => {
 
 	startClientBeforeEach();
 
-	itOnAllRenders("does NOT change its URL", (client, done) => {
-		client.url("/forward")
+	itOnAllRenders("does NOT change its URL", client => {
+		return client.url("/forward")
 			.getUrl()
-			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/forward"))
-			.then(done);
+			.then(currentUrl => expect(url.parse(currentUrl).pathname).toMatch("/forward"));
 	});
 
-	itOnAllRenders("contains the correct HTML after forward", (client, done) => {
-		client.url("/forward")
+	itOnAllRenders("contains the correct HTML after forward", client => {
+		return client.url("/forward")
 			.getText("#main")
 			.then(text => expect(text).toMatch("FinalPage"))
 			.getHTML("body", false)
-			.then(html => expect(html).not.toMatch(/ForwardPage/))
-			.then(done)
-			.catch(e => console.log(e));
+			.then(html => expect(html).not.toMatch(/ForwardPage/));
 	});
 
 	it ("gets a 200 status code and doesn't redirect", (done) => {

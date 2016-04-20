@@ -23,13 +23,12 @@ describe("A page's root elements", function() {
 		}, (value, attr) => desc(
 			`can have "${attr}" attribute on ${root}`,
 			'/attributesOn'+root,
-			(client, done) => {
-				client
+			client => {
+				return client
 					.isExisting(query)
 					.then(exists => expect(exists).toBe(true))
 					.getAttribute(query, attr)
-					.then(attrValue => expect(attrValue).toBe(value))
-					.then(done);
+					.then(attrValue => expect(attrValue).toBe(value));
 			}
 		));
 	});
@@ -57,8 +56,8 @@ describe("A page's root elements", function() {
 
 	// Some machinery to factor out commonality.
 	function desc(txt, url, fn) {
-		itOnAllRenders(txt, (client, done) => {
-			fn(client.url(url), done);
+		itOnAllRenders(txt, client => {
+			return fn(client.url(url));
 		});
 		var page = `./pages/${url[0]+url[1].toUpperCase()+url.slice(2)}`;
 		if (!seen[page]){
@@ -71,16 +70,15 @@ describe("A page's root elements", function() {
 	function makeSingleDesc(prefix) {
 		return (txt, url) => {
 			desc(`${prefix} ${txt}`, url,
-				(client, done) => {
+				client => {
 					// Note that with this selector this just grabs the first root
 					// element.  Won't always be index zero, since containers burn slots
 					// (but they don't have `data-react-server-root-id`).
-					client
+					return client
 						.isExisting("[data-react-server-root-id]")
 						.then(exists => expect(exists).toBe(true))
 						.getText("[data-react-server-root-id]")
-						.then(text => expect(text).toMatch('foo'))
-						.then(done);
+						.then(text => expect(text).toMatch('foo'));
 				}
 			);
 		}

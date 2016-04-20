@@ -17,24 +17,21 @@ describe("A page with async elements", function() {
 
 	startClientBeforeEach();
 
-	itOnAllRenders("can render", (client, done) => {
-		client.url("/asyncElement")
+	itOnAllRenders("can render", client => {
+		return client.url("/asyncElement")
 			.getText("#main")
-			.then(text => expect(text).toMatch("rendered!"))
-			.then(done);
+			.then(text => expect(text).toMatch("rendered!"));
 	});
 
-	itOnServer("can timeout on server", (client, done) => {
-		client.url("/serverTimeoutElement?_debug_render_timeout=200")
+	itOnServer("can timeout on server", client => {
+		return client.url("/serverTimeoutElement?_debug_render_timeout=200")
 			.isExisting("#main")
-			.then(exists => expect(exists).toBe(false))
-			.then(done);
+			.then(exists => expect(exists).toBe(false));
 	});
 
-	itOnClient("can timeout on server but render dynamically", (client, done) => {
-		client.url("/serverTimeoutElement")
+	itOnClient("can timeout on server but render dynamically", client => {
+		return client.url("/serverTimeoutElement")
 			.getText("#main")
-			.then(text => expect(text).toMatch("rendered!"))
-			.then(done);
+			.then(text => expect(text).toMatch("rendered!"));
 	});
 });

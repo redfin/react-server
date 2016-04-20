@@ -18,36 +18,32 @@ describe("A basic page", () => {
 
 	startClientBeforeEach();
 
-	itOnAllRenders("can say 'Hello, world!'", (client, done) => {
-		client.url('/helloWorld')
+	itOnAllRenders("can say 'Hello, world!'", client => {
+		return client.url('/helloWorld')
 			.getText("div#foo")
-			.then(text => expect(text).toMatch("Hello, world!"))
-			.then(done);
+			.then(text => expect(text).toMatch("Hello, world!"));
 	});
 
-	itOnAllRenders("can say 'Goodbye, world!'", (client, done) => {
-		client.url('/goodbyeWorld')
+	itOnAllRenders("can say 'Goodbye, world!'", client => {
+		return client.url('/goodbyeWorld')
 			.getText("div#foo")
-			.then(text => expect(text).toMatch(/Goodbye/))
-			.then(done);
+			.then(text => expect(text).toMatch(/Goodbye/));
 	});
 
 	// this test is on client only; server render doesn't run client-side JavaScript.
-	itOnClient("has React on client-side", (client, done) => {
-		client.url('/goodbyeWorld')
+	itOnClient("has React on client-side", client => {
+		return client.url('/goodbyeWorld')
 			.execute(function() {
 				return !!window.React;
 			})
-			.then(value => expect(value.value).toBe(true))
-			.then(done);
+			.then(value => expect(value.value).toBe(true));
 	});
 
-	itOnAllRenders("can have multiple elements", (client, done) => {
-		client.url('/multiElement')
+	itOnAllRenders("can have multiple elements", client => {
+		return client.url('/multiElement')
 			.getText("div#foo1")
 			.then(text => expect(text).toMatch("Div1"))
 			.getText("div#foo2")
-			.then(text => expect(text).toMatch("Div2"))
-			.then(done);
+			.then(text => expect(text).toMatch("Div2"));
 	});
 });
