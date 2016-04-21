@@ -3,7 +3,7 @@
 React is an amazing library for client-side user interface, and it has the
 added benefit of being able to be rendered on the server, which is crucial for
 SEO, SEM, and user experience. However, server-side rendering in practice is
-significantly more complicated than just calling `ReactDOM.renderToString` and
+significantly more complicated than just calling `ReactDOMServer.renderToString` and
 piping out the result, especially if you want to make sure your site loads
 quickly in a mobile-first world.
 
@@ -31,7 +31,7 @@ the total time to full completion.
 In order to facilitate blazing perceived performance, `react-server` implements the following:
 
 * Parallelize backend queries
-* Data bundle transfer
+* Bundle data for transfer to browser
 * Stream HTML to the browser
 * Wire up elements as they arrive
 * Render quickly, even when the backend is slow
@@ -76,14 +76,14 @@ highly asynchronous server applications. `react-server`, however, assumes that
 you will access the backend in a massively parallel way, and it facilitates
 building a user interface on top of parallel, asynchronous data access.
 
-## Data bundle transfer
+## Bundle data for transfer to browser
 
 One thing you quickly learn when you use React server-side rendering is that
 you have to "reconnect" React on the client side to the HTML markup you
 generated on the server side, and that's not always as easy as it seems.
 Ideally, reconnecting goes something like this:
 
-1. On the server side, call `ReactDOM.renderToString` on a React element that you
+1. On the server side, call `ReactDOMServer.renderToString` on a React element that you
    wish to render. This returns a string that represents a document fragment.
    The root of that document fragment will have an attribute
    (`data-react-checksum`) that is a simple checksum of the text of the entire
@@ -132,7 +132,7 @@ However, as our page gets longer and more fully featured, we run into
 another problem: our entire page, from header to footer, needs to be generated
 before we can send even the first byte to the browser. This means that the
 browser is waiting for all of our backend calls to finish and for
-`ReactDOM.renderToString` to return on the server before it even sees a body tag.
+`ReactDOMServer.renderToString` to return on the server before it even sees a body tag.
 We can easily lose hundreds of milliseconds or more during which the browser
 could be parsing and even displaying above-the-fold content.
 
