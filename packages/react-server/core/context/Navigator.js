@@ -303,6 +303,11 @@ class Navigator extends EventEmitter {
 	finishRoute () {
 		this._loading = false;
 
+		if (window) {
+			// this variable informs Selenium tests when a page to page transition
+			// has finished.
+			window._debug_current_url = this._currentRoute.url;
+		}
 		this.emit('loadComplete');
 
 		// If other routes were queued while we were navigating, we'll

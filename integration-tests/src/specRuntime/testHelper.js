@@ -6,7 +6,9 @@ var	fs = require("fs"),
 	start = require('react-server-cli').start,
 	crypto = require('crypto');
 
-var PORT = process.env.PORT || 8769;
+var PORT = process.env.PORT || 3000;
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 var stopFns = [];
 
@@ -286,6 +288,165 @@ var stopServerAfterAll = function () {
 	afterAll(testTeardownFn);
 }
 
+// browser constants, commented out so ESLint doesn't complain
+// const CHROME = {
+// 	browserName: 'chrome',
+// };
+//
+const FIREFOX = {
+	browserName: 'firefox',
+};
+//
+// const CHROME_OSX = {
+// 	browserName: 'chrome',
+// 	platform: 'OS X 10.11',
+// };
+//
+// const SAFARI_OSX = {
+// 	browserName: 'safari',
+// 	platform: 'OS X 10.11',
+// 	version: '9.0',
+// };
+//
+// const CHROME_WIN10 = {
+// 	browserName: 'chrome',
+// 	platform: 'Windows 10',
+// };
+//
+// const EDGE_WIN10 = {
+// 	browserName: 'MicrosoftEdge',
+// 	platform: 'Windows 10',
+// };
+//
+// const IE_WIN10 = {
+// 	browserName: 'internet explorer',
+// 	platform: 'Windows 10',
+// };
+//
+// const SAFARI_IOS = {
+// 	browserName: 'iphone',
+// 	platform: 'OS X 10.10',
+// 	version: '9.2',
+// 	deviceName: 'iPhone 6',
+// 	deviceOrientation: 'portrait',
+// };
+//
+// const BROWSER_ANDROID = {
+// 	browserName: 'android',
+// 	platform: 'Linux',
+// 	version: '5.1',
+// 	deviceName: 'Android Emulator',
+// 	deviceType: 'tablet',
+// 	deviceOrientation: 'portrait',
+// };
+
+var startClientBeforeEach = function () {
+	beforeEach(function() {
+		const isSauce = (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY);
+		const config = Object.assign({ desiredCapabilities: FIREFOX}, isSauce ? {
+			user: process.env.SAUCE_USERNAME,
+			key: process.env.SAUCE_ACCESS_KEY,
+			host: "localhost",
+			port: 4445,
+		} : {});
+		this.clientConfig = require('webdriverio').remote(config);
+	});
+
+	afterEach(function() {
+		if (this.client) {
+			return this.client.end();
+		}
+	});
+}
+
+var itOnClient = function(desc, testFn) {
+	itOnClientRender(desc, testFn);
+	itOnClientTransition(desc, testFn);
+}
+
+var itOnClientRender = function(desc, testFn) {
+	function performTest(done) {
+		this.client = this.clientConfig.init();
+		const oldUrl = this.client.url;
+		this.client.url = (url) => {
+			if (url.indexOf('http') === 0) {
+				return oldUrl.call(this.client, url);
+			}
+			return oldUrl.call(this.client, `http://localhost:${PORT}${url}`);
+		};
+		return testFn(this.client, done);
+	}
+	function performTestWithoutDone() {
+		return performTest.call(this);
+	}
+	if (testFn.length >= 2) {
+		it(`${desc} (on client render)`, performTest);
+	} else {
+		it(`${desc} (on client render)`, performTestWithoutDone);
+	}
+}
+
+const waitForClientTransition = (client, url) => {
+	return client.waitUntil(
+		() => {
+			return client.execute(function() { return window._debug_current_url })
+				.then(result => (result.value === url));
+		}, 5000);
+};
+
+const itOnClientTransition = function(desc, testFn) {
+	function performTest(done) {
+		this.client = this.clientConfig.init();
+		const oldUrl = this.client.url;
+		this.client.url = (url) => {
+			if (url.indexOf('http') === 0) {
+				return oldUrl.call(this.client, url);
+			}
+			return oldUrl
+				.call(this.client, `http://localhost:${PORT}/__transition?url=${url}`)
+				.click("=Click me")
+				.then(() => waitForClientTransition(this.client, url));
+		};
+		return testFn(this.client, done);
+	}
+	function performTestWithoutDone() {
+		return performTest.call(this);
+	}
+	if (testFn.length >= 2) {
+		it(`${desc} (on client transition)`, performTest);
+	} else {
+		it(`${desc} (on client transition)`, performTestWithoutDone);
+	}
+}
+
+const itOnServer = function(desc, testFn) {
+	function performTest(done) {
+		this.client = this.clientConfig.init();
+		const oldUrl = this.client.url;
+		this.client.url = (url) => {
+			if (url.indexOf('http') === 0) {
+				return oldUrl.call(this.client, url);
+			}
+			return oldUrl
+				.call(this.client, `http://localhost:${PORT}${url}${url.indexOf("?") === -1 ? "?" : "&"}_debug_no_system_scripts=true`);
+		};
+		return testFn(this.client, done);
+	}
+	function performTestWithoutDone() {
+		return performTest.call(this);
+	}
+	if (testFn.length >= 2) {
+		it(`${desc} (on server render)`, performTest);
+	} else {
+		it(`${desc} (on server render)`, performTestWithoutDone);
+	}
+}
+
+const itOnAllRenders = function(desc, testFn) {
+	itOnServer(desc, testFn);
+	itOnClient(desc, testFn);
+}
+
 module.exports = {
 	getPort,
 	getServerDocument,
@@ -304,4 +465,11 @@ module.exports = {
 	stopServerAfterEach,
 	startServerBeforeAll,
 	stopServerAfterAll,
+	startClientBeforeEach,
+	itOnServer,
+	itOnClient,
+	itOnClientRender,
+	itOnClientTransition,
+	itOnAllRenders,
+	waitForClientTransition,
 };

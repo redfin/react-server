@@ -2,7 +2,8 @@
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test",
+    "postinstall": "webdriver-manager update"
   },
   "devDependencies": {
     "babel": "^6.5.2",
@@ -14,6 +15,7 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-jasmine": "^2.3.0",
+    "jasmine-promises": "^0.4.1",
     "lodash": "^4.8.2",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -22,7 +24,10 @@
     "react-dom": "~0.14.2",
     "react-server": "file:../packages/react-server",
     "react-server-cli": "file:../packages/react-server-cli",
+    "request": "^2.72.0",
     "superagent": "1.2.0",
+    "webdriver-manager": "^9.0.0",
+    "webdriverio": "^4.0.5",
     "webpack": "^1.12.14",
     "zombie": "4.1.0"
   }
