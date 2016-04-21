@@ -339,8 +339,8 @@ translate very well to HTTP/2. A few of the ideas we have for HTTP/2 are:
   potentially even help overcome TCP slowstart.
 
 * **Server push of API endpoints**: In the current version of `react-server`,
-  the backend API results are sent down in a client-side cache, as noted
-  above. That cache is implemented as an inline `<script>` tag in the HTML
+  the backend API results are sent down in a data bundle, as noted
+  above. That bundle is implemented as an inline `<script>` tag in the HTML
   page, and it works, but it could be better. First, it doesn't use the
   browser cache when an API result is cacheable. Second, we currently wait
   until the end of the page to send down the client-side cache, as we don't
