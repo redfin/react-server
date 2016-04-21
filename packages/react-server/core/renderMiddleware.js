@@ -299,10 +299,12 @@ function writeHeader(req, res, context, start, pageObject) {
 		// PLAT-602: inline scripts come before stylesheets because
 		// stylesheet downloads block inline script execution.
 		renderScripts(pageObject, res),
-		renderStylesheets(pageObject, res),
-		renderMetaTags(pageObject, res),
-		renderLinkTags(pageObject, res),
-		renderBaseTag(pageObject, res),
+		renderStylesheets(pageObject, res)
+			.then(() => Q.all([
+				renderMetaTags(pageObject, res),
+				renderLinkTags(pageObject, res),
+				renderBaseTag(pageObject, res),
+			])),
 	]).then(() => {
 		// once we have finished rendering all of the pieces of the head element, we
 		// can close the head and start the body element.
@@ -590,7 +592,13 @@ function renderScripts(pageObject, res) {
 }
 
 function renderStylesheets (pageObject, res) {
-	pageObject.getHeadStylesheets().forEach((styleSheet) => {
+
+	const writeTag = styleSheet => {
+		if (!styleSheet) {
+			// skip. a promise resolving to nothing is the only way to decide
+			// to not output a stylesheet if you return a promise
+			return;
+		}
 		if (styleSheet.href) {
 			res.write(`<link rel="stylesheet" type="${styleSheet.type}" media="${styleSheet.media}" href="${styleSheet.href}" ${PAGE_CSS_NODE_ID}>`);
 		} else if (styleSheet.text) {
@@ -598,10 +606,13 @@ function renderStylesheets (pageObject, res) {
 		} else {
 			throw new Error("Style cannot be rendered because it has neither an href nor a text attribute: " + styleSheet);
 		}
-	});
+	};
 
-	// resolve immediately.
-	return Q("");
+	const styles = PageUtil.standardizeStyles(pageObject.getHeadStylesheets());
+
+	return styles.reduce( (prev, styleP) => {
+		return prev.then(() => styleP.then(writeTag));
+	}, Q());
 }
 
 function startBody(req, res, context, start, page) {

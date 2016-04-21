@@ -13,6 +13,10 @@ module.exports = {
 		entry: "/navigation/playground",
 		description: "Navigation playground",
 	},
+	StylePromises: {
+		entry: "/styles/promises",
+		description: "Stylesheets returned from promises",
+	},
 	NavigationDataBundleCache: {
 		entry: "/navigation/data-bundle-cache",
 		description: "Data bundle cache",

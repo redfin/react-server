@@ -207,16 +207,21 @@ function standardizeScripts(scripts) {
 }
 
 function standardizeStyles(styles) {
-	return PageUtil.makeArray(styles).map((style) => {
-		if (style.href || style.text) {
-			if (!style.type) style.type = "text/css";
-			if (!style.media) style.media = "";
+	return PageUtil.makeArray(styles).map(styleOrP => {
+		return Q(styleOrP).then(style => {
+			if (!style) {
+				return null;
+			}
+			if (style.href || style.text) {
+				if (!style.type) style.type = "text/css";
+				if (!style.media) style.media = "";
 
-			return style;
-		}
+				return style;
+			}
 
-		// if the answer was a string, let's make a script object
-		return {href:style, type:"text/css", media:""};
+			// if the answer was a string, let's make a script object
+			return {href:style, type:"text/css", media:""};
+		});
 	})
 }
 
