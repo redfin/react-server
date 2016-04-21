@@ -3,7 +3,7 @@
 React is an amazing library for client-side user interface, and it has the
 added benefit of being able to be rendered on the server, which is crucial for
 SEO, SEM, and user experience. However, server-side rendering in practice is
-significantly more complicated than just calling `React.renderToString` and
+significantly more complicated than just calling `ReactDOM.renderToString` and
 piping out the result, especially if you want to make sure your site loads
 quickly in a mobile-first world.
 
@@ -82,14 +82,14 @@ you have to "reconnect" React on the client side to the HTML markup you
 generated on the server side, and that's not always as easy as it seems.
 Ideally, reconnecting goes something like this:
 
-1. On the server side, call `React.renderToString` on a React element that you
+1. On the server side, call `ReactDOM.renderToString` on a React element that you
    wish to render. This returns a string that represents a document fragment.
    The root of that document fragment will have an attribute
    (`data-react-checksum`) that is a simple checksum of the text of the entire
    fragment.
 1. The server returns the document fragment to the browser wrapped in an HTML page.
 1. In the browser, once the document has been loaded, the JavaScript code runs
-   again, this time calling `React.render` on the React element and also
+   again, this time calling `ReactDOM.render` on the React element and also
    passing in the root of the pre-rendered HTML in the document.
 1. React will construct a virtual DOM and run its checksum on that virtual
    DOM. If the checksum matches the `data-react-checksum` embedded in the
