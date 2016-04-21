@@ -3,7 +3,7 @@
 React is an amazing library for client-side user interface, and it has the
 added benefit of being able to be rendered on the server, which is crucial for
 SEO, SEM, and user experience. However, server-side rendering in practice is
-significantly more complicated than just calling `React.renderToString` and
+significantly more complicated than just calling `ReactDOMServer.renderToString` and
 piping out the result, especially if you want to make sure your site loads
 quickly in a mobile-first world.
 
@@ -31,8 +31,9 @@ the total time to full completion.
 In order to facilitate blazing perceived performance, `react-server` implements the following:
 
 * Parallelize backend queries
-* Use a client-side data cache
+* Bundle data for transfer to browser
 * Stream HTML to the browser
+* Wire up elements as they arrive
 * Render quickly, even when the backend is slow
 * Enforce page hygiene
 * Enable page-to-page transitions without code bloat
@@ -75,21 +76,21 @@ highly asynchronous server applications. `react-server`, however, assumes that
 you will access the backend in a massively parallel way, and it facilitates
 building a user interface on top of parallel, asynchronous data access.
 
-## Use a client-side data cache
+## Bundle data for transfer to browser
 
 One thing you quickly learn when you use React server-side rendering is that
 you have to "reconnect" React on the client side to the HTML markup you
 generated on the server side, and that's not always as easy as it seems.
 Ideally, reconnecting goes something like this:
 
-1. On the server side, call `React.renderToString` on a React element that you
+1. On the server side, call `ReactDOMServer.renderToString` on a React element that you
    wish to render. This returns a string that represents a document fragment.
    The root of that document fragment will have an attribute
    (`data-react-checksum`) that is a simple checksum of the text of the entire
    fragment.
 1. The server returns the document fragment to the browser wrapped in an HTML page.
 1. In the browser, once the document has been loaded, the JavaScript code runs
-   again, this time calling `React.render` on the React element and also
+   again, this time calling `ReactDOM.render` on the React element and also
    passing in the root of the pre-rendered HTML in the document.
 1. React will construct a virtual DOM and run its checksum on that virtual
    DOM. If the checksum matches the `data-react-checksum` embedded in the
@@ -108,30 +109,30 @@ rendering.
 
 In `react-server`, components on the server side load data via HTTP calls to
 the backend services of their choice, and `react-server` packages all those
-results into a **client-side data cache** that is sent down to the browser
-along with the HTML markup. The client-side data cache ensures that when the
+results into a **data bundle** that is sent down to the browser
+along with the HTML markup. The client-side bundle ensures that when the
 code runs again in the browser, it will have access to exactly the same data
 that the server side code did, and the client will therefore generate exactly
 the same DOM as the server did.
 
-But a client-side data cache doesn't just help with correctness when
+But data bundle transfer doesn't just help with correctness when
 reconnecting client-side code to server-side markup; there's also a huge
-performance benefit. The client-side data cache makes sure that data calls on
+performance benefit. The data bundle transfer makes sure that data calls on
 the client return instantly, as they don't require an expensive network call
 to download data. From a developers perspective, this happens transparently
 and by default.
 
 ## Stream pre-rendered HTML
 
-Once we have parallel backend services and a client-side data cache, we're
+Once we have parallel backend services and data bundle transfer, we're
 well on our way to developing a web experience that has good perceived
 performance.
 
-However, as our page gets more longer and more fully featured, we run into
+However, as our page gets longer and more fully featured, we run into
 another problem: our entire page, from header to footer, needs to be generated
 before we can send even the first byte to the browser. This means that the
 browser is waiting for all of our backend calls to finish and for
-`React.renderToString` to return on the server before it even sees a body tag.
+`ReactDOMServer.renderToString` to return on the server before it even sees a body tag.
 We can easily lose hundreds of milliseconds or more during which the browser
 could be parsing and even displaying above-the-fold content.
 
@@ -150,6 +151,22 @@ meaning that the user's browser can get a header back potentially within just
 a few milliseconds. Browsers are well equipped to render partial pages, and
 the user will be shown some content while the primary part of the page is
 still loading.
+
+## Streaming client initialization
+
+Beyond simple streaming of the HTML content, `react-server` also initializes
+the `React` components in the browser _as they arrive_.  You tell
+`react-server` how many of your elements are above the fold.  Once the HTML
+for those elements has been sent `react-server` sends an inline `<script>` tag
+that wakes up the client controller and runs `React.render` on the elements
+that are alredy in the page.  Click handlers start listening.  State changes
+are received.  The portion of the page that's visible becomes interactive even
+as content below the fold continues to stream in.
+
+Once this initial render happens, each additional `RootElement` that arrives
+is rendered and becomes interactive immediately.  If data for late
+`RootElements` continues to arrive in the _server_ that late data is
+_streamed_ to the browser's data bundle in time for the client render.
 
 ## Render quickly despite a slow backend
 
@@ -322,8 +339,8 @@ translate very well to HTTP/2. A few of the ideas we have for HTTP/2 are:
   potentially even help overcome TCP slowstart.
 
 * **Server push of API endpoints**: In the current version of `react-server`,
-  the backend API results are sent down in a client-side cache, as noted
-  above. That cache is implemented as an inline `<script>` tag in the HTML
+  the backend API results are sent down in a data bundle, as noted
+  above. That bundle is implemented as an inline `<script>` tag in the HTML
   page, and it works, but it could be better. First, it doesn't use the
   browser cache when an API result is cacheable. Second, we currently wait
   until the end of the page to send down the client-side cache, as we don't
