@@ -31,7 +31,7 @@ the total time to full completion.
 In order to facilitate blazing perceived performance, `react-server` implements the following:
 
 * Parallelize backend queries
-* Use a client-side data cache
+* Data bundle transfer
 * Stream HTML to the browser
 * Render quickly, even when the backend is slow
 * Enforce page hygiene
@@ -75,7 +75,7 @@ highly asynchronous server applications. `react-server`, however, assumes that
 you will access the backend in a massively parallel way, and it facilitates
 building a user interface on top of parallel, asynchronous data access.
 
-## Use a client-side data cache
+## Data bundle transfer
 
 One thing you quickly learn when you use React server-side rendering is that
 you have to "reconnect" React on the client side to the HTML markup you
@@ -108,22 +108,22 @@ rendering.
 
 In `react-server`, components on the server side load data via HTTP calls to
 the backend services of their choice, and `react-server` packages all those
-results into a **client-side data cache** that is sent down to the browser
-along with the HTML markup. The client-side data cache ensures that when the
+results into a **data bundle** that is sent down to the browser
+along with the HTML markup. The client-side bundle ensures that when the
 code runs again in the browser, it will have access to exactly the same data
 that the server side code did, and the client will therefore generate exactly
 the same DOM as the server did.
 
-But a client-side data cache doesn't just help with correctness when
+But data bundle transfer doesn't just help with correctness when
 reconnecting client-side code to server-side markup; there's also a huge
-performance benefit. The client-side data cache makes sure that data calls on
+performance benefit. The data bundle transfer makes sure that data calls on
 the client return instantly, as they don't require an expensive network call
 to download data. From a developers perspective, this happens transparently
 and by default.
 
 ## Stream pre-rendered HTML
 
-Once we have parallel backend services and a client-side data cache, we're
+Once we have parallel backend services and data bundle transfer, we're
 well on our way to developing a web experience that has good perceived
 performance.
 
