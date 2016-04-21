@@ -33,6 +33,7 @@ In order to facilitate blazing perceived performance, `react-server` implements 
 * Parallelize backend queries
 * Data bundle transfer
 * Stream HTML to the browser
+* Wire up elements as they arrive
 * Render quickly, even when the backend is slow
 * Enforce page hygiene
 * Enable page-to-page transitions without code bloat
@@ -127,11 +128,11 @@ Once we have parallel backend services and data bundle transfer, we're
 well on our way to developing a web experience that has good perceived
 performance.
 
-However, as our page gets more longer and more fully featured, we run into
+However, as our page gets longer and more fully featured, we run into
 another problem: our entire page, from header to footer, needs to be generated
 before we can send even the first byte to the browser. This means that the
 browser is waiting for all of our backend calls to finish and for
-`React.renderToString` to return on the server before it even sees a body tag.
+`ReactDOM.renderToString` to return on the server before it even sees a body tag.
 We can easily lose hundreds of milliseconds or more during which the browser
 could be parsing and even displaying above-the-fold content.
 
@@ -150,6 +151,22 @@ meaning that the user's browser can get a header back potentially within just
 a few milliseconds. Browsers are well equipped to render partial pages, and
 the user will be shown some content while the primary part of the page is
 still loading.
+
+## Streaming client initialization
+
+Beyond simple streaming of the HTML content, `react-server` also initializes
+the `React` components in the browser _as they arrive_.  You tell
+`react-server` how many of your elements are above the fold.  Once the HTML
+for those elements has been sent `react-server` sends an inline `<script>` tag
+that wakes up the client controller and runs `React.render` on the elements
+that are alredy in the page.  Click handlers start listening.  State changes
+are received.  The portion of the page that's visible becomes interactive even
+as content below the fold continues to stream in.
+
+Once this initial render happens, each additional `RootElement` that arrives
+is rendered and becomes interactive immediately.  If data for late
+`RootElements` continues to arrive in the _server_ that late data is
+_streamed_ to the browser's data bundle in time for the client render.
 
 ## Render quickly despite a slow backend
 
