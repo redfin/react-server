@@ -1,5 +1,9 @@
 {
   "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "test": "gulp test"
+  },
   "devDependencies": {
     "eslint": "0.24.1",
     "eslint-plugin-react": "3.0.0",
