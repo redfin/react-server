@@ -17,7 +17,7 @@
     "react-dom": "^0.14.2",
     "react-server": "^0.1.5",
     "react-server-cli": "^0.1.5",
-    "superagent": "^1.2.0"
+    "superagent": "1.2.0"
   },
   "devDependencies": {
     "babel-plugin-react-require": "^2.1.0",
