@@ -50,7 +50,7 @@ In the example above:
 
 ## On the server
 - Elements are rendered as their promises resolve.
-- Elements are sent to the browser when they've been rendered an all elements
+- Elements are sent to the browser when they've been rendered and all elements
   before them have already been sent.
 - If an element is blocking already-rendered elements after it, when it
   renders the entire block of elements will be sent in a single `write` to the
