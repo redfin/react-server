@@ -14,7 +14,4 @@ addons:
       - g++-4.8
 
 before_script:
-  - npm install -g gulp lerna
-  - lerna bootstrap
-
-script: gulp travis-ci
+  - npm run bootstrap
