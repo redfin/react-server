@@ -4,7 +4,7 @@
   "description": "A recommended Babel config for working with react-server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"All good!\""
   },
   "repository": "redfin/react-server",
   "keywords": [
