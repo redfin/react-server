@@ -7,49 +7,66 @@ a "finished" html document.  This guide will help you understand how different
 parts of the rendering lifecycle take place, and how the final document is
 assembled.
 
-On the server, in renderMiddleware, each component to render is represented by
-a promise that's resolved immediately if there's no data requirement, or when
-data resolves, if created by RootElements.createWhenResolved, or a similar
-function (note that this is _effectively_ what happens; the actual
-rendering can happen out of order, but elements are streamed to the browser
-sequentially).
+On the server, in `renderMiddleware`, each component to render (returned by
+`getElements`) is represented by a promise.  The promise may be resolved
+immediately if there is no data requirement.  Note that the actual rendering
+can happen out of order, but elements are streamed to the browser
+sequentially.  The easiest way to create a promise that resolves at the right
+time is to use `RootElement` and `RootContainer` components.  These have
+`when` and `listen` properties that can be used to schedule render on the
+server (and, in the case of `listen` _update_ in the browser).
+
+```javascript
+getElements() {
+	return <RootContainer>
+		<RootElement when={headerPromise}>
+			<Header />
+		</RootElement>
+		<RootContainer listen={bodyEmitter}>
+			<MainContent />
+			<RootElement when={sidebarPromise}>
+				<Sidebar  />
+			</RootElement>
+		</RootContainer>
+		<Footer />
+	</RootContainer>
+}
+```
+
+In the example above:
+- `<Header />` will render once `headerPromise` resolves, and it will receive
+  props from the object that it was resolved with (if any).
+- `<MainContent />` will render when `bodyEmitter` first fires, and it will
+  receive props from the emitted object (if any).  Client-side it will
+  re-render with updated props whenever `bodyEmitter` fires again.
+- `<Sidebar />` will render when `bodyEmitter` has fired at least once _and_
+  `sidebarPromise` has resolved.  It will receive props from the _union_ of
+  the all objects from `bodyEmitter` and the resolution of `sidebarPromise`.
+  Client-side it will re-render with updated props from `bodyEmitter` if it
+  fires after the initial render.
+- `<Footer />` Will render immediately, and will be sent to the browser as
+  soon as all elements before it have rendered and been sent.  It won't
+  receive any props.
 
 ## On the server
-*pre-timeout:*
-- for each promise for a React component (in order):
-   - if it is resolved already, render the component returned by the promise
-     and stream it to the client
-   - if it isn't resolved, we'll wait until it is resolved _or_
-     the timeout is hit.
-
-*when timeout is hit*:
-- for each promise that hasn't yet rendered (in order):
-   - call getValue() -- we _force_ it to give us a component to render;
-     by default, this is whatever component was passed to
-     RootElement.createWhenResolved, but we render it _without_ data
-     being available, and stream it to the client as is.
-
-- keep http connection open on server, streaming out `<script>` tags with new
-  data responses as they resolve
+- Elements are rendered as their promises resolve.
+- Elements are sent to the browser when they've been rendered and all elements
+  before them have already been sent.
+- If an element is blocking already-rendered elements after it, when it
+  renders the entire block of elements will be sent in a single `write` to the
+  response socket.
+- After the above-the-fold elements (as specified by `getAboveTheFoldCount()`)
+  have been sent an inline `<script>` is sent that instantiates the
+  `ClientController` in the browser and gives it the data bundle for all
+  requests that have resolved.  It then renders all elements that have already
+  been sent.
+- As additional data arrives (if any) it is sent to the browser's bundle in
+  inline `<script>` tags.
+- After each element _below_ the fold is sent a `<script>` tag is sent
+  notifying the `ClientController` that the DOM node for that element is
+  ready, and it may be rendered client-side to make it interactive.
 
 ## In the browser
-- do an initial render of _all_ components w/ whatever data was
-  available server-side (so that react can re-attach without getting confused)
-- set up data promises client-side for all data not yet received
-- resolve promises on the store whenever new data arrives, until all data has
-  arrived
-
-The timeout, then, is the _maximum_ amount of time we're willing
-to wait to render server-side before _any_ content is render in the browser.
-To ensure that the final document is completed after the server has timed out,
-we're force-render everything server-side immediately following  the timeout,
-then let the client pick up where the server left off.  Some middleware
-components may render immediately, if they are first in the document and do
-not require an asynchronous data call, regardless of timeout.
-
-For projects that ensure that elements on the page don't "jump" (change
-absolute location on the page) as other elements render in, they'll need to
-set the data wait on the server to a time that is longer than  if they don't
-have good no-data content in the widgets
-- always render placeholder _something_ server-side, even if they don't have
-  data.
+- Elements are always rendered in-order.
+- The initial render is always the _same_ as the server render.
+- Elements may re-render if `listen` emitters fire after the initial render.
