@@ -1,6 +1,8 @@
 
 var logger = require('../logging').getLogger(__LOGGER__);
 var {PAGE_CSS_NODE_ID} = require('../constants');
+var Q = require('q');
+var PageUtil = require('./PageUtil')
 
 var loadedCss = {};
 
@@ -29,49 +31,51 @@ module.exports = {
 			throw new Error("ClientCssHelper.registerPageLoad can't be called server-side");
 		}
 
-		var newCss = pageObject.getHeadStylesheets();
+		return Q.all(PageUtil.standardizeStyles(pageObject.getHeadStylesheets())).then(newCss => {
+			var newCssByKey = {};
+			newCss
+				.filter(style => !!style)
+				.forEach(style => newCssByKey[this._keyFromStyleSheet(style)] = style);
 
-		var newCssByKey = {};
-		newCss.forEach((style) => newCssByKey[this._keyFromStyleSheet(style)] = style);
+			// first, remove the unneeded CSS link elements.
+			Object.keys(loadedCss).forEach(loadedCssKey => {
 
-		// first, remove the unneeded CSS link elements.
-		Object.keys(loadedCss).forEach(loadedCssKey => {
-
-			if (!newCssByKey[loadedCssKey]) {
-				// remove the corresponding node from the DOM.
-				logger.debug("Removing stylesheet: " + loadedCssKey);
-				var node = loadedCss[loadedCssKey];
-				node.parentNode.removeChild(node);
-				delete loadedCss[loadedCssKey];
-			}
-		});
-
-		// next add the style URLs that weren't already loaded.
-		Object.keys(newCssByKey).forEach(newCssKey => {
-			if(!loadedCss[newCssKey]) {
-				// this means that the CSS is not currently present in the
-				// document, so we need to add it.
-				logger.debug("Adding stylesheet: " + newCssKey);
-
-				var style = newCssByKey[newCssKey];
-				var styleTag;
-
-				if (style.href) {
-					styleTag = document.createElement('link');
-					styleTag.rel = 'stylesheet';
-					styleTag.href = style.href;
-				} else {
-					styleTag = document.createElement('style');
-					styleTag.innerHTML = style.text;
+				if (!newCssByKey[loadedCssKey]) {
+					// remove the corresponding node from the DOM.
+					logger.debug("Removing stylesheet: " + loadedCssKey);
+					var node = loadedCss[loadedCssKey];
+					node.parentNode.removeChild(node);
+					delete loadedCss[loadedCssKey];
 				}
-				styleTag.type = style.type;
-				styleTag.media = style.media;
+			});
 
-				loadedCss[newCssKey] = styleTag;
-				document.head.appendChild(styleTag);
-			} else {
-				logger.debug(`Stylesheet already loaded (no-op): ${newCssKey}`);
-			}
+			// next add the style URLs that weren't already loaded.
+			Object.keys(newCssByKey).forEach(newCssKey => {
+				if(!loadedCss[newCssKey]) {
+					// this means that the CSS is not currently present in the
+					// document, so we need to add it.
+					logger.debug("Adding stylesheet: " + newCssKey);
+
+					var style = newCssByKey[newCssKey];
+					var styleTag;
+
+					if (style.href) {
+						styleTag = document.createElement('link');
+						styleTag.rel = 'stylesheet';
+						styleTag.href = style.href;
+					} else {
+						styleTag = document.createElement('style');
+						styleTag.innerHTML = style.text;
+					}
+					styleTag.type = style.type;
+					styleTag.media = style.media;
+
+					loadedCss[newCssKey] = styleTag;
+					document.head.appendChild(styleTag);
+				} else {
+					logger.debug(`Stylesheet already loaded (no-op): ${newCssKey}`);
+				}
+			});
 		});
 	},
 

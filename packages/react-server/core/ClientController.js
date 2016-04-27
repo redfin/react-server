@@ -304,39 +304,40 @@ class ClientController extends EventEmitter {
 				this._renderLinkTags(page);
 			}
 
-			cssHelper.ensureCss(routeName, page);
+			cssHelper.ensureCss(routeName, page)
+				.then(() =>
+					page.getBodyClasses().then((classes) => {
+						classes.push(`route-${routeName}`);
+						document.body.className = classes.join(' ');
+					}))
+				.then(() => this._render(page)).catch((err) => {
+					logger.error("Error during client transition render", err);
+				}).then(() => {
 
-			page.getBodyClasses().then((classes) => {
-				classes.push(`route-${routeName}`);
-				document.body.className = classes.join(' ');
-			}).then(() => this._render(page)).catch((err) => {
-				logger.error("Error during client transition render", err);
-			}).then(() => {
-
-				// We're responsible for letting the navigator
-				// know when we're more or less done stomping
-				// around in the current request context
-				// setting things up.
-				//
-				// We can't _guarantee_ that pages/middleware
-				// haven't set timers to mess with things in
-				// the future, so we need to wait a bit before
-				// letting the navigator yank our context if
-				// an immediate subsequent navigation is
-				// scheduled.
-				//
-				// I don't like this magic delay here, but it
-				// gives us a better shot at falling after
-				// things like lazy load images do their
-				// post-render wire-up.
-				//
-				// Anything that the current page does in the
-				// request context _after_ this timeout has
-				// elapsed and we've started a subsequent
-				// navigation is pure corruption. :p
-				//
-				setTimeout(() => context.navigator.finishRoute(), 200);
-			}).done();
+					// We're responsible for letting the navigator
+					// know when we're more or less done stomping
+					// around in the current request context
+					// setting things up.
+					//
+					// We can't _guarantee_ that pages/middleware
+					// haven't set timers to mess with things in
+					// the future, so we need to wait a bit before
+					// letting the navigator yank our context if
+					// an immediate subsequent navigation is
+					// scheduled.
+					//
+					// I don't like this magic delay here, but it
+					// gives us a better shot at falling after
+					// things like lazy load images do their
+					// post-render wire-up.
+					//
+					// Anything that the current page does in the
+					// request context _after_ this timeout has
+					// elapsed and we've started a subsequent
+					// navigation is pure corruption. :p
+					//
+					setTimeout(() => context.navigator.finishRoute(), 200);
+				}).done();
 
 		});
 
