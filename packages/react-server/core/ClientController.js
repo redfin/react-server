@@ -128,25 +128,41 @@ class ClientController extends EventEmitter {
 				});
 			}
 
-		} else {
+		} else if (this._previouslyRendered) {
+
+			// If we're supposed to exit a frame, and we don't
+			// have one open, then we need to do a full browser
+			// navigation.  There's no provision for client
+			// transitions between the outer page and the frame.
+			if (request.getOpts()._framebackExit) {
+
+				// This is just so the navigator doesn't try
+				// to proceed with an ordinary navigation.
+				// This whole window is toast.
+				this.context.navigator.ignoreCurrentNavigation();
+
+				// Start from scratch with current URL (we've
+				// just popped).
+				document.location.reload();
+
+				// That's all, folks.
+				return;
+			}
 
 			// If this is a secondary request (client transition)
 			// within a session, then we'll get a fresh
 			// RequestLocalStorage container.
-			if (this._previouslyRendered){
+			RequestLocalStorage.startRequest();
 
-				RequestLocalStorage.startRequest();
-
-				// If we're not going to reuse the DOM, let's
-				// clean up right away to blank the screen.
-				if (!this._reuseDom) {
-					this._cleanupPreviousRender();
-				}
-
-				// we need to re-register the request context
-				// as a RequestLocal.
-				this.context.registerRequestLocal();
+			// If we're not going to reuse the DOM, let's
+			// clean up right away to blank the screen.
+			if (!this._reuseDom) {
+				this._cleanupPreviousRender();
 			}
+
+			// we need to re-register the request context
+			// as a RequestLocal.
+			this.context.registerRequestLocal();
 		}
 
 		// If this is a History.events.PUSHSTATE navigation,
