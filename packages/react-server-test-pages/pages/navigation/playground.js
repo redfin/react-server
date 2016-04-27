@@ -1,39 +1,26 @@
-/* eslint-disable no-unused-vars */
 import _ from "lodash";
 import React from "react";
 import {
 	Link,
-	ReactServerAgent,
 	RootContainer,
 } from "react-server";
 
+import {
+	GET,
+	ROWS,
+	PagePointer,
+	RowIndex,
+	RowMS,
+	ClientRenderIndicator,
+} from "./common";
+
+require('./common.css');
 require('./playground.css');
 
-// Each row listens to `navigateStart'.
-// Give ourselves some buffer.
-require('events').EventEmitter.defaultMaxListeners = 128;
-
-const ROWS = _.range(32);
 const BASE = "/navigation/playground";
 const LINK = (page, pick) => `${BASE}?${
 	_.map({page,pick},(v,k)=>v!==void 0?k+'='+v:'').filter(v=>v).join('&')
 }`
-
-function GET(row) {
-	const ms  = row*16;
-	const val = JSON.stringify({row, ms});
-	return ReactServerAgent
-		.get('/data/delay', {ms, val})
-		.then(res => _.assign({}, this, res.body));
-}
-
-const RowIndex = ({row}) => <div className="row-index">Row {row}</div>;
-
-const RowMS = ({ms}) => <div className="row-ms">{ms}ms</div>;
-
-const PagePointer = ({page, row}) => <div className="page-pointer">
-	{+page === +row ? "➟" : ""}
-</div>;
 
 // For simplicity of 'pick' link management.
 // Add a 'pushstate' method.
@@ -121,37 +108,6 @@ class FBL extends React.Component {
 	}
 }
 
-
-class ClientRenderIndicator extends React.Component {
-	constructor(props){
-		super(props);
-		this.state = {ready: false};
-	}
-	_handleNavEvent(evt) {
-		if (!this._mounted) return;
-		this.setState({ready: evt === 'loadComplete'});
-	}
-	componentDidMount() {
-		this._mounted = true;
-		this.setState({ready: true});
-		const nav = window.__reactServerClientController.context.navigator;
-		this._navListeners = ['navigateStart', 'loadComplete']
-			.reduce((m,e) => (nav.on(e, m[e] = this._handleNavEvent.bind(this, e)), m), {});
-	}
-	componentWillUnmount() {
-		this._mounted = false;
-		const nav = window.__reactServerClientController.context.navigator;
-		_.forEach(this._navListeners, (v,k) => nav.removeListener(k, v));
-	}
-	componentWillReceiveProps() {
-		this.setState({ready: true});
-	}
-	render() {
-		return <div className="render-indicator">
-			{this.state.ready?"✓":"⌛️"}
-		</div>
-	}
-}
 
 export default class NavigationPlaygroundPage {
 	handleRoute(next) {

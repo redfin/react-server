@@ -13,4 +13,8 @@ module.exports = {
 		entry: "/navigation/playground",
 		description: "Navigation playground",
 	},
+	NavigationDataBundleCache: {
+		entry: "/navigation/data-bundle-cache",
+		description: "Data bundle cache",
+	},
 }

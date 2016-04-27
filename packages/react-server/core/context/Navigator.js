@@ -150,18 +150,14 @@ class Navigator extends EventEmitter {
 		// use a data bundle.
 		if (this._ignoreCurrentNavigation) return Q();
 
-		const url = request.getUrl();
+		// If this request doesn't use a data bundle, we're done.
+		if (!request.getBundleData()) return Q();
 
 		// If the request wants all of the data fetched as a bundle
-		// we'll need to kick off the request for the bundle if we
-		// haven't already.
-		if (request.getBundleData()) {
-			ReactServerAgent.preloadDataForURL(url);
-		}
-
-		// If we've got a preload bundle let's inflate it and avoid
-		// firing off a bunch of xhr requests during `handleRoute`.
-		return ReactServerAgent._rehydrateDataBundle(url);
+		// we'll need to kick off the request for the bundle.
+		return ReactServerAgent._fetchDataBundle(request.getUrl())
+			.then(ReactServerAgent._rehydrateDataBundle)
+			.catch(err => logger.error('Data bundle error', err));
 	}
 
 	handlePage(pageConstructor, request, type) {
