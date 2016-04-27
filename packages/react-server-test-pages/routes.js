@@ -16,6 +16,10 @@ module.exports = {
 			path: ["/data/delay"],
 			page: "./pages/data/delay",
 		},
+		CssEcho: {
+			path: ["/data/echo-css"],
+			page: "./pages/data/EchoCssPage",
+		},
 	}, _.reduce(require('./entrypoints'), (obj, val, key) => {
 		if (!val.path) val.path = [val.entry];
 		val.page = `./pages${val.entry}`;

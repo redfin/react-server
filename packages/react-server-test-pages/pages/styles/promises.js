@@ -1,19 +1,32 @@
 
 import React from "react";
 
+const greenBackground = `
+	body {
+		background: green;
+	}
+`;
+
+const redBackground = `
+	body {
+		background: red;
+	}
+`;
+
 export default class StylePromises {
 	getHeadStylesheets () {
 		return [
-			delay(1000)
-				.then(() => "./styles/first.css"),
-			delay(100)
-				.then(() => "./styles/second.css"),
+			delay(1000).then(() => `/data/echo-css?css=${encodeURIComponent(redBackground)}`),
+			delay(100).then(() => `/data/echo-css?css=${encodeURIComponent(greenBackground)}`),
 		];
 	}
 
 	getElements () {
 		return [
-			<div>If first.css shows up before second.css in the body of this page, all is well.</div>,
+			<div>
+				<h2>If the background is GREEN at page load, all is well!</h2>
+				<div>If it flashes red first, all is _not_ well.</div>
+			</div>,
 		]
 	}
 
