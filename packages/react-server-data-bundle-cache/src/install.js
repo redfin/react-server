@@ -2,9 +2,6 @@ import wrap from "./wrap";
 import logEvents from "./log-events";
 
 let _didInstall = 0;
-let _logger;
-
-export function setLogger(logger){ _logger = logger }
 
 export default function(opts) {
 
@@ -13,5 +10,5 @@ export default function(opts) {
 
 	wrap(opts);
 
-	logEvents(_logger);
+	logEvents();
 }
