@@ -3,6 +3,9 @@
   "version": "0.1.5",
   "description": "A gulp plugin to replace tags with module information",
   "main": "index.js",
+  "scripts": {
+    "test": "echo \"All good!\""
+  },
   "repository": "redfin/react-server",
   "author": "Redfin",
   "license": "Apache License 2.0",

@@ -24,4 +24,4 @@ gulp.task("eslint", [], () => {
 });
 
 // there are no tests for this project :(
-gulp.task("test", ["default"]);
+gulp.task("test", ["eslint"]);

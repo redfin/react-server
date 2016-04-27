@@ -2,7 +2,7 @@
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "devDependencies": {
     "babel": "^6.5.2",

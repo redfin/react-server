@@ -4,8 +4,8 @@
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
-    "prepublish": "./node_modules/gulp/bin/gulp.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "gulp",
+    "test": "gulp test"
   },
   "author": "Sasha Aickin",
   "bin": {
@@ -41,5 +41,8 @@
     "gulp-babel": "~6.1.2",
     "gulp-eslint": "0.15.0",
     "react-server-gulp-module-tagger": "0.0.8"
+  },
+  "peerDependencies": {
+    "react-server": "^0.1.5"
   }
 }

@@ -96,7 +96,9 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 		});
 });
 
-gulp.task("test", ["compileServer", "compileClient"], function() {
+gulp.task("test", ["jasmine", "eslint"]);
+
+gulp.task("jasmine", ["compileServer", "compileClient"], function() {
 
 	return gulp.src(getSpecGlob("target/server/**/__tests__/**/"))
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
