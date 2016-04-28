@@ -128,25 +128,41 @@ class ClientController extends EventEmitter {
 				});
 			}
 
-		} else {
+		} else if (this._previouslyRendered) {
+
+			// If we're supposed to exit a frame, and we don't
+			// have one open, then we need to do a full browser
+			// navigation.  There's no provision for client
+			// transitions between the outer page and the frame.
+			if (request.getOpts()._framebackExit) {
+
+				// This is just so the navigator doesn't try
+				// to proceed with an ordinary navigation.
+				// This whole window is toast.
+				this.context.navigator.ignoreCurrentNavigation();
+
+				// Start from scratch with current URL (we've
+				// just popped).
+				document.location.reload();
+
+				// That's all, folks.
+				return;
+			}
 
 			// If this is a secondary request (client transition)
 			// within a session, then we'll get a fresh
 			// RequestLocalStorage container.
-			if (this._previouslyRendered){
+			RequestLocalStorage.startRequest();
 
-				RequestLocalStorage.startRequest();
-
-				// If we're not going to reuse the DOM, let's
-				// clean up right away to blank the screen.
-				if (!this._reuseDom) {
-					this._cleanupPreviousRender();
-				}
-
-				// we need to re-register the request context
-				// as a RequestLocal.
-				this.context.registerRequestLocal();
+			// If we're not going to reuse the DOM, let's
+			// clean up right away to blank the screen.
+			if (!this._reuseDom) {
+				this._cleanupPreviousRender();
 			}
+
+			// we need to re-register the request context
+			// as a RequestLocal.
+			this.context.registerRequestLocal();
 		}
 
 		// If this is a History.events.PUSHSTATE navigation,
@@ -216,7 +232,7 @@ class ClientController extends EventEmitter {
 				// This also _replaces_ state with the request
 				// URL, which handles client-side redirects.
 				this._history.replaceState(
-					getHistoryStateFrame(),
+					getHistoryStateFrame(request),
 					null,
 					url
 				)
@@ -685,37 +701,44 @@ class ClientController extends EventEmitter {
 		var location = window.location;
 		var path = location.pathname + location.search;
 		this._initializeHistoryListener(this.context);
-		this.context.navigate(new ClientRequest(path));
+
+		// If this is a _refresh_ there may be some request options
+		// stashed in the history navigation stack frame we're sitting
+		// on.
+		const state = this._history.canClientNavigate() && history.state;
+
+		this._navigateWithHistoryState({
+			path,
+			state,
+			type: History.events.PAGELOAD,
+		});
+	}
+
+	_navigateWithHistoryState({path, state, type, check}) {
+		const opts = (state||{}).reactServerFrame;
+
+		if (check && !opts) return; // Not our frame.
+
+		this.context.navigate(new ClientRequest(path, opts||{}), type);
 	}
 
 	/**
 	 * Initializes us to listen to back button events. When the user presses the back button, the history
 	 * listener will be called and cause a navigate() event.
 	 */
-	_initializeHistoryListener(context) {
+	_initializeHistoryListener() {
 
 		// If we're running without client navigation then we don't
 		// need a 'popstate' listener.
 		if (window.__reactServerDisableClientNavigation) return;
 
 		this._historyListener = ({state}) => {
-			const opts = (state||{}).reactServerFrame;
-
-			// Not our frame.
-			if (!opts) return;
-
-			if (context) {
-				var path = this._history.getPath();
-
-				// Pass in "popstate" because this is
-				// when a user clicks the forward/back
-				// button.
-				context.navigate(
-					new ClientRequest(path, opts),
-					History.events.POPSTATE
-				);
-
-			}
+			this._navigateWithHistoryState({
+				state,
+				path  : this._history.getPath(),
+				type  : History.events.POPSTATE, // Forward/back.
+				check : true, // Only navigate if frame is ours.
+			});
 		};
 
 		this._history = new History();
