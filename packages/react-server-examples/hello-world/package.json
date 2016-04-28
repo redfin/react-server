@@ -17,8 +17,8 @@
     "babel-runtime": "~6.5",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "~0.1.5",
-    "react-server-cli": "~0.1.5",
+    "react-server": "~0.2.0",
+    "react-server-cli": "~0.2.0",
     "superagent": "1.2.0"
   }
 }
