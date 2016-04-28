@@ -728,10 +728,6 @@ class ClientController extends EventEmitter {
 	 */
 	_initializeHistoryListener() {
 
-		// If we're running without client navigation then we don't
-		// need a 'popstate' listener.
-		if (window.__reactServerDisableClientNavigation) return;
-
 		this._historyListener = ({state}) => {
 			this._navigateWithHistoryState({
 				state,
