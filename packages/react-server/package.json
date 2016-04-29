@@ -1,7 +1,7 @@
 {
   "name": "react-server",
   "version": "0.2.0",
-  "description": "React Server",
+  "description": "React framework with server render for blazing fast page load and seamless transitions between pages in the browser.",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
   "repository": "redfin/react-server",
