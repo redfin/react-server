@@ -11,6 +11,12 @@
     "prepublish": "gulp build",
     "test": "gulp test"
   },
+  "keywords": [
+    "react",
+    "server",
+    "framework",
+    "isomorphic"
+  ],
   "dependencies": {
     "body-parser": "1.9.2",
     "bundle-loader": "0.5.2",
