@@ -15,7 +15,10 @@
     "react",
     "server",
     "framework",
-    "isomorphic"
+    "isomorphic",
+    "universal",
+    "express",
+    "middleware"
   ],
   "dependencies": {
     "body-parser": "1.9.2",
