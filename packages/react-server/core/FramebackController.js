@@ -56,6 +56,7 @@ var {PAGE_CONTENT_NODE_ID} = require('./constants');
 
 var _ = {
 	assign: require('lodash/object/assign'),
+	forEach: require('lodash/collection/forEach'),
 }
 
 // Cover the whole viewport.
@@ -228,40 +229,19 @@ class FramebackController extends EventEmitter {
 
 	createFrame(url){
 
-		this.frame = document.createElement("iframe");
+		const frame = this.frame = document.createElement("iframe");
 
-		Object.keys(FRAME_STYLE).forEach(k => {
-			this.frame.style[k] = FRAME_STYLE[k]
-		});
+		frame.src = absoluteUrl(url);
 
-		document.body.appendChild(this.frame);
+		_.forEach(FRAME_STYLE, (v, k) => {frame.style[k] = v});
 
-		// Can't get the `contentWindow` until it's in the document,
-		// and then we can't set our 'load' handler until the
-		// navigation has been initiated sometime after we call
-		// `setlocation`... ugh.  After the _current_ page's 'unload'
-		// fires we can set up our 'load' handler in a new timeslice.
-		this.frame.contentWindow.addEventListener('unload', () => setTimeout(() => {
+		frame.addEventListener('load', () => this._handleFrameLoad(frame));
 
-			// Firefox fires our `unload` handler _twice_ for all
-			// frameback navigation _after_ the _first_ for the
-			// page.  This guards against double-wiring our `load`
-			// handler. :goberzerk:
-			if (this.frame.contentWindow.__reactServerIsFrame) return;
+		document.body.appendChild(frame);
 
-			// Disable react-server client navigation in the frame.
-			this.frame.contentWindow.__reactServerIsFrame = true;
-
-			// Add our load handler now that we've got a fresh
-			// `window` during navigation.
-			this.frame.contentWindow.addEventListener(
-				'load', this._handleFrameLoad.bind(this, this.frame)
-			);
-		}, 10));
-
-
-		// Setting `frame.src` doesn't work in firefox. RED-70527
-		this.frame.contentWindow.location = absoluteUrl(url);
+		// Set this right away once we have a content window
+		// (available as soon as we've appended to the DOM).
+		frame.contentWindow.__reactServerIsFrame = true;
 	}
 
 
