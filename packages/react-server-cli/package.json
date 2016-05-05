@@ -1,6 +1,6 @@
 {
   "name": "react-server-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
@@ -43,6 +43,6 @@
     "react-server-gulp-module-tagger": "^0.2.0"
   },
   "peerDependencies": {
-    "react-server": "^0.2.0"
+    "react-server": "^0.2.1"
   }
 }
