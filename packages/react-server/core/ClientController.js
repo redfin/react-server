@@ -195,7 +195,7 @@ class ClientController extends EventEmitter {
 					this._history.replaceState(
 						getHistoryStateFrame(),
 						null,
-						location.path
+						location.pathname
 					);
 				}
 
@@ -267,7 +267,7 @@ class ClientController extends EventEmitter {
 
 		const state = _.assign({}, history.state);
 		state.reactServerFrame = _.assign(state.reactServerFrame||{}, opts);
-		this._history.replaceState(state, null, location.path);
+		this._history.replaceState(state, null, location.pathname);
 	}
 
 	_setupNavigateListener () {
