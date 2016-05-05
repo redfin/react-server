@@ -112,15 +112,15 @@ class Navigator extends EventEmitter {
 			].reduce((loader, format) => {
 
 				// We'll take the _first_ format that matches.
-				if (loader) return loader;
-
-				if (loaders[format] && mobileDetect[format]()){
+				if (!loader && loaders[format] && mobileDetect[format]()){
 
 					// Need to disambiguate for bundleNameUtil.
 					route.name += '-'+format;
 
 					return loaders[format];
 				}
+
+				return loader;
 			}, null) || loaders.default;
 
 			loadPage().done(pageConstructor => {

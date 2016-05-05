@@ -8,7 +8,7 @@ class RequestContext {
 
 		this.navigator = new Navigator(this, routes);
 
-		this.navigator.on('page', page => this.page = page);
+		this.navigator.on('page', page => {this.page = page});
 
 		this._navigateListeners = [];
 

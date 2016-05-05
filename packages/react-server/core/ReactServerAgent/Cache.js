@@ -46,7 +46,7 @@ class CacheEntry {
 		this.url = requestData.urlPath;
 		this.requestData = {};
 		Object.keys(requestData)
-			.forEach(key => this.requestData[key] = requestData[key]);
+			.forEach(key => {this.requestData[key] = requestData[key]});
 	}
 
 	dehydrate ( {responseBodyOnly} = {} ) {
@@ -433,7 +433,7 @@ class RequestDataCache {
 	}
 
 	markLateRequests () {
-		this.getPendingRequests().forEach(req => req.entry.late = true);
+		this.getPendingRequests().forEach(req => {req.entry.late = true});
 	}
 
 	getLateRequests () {

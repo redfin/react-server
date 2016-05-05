@@ -109,6 +109,7 @@ const startImpl = (routesRelativePath, {
 			return startServers();
 		}
 	}
+	return null; // For eslint. :p
 }
 
 // given the server routes file and a port, start a react-server HTML server at
@@ -229,7 +230,7 @@ const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) 
 		// we still need to run the compilation to get the chunk file names.
 			try {
 				handleCompilationErrors(err, stats);
-			} catch(e) {
+			} catch (e) {
 				logger.emergency("Failed to compile the local code.", e.stack);
 				reject(e);
 				return;
@@ -242,7 +243,7 @@ const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) 
 // takes in the err and stats object returned by a webpack compilation and returns
 // an error object if something serious happened, or null if things are ok.
 const handleCompilationErrors = (err, stats) => {
-	if(err) {
+	if (err) {
 		logger.error("Error during webpack build.");
 		logger.error(err);
 		return new Error(err);
