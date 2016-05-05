@@ -44,6 +44,10 @@ function getHistoryStateFrame(request) {
 	return { reactServerFrame: request?request.getOpts():{} }
 }
 
+function getHistoryPathname() {
+	return location.pathname + location.search;
+}
+
 class ClientController extends EventEmitter {
 
 	constructor ({routes}) {
@@ -195,7 +199,7 @@ class ClientController extends EventEmitter {
 					this._history.replaceState(
 						getHistoryStateFrame(),
 						null,
-						location.pathname
+						getHistoryPathname()
 					);
 				}
 
@@ -267,7 +271,7 @@ class ClientController extends EventEmitter {
 
 		const state = _.assign({}, history.state);
 		state.reactServerFrame = _.assign(state.reactServerFrame||{}, opts);
-		this._history.replaceState(state, null, location.pathname);
+		this._history.replaceState(state, null, getHistoryPathname());
 	}
 
 	_setupNavigateListener () {
@@ -698,8 +702,6 @@ class ClientController extends EventEmitter {
 			window.attachEvent("onunload", unloadHandler);
 		}
 
-		var location = window.location;
-		var path = location.pathname + location.search;
 		this._initializeHistoryListener(this.context);
 
 		// If this is a _refresh_ there may be some request options
@@ -708,8 +710,8 @@ class ClientController extends EventEmitter {
 		const state = this._history.canClientNavigate() && history.state;
 
 		this._navigateWithHistoryState({
-			path,
 			state,
+			path: getHistoryPathname(),
 			type: History.events.PAGELOAD,
 		});
 	}
