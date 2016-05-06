@@ -1,6 +1,7 @@
 {
   "name": "react-server-test-pages",
-  "version": "0.2.6",
+  "version": "0.0.0",
+  "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
   "scripts": {
@@ -15,9 +16,9 @@
     "q": "1.4.1",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
-    "react-server": "^0.2.6",
-    "react-server-cli": "^0.2.6",
-    "react-server-data-bundle-cache": "^0.2.6",
+    "react-server": "../react-server",
+    "react-server-cli": "../react-server-cli",
+    "react-server-data-bundle-cache": "../react-server-data-bundle-cache",
     "superagent": "1.2.0"
   }
 }
