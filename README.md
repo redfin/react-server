@@ -1,4 +1,5 @@
-<img src="https://raw.githubusercontent.com/careylin/react-server/patch-1/images/reactserver_logo%402x.png" width="450px"/>
+<img src="/images/reactserver_logo%402x.png" width="450px"/>
+
 # react-server monorepo [![Build Status][build-badge-img]][build-url]
 
 React framework with server render for blazing fast page load and seamless
