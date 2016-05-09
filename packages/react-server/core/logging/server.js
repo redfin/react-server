@@ -1,12 +1,12 @@
 var winston = require('winston')
 ,   common  = require('./common')
 ,   _ = {
-	mapValues     : require("lodash/object/mapValues"),
-	pick          : require("lodash/object/pick"),
-	isPlainObject : require("lodash/lang/isPlainObject"),
-	isEmpty       : require("lodash/lang/isEmpty"),
-	trimLeft      : require("lodash/string/trimLeft"),
-	trunc         : require("lodash/string/trunc"),
+	mapValues     : require("lodash/mapValues"),
+	pick          : require("lodash/pick"),
+	isPlainObject : require("lodash/isPlainObject"),
+	isEmpty       : require("lodash/isEmpty"),
+	trimStart     : require("lodash/trimStart"),
+	truncate      : require("lodash/truncate"),
 };
 
 var makeLogger = function(group, opts){
@@ -80,7 +80,7 @@ function normalizeError (err) {
 		return {
 			response: {
 				status: err.status,
-				responseText: _.trunc(_.trimLeft(err.response ? err.response.text : "<no response body>"), 200),
+				responseText: _.truncate(_.trimStart(err.response ? err.response.text : "<no response body>"), 200),
 			},
 		}
 	}

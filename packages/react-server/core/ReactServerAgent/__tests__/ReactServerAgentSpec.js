@@ -1,7 +1,7 @@
 var ReactServerAgent = require("../../ReactServerAgent");
 var superagent = require("superagent");
 var Q = require("q");
-var isArray = require("lodash/lang/isArray");
+var isArray = require("lodash/isArray");
 
 
 var {

@@ -17,8 +17,8 @@ var React = require('react'),
 	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
-	forEach: require('lodash/collection/forEach'),
-	assign: require('lodash/object/assign'),
+	forEach: require('lodash/forEach'),
+	assign: require('lodash/assign'),
 };
 
 var RLS = RequestLocalStorage.getNamespace();

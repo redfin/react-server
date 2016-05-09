@@ -55,8 +55,8 @@ var History = require('./components/History');
 var {PAGE_CONTENT_NODE_ID} = require('./constants');
 
 var _ = {
-	assign: require('lodash/object/assign'),
-	forEach: require('lodash/collection/forEach'),
+	assign: require('lodash/assign'),
+	forEach: require('lodash/forEach'),
 }
 
 // Cover the whole viewport.

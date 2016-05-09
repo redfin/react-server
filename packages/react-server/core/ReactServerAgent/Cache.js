@@ -2,8 +2,8 @@
 var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	{ mixin } = require("./util")
-,	isEqual = require("lodash/lang/isEqual")
-,	isArray = require("lodash/lang/isArray")
+,	isEqual = require("lodash/isEqual")
+,	isArray = require("lodash/isArray")
 ;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender
