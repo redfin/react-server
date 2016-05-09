@@ -283,7 +283,11 @@ class FramebackController extends EventEmitter {
 
 		// If the frame has a client controller we'll listen to when
 		// _it_ tells us it's done loading.
-		if (clientController && !clientController.__parentIsListening) {
+		//
+		// It may have finished _before_ we get here, so we'll also check
+		// whether it has already set its `_previouslyRendered` flag.
+		//
+		if (clientController && !clientController.__parentIsListening && !clientController._previouslyRendered) {
 			clientController.__parentIsListening = true;
 			clientController.context.onLoadComplete(this._handleFrameLoad.bind(this, frame));
 			return;
