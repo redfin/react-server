@@ -16,8 +16,10 @@ Once you're hungry for more dig into
 [`react-server`](packages/react-server) itself.
 ** **  
 
-#### Contributing
-See [the contributing guide](CONTRIBUTING.md).
+#### Want to help?
+
+Great!  There's a lot to do!
+See [the contributing guide](CONTRIBUTING.md) to get started.
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
