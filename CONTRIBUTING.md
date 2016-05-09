@@ -1,10 +1,37 @@
 Contributing Code to react-server
 ---------------------------------
 
+## Want to help?
+
+Great!  There's a lot to do!
+
+You could:
+
+- [Improve documentation][improve-documentation]
+- [Fix bugs][fix-bugs]
+- [Build new features][build-new-features]
+- [Contribute to the discussion][contribute-to-the-discussion]
+
+## Contributor License Agreement
+
 To get started, please [sign the Contributor License
 Agreement](https://cla-assistant.io/redfin/react-server). The purpose
 of this license is to protect contributors, Redfin, as well as users
 of this software project. Signing this agreement does not affect your
 rights to use your contributions for any other purpose.
 
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms, as stated in CODE_OF_CONDUCT.md.
+## Code of Conduct
+
+Please note that this project is released with a [Contributor Code of
+Conduct](/CODE_OF_CONDUCT.md).
+By participating in this project you agree to abide by its terms.
+
+## Thanks!
+
+Thanks for contributing!
+
+
+[improve-documentation]: https://github.com/redfin/react-server/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22+label%3Adocumentation
+[fix-bugs]: https://github.com/redfin/react-server/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22+label%3Abug
+[build-new-features]: https://github.com/redfin/react-server/issues?q=is%3Aopen+is%3Aissue+label%3A"help+wanted"+label%3Aenhancement
+[contribute-to-the-discussion]: https://github.com/redfin/react-server/issues
