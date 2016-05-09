@@ -1,6 +1,6 @@
 <img src="/images/reactserver_logo%402x.png" width="450px"/>
 
-# react-server monorepo [![Build Status][build-badge-img]][build-url]
+[![Build Status][build-badge-img]][build-url]
 
 React framework with server render for blazing fast page load and seamless
 transitions between pages in the browser.
