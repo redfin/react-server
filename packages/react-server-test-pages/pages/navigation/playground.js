@@ -116,6 +116,12 @@ export default class NavigationPlaygroundPage {
 
 		return next();
 	}
+	getTitle() {
+		const {page} = this.getRequest().getQuery();
+		return typeof page === "undefined"
+			?"Navigation Playground"
+			:"Page "+page
+	}
 	getElements() {
 		return [
 			<RootContainer>
