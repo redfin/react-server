@@ -133,11 +133,13 @@ RootElement.installListener = function(element, listen) {
 		// Once the component has mounted it will provide an updater.
 		// After that we can just short-circuit here and let it handle
 		// updating itself.
-		if (updater) return updater(childProps);
+		if (updater) {
+			updater(childProps);
+		}
 
 		// The promise itself will only resolve once, but we don't
 		// want to _clone_ multiple times.
-		if (dfd.promise.isPending()) {
+		else if (dfd.promise.isPending()) {
 			dfd.resolve(React.cloneElement(element, {
 				childProps,
 				subscribe,
@@ -145,7 +147,7 @@ RootElement.installListener = function(element, listen) {
 			}));
 		}
 	});
-	var subscribe = callback => updater = callback;
+	var subscribe = callback => {updater = callback};
 	return dfd.promise
 }
 

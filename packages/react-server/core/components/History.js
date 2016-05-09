@@ -10,13 +10,13 @@
 /*global window */
 
 var events = {
-		POPSTATE: 'popstate',
-		// the constant really should be "pushstate" but the router made it "click". added PUSHSTATE
-		// constant to make naming consistent, CLICK for backwards compat
-		CLICK: "click",
-		PUSHSTATE: "click",
-		PAGELOAD: "pageload",
-	};
+	POPSTATE: 'popstate',
+	// the constant really should be "pushstate" but the router made it "click". added PUSHSTATE
+	// constant to make naming consistent, CLICK for backwards compat
+	CLICK: "click",
+	PUSHSTATE: "click",
+	PAGELOAD: "pageload",
+};
 
 /**
  * This only supports pushState for the browsers with native pushState support.
