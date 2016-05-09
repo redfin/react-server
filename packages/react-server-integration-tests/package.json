@@ -1,4 +1,5 @@
 {
+  "name": "react-server-integration-tests",
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
