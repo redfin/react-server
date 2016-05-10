@@ -4,7 +4,7 @@ var ReactServerAgent = require("../../ReactServerAgent")
 ,   React = require("react")
 ,   ReactDOMServer = require("react-dom/server")
 ,   FragmentDataCache = require("../FragmentDataCache")
-,   isArray = require("lodash/lang/isArray")
+,   isArray = require("lodash/isArray")
 ;
 
 var {

@@ -8,7 +8,7 @@ var EventEmitter = require('events').EventEmitter,
 	PageUtil = require("../util/PageUtil");
 
 var _ = {
-	isFunction: require('lodash/lang/isFunction'),
+	isFunction: require('lodash/isFunction'),
 };
 
 class Navigator extends EventEmitter {

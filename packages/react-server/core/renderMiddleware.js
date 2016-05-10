@@ -19,7 +19,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
-	map: require('lodash/collection/map'),
+	map: require('lodash/map'),
 };
 
 // TODO FIXME ??
