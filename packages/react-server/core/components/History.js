@@ -94,7 +94,11 @@ History.prototype = {
 		var win = this.win;
 		if (this.canClientNavigate()) {
 			win.history.replaceState(state, title, url);
-		} else {
+		} else if (url !== this.currentUrl()) {
+
+			// On browsers that don't support history navigation, only want to
+			// replace state if the URL is actually changing.  Otherwise we're
+			// in for a potential infinite refresh loop.
 			this.navigationWindow().location.replace(url);
 		}
 	},
@@ -116,6 +120,11 @@ History.prototype = {
 		} else {
 			return win;
 		}
+	},
+
+	// This is current URL for current window (not navigation window).
+	currentUrl: function() {
+		return location.pathname + location.search;
 	},
 };
 
