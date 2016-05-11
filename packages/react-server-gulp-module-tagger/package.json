@@ -4,7 +4,7 @@
   "description": "A gulp plugin to replace tags with module information",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"All good!\""
+    "test": "gulp test"
   },
   "repository": "redfin/react-server",
   "author": "Redfin",
