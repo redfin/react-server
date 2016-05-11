@@ -1,6 +1,6 @@
 {
   "name": "react-server-data-bundle-cache",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "React Server Data Bundle Cache",
   "main": "index.js",
   "repository": "redfin/react-server",
@@ -19,6 +19,6 @@
     "react-server-gulp-module-tagger": "^0.2.0"
   },
   "peerDependencies": {
-    "react-server": "^0.2.4"
+    "react-server": "^0.2.5"
   }
 }
