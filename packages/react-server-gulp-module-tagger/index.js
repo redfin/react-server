@@ -11,14 +11,16 @@ var isWindows = ('win32' === process.platform)
 	: /(?:[^\/]+\/node_modules\/)?react-server-gulp-module-tagger\/index\.js$/
 ,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
-module.exports = function(){
+module.exports = function(config){
+	config || (config = {});
 	return forEach(function(stream, file){
-		return stream.pipe(replace(REPLACE_TOKEN, loggerSpec.bind(file)));
+		return stream.pipe(replace(REPLACE_TOKEN, loggerSpec.bind({file, config})));
 	})
 }
 
 var loggerSpec = function(fullMatch, optString){
-	var fn   = this.path
+	var fn   = this.file.path
+	,   trim = this.config.trim || ''
 	,   opts = {}
 
 	if (fn.indexOf(BASE_PATH) !== 0) {
@@ -31,17 +33,17 @@ var loggerSpec = function(fullMatch, optString){
 		opts = new Function("return "+optString.replace(/^\/\//mg,''))(); // eslint-disable-line no-new-func
 	}
 
-	opts.name  = getName  (fn, opts);
+	opts.name  = getName  (fn, opts, trim);
 	opts.color = getColor (fn, opts);
 
 	return JSON.stringify(opts);
 }
 
-var getName = function(fn, opts){
+var getName = function(fn, opts, trim){
 	var slashPattern = isWindows
 		?/\\/g
 		:/\//g
-	var name = fn.substring(BASE_PATH.length, fn.length)
+	var name = fn.substring(BASE_PATH.length+trim.length, fn.length)
 		.replace(/\.jsx?$/, '')
 		.replace(slashPattern,'.')
 	if (opts.label) {

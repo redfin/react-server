@@ -55,7 +55,7 @@ function compile(serverSide) {
 	return gulp.src(src)
 		.pipe(codeFilter)
 			.pipe(changed(dest, {extension: '.js'}))
-			.pipe(logging())
+			.pipe(logging({trim: 'react-server/packages/'}))
 			.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
 			.pipe(gulpif(shouldSourcemap(), sourcemaps.init()))
 			.pipe(common.es6Transform())
