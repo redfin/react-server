@@ -15,9 +15,6 @@
     "stratocacher": "0.0.12",
     "stratocacher-layer-lru": "0.0.12"
   },
-  "devDependencies": {
-    "react-server-gulp-module-tagger": "^0.2.0"
-  },
   "peerDependencies": {
     "react-server": "^0.2.5"
   }
