@@ -44,6 +44,7 @@
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "gulp-babel": "^5.1.0"
+    "gulp-babel": "^5.1.0",
+    "react-server-gulp-module-tagger": "^0.2.0"
   }
 }

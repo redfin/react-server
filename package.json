@@ -38,7 +38,6 @@
     "path-to-regexp": "1.0.1",
     "react": "0.14.2",
     "react-dom": "0.14.2",
-    "react-server-gulp-module-tagger": "^0.2.0",
     "superagent": "1.2.0",
     "webpack": "1.4.13",
     "zombie": "4.1.0"
