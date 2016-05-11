@@ -29,4 +29,4 @@ gulp.task('eslint', [], () =>  gulp.src(SRC)
 
 gulp.task('nsp', (cb) => nsp({package: path.resolve('package.json')}, cb));
 
-gulp.task('test', ['nsp']);
+gulp.task('test', ['nsp', 'eslint']);

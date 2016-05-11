@@ -1,4 +1,6 @@
 var gulp = require("gulp"),
+	path = require('path'),
+	nsp = require('gulp-nsp'),
 	replace = require("gulp-replace"),
 	rename = require("gulp-rename"),
 	sourcemaps = require("gulp-sourcemaps"),
@@ -96,7 +98,10 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 		});
 });
 
-gulp.task("test", ["jasmine", "eslint"]);
+
+gulp.task('nsp', (cb) => nsp({package: path.resolve('package.json')}, cb));
+
+gulp.task("test", ["jasmine", "eslint", "nsp"]);
 
 gulp.task("jasmine", ["compileServer", "compileClient"], function() {
 
