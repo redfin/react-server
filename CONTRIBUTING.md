@@ -12,6 +12,9 @@ You could:
 - [Build new features][build-new-features]
 - [Contribute to the discussion][contribute-to-the-discussion]
 
+Head over to [react-server-test-pages](/packages/react-server-test-pages) and
+check out the README to get a test server set up.
+
 ## Contributor License Agreement
 
 To get started, please [sign the Contributor License
