@@ -48,4 +48,4 @@ to application/json for json responses.
 # How do I find out more?
 
 The best place to learn more about how to write middleware is by looking at
-core/util/PageUtil.
+[core/util/PageUtil.js](/packages/react-server/core/util/PageUtil.js).
