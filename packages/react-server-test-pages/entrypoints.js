@@ -9,6 +9,10 @@ module.exports = {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
 	},
+	AboveTheFold: {
+		entry: "/root/aboveTheFold",
+		description: "Above The Fold Count",
+	},
 	NavigationPlayground: {
 		entry: "/navigation/playground",
 		description: "Navigation playground",
