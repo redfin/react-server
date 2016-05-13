@@ -1,3 +1,5 @@
 node_modules
 *.swp
 *.orig
+lerna-debug.log
+*npm-debug.log*
