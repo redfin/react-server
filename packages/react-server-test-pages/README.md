@@ -19,4 +19,6 @@ Then hit http://localhost:3000/ to see what's available.
 If you make changes in `packages/react-server` you'll need to `CTRL-C` and
 re-run the last line of the setup to pull them in.
 
+If you wish to run the test server in debug mode, simply replace `npm start` with `npm run debug`.
+
 Add pages in `entrypoints.js`.  Instructions are at the top.
