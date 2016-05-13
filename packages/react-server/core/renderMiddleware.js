@@ -285,6 +285,14 @@ function setDataBundleContentType(req, res) {
 }
 
 function writeHeader(req, res, context, start, pageObject) {
+	// This is awkward and imprecise.  We don't want to put `<script>`
+	// tags between divs above the fold, so we're going to keep separate
+	// track of time client and server side. Then we'll put `<noscript>`
+	// tags with data elements representing offset from our _server_ base
+	// time that we'll apply to our _client_ base time as a proxy for when
+	// the element arrived (when it's actually when we _sent_ it).
+	RLS().timingDataT0 = new Date;
+
 	res.type('html');
 	res.set('Transfer-Encoding', 'chunked');
 
@@ -294,7 +302,6 @@ function writeHeader(req, res, context, start, pageObject) {
 	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
 		renderDebugComments(pageObject, res),
-		renderTimingInit(pageObject, res),
 		renderTitle(pageObject, res),
 		// PLAT-602: inline scripts come before stylesheets because
 		// stylesheet downloads block inline script execution.
@@ -326,18 +333,6 @@ function flushRes(res){
 			logger.time('firstFlush', new Date - RLS().startTime);
 		}
 	}
-}
-
-function renderTimingInit(pageObject, res) {
-	// This is awkward and imprecise.  We don't want to put `<script>`
-	// tags between divs above the fold, so we're going to keep separate
-	// track of time client and server side. Then we'll put `<noscript>`
-	// tags with data elements representing offset from our _server_ base
-	// time that we'll apply to our _client_ base time as a proxy for when
-	// the element arrived (when it's actually when we _sent_ it).
-	//
-	RLS().timingDataT0 = new Date;
-	renderScriptsSync([{text:`__reactServerTimingStart=new Date`}], res)
 }
 
 function renderDebugComments (pageObject, res) {
