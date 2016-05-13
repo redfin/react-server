@@ -53,6 +53,7 @@ class ClientController extends EventEmitter {
 	constructor ({routes}) {
 		super();
 
+		window.__reactServerTimingStart = window.performance ? window.performance.timing.navigationStart : new Date;
 		var wakeTime = new Date - window.__reactServerTimingStart;
 
 		var dehydratedState = window.__reactServerState;
