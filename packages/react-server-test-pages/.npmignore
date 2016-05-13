@@ -1,2 +1,3 @@
 gulpfile.babel.js
 .* # dot files
+npm-debug.log*
