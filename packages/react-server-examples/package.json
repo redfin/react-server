@@ -2,6 +2,10 @@
   "name": "react-server-examples",
   "private": true,
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "clean": "rimraf npm-debug.log*"
+  },
+  "devDependencies": {
+    "rimraf": "^2.2.8"
   }
 }

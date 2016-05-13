@@ -26,13 +26,15 @@
     "eslint-config-xo-react": "^0.7.0",
     "eslint-plugin-react": "^5.1.1",
     "nsp": "^2.3.3",
+    "rimraf": "^2.5.2",
     "xo": "^0.15.1",
     "yeoman-assert": "^2.0.0",
     "yeoman-test": "^1.0.0"
   },
   "repository": "redfin/packages/generator-react-server",
   "scripts": {
-    "test": "ava test && xo && nsp check"
+    "test": "ava test && xo && nsp check",
+    "clean": "rimraf npm-debug.log*"
   },
   "license": "Apache-2.0",
   "xo": {

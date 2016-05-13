@@ -8,8 +8,9 @@
   "author": "Navtej",
   "license": "Apache License 2.0",
   "scripts": {
-    "prepublish": "gulp build",
-    "test": "gulp test"
+    "prepublish": "npm run clean; gulp build",
+    "test": "gulp test",
+    "clean": "rimraf target npm-debug.log*"
   },
   "keywords": [
     "react",
@@ -34,7 +35,6 @@
     "q": "1.4.1",
     "querystring": "0.2.0",
     "request-local-storage": "1.0.0",
-    "rimraf": "2.2.8",
     "routr": "0.1.3",
     "winston": "2.2.0"
   },
@@ -42,5 +42,8 @@
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
     "superagent": "1.2.0"
+  },
+  "devDependencies": {
+    "rimraf": "2.5.2"
   }
 }

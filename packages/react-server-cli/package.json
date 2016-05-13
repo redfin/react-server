@@ -4,8 +4,9 @@
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
-    "prepublish": "gulp",
-    "test": "gulp test"
+    "prepublish": "npm run clean; gulp",
+    "test": "gulp test",
+    "clean": "rimraf target npm-debug.log*"
   },
   "author": "Sasha Aickin",
   "bin": {
@@ -34,5 +35,8 @@
   },
   "peerDependencies": {
     "react-server": "^0.2.12"
+  },
+  "devDependencies": {
+    "rimraf": "^2.5.2"
   }
 }

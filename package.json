@@ -1,14 +1,16 @@
 {
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "test": "lerna run test"
+    "bootstrap": "npm i; lerna bootstrap",
+    "test": "lerna run test",
+    "clean": "rimraf lerna-debug.log && lerna run clean",
+    "nuke": "rm -r node_modules; for d in packages/*/node_modules; do echo $d; rm -r $d; done"
   },
   "devDependencies": {
     "babel-plugin-react-require": "^2.1.0",
+    "babel-plugin-transform-runtime": "~6.5.0",
     "babel-preset-es2015": "~6.5.0",
     "babel-preset-react": "^6.5.0",
-    "babel-plugin-transform-runtime": "~6.5.0",
     "babel-preset-stage-1": "^6.5.0",
     "babel-register": "^6.7.2",
     "cheerio": "0.19.0",
@@ -29,17 +31,18 @@
     "gulp-replace": "0.5.2",
     "gulp-sourcemaps": "1.3.0",
     "gulp-substituter": "0.3.0",
-    "minimist": "1.1.0",
     "handlebars": "1.3.0",
     "handlebars-loader": "0.1.7",
     "jasmine": "2.3.1",
     "jsdom": "5.6.1",
     "jsx-loader": "0.12.2",
+    "minimist": "1.1.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
     "react": "0.14.2",
-    "react-server-gulp-module-tagger": "./packages/react-server-gulp-module-tagger",
     "react-dom": "0.14.2",
+    "react-server-gulp-module-tagger": "^0.2.6",
+    "rimraf": "^2.5.2",
     "superagent": "1.2.0",
     "webpack": "1.4.13",
     "zombie": "4.1.0"
