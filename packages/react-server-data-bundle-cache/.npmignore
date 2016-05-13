@@ -2,3 +2,4 @@ src/
 gulpfile.js
 main.js
 .* # dot files
+npm-debug.log*
