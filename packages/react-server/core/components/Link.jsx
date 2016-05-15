@@ -12,6 +12,7 @@ module.exports = React.createClass({
 		bundleData : React.PropTypes.bool,
 		frameback  : React.PropTypes.bool,
 		reuseDom   : React.PropTypes.bool,
+		className  : React.PropTypes.string,
 	},
 
 	getDefaultProps(){
@@ -25,7 +26,7 @@ module.exports = React.createClass({
 
 	render: function () {
 		return (
-			<a href={this.props.path} onClick={this._onClick}>{this.props.children}</a>
+			<a href={this.props.path} onClick={this._onClick} className={this.className}>{this.props.children}</a>
 		);
 	},
 
