@@ -1,7 +1,9 @@
 <img src="/images/reactserver_logo%402x.png" width="450px"/>
 
 [![Build Status][build-badge-img]][build-url]
-[![NPM version][npm-badge-img]][npm-url]
+[![NPM version][npm-version-img]][npm-url]
+[![NPM license][npm-license-img]][npm-url]
+[![NPM downloads per month][npm-downloads-img]][npm-url]
 [![Powered by Redfin][redfin-img]][redfin-url]
 
 React framework with server render for blazing fast page load and seamless
@@ -24,7 +26,9 @@ See [the contributing guide](CONTRIBUTING.md) to get started.
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
-[npm-badge-img]: https://badge.fury.io/js/react-server.svg
 [npm-url]: https://npmjs.org/package/react-server
 [redfin-url]: https://www.redfin.com
 [redfin-img]: https://img.shields.io/badge/Powered%20By-Redfin-c82021.svg
+[npm-version-img]: https://badge.fury.io/js/react-server.png
+[npm-license-img]: https://img.shields.io/npm/l/react-server.svg
+[npm-downloads-img]: https://img.shields.io/npm/dm/react-server.svg
