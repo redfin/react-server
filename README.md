@@ -23,5 +23,5 @@ See [the contributing guide](CONTRIBUTING.md) to get started.
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
-[npm-badge-img]: https://badge.fury.io/js/react-server.png
+[npm-badge-img]: https://badge.fury.io/js/react-server.svg
 [npm-url]: https://npmjs.org/package/react-server
