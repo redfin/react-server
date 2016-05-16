@@ -1,4 +1,17 @@
-# react-server [![NPM version][npm-badge-img]][npm-url]
+<img src="https://raw.githubusercontent.com/redfin/react-server/master/images/reactserver_logo%402x.png" width="450px"/>
+
+[![Build Status][build-badge-img]][build-url]
+[![NPM version][npm-version-img]][npm-url]
+[![NPM downloads per month][npm-downloads-img]][npm-url]
+[![NPM license][npm-license-img]][npm-url]
+[![Powered by Redfin][redfin-img]][redfin-url]
+
+React framework with server render for blazing fast page load and seamless
+transitions between pages in the browser.
+
+** **
+
+## What is it?
 
 react-server is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
 for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
@@ -162,8 +175,11 @@ We welcome contributions to react-server!  To contribute, follow these steps:
 
 Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know).
 
-[![Dependency Status](https://david-dm.org/redfin/react-server.svg)](https://david-dm.org/redfin/react-server)
-[![devDependency Status](https://david-dm.org/redfin/react-server/dev-status.svg)](https://david-dm.org/redfin/react-server#info=devDependencies)
-
-[npm-badge-img]: https://badge.fury.io/js/react-server.png
+[build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
+[build-url]: https://travis-ci.org/redfin/react-server
 [npm-url]: https://npmjs.org/package/react-server
+[redfin-url]: https://www.redfin.com
+[redfin-img]: https://img.shields.io/badge/Powered%20By-Redfin-c82021.svg
+[npm-version-img]: https://badge.fury.io/js/react-server.svg
+[npm-license-img]: https://img.shields.io/npm/l/react-server.svg
+[npm-downloads-img]: https://img.shields.io/npm/dm/react-server.svg
