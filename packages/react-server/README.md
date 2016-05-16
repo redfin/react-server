@@ -15,7 +15,7 @@ transitions between pages in the browser.
 
 `react-server` is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
 for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
-based on the [Flux pattern](https://facebook.github.io/flux/docs/overview.html).  
+based on the [Flux pattern](https://facebook.github.io/flux/docs/overview.html).
 Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-transitioning-to-universal-javascript.html).
 
 ## Getting started
