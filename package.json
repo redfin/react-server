@@ -35,7 +35,6 @@
     "jasmine": "2.3.1",
     "jsdom": "5.6.1",
     "jsx-loader": "0.12.2",
-    "lerna": "v2.0.0-beta.5",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
     "react": "0.14.2",
@@ -44,5 +43,8 @@
     "superagent": "1.2.0",
     "webpack": "1.4.13",
     "zombie": "4.1.0"
+  },
+  "dependencies": {
+    "lerna": "2.0.0-beta.9"
   }
 }
