@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "test": "lerna run test && cd integration-tests && npm install && npm test"
+    "test": "lerna run test"
   },
   "devDependencies": {
     "babel-plugin-react-require": "^2.1.0",
@@ -36,6 +36,7 @@
     "jsdom": "5.6.1",
     "jsx-loader": "0.12.2",
     "lerna": "v2.0.0-beta.5",
+    "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
     "react": "0.14.2",
     "react-server-gulp-module-tagger": "./packages/react-server-gulp-module-tagger",

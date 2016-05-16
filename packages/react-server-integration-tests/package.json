@@ -1,0 +1,17 @@
+{
+  "name": "react-server-integration-tests",
+  "private": true,
+  "description": "Integration tests for react-server",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "devDependencies": {
+    "lodash": "^4.8.2",
+    "q": "^1.4.1",
+    "react": "~0.14.2",
+    "react-dom": "~0.14.2",
+    "react-server": "../react-server",
+    "react-server-cli": "../react-server-cli",
+    "superagent": "1.2.0"
+  }
+}

@@ -10,14 +10,17 @@ Setup (from the repo root):
 $ npm install
 $ npm run bootstrap
 $ cd packages/react-server-test-pages
-$ npm install react-server-cli@../react-server-cli
-$ npm install react-server@../react-server && npm start
+$ npm start
 ```
 
 Then hit http://localhost:3000/ to see what's available.
 
 If you make changes in `packages/react-server` you'll need to `CTRL-C` and
-re-run the last line of the setup to pull them in.
+re-install `react-server` locally to pick them up.
+
+```bash
+$ npm install react-server@../react-server && npm start
+```
 
 If you wish to run the test server in debug mode, simply replace `npm start` with `npm run debug`.
 
