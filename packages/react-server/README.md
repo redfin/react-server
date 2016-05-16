@@ -21,7 +21,7 @@ Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-t
 ## Getting started
 
 For now it's easiest to get started with
-[`react-server-cli`](https://github.com/redfin/react-server/tree/master/packages/react-server-cli).
+[`react-server-cli`](https://www.npmjs.com/package/react-server-cli).
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
