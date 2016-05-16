@@ -818,6 +818,8 @@ function writeElements(res, elements) {
 
 	// Pick up where we left off.
 	var start = RLS().nextElement||(RLS().nextElement=0);
+	// We keep a separate count for getAboveTheFoldCount in order to omit RootContainers
+	var elementCount = RLS().nextElementForATF||(RLS().nextElementForATF=0);
 
 	for (var i = start; i < elements.length; RLS().nextElement = ++i){
 
@@ -825,14 +827,14 @@ function writeElements(res, elements) {
 		if (elements[i] === ELEMENT_PENDING) break;
 
 		// Got one!
-		writeElement(res, elements[i], i);
+		var shouldCountForATF = writeElement(res, elements[i], i);
 
 		// Free for GC.
 		elements[i] = ELEMENT_ALREADY_WRITTEN;
 
 		if (PageUtil.PageConfig.get('isFragment')) continue;
 
-		if (i === RLS().atfCount - 1){
+		if (elementCount === RLS().atfCount - 1){
 
 			// Okay, we've sent all of our above-the-fold HTML,
 			// now we can let the client start waking nodes up.
@@ -840,11 +842,14 @@ function writeElements(res, elements) {
 			for (var j = 0; j <= i; j++){
 				renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${j})` }], res)
 			}
-		} else if (i >= RLS().atfCount){
+		} else if (elementCount >= RLS().atfCount){
 
 			// Let the client know it's there.
 			renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${i})` }], res)
 		}
+
+		//The element we just wrote out should count for above the fold!
+		if (shouldCountForATF) RLS().nextElementForATF = ++elementCount;
 	}
 
 	// It may be a while before we render the next element, so if we just
@@ -852,6 +857,9 @@ function writeElements(res, elements) {
 	if (i !== start) flushRes(res);
 }
 
+/*
+ Returns whether or not the element written should count for above the fold (aka if it's NOT a RootContainer open or close tag)
+*/
 function writeElement(res, element, i){
 	if (!element) {
 		// A falsy element was a render error.  We've gotta
@@ -866,8 +874,10 @@ function writeElement(res, element, i){
 		res.write(`<div ${PAGE_CONTAINER_NODE_ID}=${i}${
 			_.map(element.containerOpen, (v, k) => ` ${k}="${attrfy(v)}"`)
 		}>`);
+		return false;
 	} else if (element.containerClose) {
 		res.write('</div>');
+		return false;
 	} else {
 		res.write(`<div data-react-server-root-id=${
 			i
@@ -877,6 +887,7 @@ function writeElement(res, element, i){
 		}"${
 			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
 		}>${element.html}</div>`);
+		return true;
 	}
 }
 
