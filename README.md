@@ -29,6 +29,6 @@ See [the contributing guide](CONTRIBUTING.md) to get started.
 [npm-url]: https://npmjs.org/package/react-server
 [redfin-url]: https://www.redfin.com
 [redfin-img]: https://img.shields.io/badge/Powered%20By-Redfin-c82021.svg
-[npm-version-img]: https://badge.fury.io/js/react-server.png
+[npm-version-img]: https://badge.fury.io/js/react-server.svg
 [npm-license-img]: https://img.shields.io/npm/l/react-server.svg
 [npm-downloads-img]: https://img.shields.io/npm/dm/react-server.svg
