@@ -13,10 +13,9 @@ transitions between pages in the browser.
 
 ## What is it?
 
-react-server is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
+`react-server` is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
 for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
 based on the [Flux pattern](https://facebook.github.io/flux/docs/overview.html).  
-react-server is closest in its implementation to [reflux](https://github.com/reflux/refluxjs)
 Read more on [our dev blog](https://www.redfin.com/devblog/2015/09/thoughts-on-transitioning-to-universal-javascript.html).
 
 ## Getting started
@@ -166,14 +165,6 @@ We welcome contributions to react-server!  To contribute, follow these steps:
 
 8. Your pull request gets merged!  Congratulations, you're officially a react-server contributor.
  Have a 🍺to celebrate; your check is in the mail, we swear 😉.
-
-// TODO: Concepts
-// TODO: routing guide
-// TODO: generator
-
-## What is "triton"? Why do I see that in the git history?
-
-Back when we started this project, we came up with a great name -- `triton` -- and we started using it internally. And then it took us forever to get around to making the source code public. And then [Joyent](https://www.joyent.com) released a product called `triton` and stole our thunder, so we had to go with `react-server` instead (a terrible, terrible tragedy, we know).
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
