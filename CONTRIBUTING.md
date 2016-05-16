@@ -19,7 +19,10 @@ Yeah!  Do it!
 Head over to [react-server-test-pages](/packages/react-server-test-pages) and
 check out the README to get a test server set up.
 
-Also, check for regressions:
+Add some automated [integration
+tests](/packages/react-server-integration-tests) if you're up for it.
+
+If nothing else, check for regressions:
 
 ```bash
 npm test
