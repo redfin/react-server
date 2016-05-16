@@ -12,8 +12,23 @@ You could:
 - [Build new features][build-new-features]
 - [Contribute to the discussion][contribute-to-the-discussion]
 
+## Testing
+
+Yeah!  Do it!
+
 Head over to [react-server-test-pages](/packages/react-server-test-pages) and
 check out the README to get a test server set up.
+
+Add some automated [integration
+tests](/packages/react-server-integration-tests) if you're up for it.
+
+If nothing else, check for regressions:
+
+```bash
+npm test
+```
+
+That will, among other things, run [`eslint`](/.eslintrc).
 
 ## Contributor License Agreement
 
