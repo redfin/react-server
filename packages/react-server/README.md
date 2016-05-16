@@ -142,30 +142,6 @@ navigating to http://localhost:3000, or by opening it in your default browser fr
 ## Contributing
 We welcome contributions to react-server!  To contribute, follow these steps:
 
-1. Check out the code.  You'll want to [fork the repository](https://help.github.com/articles/fork-a-repo/),
- and then clone it locally.
-
-2. Make your changes!
-
-3. Write some tests. See [the testing guide](/core/test/README.md).
-
-4. Make sure _all_ the tests pass!
-		gulp test
-
-5. Make sure you've followed our style guide.  The style guide is codified as eslint
- rules in [package.json](package.json).  You can read more about what those rules
- do on the [eslint rules page](http://eslint.org/docs/rules/), or with a combination
- of matching the style of the rest of the project and trial and error.
-		gulp eslint
-
-6. Create a [pull request](https://help.github.com/articles/using-pull-requests/)
-
-7. Repeat zero or more times: Get some feedback from [another contributor](https://github.com/redfin/react-server/graphs/contributors),
- resolve it, update your pull request.
-
-8. Your pull request gets merged!  Congratulations, you're officially a react-server contributor.
- Have a 🍺to celebrate; your check is in the mail, we swear 😉.
-
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
 [npm-url]: https://npmjs.org/package/react-server
