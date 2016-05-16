@@ -2,8 +2,8 @@
 
 [![Build Status][build-badge-img]][build-url]
 [![NPM version][npm-version-img]][npm-url]
-[![NPM license][npm-license-img]][npm-url]
 [![NPM downloads per month][npm-downloads-img]][npm-url]
+[![NPM license][npm-license-img]][npm-url]
 [![Powered by Redfin][redfin-img]][redfin-url]
 
 React framework with server render for blazing fast page load and seamless
