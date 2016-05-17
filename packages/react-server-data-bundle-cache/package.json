@@ -1,6 +1,6 @@
 {
   "name": "react-server-data-bundle-cache",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "React Server Data Bundle Cache",
   "main": "index.js",
   "repository": "redfin/react-server",
@@ -16,6 +16,6 @@
     "stratocacher-layer-lru": "0.0.12"
   },
   "peerDependencies": {
-    "react-server": "^0.2.6"
+    "react-server": "^0.2.7"
   }
 }
