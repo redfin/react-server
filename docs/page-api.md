@@ -132,8 +132,6 @@ String, page?:Page})`
 
 * URLs for the script files that should be loaded in the head for this page.
 
-* **for v2:** allow Promises as return value
-
 `getSystemScripts(next: Function): String | Script | [String | Script]`
 
 * URLs for the critical client-side JavaScript files that make react-server
@@ -144,16 +142,12 @@ String, page?:Page})`
 
 * Default: the URLs of the files that react-server needs to run on the client-side.
 
-* **for v2:** allow Promises as return value
-
 `getHeadStylesheets(next: Function): String |  Style | [String | Style]`
 
 * URLs for the stylesheets that should be loaded in the head for this page.
 
 * If the method returns a `String` value, it is interpreted as a `Style` of
   the form `{href:<value>, type:"text/css"}`.
-
-* **for v2:** allow Promises as return value
 
 `getMetaTags(next: Function): Meta | Promise(Meta) | [Meta | Promise(Meta)]`
 
@@ -200,26 +194,11 @@ Promise(ReactElement) ]`
 
 * This method is only part of the "raw response" page lifecycle.  See
 
-### TO BE IMPLEMENTED IN VERSION 2
-
-`getCanonicalUrl(next: Function), optional: String | Promise(String)`
-
-* **NOT YET IMPLEMENTED**
-
-* A string (or promise thereof) that is the canonical URL for this webpage
-
-* RECOMMENDATION: v2, or maybe just drop
-
-* Default: no canonical URL header added.
-
 `getHttpHeaders(next:Function): HttpHeader | Promise(HttpHeader) | [HttpHeader | Promise(HttpHeader)]`
 
-* **NOT YET IMPLEMENTED**
+* The set of HTTP headers that should be sent back from this page. Has no
+  effect when a page is transitioned to on the client.
 
-* The set of HTTP headers that should be sent back from this page. HAS NO
-  EFFECT WHEN A PAGE IS TRANSITIONED TO ON THE CLIENT.
-
-* RECOMMENDATION: v2, sigh.
 
 ## PAGE_HOOKS
 
@@ -234,6 +213,13 @@ Return configuration overrides for the page.
 Add new configuration values, with defaults (only used by middleware).
 
 `handleComplete()`: Called when the request is complete and the full response has been sent.
+
+### Config values
+
+There are two config values that are honored by the navigator
+
+* `isFragment` (boolean) indicates a response is a fragment of a page, rather than a full page
+* `isRawResponse` (boolean) indicates a response is to be served as-is
 
 
 ## PAGE_MIXIN
