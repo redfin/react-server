@@ -26,7 +26,7 @@ module.exports = React.createClass({
 
 	render: function () {
 		return (
-			<a href={this.props.path} onClick={this._onClick} className={this.className}>{this.props.children}</a>
+			<a href={this.props.path} onClick={this._onClick} className={this.props.className}>{this.props.children}</a>
 		);
 	},
 
