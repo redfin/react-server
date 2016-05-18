@@ -12,6 +12,8 @@ transitions between pages in the browser.
 ** **  
 #### Just getting started with `react-server`?
 
+[![Join the chat at https://gitter.im/redfin/react-server](https://badges.gitter.im/redfin/react-server.svg)](https://gitter.im/redfin/react-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Start with [`react-server-cli`](packages/react-server-cli), which will take
 care of the _server_ part and get you up and running right away.
 
