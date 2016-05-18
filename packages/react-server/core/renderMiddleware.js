@@ -834,6 +834,7 @@ function writeElements(res, elements) {
 
 		if (i === RLS().atfCount - 1){
 
+			logAboveTheFoldTime(res);
 			// Okay, we've sent all of our above-the-fold HTML,
 			// now we can let the client start waking nodes up.
 			bootstrapClient(res)
@@ -878,6 +879,13 @@ function writeElement(res, element, i){
 			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
 		}>${element.html}</div>`);
 	}
+}
+
+function logAboveTheFoldTime(res) {
+	// write a synchronous script to record the time on the browser when above the fold content shows up
+	// this is a proxy for "first paint" when the DOM is parsed and painted
+	renderScriptsSync([{text:'__displayAboveTheFold=new Date;' +
+		'window.performance && window.performance.mark && window.performance.mark("displayAboveTheFold.fromStart");'}], res);
 }
 
 function bootstrapClient(res) {
