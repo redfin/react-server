@@ -17,15 +17,16 @@ import crypto from "crypto"
 // once the compiler has been run. The file path returned from the promise
 // can be required and passed in to reactServer.middleware().
 // TODO: add options for sourcemaps.
-export default (routes,{
-	workingDir = "./__clientTemp",
-	routesDir = ".",
-	outputDir = workingDir + "/build",
-	outputUrl = "/static/",
-	hot = true,
-	minify = false,
-	longTermCaching = false,
-} = {}) => {
+export default (routes, opts = {}) => {
+	const {
+		workingDir = "./__clientTemp",
+		routesDir = ".",
+		outputDir = workingDir + "/build",
+		outputUrl = "/static/",
+		hot = true,
+		minify = false,
+		longTermCaching = false,
+	} = opts;
 	if (longTermCaching && hot) {
 		// chunk hashes can't be used in hot mode, so we can't use long-term caching
 		// and hot mode at the same time.
@@ -40,7 +41,7 @@ export default (routes,{
 	const routesDirAbsolute = path.resolve(process.cwd(), routesDir);
 
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
-	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute);
+	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
 	const entrypointBase = hot ? [`webpack-dev-server/client?${outputUrl}`,"webpack/hot/only-dev-server"] : [];
 	let entrypoints = {};
 	for (let routeName of Object.keys(routes.routes)) {
@@ -293,7 +294,7 @@ const normalizeRoutesPage = (page) => {
 // writes out a bootstrap file for the client which in turn includes the client
 // routes file. note that outputDir must be the same directory as the client routes
 // file, which must be named "routes_client".
-const writeClientBootstrapFile = (outputDir) => {
+const writeClientBootstrapFile = (outputDir, opts) => {
 	var outputFile = outputDir + "/entry.js";
 	fs.writeFileSync(outputFile, `
 		if (typeof window !== "undefined") {
@@ -308,6 +309,9 @@ const writeClientBootstrapFile = (outputDir) => {
 		}
 		var reactServer = require("react-server");
 		window.rfBootstrap = function() {
+			reactServer.logging.setLevel('main',  ${opts.logLevel});
+			reactServer.logging.setLevel('time',  ${opts.timingLogLevel});
+			reactServer.logging.setLevel('gauge', ${opts.gaugeLogLevel});
 			new reactServer.ClientController({routes: require("./routes_client")}).init();
 		}`
 	);
