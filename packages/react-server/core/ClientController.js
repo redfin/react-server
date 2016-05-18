@@ -96,6 +96,11 @@ class ClientController extends EventEmitter {
 	}
 
 	_startRequest({request, type}) {
+
+		const t0 = type === History.events.PAGELOAD
+			?window.__reactServerTimingStart // Try to use navigation timing.
+			:new Date;                       // There's no naviagation.  We're it.
+
 		const url = request.getUrl();
 		const FC = this.context.framebackController;
 		const isPush = type === History.events.PUSHSTATE;
@@ -103,6 +108,27 @@ class ClientController extends EventEmitter {
 			// A push to a frame, or a pop _from_ a previous push.
 			isPush || ((this._lastState||{}).reactServerFrame||{})._framebackExit
 		);
+
+		// If we've got control of the URL bar we'll also take responsibility
+		// for logging how long the request took in a variety of ways:
+		// - Request type (pageload, pushstate, popstate)
+		// - Request options (reuseDom, bundleData, etc)
+		if (!window.__reactServerIsFrame) {
+			this.context.navigator.once('loadComplete', () => {
+				const tim = new Date - t0;
+				const bas = `handleRequest`;
+				const typ = `type.${type||'PAGELOAD'}`;
+				logger.time(`${bas}.all`, tim);
+				logger.time(`${bas}.${typ}.all`, tim);
+				_.forEach(request.getOpts(), (val, key) => {
+					if (val) {
+						const opt = `${bas}.opt.${key}`;
+						logger.time(`${bas}.${opt}`, tim);
+						logger.time(`${bas}.${typ}.${opt}`, tim);
+					}
+				});
+			});
+		}
 
 		this._reuseDom = request.getReuseDom();
 
