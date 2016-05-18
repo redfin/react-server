@@ -23,8 +23,19 @@ class RootElement extends React.Component {
 
 				// Okay, now we've complained about it
 				// sufficiently, let's go ahead and update.
-				this.props.childProps = childProps;
-				this.forceUpdate();
+
+				// Because props.childProps is set to writable/configurable:false
+				// We need to clone the entire props object and update childProps within the clone
+				var propstemp = {};
+                for (var k in _this2.props) {
+                    if(k != 'childProps') {
+                        propstemp[k] = _this2.props[k];
+                    }
+                }
+                propstemp['childProps'] = childProps;
+                
+                _this2.props = propstemp;
+                _this2.forceUpdate();
 			});
 		}
 	}
