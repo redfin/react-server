@@ -55,6 +55,7 @@ class ClientController extends EventEmitter {
 
 		window.__reactServerTimingStart = window.performance ? window.performance.timing.navigationStart : new Date;
 		var wakeTime = new Date - window.__reactServerTimingStart;
+		var aboveTheFold = window.performance ? (window.__displayAboveTheFold - window.__reactServerTimingStart) : 0;
 
 		var dehydratedState = window.__reactServerState;
 
@@ -82,6 +83,8 @@ class ClientController extends EventEmitter {
 
 		// Log this after loglevel is set.
 		logger.time('wakeFromStart', wakeTime);
+		// this is a proxy for when above the fold content gets painted (displayed) on the browser
+		logger.time('displayAboveTheFold.fromStart', aboveTheFold);
 	}
 
 	terminate() {
