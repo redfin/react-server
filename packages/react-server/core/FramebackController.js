@@ -111,7 +111,12 @@ class FramebackController extends EventEmitter {
 
 		this.hideMaster();
 
-		if (url !== this.url){
+		if (url === this.url){
+
+			// We're just going to show the frame.  It's already got our page.
+			setTimeout(() => this.emit('loadComplete'));
+
+		} else {
 
 			if (this.frame && request.getReuseFrame()) {
 
@@ -314,6 +319,7 @@ class FramebackController extends EventEmitter {
 			logger.debug("Frame navigated");
 		}
 
+		this.emit('loadComplete');
 	}
 }
 

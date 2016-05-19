@@ -109,26 +109,11 @@ class ClientController extends EventEmitter {
 			isPush || ((this._lastState||{}).reactServerFrame||{})._framebackExit
 		);
 
-		// If we've got control of the URL bar we'll also take responsibility
-		// for logging how long the request took in a variety of ways:
-		// - Request type (pageload, pushstate, popstate)
-		// - Request options (reuseDom, bundleData, etc)
-		if (!window.__reactServerIsFrame) {
-			this.context.navigator.once('loadComplete', () => {
-				const tim = new Date - t0;
-				const bas = `handleRequest`;
-				const typ = `type.${type||'PAGELOAD'}`;
-				logger.time(`${bas}.all`, tim);
-				logger.time(`${bas}.${typ}.all`, tim);
-				_.forEach(request.getOpts(), (val, key) => {
-					if (val) {
-						const opt = `${bas}.opt.${key}`;
-						logger.time(`${bas}.${opt}`, tim);
-						logger.time(`${bas}.${typ}.${opt}`, tim);
-					}
-				});
-			});
-		}
+		// This is who we're going to listen to regarding when navigation is
+		// complete for timing purposes.  By default it's our navigator, but
+		// if we're going to do a frameback navigation we'll listen to the
+		// frameback controller instead.
+		let navigationTimingAuthority = this.context.navigator;
 
 		this._reuseDom = request.getReuseDom();
 
@@ -155,6 +140,14 @@ class ClientController extends EventEmitter {
 				});
 
 			} else {
+
+				// We're going to let the navigator unlock navigation (via
+				// back button) as soon as our frame starts loading.  This is
+				// nice from an interactivity perspective.  But we still want
+				// to know how long it actually took to load the content in
+				// the frame.  For that we'll listen to the frameback
+				// controller.
+				navigationTimingAuthority = FC;
 
 				// Here we go...
 				FC.navigate(request).then(() => {
@@ -287,6 +280,29 @@ class ClientController extends EventEmitter {
 				});
 			}
 		}
+
+		// If we've got control of the URL bar we'll also take responsibility
+		// for logging how long the request took in a variety of ways:
+		// - Request type (pageload, pushstate, popstate)
+		// - Request options (reuseDom, bundleData, etc)
+		if (!window.__reactServerIsFrame) {
+			navigationTimingAuthority.once('loadComplete', () => {
+				const tim = new Date - t0;
+				const bas = `handleRequest`;
+				const typ = `type.${type||'PAGELOAD'}`;
+				logger.time(`${bas}.all`, tim);
+				logger.time(`${bas}.${typ}.all`, tim);
+				_.forEach(request.getOpts(), (val, key) => {
+					if (val) {
+						const opt = `${bas}.opt.${key}`;
+						logger.time(`${bas}.${opt}`, tim);
+						logger.time(`${bas}.${typ}.${opt}`, tim);
+					}
+				});
+			});
+		}
+
+
 
 		this._lastState = history.state;
 	}
