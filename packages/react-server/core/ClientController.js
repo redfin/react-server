@@ -294,7 +294,7 @@ class ClientController extends EventEmitter {
 				logger.time(`${bas}.${typ}.all`, tim);
 				_.forEach(request.getOpts(), (val, key) => {
 					if (val) {
-						const opt = `${bas}.opt.${key}`;
+						const opt = `opt.${key}`;
 						logger.time(`${bas}.${opt}`, tim);
 						logger.time(`${bas}.${typ}.${opt}`, tim);
 					}
