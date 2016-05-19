@@ -1,6 +1,10 @@
 var React = require('react');
 var Q = require('q');
 
+const _ = {
+	assign: require('lodash/assign'),
+};
+
 var logger = require('../logging').getLogger(__LOGGER__);
 
 class RootElement extends React.Component {
@@ -23,7 +27,7 @@ class RootElement extends React.Component {
 
 				// Okay, now we've complained about it
 				// sufficiently, let's go ahead and update.
-				this.props.childProps = childProps;
+				this.props = _.assign({}, this.props, {childProps});
 				this.forceUpdate();
 			});
 		}
