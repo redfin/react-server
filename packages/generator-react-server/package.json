@@ -32,7 +32,6 @@
   },
   "repository": "redfin/packages/generator-react-server",
   "scripts": {
-    "prepublish": "npm test",
     "test": "ava test && xo && nsp check"
   },
   "license": "Apache-2.0",
