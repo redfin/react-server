@@ -1,4 +1,10 @@
-# generator-react-server [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+# generator-react-server
+
+[![NPM version][npm-image]][npm-url]
+[![Build Status][build-badge-img]][build-url]
+[![NPM license][npm-license-img]][npm-url]
+[![Powered by Redfin][redfin-img]][redfin-url]
+
 > A react-server yeoman generator
 
 ## Installation
@@ -34,9 +40,8 @@ use the `generator-react-server` npm package name!
 
 [npm-image]: https://badge.fury.io/js/generator-react-server.svg
 [npm-url]: https://npmjs.org/package/generator-react-server
-[travis-image]: https://travis-ci.org/redfin/generator-react-server.svg?branch=master
-[travis-url]: https://travis-ci.org/redfin/generator-react-server
-[daviddm-image]: https://david-dm.org/redfin/generator-react-server.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/redfin/generator-react-server
-[coveralls-image]: https://coveralls.io/repos/redfin/generator-react-server/badge.svg
-[coveralls-url]: https://coveralls.io/r/redfin/generator-react-server
+[build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
+[build-url]: https://travis-ci.org/redfin/react-server
+[npm-license-img]: https://img.shields.io/npm/l/react-server.svg
+[redfin-url]: https://www.redfin.com
+[redfin-img]: https://img.shields.io/badge/Powered%20By-Redfin-c82021.svg
