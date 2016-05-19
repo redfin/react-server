@@ -1,6 +1,10 @@
 var React = require('react');
 var Q = require('q');
 
+const _ = {
+	assign: require('lodash/assign'),
+};
+
 var logger = require('../logging').getLogger(__LOGGER__);
 
 class RootElement extends React.Component {
@@ -23,17 +27,7 @@ class RootElement extends React.Component {
 
 				// Okay, now we've complained about it
 				// sufficiently, let's go ahead and update.
-
-				// Because this.props.childProps is writable/configurable:false
-				// we update the entirety this.props through a clone
-				var propstemp = {};
-				for (var k in this.props) {
-					if (k !== 'childProps') {
-						propstemp[k] = this.props[k];
-					}
-				}
-				propstemp.childProps = childProps;
-				this.props = propstemp;
+				this.props = _.assign({}, this.props, {childProps});
 				this.forceUpdate();
 			});
 		}
