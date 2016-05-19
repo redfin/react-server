@@ -13,10 +13,13 @@ transitions between pages in the browser.
 ** **  
 #### Just getting started with `react-server`?
 
-Start with [`react-server-cli`](packages/react-server-cli), which will take
-care of the _server_ part and get you up and running right away.
+The _easiest_ way to get started is with our [yeoman
+generator](packages/generator-react-server).
 
-Once you're hungry for more dig into
+That hooks you up with [`react-server-cli`](packages/react-server-cli), which
+will take care of the _server_ part and get you up and running right away.
+
+Once you're hungry for more dig into [the docs](docs/) and
 [`react-server`](packages/react-server) itself.
 ** **  
 
