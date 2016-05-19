@@ -28,7 +28,7 @@ class RootElement extends React.Component {
 				// We need to clone the entire props object and update childProps within the clone
 				var propstemp = {};
                 for (var k in this.props) {
-                    if(k != 'childProps') {
+                    if (k != 'childProps') {
                         propstemp[k] = this.props[k];
                     }
                 }
