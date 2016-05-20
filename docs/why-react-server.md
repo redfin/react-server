@@ -8,6 +8,7 @@ piping out the result, especially if you want to make sure your site loads
 quickly in a mobile-first world.
 
 `react-server`:
+
 1. Smoothes out the common problems you run into with React server-side
    rendering.
 1. Encodes performance best practices into the framework, making it easy to
