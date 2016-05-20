@@ -2,7 +2,7 @@ var winston = require('winston')
 ,   common  = require('./common')
 ,   _ = {
 	mapValues     : require("lodash/mapValues"),
-	pick          : require("lodash/pick"),
+	pickBy        : require("lodash/pickBy"),
 	isPlainObject : require("lodash/isPlainObject"),
 	isEmpty       : require("lodash/isEmpty"),
 	trimStart     : require("lodash/trimStart"),
@@ -68,7 +68,7 @@ function errorInterceptor (level, msg, meta) {
 // massage the error into a format suitable for logging
 function normalizeError (err) {
 	if (err instanceof Error) {
-		return _.pick({
+		return _.pickBy({
 			message: err.message,
 			stack: err.stack,
 		}, val => !_.isEmpty(val));
