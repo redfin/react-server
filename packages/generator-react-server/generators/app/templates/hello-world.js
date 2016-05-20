@@ -4,7 +4,7 @@ export default class HelloWorld extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {exclamationCount: 0};
-		this.increment = () => {
+		this.handleClick = () => {
 			this.setState({exclamationCount: this.state.exclamationCount + 1});
 		};
 	}
@@ -13,7 +13,7 @@ export default class HelloWorld extends React.Component {
 		return (
 			<div>
 				<h2>Hello, World{'!'.repeat(this.state.exclamationCount)}</h2>
-				<button handleOnClick={this.increment}>Get More Excited!</button>
+				<button onClick={this.handleClick}>Get More Excited!</button>
 			</div>
 			);
 	}
