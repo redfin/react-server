@@ -9,6 +9,10 @@ module.exports = {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
 	},
+	RootError: {
+		entry: "/root/error",
+		description: "A data error for a root element",
+	},
 	AboveTheFold: {
 		entry: "/root/aboveTheFold",
 		description: "Above The Fold Count",
