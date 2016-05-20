@@ -5,7 +5,7 @@ Very simple example project for `react-server` which only shows server rendering
 To install:
 
 ```
-git clone http://redfin/react-server.git
+git clone https://github.com/redfin/react-server.git
 cd react-server/packages/react-server-examples/hello-world
 npm install
 ```
