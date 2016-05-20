@@ -20,6 +20,10 @@ module.exports = {
 			path: ["/data/echo-css"],
 			page: "./pages/data/EchoCssPage",
 		},
+		DataError: {
+			path: ["/data/error"],
+			page: "./pages/data/error",
+		},
 	}, _.reduce(require('./entrypoints'), (obj, val, key) => {
 		if (!val.path) val.path = [val.entry];
 		val.page = `./pages${val.entry}`;
