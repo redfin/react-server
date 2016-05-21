@@ -1,0 +1,16 @@
+version: '2'
+services:
+  react:
+    build: .
+    volumes:
+      - .:/www
+      - react_node_modules:/www/node_modules
+    working_dir: /www
+    environment:
+      NODE_ENV: 'docker'
+    command: /bin/bash -c "npm install && npm start"
+    ports:
+      - '3000:3000'
+      - '3001:3001'
+volumes:
+  react_node_modules:
