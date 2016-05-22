@@ -30,7 +30,7 @@ These steps assume you are familiar with docker and already have it installed. S
   "port": "3000",
   "env": {
     "docker": {
-      "host": "docker.local" # Your ip from `docker-machine ip` here
+      "host": "Your ip from `docker-machine ip` here"
     },
     "staging": {
       "port": "3000"
