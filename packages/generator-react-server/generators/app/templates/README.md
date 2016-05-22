@@ -19,11 +19,47 @@ npm start -- --port=4000
 
 # Developing using Docker and Docker Compose
 
-These steps assume you are familiar with docker and already have it installed.
+These steps assume you are familiar with docker and already have it installed. Some basics:
 
-Before getting started you'll need to configure the host to use your docker-machine or docker daemon. See [The docs](https://github.com/redfin/react-server/tree/master/packages/react-server-cli) for how to do this.
-
+1. Download [Docker Toolbox](https://www.docker.com/products/docker-toolbox) and install it.
+2. Start `docker quick start shell`
+3. Navigate to where you generated the project
+4. Add a configuration to set the `host` option to the ip given by `docker-machine ip`. An example configuration might be like:
+```json
+{
+  "port": "3000",
+  "env": {
+    "docker": {
+      "host": "docker.local" # Your ip from `docker-machine ip` here
+    },
+    "staging": {
+      "port": "3000"
+    },
+    "production": {
+      "port": "80"
+    }
+  }
+}
+```
+5. Now that your system is ready to go, start the containers:
 ```shell
 docker-compose build --pull
 docker-compose up
 ```
+
+The containers will now be running. At any time, press ctrl+c to stop them.
+
+To clean up, run the following commands:
+
+```shell
+docker-compose stop
+docker-compose rm --all
+docker volume ls # and get the name of the volume ending in react_server_node_modules
+docker volume rm _react_server_node_modules # this name will be different depending on the name of the project
+```
+
+The configuration included stores the node_modules directory in a "named volume". This is a special 
+persistent data-store that Docker uses to keep around the node_modules directory so that they don't have to
+be built on each run of the container. If you need to get into the container in order to investigate what
+is in the volume, you can run `docker-compose exec react_server bash` which will open a shell in the 
+container. Be aware that the exec functionality doesn't exist in Windows (as of this writing).
