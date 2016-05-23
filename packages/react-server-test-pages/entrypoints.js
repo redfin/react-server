@@ -25,4 +25,8 @@ module.exports = {
 		entry: "/navigation/data-bundle-cache",
 		description: "Data bundle cache",
 	},
+	ErrorLogs: {
+		entry: "/error/logs",
+		description: "Generate errors in the logs",
+	},
 }
