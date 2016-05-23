@@ -1,6 +1,6 @@
 {
   "name": "react-server-cli",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
@@ -33,6 +33,6 @@
     "yargs": "~3.15.0"
   },
   "peerDependencies": {
-    "react-server": "^0.2.10"
+    "react-server": "^0.2.12"
   }
 }
