@@ -4,7 +4,6 @@ export default (args = process.argv) => {
 	var parsedArgs = yargs(args)
 		.usage('Usage: $0 [options]')
 		.option("routes", {
-			default: "./routes.js",
 			describe: "The routes file to load.",
 		})
 		.option("p", {
@@ -13,7 +12,6 @@ export default (args = process.argv) => {
 			type: "number",
 		})
 		.option("host", {
-			default: "localhost",
 			describe: "Hostname to start listening for react-server",
 			type: "string",
 		})
