@@ -12,13 +12,13 @@ test('generator-react-server:app creates files', async t => {
 		})
 		.withPrompts({name: 'foo'})
 		.toPromise();
-	t.true(await exists('.babelrc'));
-	t.true(await exists('.gitignore'));
-	t.true(await exists('hello-world-page.js'));
-	t.true(await exists('hello-world.js'));
-	t.true(await exists('package.json'));
-	t.true(await exists('README.md'));
-	t.true(await exists('routes.js'));
+	t.true(await exists('.babelrc', testDir));
+	t.true(await exists('.gitignore', testDir));
+	t.true(await exists('hello-world-page.js', testDir));
+	t.true(await exists('hello-world.js', testDir));
+	t.true(await exists('package.json', testDir));
+	t.true(await exists('README.md', testDir));
+	t.true(await exists('routes.js', testDir));
 });
 
 test('generator-react-server:app passes the test target', async t => {
@@ -33,7 +33,8 @@ test('generator-react-server:app passes the test target', async t => {
 	t.true(await runsSuccessfully('npm test'));
 });
 
-async function exists(filename) {
+async function exists(filename, dir) {
+	filename = path.join(dir, filename);
 	return new Promise((resolve) => {
 		fs.access(filename, fs.F_OK, (err) => {
 			resolve(!err);
