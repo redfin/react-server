@@ -309,10 +309,7 @@ const logProductionWarnings = ({hot, minify, jsUrl, longTermCaching}) => {
 		if (!longTermCaching) {
 			logger.warning("-- Long-term caching is disabled. To enable, set longTermCaching to true (--long-term-caching at the command-line) or set NODE_ENV=production to turn on.");
 		}
-
-		if (process.env.NODE_ENV !== "production") { //eslint-disable-line no-process-env
-			logger.warning("-- NODE_ENV is not set to \"production\".");
-		}
+		logger.info(`NODE_ENV is set to ${process.env.NODE_ENV}`); //eslint-disable-line no-process-env
 	}
 
 }
