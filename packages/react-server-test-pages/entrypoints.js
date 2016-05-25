@@ -5,6 +5,10 @@
 // Your method will be defaulted to "get".
 // The default `description` is your route _key_.
 module.exports = {
+	RootAttributes: {
+		entry: "/root/attributes",
+		description: "Attributes on root elements and containers",
+	},
 	RootWhen: {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
