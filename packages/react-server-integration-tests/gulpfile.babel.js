@@ -7,11 +7,11 @@ function isVerbose () {
 	return !!options.verbose;
 }
 var availableOptions = {
-	'boolean': [ 'verbose', 'skipSourcemaps' ],
-	'string' : [ 'specs' ],
-	'default': {
-		'verbose': false,
-		'skipSourcemaps': false,
+	"boolean": [ "verbose", "skipSourcemaps" ],
+	"string" : [ "specs" ],
+	"default": {
+		"verbose": false,
+		"skipSourcemaps": false,
 	},
 }
 var options = minimist(process.argv.slice(2), availableOptions);
@@ -35,15 +35,11 @@ function getSpecGlob (prefix) {
 gulp.task("compile", () => {
 	return gulp.src("src/**/*.js")
 		.pipe(babel())
-		.pipe(gulp.dest("target"));
+		.pipe(gulp.dest("target"))
+		.on("error", gutil.log);
 });
 
 gulp.task("test", ["compile"], function() {
-
 	return gulp.src(getSpecGlob("target/**/__tests__/**/"))
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
-});
-
-gulp.task("eslint", [], function() {
-	// we don't care as much about linting tests.
 });
