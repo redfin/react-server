@@ -7,7 +7,7 @@
   "author": "Bo Borgerson",
   "license": "Apache License 2.0",
   "scripts": {
-    "prepublish": "npm run clean; gulp build",
+    "prepublish": "gulp build",
     "test": "gulp test",
     "clean": "rimraf lib npm-debug.log* index.js"
   },

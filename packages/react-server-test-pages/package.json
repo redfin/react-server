@@ -5,7 +5,7 @@
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm run clean; gulp build",
+    "prepublish": "gulp build",
     "start": "react-server-cli",
     "test": "gulp test",
     "debug": "node-debug --debug-brk=0 -p 9000 react-server-cli",

@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
-    "clean": "rimraf target npm-debug.log*",
-    "prepublish": "npm run clean"
+    "clean": "rimraf target npm-debug.log*"
   },
   "repository": "redfin/react-server",
   "author": "Redfin",
