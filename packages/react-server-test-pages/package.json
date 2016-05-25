@@ -5,10 +5,11 @@
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
   "scripts": {
-    "prepublish": "gulp build",
+    "prepublish": "npm run clean; gulp build",
     "start": "react-server-cli",
     "test": "gulp test",
-    "debug": "node-debug --debug-brk=0 -p 9000 react-server-cli"
+    "debug": "node-debug --debug-brk=0 -p 9000 react-server-cli",
+    "clean": "rimraf npm-debug.log* __clientTemp target"
   },
   "author": "Bo Borgerson",
   "license": "Apache-2.0",
@@ -23,6 +24,7 @@
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "node-inspector": "^0.12.8"
+    "node-inspector": "^0.12.8",
+    "rimraf": "^2.5.2"
   }
 }

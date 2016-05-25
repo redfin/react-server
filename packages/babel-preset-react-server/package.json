@@ -4,7 +4,9 @@
   "description": "A recommended Babel config for working with react-server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"All good!\""
+    "test": "echo \"All good!\"",
+    "clean": "rimraf npm-debug.log*",
+    "prepublish": "npm run clean"
   },
   "repository": "redfin/react-server",
   "keywords": [
@@ -29,5 +31,8 @@
     "babel-plugin-transform-es2015-template-literals": "^6.3.13",
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
     "babel-preset-react": "^6.5.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.5.2"
   }
 }

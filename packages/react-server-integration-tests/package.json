@@ -3,7 +3,8 @@
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "clean": "rimraf target __clientTemp npm-debug.log*"
   },
   "devDependencies": {
     "lodash": "^4.8.2",
@@ -12,6 +13,7 @@
     "react-dom": "~0.14.2",
     "react-server": "../react-server",
     "react-server-cli": "../react-server-cli",
+    "rimraf": "^2.5.2",
     "superagent": "1.2.0"
   }
 }

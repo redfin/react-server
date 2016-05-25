@@ -7,8 +7,9 @@
   "author": "Bo Borgerson",
   "license": "Apache License 2.0",
   "scripts": {
-    "prepublish": "gulp build",
-    "test": "gulp test"
+    "prepublish": "npm run clean; gulp build",
+    "test": "gulp test",
+    "clean": "rimraf lib npm-debug.log* index.js"
   },
   "dependencies": {
     "lodash": "^4.11.1",
@@ -17,5 +18,8 @@
   },
   "peerDependencies": {
     "react-server": "^0.2.12"
+  },
+  "devDependencies": {
+    "rimraf": "^2.5.2"
   }
 }
