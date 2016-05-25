@@ -14,7 +14,7 @@ module.exports = yeoman.Base.extend({
 			name: 'name',
 			message: 'What would you like to call your app?',
 			default: this.appname
-		},{
+		}, {
 			type: 'confirm',
 			name: 'dockerCfg',
 			message: 'Do you want to generate a Docker file and Docker Compose file?',
