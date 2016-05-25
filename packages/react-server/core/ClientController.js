@@ -577,6 +577,10 @@ class ClientController extends EventEmitter {
 				//
 				if (this._reuseDom && element.containerOpen && oldRootContainer) {
 					mountNode = oldRootContainer;
+					this._updateContainerNodeAttributes(
+						mountNode,
+						element.containerOpen
+					);
 				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
 					mountNode = mountNode.parentNode;
 				} else if (this._reuseDom && oldRootElement) {
@@ -735,6 +739,10 @@ class ClientController extends EventEmitter {
 		_.forEach(attrs, (v, k) => node.setAttribute(k, v));
 		mountNode.appendChild(node);
 		return node;
+	}
+
+	_updateContainerNodeAttributes(node, attrs) {
+		_.forEach(attrs, (v, k) => node.setAttribute(k, v));
 	}
 
 	init () {
