@@ -662,6 +662,13 @@ class ClientController extends EventEmitter {
 
 		return retval.promise.then(() => {
 
+			if (this._reuseDom) {
+
+				// Clean up any dangling nodes if the previous page had more
+				// than we do.
+				this._cleanupPreviousRender(elementPromises.length);
+			}
+
 			// This first one is just for historical continuity.
 			logger.time('render', new Date - t0);
 
