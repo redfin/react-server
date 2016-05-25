@@ -4,11 +4,10 @@
   "changelog": {
     "repo": "redfin/react-server",
     "labels": {
+      "breaking change": "Breaking change",
       "bug": "Bug fix",
-      "cleanup": "Cleanup",
-      "documentation": "Documentation",
       "enhancement": "Enhancement",
-      "testing": "Testing"
+      "performance": "Performance"
     },
     "cacheDir": ".changelog"
   }
