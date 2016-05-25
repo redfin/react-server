@@ -4,13 +4,13 @@ import path from 'path';
 import test from 'ava';
 import helpers from 'yeoman-test';
 
-test('generator-react-server:app creates files', async t => {
+test('generator-react-server:app creates default files', async t => {
 	let testDir;
 	await helpers.run(path.join(__dirname, '../generators/app'))
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
-		.withPrompts({name: 'foo'})
+		.withPrompts({name: 'foo', dockerCfg: false})
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
@@ -19,6 +19,27 @@ test('generator-react-server:app creates files', async t => {
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
 	t.true(await exists('routes.js', testDir));
+	t.false(await exists('Dockerfile', testDir));
+	t.false(await exists('docker-compose.yml', testDir));
+});
+
+test('generator-react-server:app creates docker files', async t => {
+	let testDir;
+	await helpers.run(path.join(__dirname, '../generators/app'))
+		.inTmpDir(dir => {
+			testDir = dir;
+		})
+		.withPrompts({name: 'foo', dockerCfg: true})
+		.toPromise();
+	t.true(await exists('.babelrc', testDir));
+	t.true(await exists('.gitignore', testDir));
+	t.true(await exists('hello-world-page.js', testDir));
+	t.true(await exists('hello-world.js', testDir));
+	t.true(await exists('package.json', testDir));
+	t.true(await exists('README.md', testDir));
+	t.true(await exists('routes.js', testDir));
+	t.true(await exists('Dockerfile', testDir));
+	t.true(await exists('docker-compose.yml', testDir));
 });
 
 test('generator-react-server:app passes the test target', async t => {
@@ -27,7 +48,7 @@ test('generator-react-server:app passes the test target', async t => {
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
-		.withPrompts({name: 'foo'})
+		.withPrompts({name: 'foo', dockerCfg: false})
 		.toPromise();
 	await installDeps();
 	t.true(await runsSuccessfully('npm test'));
