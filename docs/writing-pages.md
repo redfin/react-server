@@ -45,7 +45,6 @@ lifecycle is called in order
 1. getBodyClasses
 1. getBodyStartContent
 1. getElements
-1. getAboveTheFoldCount (until we've rendered all the above-the-fold content)
 
 Once we reach the above the fold content, we'll start sending javascript.
 
