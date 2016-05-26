@@ -9,6 +9,10 @@ module.exports = {
 		entry: "/root/attributes",
 		description: "Attributes on root elements and containers",
 	},
+	RootReuseTrim: {
+		entry: "/root/reuse-trim",
+		description: "Dangling nodes should be trimmed with `reuseDom`",
+	},
 	RootWhen: {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
