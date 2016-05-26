@@ -1,8 +1,6 @@
 
 var React = require('react'),
-	ClientRequest = require("../ClientRequest"),
-	History = require("./History"),
-	getCurrentRequestContext = require("../context/RequestContext").getCurrentRequestContext;
+	navigateTo = require("../util/navigateTo").default;
 
 module.exports = React.createClass({
 	displayName: 'Link',
@@ -39,15 +37,12 @@ module.exports = React.createClass({
 			e.preventDefault();
 			e.stopPropagation();
 			const {bundleData, frameback, reuseDom, reuseFrame} = this.props;
-			getCurrentRequestContext().navigate(
-				new ClientRequest(this.props.path, {
-					bundleData,
-					frameback,
-					reuseDom,
-					reuseFrame,
-				}),
-				History.events.PUSHSTATE
-			);
+			navigateTo(this.props.path, {
+				bundleData,
+				frameback,
+				reuseDom,
+				reuseFrame,
+			});
 		} else {
 			// do normal browser navigate
 		}
