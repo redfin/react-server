@@ -11,7 +11,7 @@ That's where _client transitions_ come in.  Navigation between `react-server`
 pages can be done without ever hitting the server.  It's easy.  Pages don't
 need to do anything tricky to make this work.  It's part of the framework!
 
-## The `<Link>`
+## The `<Link>` component
 
 How easy is it?
 
@@ -27,22 +27,15 @@ transitions.  Middle-clicks, command-clicks, etc, all still behave as
 expected, but a normal left-click to navigate becomes a light-weight
 transition within the browser.
 
-## The `ClientRequest`
+## The `navigateTo()` function
 
 Want to manage your own `<a>` tags and click handlers?  Want to navigate based
 on some other action?
 
 ```javascript
-const {
-	ClientRequest
-	History,
-	getCurrentRequestContext,
-} = require("react-server");
+const {navigateTo} = require("react-server");
 
-getCurrentRequestContext().navigate(
-	new ClientRequest(this.props.path),
-	History.events.PUSHSTATE
-);
+navigateTo("/my-page");
 ```
 
 This is what the `<Link>` tag does for you on click.
@@ -61,7 +54,7 @@ key/value pair in an `options` object passed as a second argument to the
 ```javascript
 <Link path={path} bundleData={true}>...</Link>
 
-new ClientRequest(path, {bundleData: true});
+navigateTo(path, {bundleData: true});
 ```
 
 In order to render the new page in the browser, we first need to fetch the
@@ -83,7 +76,7 @@ the results in the bundle and we don't need to fire actual XHRs!
 ```javascript
 <Link path={path} reuseDom={true}>...</Link>
 
-new ClientRequest(path, {reuseDom: true});
+navigateTo(path, {reuseDom: true});
 ```
 
 This is useful for "single-page app" style navigation, where there may be UI
@@ -98,7 +91,7 @@ page that are the same as the previous page are _re-used_.  This includes
 ```javascript
 <Link path={path} frameback={true}>...</Link>
 
-new ClientRequest(path, {frameback: true});
+navigateTo(path, {frameback: true});
 ```
 
 This one addresses a very specific navigation pattern:  A _list_ page that's
@@ -118,7 +111,7 @@ the list.
 ```javascript
 <Link path={path} frameback={true} reuseFrame={true}>...</Link>
 
-new ClientRequest(path, {frameback: true, reuseFrame: true});
+navigateTo(path, {frameback: true, reuseFrame: true});
 ```
 
 This one only affects the behavior of `frameback`.  Ordinarily each new
