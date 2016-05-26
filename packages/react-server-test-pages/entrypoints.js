@@ -33,6 +33,10 @@ module.exports = {
 		entry: "/navigation/data-bundle-cache",
 		description: "Data bundle cache",
 	},
+	NavigateTo: {
+		entry: "/navigation/navigateTo",
+		description: "Navigate using `navigateTo()`",
+	},
 	ErrorLogs: {
 		entry: "/error/logs",
 		description: "Generate errors in the logs",
