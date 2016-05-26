@@ -609,9 +609,11 @@ class ClientController extends EventEmitter {
 			if (element.containerOpen || element.containerClose){
 				return; // Nothing left to do.
 			} else if (element.isTheFold) {
-				logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
-				logger.time(`renderAboveTheFold.individual`, totalRenderTime);
-				logger.time(`renderAboveTheFold.elementCount`, index + 1);
+				if (!this._previouslyRendered){
+					logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
+					logger.time(`renderAboveTheFold.individual`, totalRenderTime);
+					logger.time(`renderAboveTheFold.elementCount`, index + 1);
+				}
 				return; // Again, this isn't a real root element.
 			}
 
