@@ -5,6 +5,7 @@ module.exports = {
 	RootElement: require("./components/RootElement"),
 	Link: require('./components/Link'),
 	History: require('./components/History'),
+	navigateTo: require('./util/navigateTo').default,
 	ClientRequest: require('./ClientRequest'),
 	FramebackController: require('./FramebackController'),
 	components: {
