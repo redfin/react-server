@@ -1,0 +1,26 @@
+@import "reset";
+
+// Text colors
+$vanta: #333;
+$linkColor: #0e58f5;
+
+//typography
+$font-stack: normal 14px/1.5 "Helvetica Neue", sans-serif;
+
+.page-body {
+  font: $font-stack;
+  color: $vanta;
+  padding: 0rem 4rem 0rem;
+}
+
+a {
+  color: $linkColor;
+}
+
+.header {
+  padding: 0rem 0rem 2rem;
+}
+
+.footer {
+  padding: 2rem 0rem 0rem;
+}
