@@ -97,7 +97,8 @@ var startServer = function (specFile, routes) {
 
 	var routesFile = writeRoutesFile(specFile, routes, testTempDir);
 
-	return start(routesFile, {
+	return start({
+		routesFile: routesFile,
 		hot: false,
 		port: PORT,
 		logLevel: "emergency",
