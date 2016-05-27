@@ -45,9 +45,7 @@
     "rimraf": "^2.5.2",
     "superagent": "1.2.0",
     "webpack": "1.4.13",
-    "zombie": "4.1.0"
-  },
-  "dependencies": {
-    "lerna": "2.0.0-beta.9"
+    "zombie": "4.1.0",
+    "lerna": "2.0.0-beta.14"
   }
 }
