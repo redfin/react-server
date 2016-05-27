@@ -17,7 +17,7 @@ const logger = logging.getLogger(__LOGGER__);
 // stop. started is a promise that resolves when all necessary servers have been
 // started. stop is a method to stop all servers. It takes no arguments and
 // returns a promise that resolves when the server has stopped.
-export default (routesRelativePath, options = {}) => {
+export default (options = {}) => {
 	// for the option properties that weren't sent in, look for a config file
 	// (either .reactserverrc or a reactServer section in a package.json). for
 	// options neither passed in nor in a config file, use the defaults.
@@ -26,10 +26,11 @@ export default (routesRelativePath, options = {}) => {
 	setupLogging(options.logLevel, options.timingLogLevel, options.gaugeLogLevel);
 	logProductionWarnings(options);
 
-	return startImpl(routesRelativePath, options);
+	return startImpl(options);
 }
 
-const startImpl = (routesRelativePath, {
+const startImpl = ({
+		routesFile,
 		host,
 		port,
 		jsPort,
@@ -44,7 +45,7 @@ const startImpl = (routesRelativePath, {
 		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
 	}
 
-	const routesPath = path.resolve(process.cwd(), routesRelativePath);
+	const routesPath = path.resolve(process.cwd(), routesFile);
 	const routes = require(routesPath);
 
 	const outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;

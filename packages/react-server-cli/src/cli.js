@@ -15,4 +15,4 @@ if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.htt
 	}
 }
 
-start(argv.routes, argv);
+start(argv);
