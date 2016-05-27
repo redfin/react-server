@@ -1,5 +1,5 @@
 
-## Unreleased (2016-05-26)
+## Unreleased (2016-05-27)
 
 #### Breaking change
 * `react-server-test-pages`, `react-server`
@@ -20,6 +20,6 @@
   * [#200](https://github.com/redfin/react-server/pull/200) Add docker to yeoman generator. ([@withinboredom](https://github.com/withinboredom))
 
 #### Commiters: 3
-- [doug-wade](https://github.com/doug-wade)
-- [gigabo](https://github.com/gigabo)
-- [withinboredom](https://github.com/withinboredom)
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Rob Landers ([withinboredom](https://github.com/withinboredom))
