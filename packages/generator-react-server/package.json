@@ -38,12 +38,11 @@
   },
   "license": "Apache-2.0",
   "xo": {
+    "envs": ["node"],
     "extends": "xo-react",
+    "globals": ["__LOGGER__"],
     "ignores": [
       "test/**/*"
-    ],
-    "envs": [
-      "node"
     ]
   }
 }
