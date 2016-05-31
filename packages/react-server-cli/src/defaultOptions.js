@@ -23,7 +23,7 @@ export default {
 	gaugeLogLevel: "ok",
 	https: false,
 	longTermCaching: false,
-	routes: "./routes.js",
+	routesFile: "./routes.js",
 	env: {
 		production: {
 			hot: false,

@@ -3,8 +3,8 @@ import yargs from "yargs"
 export default (args = process.argv) => {
 	var parsedArgs = yargs(args)
 		.usage('Usage: $0 [options]')
-		.option("routes", {
-			describe: "The routes file to load.",
+		.option("routes-file", {
+			describe: "The routes file to load. Default is 'routes.js'.",
 		})
 		.option("p", {
 			alias: "port",
