@@ -1,7 +1,9 @@
 
-## Unreleased (2016-05-27)
+## Unreleased (2016-05-31)
 
 #### Breaking change
+* `react-server-cli`, `react-server-integration-tests`
+  * [#226](https://github.com/redfin/react-server/pull/226) Standardize routes file configuration (and rename `--routes` => `--routes-file`). ([@gigabo](https://github.com/gigabo))
 * `react-server-test-pages`, `react-server`
   * [#221](https://github.com/redfin/react-server/pull/221) Add new component: `<TheFold />`. ([@gigabo](https://github.com/gigabo))
 
