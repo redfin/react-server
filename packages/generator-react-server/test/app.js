@@ -14,6 +14,7 @@ test('generator-react-server:app creates default files', async t => {
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
+	t.true(await exists('.reactserverrc', testDir));
 	t.true(await exists('hello-world-page.js', testDir));
 	t.true(await exists('hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
@@ -33,6 +34,7 @@ test('generator-react-server:app creates docker files', async t => {
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
+	t.true(await exists('.reactserverrc', testDir));
 	t.true(await exists('hello-world-page.js', testDir));
 	t.true(await exists('hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
@@ -51,10 +53,10 @@ test('generator-react-server:app passes the test target', async t => {
 		.withPrompts({name: 'foo', dockerCfg: false})
 		.toPromise();
 	await installDeps();
-	t.true(await runsSuccessfully('npm test'));
+	t.true(await runsSuccessfully('npm test', testDir));
 });
 
-async function exists(filename, dir) {
+function exists(filename, dir) {
 	filename = path.join(dir, filename);
 	return new Promise((resolve) => {
 		fs.access(filename, fs.F_OK, (err) => {
@@ -63,22 +65,24 @@ async function exists(filename, dir) {
 	});
 }
 
-async function runsSuccessfully(command) {
+function runsSuccessfully(command, dir) {
 	return new Promise((resolve) => {
-		cp.exec(command, (error) => {
+		cp.exec(command, {
+			cwd: dir
+		}, (error) => {
 			resolve(!error);
-		})
+		});
 	});
 }
 
-async function installDeps() {
-	return new Promise((resolve) => {
+function installDeps() {
+	return new Promise((resolve, reject) => {
 		cp.exec('npm install', (error) => {
 			if (error) {
 				reject(error);
 			} else {
 				resolve();
 			}
-		})
+		});
 	});
 }
