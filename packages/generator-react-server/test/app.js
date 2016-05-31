@@ -14,7 +14,6 @@ test('generator-react-server:app creates default files', async t => {
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
-	t.true(await exists('.reactserverrc', testDir));
 	t.true(await exists('hello-world-page.js', testDir));
 	t.true(await exists('hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
@@ -34,7 +33,6 @@ test('generator-react-server:app creates docker files', async t => {
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
-	t.true(await exists('.reactserverrc', testDir));
 	t.true(await exists('hello-world-page.js', testDir));
 	t.true(await exists('hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
@@ -67,9 +65,7 @@ function exists(filename, dir) {
 
 function runsSuccessfully(command, dir) {
 	return new Promise((resolve) => {
-		cp.exec(command, {
-			cwd: dir
-		}, (error) => {
+		cp.exec(command, {cwd: dir}, (error) => {
 			resolve(!error);
 		});
 	});
