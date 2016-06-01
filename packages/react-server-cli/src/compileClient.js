@@ -135,8 +135,13 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 					exclude: /node_modules/,
 				},
 				{
-					test: /.css$/,
+					test: /\.css$/,
 					loader: extractTextLoader,
+					exclude: /node_modules/,
+				},
+				{
+					test: /\.(eot|woff|woff2|ttf|ttc|png|svg|jpg|jpeg|gif|cgm|tiff|webp|bmp|ico)$/,
+					loader: "file",
 					exclude: /node_modules/,
 				},
 			],

@@ -1,4 +1,5 @@
 import babel from "gulp-babel"
+import filter from "gulp-filter"
 import gulp from "gulp"
 import jasmine from "gulp-jasmine"
 import minimist from "minimist"
@@ -33,8 +34,12 @@ function getSpecGlob (prefix) {
 	return specs;
 }
 gulp.task("compile", () => {
-	return gulp.src("src/**/*.js")
-		.pipe(babel())
+	const jsFilter = filter("**/*.js");
+
+	return gulp.src("src/**")
+		.pipe(jsFilter)
+			.pipe(babel())
+		.pipe(jsFilter.restore())
 		.pipe(gulp.dest("target"));
 });
 

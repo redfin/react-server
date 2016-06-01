@@ -1,3 +1,7 @@
-import startServer from "./startServer"
+require.extensions['.css'] = function(module, filename) {
+  return module._compile("", filename);
+};
 
-export {startServer as start}
+module.exports = {
+  start: require("./startServer").default,
+};

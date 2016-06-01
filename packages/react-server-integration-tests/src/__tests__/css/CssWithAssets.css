@@ -1,0 +1,34 @@
+.foo {
+  background-image: url("./images/cat.png");
+}
+.bar {
+  background-image: url("http://example.com/doesNotExist.png");
+}
+@font-face {
+    font-family: myFontWoff;
+    src: url(./fonts/Prociono-Regular-webfont.woff);
+}
+@font-face {
+    font-family: myFontTtf;
+    src: url(./fonts/Prociono-Regular-webfont.ttf);
+}
+@font-face {
+    font-family: myFontEot;
+    src: url(./fonts/Prociono-Regular-webfont.eot);
+}
+@font-face {
+    font-family: myFontSvg;
+    src: url(./fonts/Prociono-Regular-webfont.svg);
+}
+.woff {
+  font-family: myFontWoff;
+}
+.ttf {
+  font-family: myFontTtf;
+}
+.eot {
+  font-family: myFontEot;
+}
+.svg {
+  font-family: myFontSvg;
+}
