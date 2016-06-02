@@ -1,14 +1,14 @@
 
-## Unreleased (2016-05-31)
+## v0.3.0 (2016-06-02)
 
 #### Breaking change
-* `react-server-cli`, `react-server-integration-tests`
+* `react-server-cli`
   * [#226](https://github.com/redfin/react-server/pull/226) Standardize routes file configuration (and rename `--routes` => `--routes-file`). ([@gigabo](https://github.com/gigabo))
-* `react-server-test-pages`, `react-server`
+* `react-server`
   * [#221](https://github.com/redfin/react-server/pull/221) Add new component: `<TheFold />`. ([@gigabo](https://github.com/gigabo))
 
 #### Bug fix
-* `react-server-test-pages`, `react-server`
+* `react-server`
   * [#219](https://github.com/redfin/react-server/pull/219) Trim dangling root nodes with `reuseDom`. ([@gigabo](https://github.com/gigabo))
   * [#218](https://github.com/redfin/react-server/pull/218) Update root container attributes on `reuseDom` client transition. ([@gigabo](https://github.com/gigabo))
 * `react-server-cli`
@@ -20,7 +20,7 @@
   * [#229](https://github.com/redfin/react-server/pull/229) Generate meta tags. ([@doug-wade](https://github.com/doug-wade))
   * [#231](https://github.com/redfin/react-server/pull/231) Add .reactserverrc to generator. ([@doug-wade](https://github.com/doug-wade))
   * [#200](https://github.com/redfin/react-server/pull/200) Add docker to yeoman generator. ([@withinboredom](https://github.com/withinboredom))
-* `react-server-test-pages`, `react-server`
+* `react-server`
   * [#221](https://github.com/redfin/react-server/pull/221) Add new component: `<TheFold />`. ([@gigabo](https://github.com/gigabo))
   * [#224](https://github.com/redfin/react-server/pull/224) Expose new convenience function: `navigateTo`. ([@gigabo](https://github.com/gigabo))
 * `react-server-cli`
