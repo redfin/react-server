@@ -497,11 +497,6 @@ class ClientController extends EventEmitter {
 		// each request so we can keep track of that overhead.
 		var totalRenderTime = 0;
 
-		// We'll consider the page "interactive" when we've rendered
-		// all elements that we expect to be above the fold.
-		// Need this to be an integer value greater than zero.
-		var aboveTheFoldCount = Math.max(page.getAboveTheFoldCount()|0, 1)
-
 		// These resolve with React elements when their data
 		// dependencies are fulfilled.
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
@@ -601,7 +596,7 @@ class ClientController extends EventEmitter {
 						// If we're closing a container its
 						// parent is once again our mountNode.
 						mountNode = mountNode.parentNode;
-					} else {
+					} else if (!element.isTheFold) {
 
 						// Need a new root element in our
 						// current mountNode.
@@ -613,6 +608,13 @@ class ClientController extends EventEmitter {
 
 			if (element.containerOpen || element.containerClose){
 				return; // Nothing left to do.
+			} else if (element.isTheFold) {
+				if (!this._previouslyRendered){
+					logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
+					logger.time(`renderAboveTheFold.individual`, totalRenderTime);
+					logger.time(`renderAboveTheFold.elementCount`, index + 1);
+				}
+				return; // Again, this isn't a real root element.
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
@@ -632,12 +634,6 @@ class ClientController extends EventEmitter {
 				var tDisplay = root.getAttribute('data-react-server-timing-offset');
 				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
 				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
-
-				if (index === aboveTheFoldCount - 1) {
-					logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
-					logger.time(`renderAboveTheFold.individual`, totalRenderTime);
-					logger.time(`renderAboveTheFold.elementCount`, aboveTheFoldCount);
-				}
 			}
 		};
 

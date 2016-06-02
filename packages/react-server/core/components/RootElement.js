@@ -1,6 +1,8 @@
 var React = require('react');
 var Q = require('q');
 
+const {isTheFold} = require('./TheFold');
+
 const _ = {
 	assign: require('lodash/assign'),
 };
@@ -107,8 +109,8 @@ RootElement.getRootElementAttributes = function(element) {
 
 RootElement.ensureRootElementWithContainer = function(element, container) {
 
-	// If it's _already_ a root element, pass it along.
-	if (RootElement.isRootElement(element) || (
+	// If it's _already_ a root element (or the fold), pass it along.
+	if (RootElement.isRootElement(element) || isTheFold(element) || (
 
 		// Alternatively, if it's a control object pass it along.
 		//

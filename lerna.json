@@ -1,4 +1,14 @@
 {
-  "lerna": "2.0.0-beta.9",
-  "version": "0.2.12"
+  "lerna": "2.0.0-beta.14",
+  "version": "0.2.12",
+  "changelog": {
+    "repo": "redfin/react-server",
+    "labels": {
+      "breaking change": "Breaking change",
+      "bug": "Bug fix",
+      "enhancement": "Enhancement",
+      "performance": "Performance"
+    },
+    "cacheDir": ".changelog"
+  }
 }

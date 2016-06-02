@@ -5,6 +5,7 @@ var Q = require("q"),
 
 var {isRootContainer, flattenForRender} = require('../components/RootContainer');
 var {ensureRootElement, scheduleRender} = require('../components/RootElement');
+var {isTheFold, markTheFold} = require('../components/TheFold');
 
 // There are three data structures defined here that are relevant for page and
 // middleware authors:
@@ -61,7 +62,6 @@ var PAGE_METHODS = {
 	getBase            : [() => null, Q],
 	getBodyClasses     : [() => [], Q],
 	getElements        : [() => [], standardizeElements],
-	getAboveTheFoldCount : [() => 1, _ => _],
 	getResponseData    : [() => "", Q],
 };
 
@@ -174,6 +174,7 @@ function standardizeElements(elements) {
 		.makeArray(elements)
 		.map(e => isRootContainer(e)?flattenForRender(e):e)
 		.reduce((m, e) => m.concat(Array.isArray(e)?e:[e]), [])
+		.map(e => isTheFold(e)?markTheFold():e)
 		.map(ensureRootElement)
 		.map(scheduleRender)
 }

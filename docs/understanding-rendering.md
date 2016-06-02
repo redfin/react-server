@@ -28,6 +28,7 @@ getElements() {
 				<Sidebar  />
 			</RootElement>
 		</RootContainer>
+		<TheFold />
 		<Footer />
 	</RootContainer>
 }
@@ -44,6 +45,10 @@ In the example above:
   the all objects from `bodyEmitter` and the resolution of `sidebarPromise`.
   Client-side it will re-render with updated props from `bodyEmitter` if it
   fires after the initial render.
+- `<TheFold />` will cause an inline `<script>` tag to be sent that kicks off
+  the client-side render, making elements above the fold interactive.  This
+  forces a browser paint, so it's important to put it after above-the-fold
+  elements.
 - `<Footer />` Will render immediately, and will be sent to the browser as
   soon as all elements before it have rendered and been sent.  It won't
   receive any props.
@@ -55,7 +60,7 @@ In the example above:
 - If an element is blocking already-rendered elements after it, when it
   renders the entire block of elements will be sent in a single `write` to the
   response socket.
-- After the above-the-fold elements (as specified by `getAboveTheFoldCount()`)
+- After the above-the-fold elements (followed by `<TheFold/>`)
   have been sent an inline `<script>` is sent that instantiates the
   `ClientController` in the browser and gives it the data bundle for all
   requests that have resolved.  It then renders all elements that have already

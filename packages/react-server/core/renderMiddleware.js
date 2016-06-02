@@ -633,10 +633,6 @@ function writeBody(req, res, context, start, page) {
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());
 
-	// No JS until the HTML above the fold has made it through.
-	// Need this to be an integer value greater than zero.
-	RLS().atfCount = Math.max(page.getAboveTheFoldCount()|0, 1);
-
 	// This is where we'll store our rendered HTML strings.  A value of
 	// `undefined` means we haven't rendered that element yet.
 	var rendered = elementPromises.map(() => ELEMENT_PENDING);
@@ -769,9 +765,9 @@ function writeDataBundle(req, res) {
 
 function renderElement(res, element, context) {
 
-	if (element.containerOpen || element.containerClose){
+	if (element.containerOpen || element.containerClose || element.isTheFold){
 
-		// Short-circuit out.  Don't want timing for containers.
+		// Short-circuit out.  Don't want timing for control objects.
 		return element;
 	}
 
@@ -832,19 +828,16 @@ function writeElements(res, elements) {
 
 		if (PageUtil.PageConfig.get('isFragment')) continue;
 
-		if (i === RLS().atfCount - 1){
+		if (RLS().haveBootstrapped) {
 
-			logAboveTheFoldTime(res);
-			// Okay, we've sent all of our above-the-fold HTML,
-			// now we can let the client start waking nodes up.
-			bootstrapClient(res)
-			for (var j = 0; j <= i; j++){
-				renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${j})` }], res)
-			}
-		} else if (i >= RLS().atfCount){
+			// We've already bootstrapped, so we can immediately tell the
+			// client controller to wake the new element we just sent.
+			wakeElement(res, i);
+		} else if (i === elements.length - 1) {
 
-			// Let the client know it's there.
-			renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${i})` }], res)
+			// Page didn't emit `<TheFold/>`.  Now we're done.
+			// This wakes everything up through `i`.
+			bootstrapClient(res, i);
 		}
 	}
 
@@ -869,6 +862,11 @@ function writeElement(res, element, i){
 		}>`);
 	} else if (element.containerClose) {
 		res.write('</div>');
+	} else if (element.isTheFold) {
+
+		// Okay, we've sent all of our above-the-fold HTML,
+		// now we can let the client start waking nodes up.
+		bootstrapClient(res, i)
 	} else {
 		res.write(`<div data-react-server-root-id=${
 			i
@@ -888,7 +886,10 @@ function logAboveTheFoldTime(res) {
 		'window.performance && window.performance.mark && window.performance.mark("displayAboveTheFold.fromStart");'}], res);
 }
 
-function bootstrapClient(res) {
+function bootstrapClient(res, lastElementSent) {
+
+	logAboveTheFoldTime(res);
+
 	var initialContext = {
 		'ReactServerAgent.cache': ReactServerAgent.cache().dehydrate(),
 	};
@@ -907,6 +908,16 @@ function bootstrapClient(res) {
 	// This actually needs to happen _synchronously_ with this current
 	// function to avoid letting responses slip in between.
 	setupLateArrivals(res);
+
+	for (var i = 0; i <= lastElementSent; i++) {
+		wakeElement(res, i);
+	}
+
+	RLS().haveBootstrapped = true;
+}
+
+function wakeElement(res, i) {
+	renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${i})` }], res)
 }
 
 function setupLateArrivals(res) {
