@@ -45,7 +45,7 @@ function getHistoryStateFrame(request) {
 }
 
 function getHistoryPathname() {
-	return location.pathname + location.search;
+	return location.pathname + location.search + location.hash;
 }
 
 class ClientController extends EventEmitter {
