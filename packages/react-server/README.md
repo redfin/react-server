@@ -13,15 +13,19 @@ transitions between pages in the browser.
 
 ## What is it?
 
-`react-server` is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
+React Server is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
 for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
 based on the [Flux pattern](https://facebook.github.io/flux/docs/overview.html).
 Read more on [our dev blog](https://www.redfin.com/blog/tag/react-server).
 
 ## Getting started
 
-For now it's easiest to get started with
-[`react-server-cli`](https://www.npmjs.com/package/react-server-cli).
+The _easiest_ way to get started is with our [yeoman generator](https://www.npmjs.com/package/generator-react-server).
+
+That hooks you up with [`react-server-cli`](https://www.npmjs.com/package/react-server-cli), which
+will take care of the _server_ part and get you up and running right away.
+
+Once you're hungry for more dig into [the docs](https://github.com/redfin/react-server/tree/master/docs).
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
 [build-url]: https://travis-ci.org/redfin/react-server
