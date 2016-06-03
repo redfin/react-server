@@ -635,6 +635,43 @@ describe("ReactServerAgent", () => {
 			.done();
 
 		}));
+
+		it("rehydrates response body for non-200 requests", withRlsContext(done => {
+			var URL = "/error";
+
+			ReactServerAgent.get(URL)
+				.then(res => {
+					// this is a failure
+					expect(res).toBeUndefined();
+					done();
+				})
+				.catch(err => {
+					var cache = ReactServerAgent.cache();
+					var dehydrated = cache.dehydrate();
+
+					// make sure that the cache is empty
+					ReactServerAgent._clearCache();
+
+					cache = ReactServerAgent.cache();
+
+					// verify that cache can be rehydrated
+					cache.rehydrate(dehydrated);
+
+					// only one entry; just grab it via index
+					var entry = cache.dataCache[URL][0];
+					console.log(entry);
+					expect(entry).toBeDefined();
+					expect(entry.err).toBeDefined();
+					expect(entry.err.response).toBeDefined();
+
+					// this will only be defined if rehydrate is working
+					// properly
+					expect(entry.err.response.body).toBeDefined();
+
+					done();
+				})
+				.done();
+		}));
 	});
 
 	function getSingleDehydratedCacheEntry(dehydratedCache, url) {

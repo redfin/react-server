@@ -117,12 +117,17 @@ class CacheEntry {
 		// once initially, when not loaded, and once again when
 		// the request arrives
 
+		var err = state.err;
+		if (err) {
+			err.response = this._rehydrateResponse(err.response);
+		}
+
 		this.url = state.url;
 		this.requestData = state.requestData;
 		this.requesters = state.requesters;
 		this.loaded = state.loaded;
 		this.res = this._rehydrateResponse(state.res);
-		this.err = state.err;
+		this.err = err;
 
 		// TODO FIXME: these won't work if the response from the server was an error
 
