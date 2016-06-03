@@ -1,6 +1,6 @@
 {
   "name": "generator-react-server",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A react-server yeoman generator",
   "homepage": "http://github.com/redfin/react-server",
   "author": {
@@ -38,9 +38,13 @@
   },
   "license": "Apache-2.0",
   "xo": {
-    "envs": ["node"],
+    "envs": [
+      "node"
+    ],
     "extends": "xo-react",
-    "globals": ["__LOGGER__"],
+    "globals": [
+      "__LOGGER__"
+    ],
     "ignores": [
       "test/**/*"
     ]

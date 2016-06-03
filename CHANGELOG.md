@@ -1,4 +1,23 @@
 
+## v0.3.1 (2016-06-03)
+
+#### Bug fix
+* `react-server`
+  * [#263](https://github.com/redfin/react-server/pull/263) Fixed: #261 - error response body needs to be rehydrated. ([@roblg](https://github.com/roblg))
+* `generator-react-server`
+  * [#257](https://github.com/redfin/react-server/pull/257) [255] .reactserverrc is malformed json. ([@doug-wade](https://github.com/doug-wade))
+  * [#256](https://github.com/redfin/react-server/pull/256) [254] Generate gulpfile from template. ([@doug-wade](https://github.com/doug-wade))
+
+#### Enhancement
+* `react-server-cli`
+  * [#251](https://github.com/redfin/react-server/pull/251) Handle image and font files linked from CSS. ([@aickin](https://github.com/aickin))
+
+#### Commiters: 4
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Robert Gay ([roblg](https://github.com/roblg))
+- Sasha Aickin ([aickin](https://github.com/aickin))
+
 ## v0.3.0 (2016-06-02)
 
 #### Breaking change
