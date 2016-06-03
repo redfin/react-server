@@ -659,7 +659,6 @@ describe("ReactServerAgent", () => {
 
 					// only one entry; just grab it via index
 					var entry = cache.dataCache[URL][0];
-					console.log(entry);
 					expect(entry).toBeDefined();
 					expect(entry.err).toBeDefined();
 					expect(entry.err.response).toBeDefined();
