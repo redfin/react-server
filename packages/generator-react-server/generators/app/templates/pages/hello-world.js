@@ -1,5 +1,5 @@
 import React from 'react';
-import HelloWorld from './hello-world';
+import HelloWorld from '../components/hello-world';
 
 export default class SimplePage {
 	getElements() {

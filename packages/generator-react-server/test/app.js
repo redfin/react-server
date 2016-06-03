@@ -15,8 +15,8 @@ test('generator-react-server:app creates default files', async t => {
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
 	t.true(await exists('.reactserverrc', testDir));
-	t.true(await exists('hello-world-page.js', testDir));
-	t.true(await exists('hello-world.js', testDir));
+	t.true(await exists('components/hello-world.js', testDir));
+	t.true(await exists('pages/hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
 	t.true(await exists('routes.js', testDir));
@@ -35,8 +35,8 @@ test('generator-react-server:app creates docker files', async t => {
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
 	t.true(await exists('.reactserverrc', testDir));
-	t.true(await exists('hello-world-page.js', testDir));
-	t.true(await exists('hello-world.js', testDir));
+	t.true(await exists('components/hello-world.js', testDir));
+	t.true(await exists('pages/hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
 	t.true(await exists('routes.js', testDir));

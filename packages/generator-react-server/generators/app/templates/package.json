@@ -4,8 +4,9 @@
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "scripts": {
-    "start": "gulp && react-server-cli --routes build/routes.js",
-    "test": "xo && nsp check"
+    "compile": "gulp",
+    "start": "react-server-cli --routes build/routes.js",
+    "test": "xo && nsp check && ava test.js"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -20,6 +21,7 @@
     "superagent": "1.2.0"
   },
   "devDependencies": {
+    "ava": "^0.15.1",
     "babel-preset-react-server": "^0.2.0",
     "eslint-config-xo-react": "^0.7.0",
     "eslint-plugin-react": "^5.1.1",
@@ -33,6 +35,6 @@
     "esnext": true,
     "extends": "xo-react",
     "globals": ["__LOGGER__"],
-    "ignores": ["__clientTemp/**/*"]
+    "ignores": ["__clientTemp/**/*", "build/**/*"]
   }
 }
