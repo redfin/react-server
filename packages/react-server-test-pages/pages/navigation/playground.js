@@ -102,7 +102,7 @@ class FBL extends React.Component {
 	render() {
 		return <Link path={LINK(this.props.row)} frameback={true} {...this.props.link}>
 			<span className={this.state.available?'available':'not-available'}>FB</span>{
-				this.props.children?['/',...this.props.children]:[]
+				this.props.children?['/',...React.Children.toArray(this.props.children)]:[]
 			}
 		</Link>
 	}
