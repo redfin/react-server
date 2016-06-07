@@ -267,8 +267,22 @@ const handleCompilationErrors = (err, stats) => {
 // returns a method that can be used to stop the server. the returned method
 // returns a promise to indicate when the server is actually stopped.
 const serverToStopPromise = (server) => {
+
+	const sockets = [];
+
+	// If we're testing then we want to be able to bail out quickly.  Zombie
+	// (the test browser) makes keepalive connections to our static asset
+	// server, and we don't need to be polite to it when we're tearing down.
+	if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
+		server.on('connection', socket => sockets.push(socket));
+	}
+
 	return () => {
 		return new Promise((resolve, reject) => {
+
+			// This will only have anything if we're testing.  See above.
+			sockets.forEach(socket => socket.destroy());
+
 			server.on('error', (e) => {
 				logger.error('An error was emitted while shutting down the server');
 				logger.error(e);
