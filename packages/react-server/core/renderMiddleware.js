@@ -138,7 +138,10 @@ module.exports = function(server, routes) {
 
 		var navigateDfd = Q.defer();
 
-		setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
+		const timeout = setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
+
+		// Don't leave dead timers hanging around.
+		navigateDfd.promise.then(() => clearTimeout(timeout));
 
 		// If we fail to navigate, we'll throw a 500 and move on.
 		navigateDfd.promise.catch(() => {
@@ -723,7 +726,7 @@ function writeBody(req, res, context, start, page) {
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
 
-	setTimeout(() => {
+	const timeout = setTimeout(() => {
 		// give some additional information when we time out
 		retval.reject({
 			message: "Timed out rendering.",
@@ -740,6 +743,9 @@ function writeBody(req, res, context, start, page) {
 			}),
 		});
 	}, timeRemaining);
+
+	// Don't leave dead timers hanging around.
+	retval.promise.then(() => clearTimeout(timeout));
 
 	return retval.promise;
 }
