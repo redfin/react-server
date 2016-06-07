@@ -11,6 +11,8 @@ var	fs = require("fs"),
 // these during a top-level `npm test`.
 var PORT = process.env.PORT || 8770;
 
+process.env.NODE_ENV = "test";
+
 var stopFns = [];
 
 function getBrowser(opts) {
