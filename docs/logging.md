@@ -63,5 +63,5 @@ var fooLogger = logging.getLogger(__LOGGER__({ label: "foo" }));
 var barLogger = logging.getLogger(__LOGGER__({ label: "bar" }));
 ```
 
-See [react-server-gulp-module-tagger]() for more details on how `__LOGGER__` is
+See [module-tagging](/module-tagging) for more details on how `__LOGGER__` is
 replaced.
