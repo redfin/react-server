@@ -8,16 +8,21 @@ export default function({types: t }) {
         console.log(`node ${node}`);
         console.log(`name ${name}`);
 
-        // TODO: get module identifier from config
-        const fn = this.file.opts.filename
+        const config = { trim: state.opts.trim };
+        const moduleTag = loggerSpec.bind({ config })(this.file.opts.filename, {});
 
-        // technically, channel and cache are only reserved words for future use
-        // but let's replace them as a gentle reminder (and convenience for
-        // forward-facing users)
-        if (name === "__LOGGER__" || name === "__CHANNEL__" || name === "__CACHE__") {
-          console.log('found __LOGGER__ statment');
-        } else if (name === "") {
-          console.log(`found replacement token ${name}`);
+       let tokens;
+       if (state.opts.identifiers) {
+         tokens = new Set(state.opts.identifiers);
+       } else {
+         // technically, channel and cache are only reserved words for future use
+         // but let's replace them as a gentle reminder (and convenience for
+         // forward-facing users)
+         tokens = new Set(["__LOGGER__", "__CHANNEL__", "__CACHE__"]);
+       }
+
+        if (tokens.has(name)) {
+          console.log(`found ${name} replacement token`);
         }
       }
     }
