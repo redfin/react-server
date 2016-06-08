@@ -1,10 +1,13 @@
+var isWindows = ('win32' === process.platform);
+
 export default function(fullMatch, optString){
-	var fn   = this.file.path
+	var fn   = this.file && this.file.path ? this.file.path : fullMatch
 	,   trim = this.config.trim || ''
+	,   basePath = this.config.basePath || ''
 	,   opts = {}
 
-	if (fn.indexOf(BASE_PATH) !== 0) {
-		throw new Error("Unable to handle "+REPLACE_TOKEN+" for "+fn);
+	if (fn.indexOf(basePath) !== 0) {
+		throw new Error("Unable to handle " + basePath + " for " + fn);
 	}
 
 	if (optString) {
@@ -13,17 +16,17 @@ export default function(fullMatch, optString){
 		opts = new Function("return "+optString.replace(/^\/\//mg,''))(); // eslint-disable-line no-new-func
 	}
 
-	opts.name  = getName  (fn, opts, trim);
+	opts.name  = getName  (fn, opts, trim, basePath);
 	opts.color = getColor (fn, opts);
 
 	return JSON.stringify(opts);
 }
 
-var getName = function(fn, opts, trim){
+var getName = function(fn, opts, trim, basePath){
 	var slashPattern = isWindows
 		?/\\/g
 		:/\//g
-	var name = fn.substring(BASE_PATH.length+trim.length, fn.length)
+	var name = fn.substring(basePath.length+trim.length, fn.length)
 		.replace(/\.jsx?$/, '')
 		.replace(slashPattern,'.')
 	if (opts.label) {

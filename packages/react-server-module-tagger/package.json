@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"🐑🐑🐑\"",
-    "compile": "babel --presets react-server -o index.js",
+    "compile": "babel --presets react-server -o index.js index.babel.js",
     "clean": "del npm-debug.log*"
-},
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/redfin/react-server.git"
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
+    "ava": "^0.15.2",
     "babel-cli": "^6.9.0",
     "babel-preset-react-server": "^0.3.0",
     "del-cli": "^0.2.0"

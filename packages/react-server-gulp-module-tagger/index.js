@@ -10,10 +10,10 @@ var isWindows = ('win32' === process.platform)
 ,   THIS_MODULE   = isWindows
 	? /(?:[^\\]+\\node_modules\\)?react-server-gulp-module-tagger\\index\.js$/
 	: /(?:[^\/]+\/node_modules\/)?react-server-gulp-module-tagger\/index\.js$/
-,   BASE_PATH     = module.filename.replace(THIS_MODULE,'')
 
 module.exports = function(config){
 	config || (config = {});
+	config.basePath = module.filename.replace(THIS_MODULE,'');
 	return forEach(function(stream, file){
 		return stream.pipe(replace(REPLACE_TOKEN, loggerSpec.bind({file, config})));
 	})
