@@ -31,7 +31,7 @@
     "yeoman-assert": "^2.0.0",
     "yeoman-test": "^1.0.0"
   },
-  "repository": "redfin/packages/generator-react-server",
+  "repository": "redfin/react-server",
   "scripts": {
     "test": "ava test --tap && xo && nsp check",
     "clean": "rimraf npm-debug.log*"
