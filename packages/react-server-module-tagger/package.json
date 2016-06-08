@@ -1,0 +1,29 @@
+{
+  "name": "react-server-module-tagger",
+  "version": "0.3.0",
+  "description": "calculates module level config",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"🐑🐑🐑\"",
+    "compile": "babel --presets react-server -o index.js",
+    "clean": "del npm-debug.log*"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/redfin/react-server.git"
+  },
+  "keywords": [
+    "react-server"
+  ],
+  "author": "Doug Wade <doug.wade@redfin.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/redfin/react-server/issues"
+  },
+  "homepage": "https://github.com/redfin/react-server#readme",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-react-server": "^0.3.0",
+    "del-cli": "^0.2.0"
+  }
+}
