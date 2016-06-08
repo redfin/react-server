@@ -1,1 +1,1 @@
-let foo;
+let foo = __LOGGER__;
