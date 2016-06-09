@@ -7,7 +7,8 @@ React Server transpilation
 **In**
 
 ```js
-// input code
+var logger = require('react-server').logging.getLogger(__LOGGER__);
+var fooLogger = logging.getLogger(__LOGGER__({ label: "foo" }));
 ```
 
 **Out**
@@ -15,7 +16,8 @@ React Server transpilation
 ```js
 "use strict";
 
-// output code
+var logger = require('react-server').logging.getLogger({ name: 'module.name', color: {} });
+var fooLogger = logging.getLogger({ label: 'foo', name: 'module.name.foo', color: {} }));
 ```
 
 ## Installation
@@ -48,4 +50,43 @@ $ babel --plugins react-server script.js
 require("babel-core").transform("code", {
   plugins: ["react-server"]
 });
+```
+
+
+## Configuration
+
+A fully configured babel plugin in your babelrc would look be
+
+```json
+{
+  "plugins": [
+    ["react-server", {
+      "trim": "my-project.components.",
+      "token": "__LOGGER__"
+    }]
+  ]
+}
+```
+
+
+### Trim
+
+A substring to trim off the front of the module name
+
+```javascript
+{
+    trim: "my-project.pages."
+}
+```
+
+### Token
+
+The token to replace in the source code with the module tag.  By default, uses
+the default logger token `__LOGGER__`, and two future reserved tokens,
+`__CHANNEL__` and 
+
+```javascript
+{
+    token: "__LOGGER__"
+}
 ```

@@ -1,11 +1,11 @@
 {
   "version": "0.0.0",
   "description": "React Server transpilation",
-  "repository": "Redfin/babel-plugin-react-server",
-  "author": "Doug Wade <doug.wade@redfin.com> <doug.wade@redfin.com>",
+  "repository": "redfin/babel-plugin-react-server",
+  "author": "Doug Wade <doug.wade@redfin.com>",
   "main": "lib/index.js",
   "dependencies": {
-    "react-server-module-tagger": "^0.3.0" 
+    "react-server-module-tagger": "^0.3.0"
   },
   "devDependencies": {
     "babel-core": "^6.3.17",

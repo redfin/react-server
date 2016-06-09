@@ -1,5 +1,5 @@
 {
   "plugins": [
-    ["../../src" { "token": "BAR" }]
+    ["../../../src", { "tokens": ["BAR"] }]
   ]
 }

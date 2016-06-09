@@ -3,17 +3,17 @@ import loggerSpec from 'react-server-module-tagger';
 export default function({types: t }) {
   return {
     visitor: {
-      IdentifierExpression(node) {
-        const {name} = node;
-        console.log(`node ${node}`);
-        console.log(`name ${name}`);
+      Identifier(path, state) {
+        const {node} = path;
+        const {name, type} = node;
 
         const config = { trim: state.opts.trim };
-        const moduleTag = loggerSpec.bind({ config })(this.file.opts.filename, {});
+        const file =  { path: this.file.opts.filename.replace(__dirname, '') }
+        const moduleTag = loggerSpec.bind({ file, config })(file.path);
 
        let tokens;
-       if (state.opts.identifiers) {
-         tokens = new Set(state.opts.identifiers);
+       if (state.opts.tokens) {
+         tokens = new Set(state.opts.token);
        } else {
          // technically, channel and cache are only reserved words for future use
          // but let's replace them as a gentle reminder (and convenience for
@@ -23,6 +23,9 @@ export default function({types: t }) {
 
         if (tokens.has(name)) {
           console.log(`found ${name} replacement token`);
+          console.log(`replacing with ${moduleTag}`);
+          console.log(`${Object.keys(node)}`);
+          path.node.name = moduleTag;
         }
       }
     }
