@@ -1,18 +1,22 @@
 import test from 'ava';
 import loggerSpec from '.';
 
-test(t => {
-  const file = 'foo.bar';
-  const config = {};
+test('creates a module tag', t => {
   const expected = '{\"name\":\"foo.bar\",\"color\":{\"server\":73,\"client\":\"rgb(42,127,127)\"}}';
 
-  t.is(expected, loggerSpec.bind({file, config})(file));
+  const file = 'foo.bar';
+  const config = {};
+  const actual = loggerSpec.bind({file, config})(file);
+
+  t.is(expected, actual);
 });
 
-test(t => {
-  const file = 'baz.quux';
-  const config = { trim: 'baz.' };
+test('trims prefix from module tag name', t => {
   const expected = '{\"name\":\"quux\",\"color\":{\"server\":135,\"client\":\"rgb(127,42,212)\"}}';
 
-  t.is(expected, loggerSpec.bind({file, config})(file));
+  const file = 'baz.quux';
+  const config = { trim: 'baz.' };
+  const actual = loggerSpec.bind({file, config})(file);
+
+  t.is(expected, actual);
 });

@@ -1,5 +1,20 @@
 var isWindows = ('win32' === process.platform);
 
+/**
+ * A util function for tagging modules.  Expects to find data on its prototype
+ * as follows
+ *     {
+ *         file: {
+ *             path: the path to the file to tag
+ *         }
+ *         config: {
+ *             trim: the string to trim off the front of the logger name
+ *         }
+ *     }
+ * @param  {String} fullMatch May also be provided as this.file.path, the path to the file
+ * @param  {String} optString an environment variable to get the module tag from
+ * @return {String}           A json object containing a module identifier
+ */
 export default function(fullMatch, optString){
 	var fn   = this.file && this.file.path ? this.file.path : fullMatch
 	,   trim = this.config.trim || ''
@@ -22,6 +37,21 @@ export default function(fullMatch, optString){
 	return JSON.stringify(opts);
 }
 
+/**
+ * Gets the name of a logger from its filepath.
+ * @example
+ *     getName(
+ *         'my-component',
+ *         { label: 'sub' },
+ *         'my-project.src',
+ *         'my-project/src/components/my-component.js'
+ *     ) // returns "components.my-component"
+ * @param  {String}   fn       filename
+ * @param  {Object}   opts     { label: 'Optional logger label' }
+ * @param  {String}   trim     The leading portion of the name to remove.
+ * @param  {String}   basePath The path to the file
+ * @return {String}            The logger name, e.g. my-project.components.my-component
+ */
 var getName = function(fn, opts, trim, basePath){
 	var slashPattern = isWindows
 		?/\\/g
@@ -35,6 +65,11 @@ var getName = function(fn, opts, trim, basePath){
 	return name;
 }
 
+/**
+ * Gets isomorphic color objects from filenames.
+ * @param  {String} filename
+ * @return {Object} An isomorphic color object in the form {"color":{"server":147,"client":"rgb(127,127,212)"}}
+ */
 var getColor = (function(){
 
 	// ANSI escape sequence on the server.
