@@ -1,8 +1,8 @@
 const gulp = require('gulp');
-const tagger = require('react-server-gulp-module-tagger');
+const tagger = require('../../..');
 
 gulp.task('default', () => {
-	gulp.src('*.js')
-			.pipe(tagger())
-			.pipe(gulp.dest('build'));
+	gulp.src('actual.js')
+		.pipe(tagger())
+		.pipe(gulp.dest('build'));
 });

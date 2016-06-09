@@ -9,6 +9,7 @@ getTestCases().then((testCases) => {
       await runGulp(dir);
       const expected = await readFile(path.join('fixtures', dir, 'expected.js'));
       const actual = await readFile(path.join('fixtures', dir, 'build', 'actual.js'));
+      t.is(actual.toString(), expected.toString());
     });
   });
 });
