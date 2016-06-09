@@ -1,13 +1,13 @@
 {
   "name": "react-server-module-tagger",
-  "version": "0.3.0",
+  "version": "0.0.1",
   "description": "calculates module level config",
   "main": "index.js",
   "scripts": {
     "test": "ava test.js",
-    "compile": "babel --presets react-server -o index.js index.babel.js",
+    "compile": "babel --presets es2015,stage-0 -o index.js index.babel.js",
     "clean": "del index.js npm-debug.log*",
-    "prepublish": "compile"
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,8 @@
   "devDependencies": {
     "ava": "^0.15.2",
     "babel-cli": "^6.9.0",
-    "babel-preset-react-server": "^0.3.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
     "del-cli": "^0.2.0"
   }
 }

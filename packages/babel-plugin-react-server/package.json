@@ -6,7 +6,7 @@
   "author": "Doug Wade <doug.wade@redfin.com>",
   "main": "lib/index.js",
   "dependencies": {
-    "react-server-module-tagger": "^0.3.0"
+    "react-server-module-tagger": "^0.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.3.17",
