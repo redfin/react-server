@@ -15,7 +15,7 @@
     "mocha": "^2.2.5"
   },
   "scripts": {
-    "clean": "rm -rf lib",
+    "clean": "rm -rf lib npm-debug.log*",
     "build": "babel src -d lib",
     "test": "mocha --compilers js:babel-register",
     "test:watch": "npm run test -- --watch",

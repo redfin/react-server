@@ -6,7 +6,8 @@
   "scripts": {
     "test": "ava test.js",
     "compile": "babel --presets react-server -o index.js index.babel.js",
-    "clean": "del npm-debug.log*"
+    "clean": "del index.js npm-debug.log*",
+    "prepublish": "compile"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,7 @@
 module.exports = {
   plugins: [
     require('babel-plugin-react-server'),
+    require('babel-plugin-transform-runtime'),
   ],
   presets: [
     require('babel-preset-es2015'),
