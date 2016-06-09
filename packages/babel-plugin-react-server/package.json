@@ -1,6 +1,7 @@
 {
-  "version": "0.0.0",
-  "description": "React Server transpilation",
+  "name": "babel-plugin-react-server",
+  "version": "0.0.1",
+  "description": "Babel plugin for React Server transpilation",
   "repository": "redfin/babel-plugin-react-server",
   "author": "Doug Wade <doug.wade@redfin.com>",
   "main": "lib/index.js",
