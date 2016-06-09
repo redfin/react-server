@@ -8,7 +8,6 @@ React Server transpilation
 
 ```js
 var logger = require('react-server').logging.getLogger(__LOGGER__);
-var fooLogger = logging.getLogger(__LOGGER__({ label: "foo" }));
 ```
 
 **Out**
@@ -17,7 +16,6 @@ var fooLogger = logging.getLogger(__LOGGER__({ label: "foo" }));
 "use strict";
 
 var logger = require('react-server').logging.getLogger({ name: 'module.name', color: {} });
-var fooLogger = logging.getLogger({ label: 'foo', name: 'module.name.foo', color: {} }));
 ```
 
 ## Installation
@@ -83,7 +81,7 @@ A substring to trim off the front of the module name
 
 The token to replace in the source code with the module tag.  By default, uses
 the default logger token `__LOGGER__`, and two future reserved tokens,
-`__CHANNEL__` and 
+`__CHANNEL__` and
 
 ```javascript
 {

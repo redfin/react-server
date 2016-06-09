@@ -1,31 +1,32 @@
 import loggerSpec from 'react-server-module-tagger';
+import path from 'path';
 
 export default function({types: t }) {
   return {
     visitor: {
-      Identifier(path, state) {
-        const {node} = path;
+      Identifier(p, state) {
+        const {node} = p;
         const {name, type} = node;
 
         const config = { trim: state.opts.trim };
-        const file =  { path: this.file.opts.filename.replace(__dirname, '') }
-        const moduleTag = loggerSpec.bind({ file, config })(file.path);
+        const parent = path.resolve(path.join(process.cwd(), '..')) + path.sep;
+        const fp = this.file.opts.filename.replace(parent, '');
+        const file =  { path: fp };
+        //TODO: Support labels
+        const moduleTag = loggerSpec.bind({ file, config })(fp);
 
        let tokens;
        if (state.opts.tokens) {
-         tokens = new Set(state.opts.token);
+         tokens = new Set(state.opts.tokens);
        } else {
-         // technically, channel and cache are only reserved words for future use
-         // but let's replace them as a gentle reminder (and convenience for
-         // forward-facing users)
          tokens = new Set(["__LOGGER__", "__CHANNEL__", "__CACHE__"]);
        }
 
         if (tokens.has(name)) {
-          console.log(`found ${name} replacement token`);
-          console.log(`replacing with ${moduleTag}`);
-          console.log(`${Object.keys(node)}`);
-          path.node.name = moduleTag;
+          // this strikes me as a dirty, nasty hack.  I think it would be better
+          // to parse the object as json and coerce it to an array of
+          // ObjectProperties to construct an ObjectExpression
+          p.node.name = moduleTag;
         }
       }
     }
