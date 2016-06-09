@@ -16,7 +16,8 @@ data on its prototype, so use `.bind`.
 ```javascript
 const tagger = require('react-server-module-tagger');
 const filepath = 'path/to/my/output.js';
-const moduleTag = tagger.bind({ file: { path: filepath }, config: { trim: 'path/to'} })(filepath));
+const optString = '({label:"foo"})'
+const moduleTag = tagger.bind({ file: { path: filepath }, config: { trim: 'path/to'} })(filepath, optString));
 ```
 
 returns a logger instance that will have consistent coloring on the server and

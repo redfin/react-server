@@ -11,8 +11,12 @@ var isWindows = ('win32' === process.platform);
  *             trim: the string to trim off the front of the logger name
  *         }
  *     }
+ * @example
+ *     const file = '/path/to/my/file.js';
+ *     loggerSpec.bind({file, { trim: 'path.to.' }})(file, '({label: "foo"})')
+ *     // returns '{\"label\":\"foo\",\"name\":\"my.file\",\"color\":{\"server\":87,\"client\":\"rgb(42,212,212)\"}}'
  * @param  {String} fullMatch May also be provided as this.file.path, the path to the file
- * @param  {String} optString an environment variable to get the module tag from
+ * @param  {String} optString The label to add to the module tag, in the form '({label:"$label"})'
  * @return {String}           A json object containing a module identifier
  */
 export default function(fullMatch, optString){
