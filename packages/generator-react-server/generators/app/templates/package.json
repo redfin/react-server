@@ -4,7 +4,7 @@
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "scripts": {
-    "start": "gulp && react-server-cli --routes build/routes.js",
+    "start": "react-server-cli",
     "test": "xo && nsp check"
   },
   "license": "Apache-2.0",
@@ -20,11 +20,9 @@
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "babel-preset-react-server": "^0.2.0",
+    "babel-preset-react-server": "^0.3.0",
     "eslint-config-xo-react": "^0.7.0",
     "eslint-plugin-react": "^5.1.1",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
     "nsp": "^2.3.3",
     "react-server-gulp-module-tagger": "^0.2.6",
     "xo": "^0.15.1"

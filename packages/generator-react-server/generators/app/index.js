@@ -43,7 +43,6 @@ module.exports = yeoman.Base.extend({
 		});
 
 		let files = [
-			'gulpfile.js',
 			'hello-world-page.js',
 			'hello-world.js',
 			'package.json',
