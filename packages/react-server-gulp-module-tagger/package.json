@@ -19,6 +19,7 @@
     "react-server-module-tagger": "^0.3.0"
   },
   "devDependencies": {
+    "ava": "^0.15.2",
     "gulp-ava": "^0.12.0",
     "rimraf": "^2.5.2"
   }
