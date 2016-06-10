@@ -5,7 +5,7 @@
   "main": "HelloWorld.js",
   "scripts": {
     "compile": "gulp",
-    "start": "react-server-cli --routes build/routes.js",
+    "start": "react-server-cli --port 3010 --js-port 3011 --routes build/routes.js",
     "test": "xo && nsp check && ava test.js"
   },
   "license": "Apache-2.0",
