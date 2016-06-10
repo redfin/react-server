@@ -1,4 +1,4 @@
-<img src="/images/reactserver_logo%402x.png" width="450px"/>
+<img src="https://cdn.rawgit.com/doug-wade/react-server/svg-logo/images/reactserver_logo.svg"/>
 
 [![Build Status][build-badge-img]][build-url]
 [![NPM version][npm-version-img]][npm-url]
