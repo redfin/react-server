@@ -47,6 +47,9 @@
     ],
     "ignores": [
       "test/**/*"
-    ]
+    ],
+    "rules": {
+      "ava/no-ignored-test-files": [0]
+    }
   }
 }

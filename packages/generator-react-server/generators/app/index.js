@@ -44,11 +44,12 @@ module.exports = yeoman.Base.extend({
 
 		let files = [
 			'gulpfile.js',
-			'hello-world-page.js',
-			'hello-world.js',
+			'pages/hello-world.js',
+			'components/hello-world.js',
 			'package.json',
 			'README.md',
-			'routes.js'
+			'routes.js',
+			'test.js'
 		];
 
 		if (this.props.dockerCfg) {
