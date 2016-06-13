@@ -4,7 +4,7 @@
     "bootstrap": "npm i; lerna bootstrap",
     "test": "lerna run test",
     "clean": "rimraf lerna-debug.log && lerna run clean",
-    "nuke": "rm -r node_modules; for d in packages/*/node_modules; do echo $d; rm -r $d; done"
+    "nuke": "lerna clean && rm -r node_modules"
   },
   "devDependencies": {
     "babel-plugin-react-require": "^2.1.0",
@@ -36,6 +36,7 @@
     "jasmine": "2.3.1",
     "jsdom": "5.6.1",
     "jsx-loader": "0.12.2",
+    "lerna": "2.0.0-beta.18",
     "minimist": "1.1.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
@@ -45,7 +46,6 @@
     "rimraf": "^2.5.2",
     "superagent": "1.2.0",
     "webpack": "1.4.13",
-    "zombie": "4.1.0",
-    "lerna": "2.0.0-beta.14"
+    "zombie": "4.1.0"
   }
 }
