@@ -1,6 +1,6 @@
 {
   "name": "generator-react-server",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A react-server yeoman generator",
   "homepage": "http://github.com/redfin/react-server",
   "author": {
@@ -49,7 +49,9 @@
       "test/**/*"
     ],
     "rules": {
-      "ava/no-ignored-test-files": [0]
+      "ava/no-ignored-test-files": [
+        0
+      ]
     }
   }
 }
