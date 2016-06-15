@@ -826,17 +826,19 @@ class ClientController extends EventEmitter {
 		ReactServerAgent.cache().lateArrival(url, dehydratedEntry);
 	}
 
-	nodeArrival (index) {
+	nodeArrival (startIndex, endIndex) {
 
 		// The server has just let us know that a pre-rendered root
 		// element has arrived.  We'll grab a reference to its DOM
 		// node and un-block client-side rendering of the element that
 		// we're going to mount into it.
-		this._ensureRootNodeDfd(index).resolve(
-			this.mountNode.querySelector(
-				`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
-			)
-		);
+		for (var i = startIndex; i <= endIndex; i++) {
+			this._ensureRootNodeDfd(i).resolve(
+				this.mountNode.querySelector(
+					`div[${REACT_SERVER_DATA_ATTRIBUTE}="${i}"]`
+				)
+			);
+		}
 	}
 
 	failArrival () {

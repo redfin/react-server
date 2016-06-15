@@ -915,15 +915,16 @@ function bootstrapClient(res, lastElementSent) {
 	// function to avoid letting responses slip in between.
 	setupLateArrivals(res);
 
-	for (var i = 0; i <= lastElementSent; i++) {
-		wakeElement(res, i);
-	}
+	wakeElement(res, 0, lastElementSent);
 
 	RLS().haveBootstrapped = true;
 }
 
-function wakeElement(res, i) {
-	renderScriptsAsync([{ text: `__reactServerClientController.nodeArrival(${i})` }], res)
+function wakeElement(res, startIndex, endIndex) {
+	endIndex = endIndex || startIndex;
+	renderScriptsAsync([{
+		text: `__reactServerClientController.nodeArrival(${startIndex},${endIndex})`,
+	}], res);
 }
 
 function setupLateArrivals(res) {
