@@ -14,8 +14,8 @@ transitions between pages in the browser.
 ## What is it?
 
 React Server is an [Express](http://expressjs.com/) [middleware](http://expressjs.com/guide/using-middleware.html)
-for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/)
-which borrows some performance ideas from [Facebook's Big Pipe](https://www.facebook.com/notes/facebook-engineering/bigpipe-pipelining-web-pages-for-high-performance/389414033919/).
+for serving universal (isomorphic) JavaScript applications built with [React](https://facebook.github.io/react/).
+
 Read more on [our dev blog](https://www.redfin.com/blog/tag/react-server).
 
 ## Getting started
