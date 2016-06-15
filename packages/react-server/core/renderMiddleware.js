@@ -838,7 +838,7 @@ function writeElements(res, elements) {
 
 			// We've already bootstrapped, so we can immediately tell the
 			// client controller to wake the new element we just sent.
-			wakeElement(res, i);
+			wakeElementRange(res, i, i);
 		} else if (i === elements.length - 1) {
 
 			// Page didn't emit `<TheFold/>`.  Now we're done.
@@ -915,12 +915,12 @@ function bootstrapClient(res, lastElementSent) {
 	// function to avoid letting responses slip in between.
 	setupLateArrivals(res);
 
-	wakeElement(res, 0, lastElementSent);
+	wakeElementRange(res, 0, lastElementSent);
 
 	RLS().haveBootstrapped = true;
 }
 
-function wakeElement(res, startIndex, endIndex) {
+function wakeElementRange(res, startIndex, endIndex) {
 	endIndex = endIndex || startIndex;
 	renderScriptsAsync([{
 		text: `__reactServerClientController.nodeArrival(${startIndex},${endIndex})`,
