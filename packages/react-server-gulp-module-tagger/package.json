@@ -4,7 +4,7 @@
   "description": "A gulp plugin to replace tags with module information",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test",
+    "test": "ava test/test.js && eslint index.js && nsp check",
     "clean": "rimraf target npm-debug.log*"
   },
   "repository": "redfin/react-server",
@@ -15,9 +15,13 @@
   ],
   "dependencies": {
     "gulp-foreach": "0.1.0",
+    "gulp-plumber": "^1.1.0",
     "gulp-replace": "0.5.2"
   },
   "devDependencies": {
+    "ava": "^0.15.2",
+    "del": "^2.2.1",
+    "nsp": "^2.4.0",
     "rimraf": "^2.5.2"
   }
 }

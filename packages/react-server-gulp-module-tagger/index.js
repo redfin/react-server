@@ -101,7 +101,7 @@ var getColor = (function(){
 		return (hash%len+len)%len;
 	}
 
-	return function(fn){
-		return colors[hash(fn)];
+	return function(fn, opts){
+		return colors[hash(opts.name)];
 	}
 })();
