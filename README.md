@@ -23,8 +23,13 @@ npm install -g yo
 # install the react-server generator
 npm install -g generator-react-server
 
-# make a new react-server project
+# make a new react-server project in the CURRENT directory
 yo react-server
+
+# compile and run the new app
+npm run compile
+npm run start
+# go to http://localhost:3010
 ```
 
 That hooks you up with [`react-server-cli`](packages/react-server-cli), which
