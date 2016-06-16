@@ -133,6 +133,9 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 					test: /\.jsx?$/,
 					loader: "babel",
 					exclude: /node_modules/,
+					query: {
+						presets: ['babel-preset-react-server'],
+					},
 				},
 				{
 					test: /\.css$/,

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
-    "clean": "rimraf target npm-debug.log*"
+    "clean": "rimraf npm-debug.log* test/fixtures/**/build"
   },
   "repository": "redfin/react-server",
   "author": "Redfin",
@@ -15,9 +15,12 @@
   ],
   "dependencies": {
     "gulp-foreach": "0.1.0",
-    "gulp-replace": "0.5.2"
+    "gulp-replace": "0.5.2",
+    "react-server-module-tagger": "^0.0.1"
   },
   "devDependencies": {
+    "ava": "^0.15.2",
+    "gulp-ava": "^0.12.0",
     "rimraf": "^2.5.2"
   }
 }

@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    ["../../../src", { "trim": "babel-plugin-react-server.test.fixtures." }]
+  ]
+}

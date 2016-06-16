@@ -1,4 +1,23 @@
 
+## v0.3.2 (2016-06-13)
+
+#### Bug fix
+* `react-server`
+  * [#268](https://github.com/redfin/react-server/pull/268) Include URL fragment in history navigation stack pathnames. ([@gigabo](https://github.com/gigabo))
+
+#### Enhancement
+* `react-server-examples`
+  * [#222](https://github.com/redfin/react-server/pull/222) Add bike share example. ([@doug-wade](https://github.com/doug-wade))
+
+#### Performance
+* `react-server`
+  * [#274](https://github.com/redfin/react-server/pull/274) Clear failsafe timeouts on route/render success. ([@gigabo](https://github.com/gigabo))
+
+#### Commiters: 3
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Carey Spies ([careylin](https://github.com/careylin))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+
 ## v0.3.1 (2016-06-03)
 
 #### Bug fix
