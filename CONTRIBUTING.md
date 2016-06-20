@@ -32,6 +32,12 @@ npm test
 
 That will, among other things, run [`eslint`](/.eslintrc).
 
+If you add a new test that starts a server, make sure to update the
+testing port registry to make sure there aren't any conflicts.  Our
+CI test target runs many packages' tests simultaneously, so its
+important that every server starts on a unique port.  You can find
+the manifest in the docs.
+
 ## Contributor License Agreement
 
 To get started, please [sign the Contributor License
