@@ -1,3 +1,3 @@
 {
-  "exceptions": ["https://nodesecurity.io/advisories/106"]
+  "exceptions": ["https://nodesecurity.io/advisories/106", "https://nodesecurity.io/advisories/118"]
 }
