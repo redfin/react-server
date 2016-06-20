@@ -15,3 +15,6 @@ addons:
 
 before_script:
   - npm run bootstrap
+
+after_failure:
+  - npm run debug
