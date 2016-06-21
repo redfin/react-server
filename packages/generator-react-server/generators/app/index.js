@@ -2,6 +2,7 @@
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
+var validatePackageName = require('validate-npm-package-name');
 
 module.exports = yeoman.Base.extend({
 	prompting: function () {
@@ -13,7 +14,18 @@ module.exports = yeoman.Base.extend({
 			type: 'input',
 			name: 'name',
 			message: 'What would you like to call your app?',
-			default: this.appname
+			default: this.appname.trim().replace(/\s+/g, '-'),
+			validate: function (name) {
+				var validation = validatePackageName(name);
+				var warnings = validation.warnings || [];
+				var errors = validation.errors || [];
+
+				if (validation.validForNewPackages) {
+					return true;
+				}
+
+				return warnings.concat(errors).join('\n');
+			}
 		}, {
 			type: 'confirm',
 			name: 'dockerCfg',
