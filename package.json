@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "bootstrap": "npm i; lerna bootstrap",
+    "bootstrap": "npm i && lerna bootstrap",
     "test": "lerna run test",
     "clean": "rimraf lerna-debug.log && lerna run clean",
     "nuke": "lerna clean && rm -r node_modules"
