@@ -199,6 +199,10 @@ function renderPage(req, res, context, start, page) {
 
 	var timer = logger.timer("lifecycle.individual");
 
+	// Protects some browsers (Chrome, IE) against MIME sniffing attacks.
+	// see: http://security.stackexchange.com/a/12916
+	res.set('X-Content-Type-Options', 'nosniff');
+
 	res.status(page.getStatus()||200);
 
 	// Each of these functions has the same signature and returns a
