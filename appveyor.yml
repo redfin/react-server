@@ -1,0 +1,12 @@
+environment:
+  nodejs_version: "6.2"
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm run bootstrap
+
+test_script:
+  - npm test
+
+build: off
+
