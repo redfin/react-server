@@ -34,7 +34,7 @@ var loggerSpec = function(fullMatch, optString){
 	}
 
 	opts.name  = getName  (fn, opts, trim);
-	opts.color = getColor (fn, opts);
+	opts.color = getColor (opts);
 
 	return JSON.stringify(opts);
 }
@@ -101,7 +101,7 @@ var getColor = (function(){
 		return (hash%len+len)%len;
 	}
 
-	return function(fn, opts){
+	return function(opts){
 		return colors[hash(opts.name)];
 	}
 })();
