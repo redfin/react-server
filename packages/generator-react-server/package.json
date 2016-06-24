@@ -23,12 +23,12 @@
     "yosay": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.14.0",
-    "eslint-config-xo-react": "^0.7.0",
+    "ava": "^0.15.2",
+    "eslint-config-xo-react": "^0.8.0",
     "eslint-plugin-react": "^5.1.1",
     "nsp": "^2.3.3",
     "rimraf": "^2.5.2",
-    "xo": "^0.15.1",
+    "xo": "^0.16.0",
     "yeoman-assert": "^2.0.0",
     "yeoman-test": "^1.0.0"
   },

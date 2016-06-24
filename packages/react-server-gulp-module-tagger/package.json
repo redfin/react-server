@@ -16,7 +16,7 @@
   "dependencies": {
     "gulp-foreach": "0.1.0",
     "gulp-plumber": "^1.1.0",
-    "gulp-replace": "0.5.2",
+    "gulp-replace": "^0.5.4",
     "react-server-module-tagger": "0.0.1"
   },
   "devDependencies": {
