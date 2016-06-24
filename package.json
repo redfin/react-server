@@ -4,7 +4,8 @@
     "bootstrap": "npm i; lerna bootstrap",
     "test": "lerna run test",
     "clean": "rimraf lerna-debug.log && lerna run clean",
-    "nuke": "lerna clean && rm -r node_modules"
+    "nuke": "lerna clean && rm -r node_modules",
+    "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done"
   },
   "devDependencies": {
     "babel-plugin-react-require": "^2.1.0",
