@@ -7,7 +7,8 @@
       "breaking change": "Breaking change",
       "bug": "Bug fix",
       "enhancement": "Enhancement",
-      "performance": "Performance"
+      "performance": "Performance",
+      "security": "Security"
     },
     "cacheDir": ".changelog"
   }
