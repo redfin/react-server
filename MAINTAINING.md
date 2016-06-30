@@ -1,5 +1,7 @@
 ### Deployment Checklist
 
+- `npm config get registry`
+    - Make sure it's `https://registry.npmjs.org/`
 - `npm run clean`
 - `npm test`
 - `npm run changelog >> CHANGELOG.md`
