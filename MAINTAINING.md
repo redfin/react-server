@@ -1,8 +1,11 @@
 ### Deployment Checklist
 
+- `git checkout master && git pull upstream master`
 - `npm config get registry`
     - Make sure it's `https://registry.npmjs.org/`
 - `npm run clean`
+- optionally: `npm run nuke && npm run bootstrap`
+- `lerna exec -- npm prepublish`
 - `npm test`
 - `npm run changelog >> CHANGELOG.md`
 - Edit `CHANGELOG.md`:
