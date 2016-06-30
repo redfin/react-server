@@ -5,9 +5,9 @@
     "repo": "redfin/react-server",
     "labels": {
       "breaking change": "Breaking change",
-      "bug": "Bug fix",
       "enhancement": "Enhancement",
       "performance": "Performance",
+      "bug": "Bug fix",
       "security": "Security"
     },
     "cacheDir": ".changelog"
