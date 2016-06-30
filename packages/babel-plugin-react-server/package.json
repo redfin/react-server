@@ -1,12 +1,12 @@
 {
   "name": "babel-plugin-react-server",
-  "version": "0.0.1",
+  "version": "0.3.3",
   "description": "Babel plugin for React Server transpilation",
   "repository": "redfin/babel-plugin-react-server",
   "author": "Doug Wade <doug.wade@redfin.com>",
   "main": "lib/index.js",
   "dependencies": {
-    "react-server-module-tagger": "^0.0.1"
+    "react-server-module-tagger": "^0.3.3"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",

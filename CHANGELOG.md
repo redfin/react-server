@@ -1,3 +1,38 @@
+## v0.3.3 (2016-06-30)
+
+#### Enhancement
+* `babel-plugin-react-server`, `babel-preset-react-server`
+  * [#301](https://github.com/redfin/react-server/pull/301) Add babel module tagging. ([@doug-wade](https://github.com/doug-wade))
+* `react-server-gulp-module-tagger`, `react-server-module-tagger`
+  * [#300](https://github.com/redfin/react-server/pull/300) Add react server module tagger. ([@doug-wade](https://github.com/doug-wade))
+
+#### Performance
+* `react-server`
+  * [#288](https://github.com/redfin/react-server/pull/288) Reduce nodeArrival calls by taking in range of node indices. ([@SteveVitali](https://github.com/SteveVitali))
+
+#### Bug fix
+* `babel-plugin-react-server`
+  * [#322](https://github.com/redfin/react-server/pull/322) add dev dependency on babel-cli to babel plugin. ([@doug-wade](https://github.com/doug-wade))
+* `react-server-cli`
+  * [#318](https://github.com/redfin/react-server/pull/318) Downgrade webpack-dev-server to 1.13.0. ([@gigabo](https://github.com/gigabo))
+* `generator-react-server`
+  * [#298](https://github.com/redfin/react-server/pull/298) Validate project name in generator to ensure it's a valid npm package name. ([@latentflip](https://github.com/latentflip))
+
+#### Security
+* `react-server-cli`
+  * [#308](https://github.com/redfin/react-server/pull/308) Resolve nsp 118 for react-server-cli. ([@doug-wade](https://github.com/doug-wade))
+* `generator-react-server`
+  * [#307](https://github.com/redfin/react-server/pull/307) Exempt nsp 120. ([@doug-wade](https://github.com/doug-wade))
+* `react-server`
+  * [#305](https://github.com/redfin/react-server/pull/305) Adding X-Content-Type-Options: nosniff header. ([@roblg](https://github.com/roblg))
+
+#### Commiters: 6
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Philip Roberts ([latentflip](https://github.com/latentflip))
+- Robert Gay ([roblg](https://github.com/roblg))
+- Sasha Aickin ([aickin](https://github.com/aickin))
+- Steve Vitali ([SteveVitali](https://github.com/SteveVitali))
 
 ## v0.3.2 (2016-06-13)
 

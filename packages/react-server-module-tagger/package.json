@@ -1,11 +1,11 @@
 {
   "name": "react-server-module-tagger",
-  "version": "0.0.1",
+  "version": "0.3.3",
   "description": "calculates module level config",
   "main": "index.js",
   "scripts": {
     "test": "ava test.js",
-    "clean": "del index.js npm-debug.log*"
+    "clean": "del npm-debug.log*"
   },
   "repository": {
     "type": "git",
