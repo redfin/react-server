@@ -50,7 +50,8 @@ module.exports = {
 			});
 
 			// next add the style URLs that weren't already loaded.
-			Object.keys(newCssByKey).forEach(newCssKey => {
+			return Q.all(Object.keys(newCssByKey).map(newCssKey => {
+				var retval;
 				if (!loadedCss[newCssKey]) {
 					// this means that the CSS is not currently present in the
 					// document, so we need to add it.
@@ -63,6 +64,14 @@ module.exports = {
 						styleTag = document.createElement('link');
 						styleTag.rel = 'stylesheet';
 						styleTag.href = style.href;
+
+						// If we _can_ wait for the CSS to be loaded before
+						// proceeding, let's do so.
+						if ('onload' in styleTag) {
+							var dfd = Q.defer();
+							styleTag.onload = dfd.resolve;
+							retval = dfd.promise;
+						}
 					} else {
 						styleTag = document.createElement('style');
 						styleTag.innerHTML = style.text;
@@ -75,7 +84,8 @@ module.exports = {
 				} else {
 					logger.debug(`Stylesheet already loaded (no-op): ${newCssKey}`);
 				}
-			});
+				return retval;
+			}));
 		});
 	},
 
