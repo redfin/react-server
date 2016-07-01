@@ -1,12 +1,15 @@
 import React from 'react';
-import {ReactServerAgent, RootElement, TheFold} from 'react-server';
+import {ReactServerAgent, RootElement, TheFold, logging} from 'react-server';
 import NetworkList from '../components/network-list';
 import Header from '../components/header';
 import Footer from '../components/footer';
-import '../styles/index.css';
+import '../build/styles/index.css';
+
+const logger = logging.getLogger(__LOGGER__);
 
 export default class IndexPage {
 	handleRoute(next) {
+		logger.info('handling index');
 		this.data = ReactServerAgent.get('/api/networks').then(d => d.body.body);
 		return next();
 	}
