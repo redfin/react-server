@@ -279,6 +279,11 @@ class ClientController extends EventEmitter {
 					reuseDom: true,
 				});
 			}
+		} else if (this._history) {
+
+			// We're in a frameback frame, but we want to make sure that the
+			// frame's `document.location` stays up to date.
+			window.history.replaceState(null, null, url);
 		}
 
 		// If we've got control of the URL bar we'll also take responsibility
