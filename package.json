@@ -46,7 +46,7 @@
     "react": "0.14.2",
     "react-dom": "0.14.2",
     "react-server-gulp-module-tagger": "^0.3.3",
-    "rimraf": "^2.5.2",
+    "rimraf": "^2.5.3",
     "superagent": "1.2.0",
     "webpack": "1.4.13",
     "zombie": "4.1.0"
