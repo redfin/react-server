@@ -1,3 +1,15 @@
+## v0.3.4 (2016-07-05)
+
+#### Bug fix
+* `react-server`
+  * [#332](https://github.com/redfin/react-server/pull/332) Keep `document.location` up-to-date in frameback frame. ([@gigabo](https://github.com/gigabo))
+  * [#330](https://github.com/redfin/react-server/pull/330) Wait for CSS to load on client transition. ([@gigabo](https://github.com/gigabo))
+
+#### Commiters: 3
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+
 ## v0.3.3 (2016-06-30)
 
 #### Enhancement
