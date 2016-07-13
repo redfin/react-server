@@ -48,7 +48,7 @@
     "react-server-gulp-module-tagger": "^0.3.3",
     "rimraf": "^2.5.2",
     "superagent": "1.2.0",
-    "webpack": "1.4.13",
+    "webpack": "1.13.1",
     "zombie": "4.1.0"
   }
 }
