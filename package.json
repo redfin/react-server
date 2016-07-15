@@ -43,7 +43,7 @@
     "minimist": "1.1.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
-    "react": "0.14.2",
+    "react": "15.2.1",
     "react-dom": "0.14.2",
     "react-server-gulp-module-tagger": "^0.3.3",
     "rimraf": "^2.5.2",
