@@ -1,3 +1,15 @@
+## v0.4.0 (2016-07-16)
+
+#### Enhancement
+* `react-server-cli`
+  * [#302](https://github.com/redfin/react-server/pull/302) Use babel preset to build react-server-cli. ([@doug-wade](https://github.com/doug-wade))
+  * [#343](https://github.com/redfin/react-server/pull/343) Add react-server-cli watch mode. ([@doug-wade](https://github.com/doug-wade))
+  * [#348](https://github.com/redfin/react-server/pull/348) Add json loader to webpack. ([@doug-wade](https://github.com/doug-wade))
+
+#### Commiters: 2
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+
 ## v0.3.4 (2016-07-05)
 
 #### Bug fix

@@ -1,6 +1,6 @@
 {
   "lerna": "2.0.0-beta.24",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "changelog": {
     "repo": "redfin/react-server",
     "labels": {
