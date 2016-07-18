@@ -52,5 +52,8 @@
     "superagent": "1.2.0",
     "webpack": "1.13.1",
     "zombie": "4.1.0"
+  },
+  "engine": {
+  	"node": ">4.2.1"
   }
 }
