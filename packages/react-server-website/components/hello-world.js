@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import {logging} from 'react-server';
+import css from './hello-world.css';
 
 const logger = logging.getLogger(__LOGGER__);
 
@@ -37,6 +38,6 @@ console.log(js);
 `
 				} />
 			</div>
-			);
+		);
 	}
 }
