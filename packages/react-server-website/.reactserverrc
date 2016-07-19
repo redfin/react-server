@@ -1,0 +1,20 @@
+{
+  "routes": "./routes.js",
+  "host": "localhost",
+  "port": 3000,
+  "js-port": 3001,
+  "hot": false,
+  "minify": false,
+  "long-term-caching": false,
+  "compile-only": false,
+  "https": false,
+  "log-level": "debug",
+  "env": {
+    "staging": {
+      "port": "4000"
+    },
+    "production": {
+       "port": "80"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+version: '2'
+services:
+  react_server:                               # The label of the service
+    build: .                                  # The location of the Dockerfile to build
+    volumes:                                  # Files to share with the container and the host
+      - .:/www                                # Share the project in /www in the container
+      - react_server_node_modules:/www/node_modules  # A special volume so that OS specific node_modules are built correctly
+    working_dir: /www                         # The location all commands should run from
+    environment:
+      NODE_ENV: 'docker'                      # Set the NODE_ENV environment variable
+    command: /bin/bash -c "npm install && npm start" # The command to run in when the container starts
+    ports:                                    # Ports to expose to your host
+      - '3000:3000'
+      - '3001:3001'
+  # An example database
+  # my_db:
+  #  image: rethinkdb:latest
+  # You can reference the db/service by using the dns name `my_db` and docker will do the rest
+
+# Volume to store separate from the container runtime and host
+volumes:
+  react_server_node_modules:
