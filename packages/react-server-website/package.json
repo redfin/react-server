@@ -1,0 +1,43 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "description": "A react-server instance",
+  "main": "HelloWorld.js",
+  "scripts": {
+    "compile": "gulp",
+    "start": "react-server-cli --port 3010 --js-port 3011",
+    "test": "xo && nsp check && ava test.js"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "babel-plugin-transform-runtime": "^6.8.0",
+    "babel-runtime": "^6.6.1",
+    "react": "~0.14.2",
+    "react-dom": "~0.14.2",
+    "react-markdown": "^2.4.2",
+    "react-server": "^0.3.4",
+    "react-server-cli": "^0.4.0",
+    "superagent": "1.2.0"
+  },
+  "devDependencies": {
+    "ava": "^0.15.1",
+    "babel-preset-react-server": "^0.3.3",
+    "eslint-config-xo-react": "^0.7.0",
+    "eslint-plugin-react": "^5.1.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "nsp": "^2.3.3",
+    "xo": "^0.15.1"
+  },
+  "xo": {
+    "esnext": true,
+    "extends": "xo-react",
+    "globals": [
+      "__LOGGER__"
+    ],
+    "ignores": [
+      "__clientTemp/**/*",
+      "build/**/*"
+    ]
+  }
+}
