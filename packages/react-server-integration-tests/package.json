@@ -3,7 +3,7 @@
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
-    "test": "gulp test",
+    "test": "PORT=8771 gulp test",
     "clean": "rimraf target __clientTemp npm-debug.log*"
   },
   "devDependencies": {
