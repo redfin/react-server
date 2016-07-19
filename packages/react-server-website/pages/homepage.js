@@ -1,9 +1,17 @@
 import React from 'react';
-import HelloWorld from '../components/hello-world';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import BannerSection from '../components/homepage/HomepageBanner';
 
-export default class SimplePage {
+export default class Homepage {
 	getElements() {
-		return <HelloWorld/>;
+		return (
+			<div className="content">
+				<Header/>
+				<BannerSection/>
+				<Footer/>
+			</div>
+		);
 	}
 
 	getMetaTags() {
