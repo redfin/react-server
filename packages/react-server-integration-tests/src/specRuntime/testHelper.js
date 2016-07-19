@@ -9,7 +9,9 @@ var	fs = require("fs"),
 // This needs to be different from the port used by the tests that still live
 // in the main `react-server` package, since those tests run concurrently with
 // these during a top-level `npm test`.
-var PORT = process.env.PORT || 8770;
+var PORT = process.env.PORT;
+
+if (!PORT) throw new Error("Need a port");
 
 process.env.NODE_ENV = "test";
 
