@@ -154,6 +154,11 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 					loader: extractTextLoader + "!less-loader",
 					exclude: /node_modules/,
 				},
+				{
+					test: /\.less/,
+					loader: "less",
+					exclude: /node_modules/,
+				},
 			],
 		},
 		resolve: {
