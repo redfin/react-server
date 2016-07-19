@@ -30,11 +30,32 @@ this paragraph is a paragraph
 - haha
 - ok
 
+\`\`\`bash
+# this assumes you have npm already
+$ npm install react-server
+\`\`\`
+
+
 
 \`\`\`javascript
+// javascript
 var js = "this is javascript";
 console.log(js);
 \`\`\`
+
+\`\`\`jsx
+// jsx
+let foo = (
+	<div>
+		foo
+	</div>
+)
+
+render() {
+	return <foo />;
+}
+\`\`\`
+
 `
 				} />
 			</div>
