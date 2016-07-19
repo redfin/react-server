@@ -21,22 +21,7 @@ export default class HelloWorld extends React.Component {
 				<h2>Hello, World{'!'.repeat(this.state.exclamationCount)}</h2>
 				<button onClick={this.handleClick}>Get More Excited!</button>
 
-				<ReactMarkdown source={
-`# this heading is a heading
-
-this paragraph is a paragraph
-
-- omg list
-- haha
-- ok
-
-
-\`\`\`javascript
-var js = "this is javascript";
-console.log(js);
-\`\`\`
-`
-				} />
+				<ReactMarkdown source={ this.props.text } />
 			</div>
 		);
 	}

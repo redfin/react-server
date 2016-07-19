@@ -1,5 +1,6 @@
 import React from 'react';
 import HelloWorld from '../components/hello-world';
+import {ReactServerAgent} from "react-server";
 
 
 // Syntax highlighting - runs on the fly.
@@ -7,10 +8,15 @@ import HelloWorld from '../components/hello-world';
 require('prismjs');
 require('./prism.css');
 
+const getData = path => ReactServerAgent
+	.get("/api/docs", {path})
+	.then(res => res.body);
+
 export default class SimplePage {
 	getElements() {
+		const path = "/docs/client-transitions.md";
 		return [
-			<HelloWorld/>,
+			getData(path).then(res => <HelloWorld {...res} />),
 		];
 	}
 
