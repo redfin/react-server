@@ -1,7 +1,9 @@
 import React from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import BannerSection from '../components/homepage/HomepageBanner';
 import HelloWorld from '../components/hello-world';
 import {ReactServerAgent} from "react-server";
-
 
 // Syntax highlighting - runs on the fly.
 // TODO move to middleware
@@ -12,11 +14,20 @@ const getData = path => ReactServerAgent
 	.get("/api/docs", {path})
 	.then(res => res.body);
 
-export default class SimplePage {
+export default class Homepage {
 	getElements() {
 		const path = "/docs/client-transitions.md";
 		return [
-			getData(path).then(res => <HelloWorld {...res} />),
+			getData(path).then(function (res) {
+				return (
+					<div className="content">
+						<Header/>
+						<HelloWorld {...res} />
+						<BannerSection/>
+						<Footer/>
+					</div>
+				);
+			}),
 		];
 	}
 
