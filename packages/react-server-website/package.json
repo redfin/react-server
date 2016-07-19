@@ -15,7 +15,7 @@
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
     "react-server": "^0.3.4",
-    "react-server-cli": "^0.4.0",
+    "react-server-cli": "../react-server-cli",
     "superagent": "1.2.0"
   },
   "devDependencies": {
