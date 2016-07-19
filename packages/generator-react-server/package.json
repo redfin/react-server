@@ -13,7 +13,13 @@
   ],
   "main": "generators/index.js",
   "keywords": [
-    "react-server react server express middleware",
+    "react-server",
+    "react",
+    "server",
+    "middleware",
+    "express",
+    "yeoman",
+    "generator",
     "yeoman-generator"
   ],
   "dependencies": {
