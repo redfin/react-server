@@ -4,6 +4,8 @@ import Footer from '../components/Footer';
 import BannerSection from '../components/homepage/HomepageBanner';
 import HelloWorld from '../components/hello-world';
 import {ReactServerAgent} from "react-server";
+import Example from '../components/homepage/HomepageExample';
+import Features from '../components/homepage/Features';
 
 // Syntax highlighting - runs on the fly.
 // TODO move to middleware
@@ -17,6 +19,7 @@ const getData = path => ReactServerAgent
 export default class Homepage {
 	getElements() {
 		const path = "/docs/client-transitions.md";
+
 		return [
 			getData(path).then(function (res) {
 				return (
@@ -24,6 +27,8 @@ export default class Homepage {
 						<Header/>
 						<HelloWorld {...res} />
 						<BannerSection/>
+						<Example/>
+						<Features/>
 						<Footer/>
 					</div>
 				);
