@@ -1,6 +1,6 @@
 import React from 'react';
 import {logging} from 'react-server';
-import css from './hello-world.css';
+import './hello-world.less';
 
 const logger = logging.getLogger(__LOGGER__);
 
