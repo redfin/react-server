@@ -7,4 +7,4 @@ to update this manifest when adding a test that starts a server.
 3010, 3011
 
 ## react-server-integration-test
-8770, 3001
+8771, 3001
