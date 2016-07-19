@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "gulp",
     "start": "react-server-cli --port 3010 --js-port 3011",
-    "test": "xo && nsp check && ava test.js"
+    "test": "eslint routes.js gulpfile.js pages/ && nsp check"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -19,19 +19,7 @@
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "ava": "^0.15.1",
     "babel-preset-react-server": "^0.3.3",
-    "eslint-config-xo-react": "^0.7.0",
-    "eslint-plugin-react": "^5.1.1",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "nsp": "^2.3.3",
-    "xo": "^0.15.1"
-  },
-  "xo": {
-    "esnext": true,
-    "extends": "xo-react",
-    "globals": ["__LOGGER__"],
-    "ignores": ["__clientTemp/**/*", "build/**/*"]
+    "nsp": "^2.3.3"
   }
 }

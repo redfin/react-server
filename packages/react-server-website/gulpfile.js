@@ -6,7 +6,7 @@ gulp.task('default', () => {
 	gulp.src(['components/*.js', 'pages/*.js', 'routes.js'], {base: '.'})
 		.pipe(tagger())
 		.pipe(babel({
-			presets: ['react-server']
+			presets: ['react-server'],
 		}))
 		.pipe(gulp.dest('build'));
 });
