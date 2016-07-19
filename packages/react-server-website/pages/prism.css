@@ -1,0 +1,147 @@
+/* FROM http://atelierbram.github.io/syntax-highlighting/prism/ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	font-family: "Source Code Pro", Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
+	font-size: 14px;
+	line-height: 1.375;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	background: #2d2d2d;
+	color: #d3d0c8
+}
+
+pre[class*="language-"]::-moz-selection,
+pre[class*="language-"]::-moz-selection,
+code[class*="language-"]::-moz-selection,
+code[class*="language-"]::-moz-selection {
+	text-shadow: none;
+	background: #a09f93
+}
+
+pre[class*="language-"]::selection,
+pre[class*="language-"]::selection,
+code[class*="language-"]::selection,
+code[class*="language-"]::selection {
+	text-shadow: none;
+	background: #a09f93
+}
+
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto
+}
+
+:not(pre)>code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: #747369
+}
+
+.token.punctuation {
+	color: #d3d0c8
+}
+
+.token.namespace {
+	opacity: .7
+}
+
+.token.operator,
+.token.boolean,
+.token.number {
+	color: #f99157
+}
+
+.token.property {
+	color: #fc6
+}
+
+.token.tag {
+	color: #69c
+}
+
+.token.string {
+	color: #6cc
+}
+
+.token.selector {
+	color: #c9c
+}
+
+.token.attr-name {
+	color: #f99157
+}
+
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #6cc
+}
+
+.token.attr-value,
+.token.keyword,
+.token.control,
+.token.directive,
+.token.unit {
+	color: #9c9
+}
+
+.token.statement,
+.token.regex,
+.token.atrule {
+	color: #6cc
+}
+
+.token.placeholder,
+.token.variable {
+	color: #69c
+}
+
+.token.deleted {
+	text-decoration: line-through
+}
+
+.token.inserted {
+	border-bottom: 1px dotted #f2f0ec;
+	text-decoration: none
+}
+
+.token.italic {
+	font-style: italic
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold
+}
+
+.token.important {
+	color: #f2777a
+}
+
+.token.entity {
+	cursor: help
+}
+
+pre>code.highlight {
+	outline: 0.4em solid #f2777a;
+	outline-offset: .4em
+}

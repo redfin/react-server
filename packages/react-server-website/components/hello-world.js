@@ -27,7 +27,14 @@ this paragraph is a paragraph
 
 - omg list
 - haha
-- ok`
+- ok
+
+
+\`\`\`javascript
+var js = "this is javascript";
+console.log(js);
+\`\`\`
+`
 				} />
 			</div>
 			);

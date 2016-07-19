@@ -1,9 +1,17 @@
 import React from 'react';
 import HelloWorld from '../components/hello-world';
 
+
+// Syntax highlighting - runs on the fly.
+// TODO move to middleware
+require('prismjs');
+require('./prism.css');
+
 export default class SimplePage {
 	getElements() {
-		return <HelloWorld/>;
+		return [
+			<HelloWorld/>,
+		];
 	}
 
 	getMetaTags() {
@@ -12,7 +20,7 @@ export default class SimplePage {
 			{'http-equiv': 'x-ua-compatible', 'content': 'ie=edge'},
 			{name: 'viewport', content: 'width=device-width, initial-scale=1'},
 			{name: 'description', content: 'hello world, powered by React Server'},
-			{name: 'generator', content: 'React Server'}
+			{name: 'generator', content: 'React Server'},
 		];
 	}
 }
