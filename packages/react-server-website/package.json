@@ -14,6 +14,7 @@
     "babel-runtime": "^6.6.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
+    "react-markdown": "^2.4.2",
     "react-server": "^0.3.4",
     "react-server-cli": "^0.4.0",
     "superagent": "1.2.0"
@@ -31,7 +32,12 @@
   "xo": {
     "esnext": true,
     "extends": "xo-react",
-    "globals": ["__LOGGER__"],
-    "ignores": ["__clientTemp/**/*", "build/**/*"]
+    "globals": [
+      "__LOGGER__"
+    ],
+    "ignores": [
+      "__clientTemp/**/*",
+      "build/**/*"
+    ]
   }
 }
