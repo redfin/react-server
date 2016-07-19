@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import {logging} from 'react-server';
 import css from './hello-world.css';
 
@@ -19,6 +20,23 @@ export default class HelloWorld extends React.Component {
 			<div>
 				<h2>Hello, World{'!'.repeat(this.state.exclamationCount)}</h2>
 				<button onClick={this.handleClick}>Get More Excited!</button>
+
+				<ReactMarkdown source={
+`# this heading is a heading
+
+this paragraph is a paragraph
+
+- omg list
+- haha
+- ok
+
+
+\`\`\`javascript
+var js = "this is javascript";
+console.log(js);
+\`\`\`
+`
+				} />
 			</div>
 		);
 	}

@@ -147,7 +147,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 				{
 					test: /\.json/,
 					loader: "json",
-					exclude: /node_modules/,
+					// exclude: /node_modules/,
 				},
 				{
 					test: /\.less/,
