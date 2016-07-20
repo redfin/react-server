@@ -5,6 +5,7 @@
   "main": "HelloWorld.js",
   "scripts": {
     "compile": "gulp",
+    "build-assets": "react-server-cli --compile-only",
     "start": "react-server-cli --port 3010 --js-port 3011",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check"
   },
