@@ -13,10 +13,10 @@ export default class Markdown extends React.Component {
 	render() {
 		let content = this.props.children || this.props.source;
 
-		return <span dangerouslySetInnerHTML={{ __html: this._renderRemarkable(content) }} />
+		return <span dangerouslySetInnerHTML={{ __html: this._renderMarkdown(content) }} />
 	}
 
-	_renderRemarkable(content) {
+	_renderMarkdown(content) {
 		// Remarkable hljs handling, from documentation
 		const md = new Remarkable({
 			highlight: function (str, lang) {
