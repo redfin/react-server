@@ -19,5 +19,10 @@ module.exports = {
 			method: 'get',
 			page: './pages/docs-api',
 		},
+		DirectoryTreeApi: {
+			path: ['/api/directory-tree'],
+			method: 'get',
+			page: './api/directory-tree',
+		},
 	},
 };
