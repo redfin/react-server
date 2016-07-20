@@ -1,14 +1,6 @@
 import React from 'react';
 import HelloWorld from '../components/hello-world';
 
-
-// Syntax highlighting - runs on the fly.
-// TODO move to middleware
-require('prismjs');
-require('prismjs/components/prism-jsx');
-require('prismjs/components/prism-bash');
-require('./prism.css');
-
 export default class SimplePage {
 	getElements() {
 		return [

@@ -1,7 +1,8 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
+
+import Markdown from './Markdown.jsx';
 import {logging} from 'react-server';
-import './hello-world.less';
+// import './hello-world.less';
 
 const logger = logging.getLogger(__LOGGER__);
 
@@ -21,7 +22,7 @@ export default class HelloWorld extends React.Component {
 				<h2>Hello, World{'!'.repeat(this.state.exclamationCount)}</h2>
 				<button onClick={this.handleClick}>Get More Excited!</button>
 
-				<ReactMarkdown source={
+				<Markdown source={
 `# this heading is a heading
 
 this paragraph is a paragraph
