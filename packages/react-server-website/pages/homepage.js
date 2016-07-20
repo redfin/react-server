@@ -1,13 +1,12 @@
 import React from 'react';
-import Header from '../components/Header';
 import Content from '../components/homepage/HomepageContent';
 import Footer from '../components/Footer';
+import './homepage.less';
 
 export default class Homepage {
 	getElements() {
 		return (
 			<div className="homepage">
-				<Header/>
 				{/* TODO: Change from hardcoded serverVersion to dynamic. */}
 				<Content serverVersion="0.3.4"/>
 				<Footer/>

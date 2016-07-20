@@ -1,5 +1,6 @@
 import React from 'react';
 import {Component, PropTypes} from 'react';
+import './HeroSection.less';
 
 export default class HeroSection extends Component {
 	static getPropTypes() {
@@ -10,14 +11,16 @@ export default class HeroSection extends Component {
 
 	render() {
 		return (
-			<section className="HomepageBanner">
-				<div className="banner-tagline">
-					<h1>React Server</h1>
-					<p>Blazing fast-page load and seamless page transitions.</p>
-				</div>
-				<div className="banner-ctas">
-					<button className="Button primary">Get Started</button>
-					<button className="Button secondary">Download React Server {this.props.serverVersion}</button>
+			<section className="HeroSection">
+				<div className="banner-content">
+					<div className="banner-tagline">
+						<h1>React Server</h1>
+						<p>Blazing fast-page load and seamless page transitions.</p>
+					</div>
+					<div className="banner-ctas">
+						<button className="Button primary">Get Started</button>
+						<button className="Button secondary">Download React Server {this.props.serverVersion}</button>
+					</div>
 				</div>
 			</section>
 		)
