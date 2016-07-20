@@ -9,13 +9,12 @@ RUN npm run bootstrap
 
 WORKDIR /usr/src/react-server/packages/react-server-website
 
-COPY components/doc-body.js components/
 RUN npm run build-assets
-RUN mkdir -p /www/assets
-RUN cp __clientTemp/build/* /www/assets/
+RUN mkdir -p /www/data/assets
+RUN cp __clientTemp/build/* /www/data/assets/
 
-VOLUME /www/assets
+VOLUME /www
 
 EXPOSE 3010 3011
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "start-prod" ]
