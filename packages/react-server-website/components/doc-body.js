@@ -1,8 +1,8 @@
 import {Component} from 'react';
-import ReactMarkdown from 'react-markdown';
+import Markdown from './Markdown';
 
 export default class DocBody extends Component {
 	render() {
-		return <ReactMarkdown source={ this.props.text } />
+		return <Markdown source={ this.props.text } />
 	}
 }
