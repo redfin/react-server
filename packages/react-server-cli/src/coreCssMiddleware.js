@@ -10,9 +10,12 @@ export default (pathToStatic, manifest) => {
 			}
 
 			const fileNames = [];
+
+			if (manifest.cssChunksByName.common) {
+				fileNames.push(baseUrl + manifest.cssChunksByName.common);
+			}
+
 			if (manifest.cssChunksByName[routeName]) {
-				// the css file is the second resource in the file array in the manifest;
-				// the js file is the first.
 				fileNames.push(baseUrl + manifest.cssChunksByName[routeName]);
 			}
 
