@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "gulp",
     "build-assets": "react-server-cli --compile-only --minify",
+    "start-prod": "react-server-cli --port 3010 --js-url /assets/",
     "start": "react-server-cli --port 3010 --js-port 3011",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check"
   },
