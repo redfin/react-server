@@ -2,6 +2,8 @@
 module.exports = {
 	middleware: [
 		'./middleware/RequestToPort',
+		'./middleware/Theme',
+		'./middleware/PageHeader',
 	],
 	routes: {
 		HelloWorld: {
