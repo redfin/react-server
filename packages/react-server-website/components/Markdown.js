@@ -27,7 +27,8 @@ export default class Markdown extends React.Component {
 				}
 
 				try {
-					return hljs.highlightAuto(str).value;
+					// default to js
+					return hljs.highlight("javascript", str).value;
 				} catch (err) { logger.log(err); }
 
 				return ''; // use external default escaping

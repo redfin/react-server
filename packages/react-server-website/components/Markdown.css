@@ -13,6 +13,11 @@ pre {
 	padding: 1rem;
 }
 
+pre,
+code {
+	font-family: "Source Code Pro", monospace;
+}
+
 /* Eighties Comment */
 .hljs-comment,
 .hljs-title {
