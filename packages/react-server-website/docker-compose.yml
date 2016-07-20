@@ -15,3 +15,5 @@ services:
      - node:react-server-assets
     ports:
      - "8080:80"
+    volumes_from:
+     - node:ro
