@@ -2,7 +2,7 @@ import React from 'react';
 
 import Markdown from './Markdown.jsx';
 import {logging} from 'react-server';
-// import './hello-world.less';
+import './hello-world.less';
 
 const logger = logging.getLogger(__LOGGER__);
 
@@ -22,43 +22,7 @@ export default class HelloWorld extends React.Component {
 				<h2>Hello, World{'!'.repeat(this.state.exclamationCount)}</h2>
 				<button onClick={this.handleClick}>Get More Excited!</button>
 
-				<Markdown source={
-`# this heading is a heading
-
-this paragraph is a paragraph
-
-- omg list
-- haha
-- ok
-
-\`\`\`bash
-# this assumes you have npm already
-$ npm install react-server
-\`\`\`
-
-
-
-\`\`\`javascript
-// javascript
-var js = "this is javascript";
-console.log(js);
-\`\`\`
-
-\`\`\`jsx
-// jsx
-let foo = (
-	<div>
-		foo
-	</div>
-)
-
-render() {
-	return <foo />;
-}
-\`\`\`
-
-`
-				} />
+				<Markdown source={ this.props.text } />
 			</div>
 		);
 	}
