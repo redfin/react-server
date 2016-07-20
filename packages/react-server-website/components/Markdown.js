@@ -33,7 +33,6 @@ export default class Markdown extends React.Component {
 				return ''; // use external default escaping
 			},
 		});
-		debugger;
 
 		return md.render(content);
 	}
