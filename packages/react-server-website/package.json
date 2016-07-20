@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "gulp",
     "start": "react-server-cli --port 3010 --js-port 3011",
-    "test": "eslint routes.js gulpfile.js pages/ && nsp check"
+    "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check"
   },
   "license": "Apache-2.0",
   "dependencies": {
