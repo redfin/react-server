@@ -1,0 +1,38 @@
+@almost-white: #f5f5f5;
+
+header {
+	display: table;
+	width: 100%;
+
+	background-image: linear-gradient(-135deg, #585858 0%, #333333 100%);
+
+	.header-logo {
+		display: table-cell;
+		padding: 1.25rem 2.5rem;
+
+		font-size: 2rem;
+		font-weight: 900;
+		color: @almost-white;
+	}
+
+	.header-nav {
+		display: table-cell;
+		padding: 1.25rem 2.5rem;
+		text-align: right;
+		vertical-align: middle;
+
+		ul,
+		li {
+			display: inline-block;
+			padding: 0;
+			margin: 0;
+		}
+
+		li a {
+			padding: 0.5rem 1.0rem;
+
+			color: @almost-white;
+			text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+		}
+	}
+}
