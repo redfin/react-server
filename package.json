@@ -6,7 +6,8 @@
     "clean": "rimraf lerna-debug.log && lerna run clean",
     "nuke": "lerna clean && rm -r node_modules",
     "changelog": "lerna-changelog",
-    "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done"
+    "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done",
+    "docs": "yuidoc -o api-doc packages/react-server/core --quiet && docco packages/react-server/core/**/*.js -o annotated-src"
   },
   "devDependencies": {
     "babel-plugin-react-require": "^2.1.0",
@@ -21,6 +22,7 @@
     "eslint": "3.1.1",
     "eslint-plugin-react": "5.2.2",
     "express": "4.11.2",
+    "docco": "^0.7.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
     "gulp-changed": "1.1.1",
@@ -51,6 +53,7 @@
     "rimraf": "^2.5.3",
     "superagent": "1.2.0",
     "webpack": "1.13.1",
+    "yuidocjs": "^0.10.1",
     "zombie": "4.1.0"
   },
   "engine": {
