@@ -2,12 +2,6 @@ import React from 'react';
 import HelloWorld from '../components/hello-world';
 import {ReactServerAgent} from "react-server";
 
-
-// Syntax highlighting - runs on the fly.
-// TODO move to middleware
-require('prismjs');
-require('./prism.css');
-
 const getData = path => ReactServerAgent
 	.get("/api/docs", {path})
 	.then(res => res.body);
