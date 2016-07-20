@@ -7,7 +7,7 @@ module.exports = {
 		HelloWorld: {
 			path: ['/'],
 			method: 'get',
-			page: './pages/hello-world',
+			page: './pages/homepage',
 		},
 		docs: {
 			path: ['/docs/:path'],
