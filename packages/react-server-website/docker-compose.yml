@@ -1,0 +1,17 @@
+version: '2'
+services:
+  node:
+    build:
+     context: .
+     dockerfile: Dockerfile.node
+  nginx:
+    build:
+     context: .
+     dockerfile: Dockerfile.nginx
+    depends_on:
+     - node
+    links:
+     - node:react-server-docs
+     - node:react-server-assets
+    ports:
+     - "8080:80"

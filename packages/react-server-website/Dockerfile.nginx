@@ -7,7 +7,7 @@ RUN rm -rf /etc/nginx/sites-enabled/default
 
 EXPOSE 80 443
 
-COPY conf/nginx.conf /etc/nginx/sites-available/react_server_docs
+COPY nginx.conf /etc/nginx/sites-available/react_server_docs
 RUN ln -s /etc/nginx/sites-available/react_server_docs /etc/nginx/sites-enabled/react_server_docs
 
 CMD ["nginx", "-g", "daemon off;"]
