@@ -1,18 +1,15 @@
 import React from 'react';
 import Header from '../components/Header';
+import Content from '../components/homepage/HomepageContent';
 import Footer from '../components/Footer';
-import BannerSection from '../components/homepage/HomepageBanner';
-import Example from '../components/homepage/HomepageExample';
-import Features from '../components/homepage/Features';
 
 export default class Homepage {
 	getElements() {
 		return (
 			<div className="homepage">
 				<Header/>
-				<BannerSection/>
-				<Example/>
-				<Features/>
+				{/* TODO: Change from hardcoded serverVersion to dynamic. */}
+				<Content serverVersion="0.3.4"/>
 				<Footer/>
 			</div>
 		);

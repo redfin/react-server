@@ -1,6 +1,13 @@
 import React from 'react';
+import {Component, PropTypes} from 'react';
 
-export default class HomepageBanner extends React.Component {
+export default class HeroSection extends Component {
+	static getPropTypes() {
+		return {
+			serverVersion: PropTypes.string,
+		};
+	}
+
 	render() {
 		return (
 			<section className="HomepageBanner">
@@ -10,7 +17,7 @@ export default class HomepageBanner extends React.Component {
 				</div>
 				<div className="banner-ctas">
 					<button className="Button primary">Get Started</button>
-					<button className="Button secondary">Download React Server 0.3.4</button>
+					<button className="Button secondary">Download React Server {this.props.serverVersion}</button>
 				</div>
 			</section>
 		)

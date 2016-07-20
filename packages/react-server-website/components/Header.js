@@ -10,6 +10,7 @@ export default class Header extends React.Component {
 				<nav className="header-nav">
 					<ul>
 						<li><a href="/docs">Docs</a></li>
+						<li><a href="https://react-server.slack.com/">Slack</a></li>
 						<li><a href="https://github.com/redfin/react-server">Git Hub</a></li>
 					</ul>
 				</nav>
