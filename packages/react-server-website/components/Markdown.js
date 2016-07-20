@@ -5,7 +5,7 @@ import hljs from 'highlight.js';
 
 import {logging} from 'react-server';
 
-import './Markdown.css';
+import './Markdown.less';
 
 const logger = logging.getLogger(__LOGGER__);
 
