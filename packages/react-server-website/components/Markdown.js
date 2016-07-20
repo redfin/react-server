@@ -5,7 +5,7 @@ import hljs from 'highlight.js';
 
 import {logging} from 'react-server';
 
-require('./Markdown.css');
+import './Markdown.css';
 
 const logger = logging.getLogger(__LOGGER__);
 
@@ -33,6 +33,7 @@ export default class Markdown extends React.Component {
 				return ''; // use external default escaping
 			},
 		});
+		debugger;
 
 		return md.render(content);
 	}

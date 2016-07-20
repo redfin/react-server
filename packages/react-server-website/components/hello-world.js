@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Markdown from './Markdown.jsx';
+import Markdown from './Markdown';
 import {logging} from 'react-server';
 import './hello-world.less';
 
