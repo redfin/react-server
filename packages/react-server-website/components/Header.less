@@ -1,13 +1,24 @@
-@import '../middleware/Theme/constants.less';
+@import '../middleware/Theme/constants';
 
 .Header {
 	display: table;
 	width: 100%;
+	color: #585858;
 
 	.route-homepage & {
 		background-image: linear-gradient(-135deg, #585858 0%, #333333 100%);
 		color: @almost-white;
 		text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+
+		.header-nav a {
+			color: inherit;
+			&:hover {
+				color: white;
+			}
+		}
+		.active a {
+			color: white;
+		}
 	}
 
 	.header-logo {
@@ -33,7 +44,7 @@
 
 	.header-nav {
 		display: table-cell;
-		padding: 1.25rem 2.5rem;
+		padding: 0 2.5rem;
 		text-align: right;
 		vertical-align: middle;
 
@@ -42,12 +53,30 @@
 			display: inline-block;
 			padding: 0;
 			margin: 0;
+			height: 100%;
 		}
 
-		li a {
-			padding: 0.5rem 1.0rem;
+		a {
+			padding: 2.0rem 1.0rem 1.75rem 1.0rem;
+			color: #727272;
+			height: 100%;
+			display: inline-block;
+			box-sizing: border-box;
+			border-bottom: 0.25rem solid transparent;
 
-			color: inherit;
+			&:hover {
+				text-decoration: none;
+			}
+		}
+
+		.active a,
+		.active a:hover {
+			border-color: @active-color;
+			color: #333333;
+		}
+		a:hover {
+			color: #333333;
+			border-color: transparent;
 		}
 	}
 }
