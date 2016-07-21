@@ -1,10 +1,14 @@
 @import '../middleware/Theme/constants.less';
 
-header {
+.Header {
 	display: table;
 	width: 100%;
 
-	background-image: linear-gradient(-135deg, #585858 0%, #333333 100%);
+	.route-homepage & {
+		background-image: linear-gradient(-135deg, #585858 0%, #333333 100%);
+		color: @almost-white;
+		text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+	}
 
 	.header-logo {
 		display: table-cell;
@@ -12,7 +16,19 @@ header {
 
 		font-size: 2rem;
 		font-weight: 900;
-		color: @almost-white;
+		color: inherit;
+
+		svg {
+			height: 3rem;
+			margin-right: 1rem;
+
+			vertical-align: middle;
+			fill: currentColor;
+		}
+
+		&:hover {
+			text-decoration: none;
+		}
 	}
 
 	.header-nav {
@@ -31,8 +47,7 @@ header {
 		li a {
 			padding: 0.5rem 1.0rem;
 
-			color: @almost-white;
-			text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+			color: inherit;
 		}
 	}
 }

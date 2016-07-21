@@ -6,7 +6,7 @@ module.exports = {
 		'./middleware/PageHeader',
 	],
 	routes: {
-		HelloWorld: {
+		homepage: {
 			path: ['/'],
 			method: 'get',
 			page: './pages/homepage',
