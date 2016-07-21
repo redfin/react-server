@@ -27,7 +27,7 @@ const links = [
 
 const HeaderLink = ({label, path, internal}) => {
 	if (internal) {
-		return <li {...classIfActive(path, internal)}><Link reuseDom path={path}>{label}</Link></li>
+		return <li {...classIfActive(path, internal)}><Link path={path}>{label}</Link></li>
 	} else {
 		return <li {...classIfActive(path, internal)}><a target="_blank" href={path}>{label}</a></li>
 	}
@@ -64,7 +64,7 @@ export default class Header extends React.Component {
 	render () {
 		return (
 			<header className={this.state.menuOpen ? "menuOpen Header" : "Header"}>
-				<Link reuseDom className="header-logo" path="/">
+				<Link className="header-logo" path="/">
 					<SvgLogo />React Server
 				</Link>
 
