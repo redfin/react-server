@@ -1,3 +1,5 @@
+@import '../middleware/Theme/constants.less';
+
 .homepage {
 	section {
 		padding-top: 2rem;
@@ -7,8 +9,13 @@
 		&:nth-child(2n+1) {
 			background-color: #f5f5f5;
 
-			padding: 0rem 1rem;	// this offsets the main layout styles
-			margin: 0rem -1rem;
+			padding: 0rem @small-screen-gutter;	// this offsets the main layout styles
+			margin: 0rem -@small-screen-gutter;
+
+			@media (min-width: @min-medium-screen) {
+				padding: 0rem @medium-screen-gutter;
+				margin: 0rem -@medium-screen-gutter;
+			}
 		}
 	}
 }
