@@ -1,0 +1,21 @@
+{
+	"contents": [
+		{
+			"name": "Introduction",
+			"pages": [
+				{ "name": "Why React Server",  "path": "intro/why-react-server" },
+				{ "name": "Design Principles", "path": "intro/design" }
+			]
+		},
+		{
+			"name": "Guides",
+			"pages": [
+				{ "name": "Writing Pages",           "path": "guides/writing-pages" },
+				{ "name": "How Logging Works",       "path": "guides/logging" },
+				{ "name": "Writing Middleware",      "path": "guides/writing-middleware" },
+				{ "name": "Understanding Rendering", "path": "guides/understanding-rendering" },
+				{ "name": "Using ReactServerAgent",  "path": "guides/using-react-server-agent"}
+			]
+		}
+	]
+}

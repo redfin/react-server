@@ -1,0 +1,42 @@
+@brand-color: #c82021;
+
+@background-color: #f5f5f5;
+@link-color: @brand-color;
+@font-color: #333333;
+
+
+* {
+	font-family: 'Source Sans Pro', 'Helvetica', 'Arial', sans-serif;
+	font-size: 16px;
+	color: @font-color;
+}
+
+
+// core html
+
+p {
+	line-height: 1.5;
+	margin-bottom: 1rem;
+}
+
+a {
+	color: @brand-color;
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+
+// typography
+
+.page-title {
+	font-size: 2rem;
+	color: @background-color;
+}
+
+.section-title {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+}
