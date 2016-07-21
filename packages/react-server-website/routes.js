@@ -7,7 +7,7 @@ module.exports = {
 		'./middleware/Analytics',
 	],
 	routes: {
-		HelloWorld: {
+		homepage: {
 			path: ['/'],
 			method: 'get',
 			page: './pages/homepage',
