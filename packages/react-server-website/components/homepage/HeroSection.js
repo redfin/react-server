@@ -13,13 +13,13 @@ export default class HeroSection extends Component {
 		return (
 			<section className="HeroSection">
 				<div className="banner-content">
-					<div className="banner-tagline">
-						<h1>React Server</h1>
-						<p>Blazing fast-page load and seamless page transitions.</p>
+					<div className="banner-titles">
+						<h1 className="banner-title">React Server</h1>
+						<p className="banner-subtitle">Blazing fast-page load and seamless page transitions.</p>
 					</div>
 					<div className="banner-ctas">
-						<button className="Button primary">Get Started</button>
-						<button className="Button secondary">Download React Server {this.props.serverVersion}</button>
+						<a href="/" className="Button primary get-started-button">Get Started</a>
+						<a href="/" className="Button secondary download-button">Download React Server {this.props.serverVersion}</a>
 					</div>
 				</div>
 			</section>

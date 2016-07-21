@@ -1,26 +1,53 @@
 .HeroSection {
 	display: table;
 	width: 100%;
-	height: 30vh;
+	height: 100vh;
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+	.background-color-top-left();
 
 	.banner-content {
+		color: #FFFFFF;
 		display: table-cell;
 		text-align: center;
 		vertical-align: middle;
 	}
 
-	.Button {
-		border: 0 none;
-		box-shadow: 0 2px #333333;
+	.banner-titles {
+		margin-bottom: 3rem;
+	}
 
-		&.primary {
-			color: white;
-			background-color: #C82021;
+	.banner-title {
+		font-size: 3rem;
+		margin-top: 0;
+	}
+
+	.banner-subtitle {
+		font-size: 1.5rem;
+		margin-top: 0;
+	}
+
+	.Button {
+		width: 350px;
+
+		&.get-started-button {
+			margin-right: 1.25rem;
 		}
 
-		&.secondary {
-			color: #333333;
-			background-color: #CCCCCC;
+		&.download-button {
+			margin-left: 1.25rem;
 		}
 	}
+}
+
+
+.background-color-top-left() {
+	background: rgba(88,88,88,1);
+	background: -moz-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
+	background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(88,88,88,1)), color-stop(100%, rgba(51,51,51,1)));
+	background: -webkit-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
+	background: -o-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
+	background: -ms-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
+	background: linear-gradient(135deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#585858', endColorstr='#333333', GradientType=1 );
 }
