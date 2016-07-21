@@ -2,12 +2,12 @@ version: '2'
 services:
   node:
     build:
-     context: .
-     dockerfile: Dockerfile.node
+      context: .
+      dockerfile: Dockerfile.node
   nginx:
     build:
-     context: .
-     dockerfile: Dockerfile.nginx
+      context: .
+      dockerfile: Dockerfile.nginx
     depends_on:
      - node
     links:
