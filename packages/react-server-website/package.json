@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "babel-preset-react-server": "^0.3.3",
+    "docco": "^0.7.0",
     "nsp": "^2.3.3"
   }
 }
