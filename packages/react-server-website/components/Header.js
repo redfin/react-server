@@ -1,14 +1,14 @@
 import React from 'react';
 import {Link} from 'react-server';
-
+import SvgLogo from './assets/SvgLogo';
 import './Header.less';
 
 export default class Header extends React.Component {
 	render () {
 		return (
-			<header>
+			<header className="Header">
 				<Link reuseDom className="header-logo" path="/">
-					React Server
+					<SvgLogo /> React Server
 				</Link>
 				<nav className="header-nav">
 					<ul>

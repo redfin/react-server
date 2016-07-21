@@ -1,6 +1,6 @@
 ## Getting Started with React Server
 
-The easiest way to get started is with our [yeoman generator](http://yeoman.io/). Open your terminal and type:
+The easiest way to get started is with our [yeoman generator](https://www.npmjs.com/package/generator-react-server). Open your terminal and type:
 
 ```bash
 # install yeoman
