@@ -1,0 +1,46 @@
+.rootContent {
+	width: 100%;
+	max-width: @max-content-width;
+
+	padding: 0rem @small-screen-gutter;
+	box-sizing: border-box;
+
+	.DocContents {
+		box-sizing: border-box;
+		width: 100%;
+	}
+
+	section {
+		padding-top: @small-section-pad;
+		padding-bottom: @small-section-pad;
+	}
+
+	@media (min-width: @min-medium-screen) {
+		width: @medium-content-width;
+		padding: 0rem @medium-screen-gutter;
+		margin: 0 0 0 33%;
+
+		.DocContents {
+			width: ~"calc(33% - 2rem )";
+			max-width: 270px;
+			position: fixed;
+			right: @medium-content-width;
+
+			margin-left: @medium-screen-gutter;
+		}
+	}
+
+	@media (min-width: @min-large-screen) {
+		width: 100%;
+		margin: 0 auto;
+
+		.DocContents {
+			right: auto;
+			left: 0;
+
+			margin-left: @large-screen-gutter;
+		}
+	}
+	// max-width: 740px;
+	// margin: 0rem auto;
+}

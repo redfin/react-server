@@ -14,7 +14,7 @@ export default class DocsPage {
 		return next();
 	}
 	getElements() {
-		return <RootContainer when={this.bodyPromise}>
+		return <RootContainer className='rootContent' when={this.bodyPromise}>
 			<RootElement when={this.contentsPromise}>
 				<DocContents />
 			</RootElement>

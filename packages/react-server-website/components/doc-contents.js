@@ -1,6 +1,7 @@
 import React from "react";
 import {join} from "path";
 import {Link, getCurrentRequestContext} from "react-server";
+import './doc-contents.less'
 
 const ContentsSection = ({name, pages}) => <div>
 	<div>{name}</div>
@@ -20,5 +21,5 @@ const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 </li>
 
 export default function DocContents({contents}) {
-	return <div>{contents.map(ContentsSection)}</div>
+	return <div className='DocContents'>{contents.map(ContentsSection)}</div>
 }

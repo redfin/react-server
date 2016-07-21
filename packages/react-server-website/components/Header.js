@@ -1,17 +1,21 @@
 import React from 'react';
+import {Link} from 'react-server';
+
+import './Header.less';
 
 export default class Header extends React.Component {
 	render () {
 		return (
 			<header>
-				<div className="header-logo">
+				<Link className="header-logo" path="/">
 					React Server
-				</div>
+				</Link>
 				<nav className="header-nav">
 					<ul>
-						<li><a href="/docs">Docs</a></li>
-						<li><a href="https://react-server.slack.com/">Slack</a></li>
-						<li><a href="https://github.com/redfin/react-server">Git Hub</a></li>
+						<li><Link path="/docs/README">Docs</Link></li>
+						<li><Link path="/api">API</Link></li>
+						<li><Link path="https://slack.react-server.io/">Slack</Link></li>
+						<li><Link path="https://github.com/redfin/react-server">GitHub</Link></li>
 					</ul>
 				</nav>
 			</header>
