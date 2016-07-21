@@ -23,18 +23,26 @@
 
 	.header-logo {
 		display: table-cell;
-		padding: 1.25rem 2.5rem;
+		padding: 1.25rem;
 
-		font-size: 2rem;
-		font-weight: 900;
 		color: inherit;
+		font-weight: 900;
+		font-size: 1rem;
 
 		svg {
-			height: 3rem;
+			height: 2rem;
 			margin-right: 1rem;
-
 			vertical-align: middle;
 			fill: currentColor;
+		}
+
+		@media (min-width: @min-medium-screen) {
+			padding: 1.25rem 2.5rem;
+			font-size: 2rem;
+
+			svg {
+				height: 3rem;
+			}
 		}
 
 		&:hover {
@@ -42,8 +50,54 @@
 		}
 	}
 
-	.header-nav {
+	.mobileToggle {
 		display: table-cell;
+		padding: 1.25rem;
+		text-align: right;
+
+		@media (min-width: @min-medium-screen) {
+			display: none;
+		}
+
+		svg {
+			height: 2rem;
+			fill: currentColor;
+			vertical-align: middle;
+		}
+	}
+
+	@max-small-screen: (@min-medium-screen - 1);
+	&.menuOpen {
+		.mobileToggle {
+			z-index: 999;
+			position: relative;
+			color: @font-color;
+		}
+		.header-nav {
+			display: block;
+
+			@media (max-width: @max-small-screen) {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+
+				font-color: @font-color;
+				background: white;
+				color: black;
+				padding-top: 3rem;
+			}
+		}
+	}
+
+	.header-nav {
+		display: none;
+
+		@media (min-width: @min-medium-screen) {
+			display: table-cell;
+		}
+
 		padding: 0 2.5rem;
 		text-align: right;
 		vertical-align: middle;
