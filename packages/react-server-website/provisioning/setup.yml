@@ -13,8 +13,9 @@
          region: us-west-2
          vpc_subnet_id: subnet-d94db0ae
          assign_public_ip: yes
+         instance_profile_name: react-server-box
          wait: yes
-         exact_count: 2
+         exact_count: 1
          count_tag:
             Name: react-server-box
          instance_tags:
