@@ -3,10 +3,12 @@ import {join} from "path";
 import {Link, getCurrentRequestContext} from "react-server";
 import './doc-contents.less'
 
-const ContentsSection = ({name, pages}) => <div>
-	<div>{name}</div>
-	<ul>{pages.map(ContentsLink)}</ul>
-</div>
+const ContentsSection = ({name, pages}) => (
+	<div className='contentsSection'>
+		<h3>{name}</h3>
+		<ul>{pages.map(ContentsLink)}</ul>
+	</div>
+)
 
 const currentPath = () => getCurrentRequestContext().getCurrentPath();
 
