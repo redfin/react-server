@@ -5,10 +5,12 @@ import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
 import crypto from "crypto"
+import StatsPlugin from "webpack-stats-plugin"
+
 
 // commented out to please eslint, but re-add if logging is needed in this file.
-//import {logging} from "react-server"
-//const logger = logging.getLogger(__LOGGER__);
+// import {logging} from "react-server"
+// const logger = logging.getLogger(__LOGGER__);
 
 // compiles the routes file for browser clients using webpack.
 // returns a tuple of { compiler, serverRoutes }. compiler is a webpack compiler
@@ -25,6 +27,7 @@ export default (routes, opts = {}) => {
 		outputUrl = "/static/",
 		hot = true,
 		minify = false,
+		stats = false,
 		longTermCaching = false,
 	} = opts;
 	if (longTermCaching && hot) {
@@ -62,7 +65,7 @@ export default (routes, opts = {}) => {
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
 	// finally, let's pack this up with webpack.
-	const compiler = webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching));
+	const compiler = webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats));
 
 	const serverRoutes = new Promise((resolve) => {
 		compiler.plugin("done", (stats) => {
@@ -116,7 +119,7 @@ const statsToManifest = (stats) => {
 	};
 }
 
-const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, longTermCaching) => {
+const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats) => {
 	const extractTextLoader = require.resolve("./NonCachingExtractTextLoader") + "?{remove:true}!css-loader";
 	let webpackConfig = {
 		entry: entrypoints,
@@ -182,6 +185,12 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 			}),
 		],
 	};
+
+	if (stats) {
+		webpackConfig.plugins.push(new StatsPlugin.StatsWriterPlugin({
+			fields: ["assets", "assetsByChunkName", "chunks", "errors", "warnings", "version", "hash", "time", "filteredModules", "children", "modules"],
+		}));
+	}
 
 	if (minify) {
 		webpackConfig.plugins = [
