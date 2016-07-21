@@ -1,6 +1,7 @@
 .rootContent {
 	width: 100%;
 	max-width: @max-content-width;
+	margin-top: 2rem;
 
 	padding: 0rem @small-screen-gutter;
 	box-sizing: border-box;
@@ -18,7 +19,7 @@
 	@media (min-width: @min-medium-screen) {
 		width: @medium-content-width;
 		padding: 0rem @medium-screen-gutter;
-		margin: 0 0 0 33%;
+		margin-left: 33%;
 
 		.DocContents {
 			width: ~"calc(33% - 2rem )";
@@ -32,15 +33,14 @@
 
 	@media (min-width: @min-large-screen) {
 		width: 100%;
-		margin: 0 auto;
+		margin-left: auto;
+		margin-right: auto;
 
 		.DocContents {
 			right: auto;
-			left: 0;
+			left: 0rem;
 
 			margin-left: @large-screen-gutter;
 		}
 	}
-	// max-width: 740px;
-	// margin: 0rem auto;
 }
