@@ -1,9 +1,4 @@
-import {join} from "path";
-import {ReactServerAgent} from "react-server";
-
-const URL = path => "https://raw.githubusercontent.com" + join(
-	"/redfin/react-server/master", path
-);
+import Repo from "../lib/repo";
 
 export default class DocsApi {
 
@@ -13,9 +8,7 @@ export default class DocsApi {
 
 	getResponseData() {
 		const {path} = this.getRequest().getQuery();
-		return ReactServerAgent
-			.get(URL(path))
-			.then(({text}) => text)
+		return Repo.provideFile(path)
 			.then(transformLinks)
 			.then(text => JSON.stringify({path, text}));
 	}

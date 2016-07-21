@@ -21,6 +21,11 @@ module.exports = {
 			method: 'get',
 			page: './pages/docs-api',
 		},
+		ContentsApi: {
+			path: ['/api/contents'],
+			method: 'get',
+			page: './pages/contents-api',
+		},
 		DirectoryTreeApi: {
 			path: ['/api/directory-tree'],
 			method: 'get',
