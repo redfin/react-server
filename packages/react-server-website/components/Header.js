@@ -57,6 +57,10 @@ export default class Header extends React.Component {
 		};
 	}
 
+	componentDidMount() {
+		getCurrentRequestContext().navigator.on( "navigateStart", this.closeMenu.bind(this) );
+	}
+
 	render () {
 		return (
 			<header className={this.state.menuOpen ? "menuOpen Header" : "Header"}>
@@ -75,6 +79,10 @@ export default class Header extends React.Component {
 				</nav>
 			</header>
 		);
+	}
+
+	closeMenu() {
+		this.setState( {menuOpen: false} );
 	}
 
 	toggleMenuOpen() {
