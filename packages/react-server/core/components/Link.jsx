@@ -1,35 +1,39 @@
-
-var React = require('react'),
-	navigateTo = require("../util/navigateTo").default;
+import { React, PropTypes } from 'react';
+import navigateTo from '../util/navigateTo';
 
 module.exports = React.createClass({
 	displayName: 'Link',
 
 	propTypes: {
-		path       : React.PropTypes.string.isRequired,
+		// Specify path with either 'path' or 'href' prop
+		path       : React.PropTypes.string,
+		href       : React.PropTypes.string,
 		bundleData : React.PropTypes.bool,
 		frameback  : React.PropTypes.bool,
 		reuseDom   : React.PropTypes.bool,
 		className  : React.PropTypes.string,
 	},
 
-	getDefaultProps(){
+	getDefaultProps() {
 		return {
 			bundleData : false,
 			frameback  : false,
 			reuseDom   : false,
 			reuseFrame : false,
-		}
+		};
 	},
 
 	render: function () {
 		return (
-			<a href={this.props.path} onClick={this._onClick} className={this.props.className}>{this.props.children}</a>
+			<a href={this.props.path || this.props.href || '#'}
+				onClick={this._onClick}
+				className={this.props.className}>
+				{this.props.children}
+			</a>
 		);
 	},
 
 	_onClick: function (e) {
-
 		// TODO: IE8-9 detection
 
 		// TODO: if OSX && key.isMeta?
@@ -46,6 +50,5 @@ module.exports = React.createClass({
 		} else {
 			// do normal browser navigate
 		}
-
 	},
-})
+});
