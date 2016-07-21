@@ -7,12 +7,12 @@ export default class Header extends React.Component {
 	render () {
 		return (
 			<header className="Header">
-				<Link reuseDom className="header-logo" path="/">
+				<Link className="header-logo" path="/">
 					<SvgLogo /> React Server
 				</Link>
 				<nav className="header-nav">
 					<ul>
-						<li><Link reuseDom path="/docs">Docs</Link></li>
+						<li><Link path="/docs">Docs</Link></li>
 						<li><a target="_blank" href="https://slack.react-server.io/">Slack</a></li>
 						<li><a target="_blank" href="https://github.com/redfin/react-server">GitHub</a></li>
 					</ul>
