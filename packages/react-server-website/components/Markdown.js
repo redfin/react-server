@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Remarkable from 'remarkable';
-import hljs from 'highlight.js';
+import hljs from '../lib/highlight.js';
 
 import {logging} from 'react-server';
 
