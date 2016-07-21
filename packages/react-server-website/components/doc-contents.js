@@ -1,4 +1,5 @@
 import React from "react";
+import {join} from "path";
 import {Link} from "react-server";
 
 const ContentsSection = ({name, pages}) => <div>
@@ -7,7 +8,7 @@ const ContentsSection = ({name, pages}) => <div>
 </div>
 
 const ContentsLink = ({name, path}) => <li>
-	<Link path={path}>{name}</Link>
+	<Link reuseDom path={join("/docs", path)}>{name}</Link>
 </li>
 
 export default function DocContents({contents}) {

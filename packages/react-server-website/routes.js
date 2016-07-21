@@ -12,7 +12,7 @@ module.exports = {
 			page: './pages/homepage',
 		},
 		docs: {
-			path: ['/docs/:path'],
+			path: ['/docs:path(.*)'],
 			method: 'get',
 			page: './pages/docs',
 		},
