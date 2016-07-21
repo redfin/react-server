@@ -3,12 +3,6 @@ import {Component, PropTypes} from 'react';
 import './HeroSection.less';
 
 export default class HeroSection extends Component {
-	static getPropTypes() {
-		return {
-			serverVersion: PropTypes.string,
-		};
-	}
-
 	render() {
 		return (
 			<section className="HeroSection">
@@ -19,7 +13,7 @@ export default class HeroSection extends Component {
 					</div>
 					<div className="banner-ctas">
 						<a href="/" className="Button primary get-started-button">Get Started</a>
-						<a href="/" className="Button secondary download-button">Download React Server {this.props.serverVersion}</a>
+						<a href="/" className="Button secondary download-button">View on GitHub</a>
 					</div>
 				</div>
 			</section>

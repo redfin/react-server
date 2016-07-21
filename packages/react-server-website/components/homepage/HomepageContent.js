@@ -7,16 +7,10 @@ import WhySection from './WhySection.md';
 import ContributingSection from './ContributingSection.md';
 
 export default class HomepageContent extends Component {
-	static getPropTypes() {
-		return {
-			serverVersion: PropTypes.string,
-		};
-	}
-
 	render() {
 		return (
 			<div className="HomepageContent">
-				<HeroSection serverVersion={this.props.serverVersion} />
+				<HeroSection />
 				<section className="get-started-section">
 					<Markdown source={GetStartedSection} />
 				</section>
