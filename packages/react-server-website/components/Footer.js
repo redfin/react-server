@@ -1,4 +1,5 @@
 import React from 'react';
+import './Footer.less';
 
 export default class Footer extends React.Component {
 	render() {
