@@ -4,6 +4,11 @@ import Footer from '../components/Footer';
 import './homepage.less';
 
 export default class Homepage {
+
+	getTitle() {
+		return "React Server";
+	}
+
 	getElements() {
 		return (
 			<div className="homepage rootContent">

@@ -1,6 +1,10 @@
 import React from 'react';
 import {join} from "path";
-import { RootContainer, RootElement } from "react-server";
+import {
+	getCurrentRequestContext,
+	RootContainer,
+	RootElement,
+} from "react-server";
 
 import Repo from "../lib/repo";
 import DocBody from "../components/doc-body";
@@ -13,6 +17,17 @@ export default class DocsPage {
 		this.contentsPromise = Repo.getContents();
 		return next();
 	}
+
+	getTitle() {
+		return this.contentsPromise.then(res => {
+			const path = getCurrentRequestContext().getCurrentPath()
+				.replace("/docs/", "");
+			return (res.contents.reduce((page, section) => (
+				page || section.pages.find(page => page.path === path)
+			), null) || {name: "React Server Documentation"}).name;
+		});
+	}
+
 	getElements() {
 		return <RootContainer className='rootContent' when={this.bodyPromise}>
 			<RootElement when={this.contentsPromise}>
