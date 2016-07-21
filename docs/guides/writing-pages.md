@@ -12,7 +12,7 @@ rendered as React instances.
 
 The simplest of pages only needs a `getElements` method
 
-```js
+```javascript
 export default class SimplePage {
 	getElements () {
 		return <h1>Hello react-server</h1>;
