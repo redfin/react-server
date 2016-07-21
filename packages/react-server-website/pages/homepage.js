@@ -14,8 +14,8 @@ export default class Homepage {
 		return (
 			<div className="homepage">
 				{/* TODO: Change from hardcoded serverVersion to dynamic. */}
-				<Content serverVersion="0.3.4"/>
-				<Footer/>
+				<Content />
+				<Footer />
 			</div>
 		);
 	}

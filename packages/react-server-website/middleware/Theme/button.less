@@ -5,7 +5,7 @@ button {
 }
 
 .Button {
-	display: inline-block;
+	display: block;
 	text-decoration: none;
 	color: #FFFFFF;
 	background-color: @brand-color;
@@ -16,10 +16,15 @@ button {
 	font-weight: 600;
 	padding: 1rem;
 	box-sizing: border-box;
+	width: 100%;
 
 	&,
 	& > * {
-		font-size: 1.25rem;
+		font-size: 1rem;
+
+		@media (min-width: @min-medium-screen) {
+			font-size: 1.25rem;
+		}
 	}
 
 	&:hover {
@@ -34,5 +39,10 @@ button {
 
 	&.small {
 		font-size: 1rem;
+	}
+
+	@media (min-width: @min-medium-screen) {
+		display: inline-block;
+		width: auto;
 	}
 }
