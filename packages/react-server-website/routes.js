@@ -27,10 +27,10 @@ module.exports = {
 			method: 'get',
 			page: './pages/contents-api',
 		},
-		DirectoryTreeApi: {
-			path: ['/api/directory-tree'],
+		DoccoApi: {
+			path: ['/api/docco'],
 			method: 'get',
-			page: './api/directory-tree',
+			page: './pages/docco-api',
 		},
 	},
 };
