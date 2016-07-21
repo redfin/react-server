@@ -85,6 +85,11 @@ export default (args = process.argv) => {
 			describe: "A URL base for the pre-compiled client JavaScript. Setting a value for jsurl means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any JavaScript. Obviously, this means that --jsurl overrides all of the options related to JavaScript compilation: --hot, --minify, and --bundleperroute.",
 			type: "string",
 		})
+		.option("stats", {
+			describe: "Output webpack stats to __clientTemp/build/stats.json.  Recommended for use with webpack-bundle-size-analyzer.",
+			default: false,
+			type: "boolean",
+		})
 		.help('?')
 		.alias('?', 'help')
 		.demand(0)
