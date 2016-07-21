@@ -4,11 +4,11 @@
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "scripts": {
-    "compile": "gulp",
-    "build-assets": "react-server-cli --compile-only --minify",
+    "build-assets": "react-server-cli --compile-only --minify && npm run docs",
     "start-prod": "react-server-cli --port 3010 --js-url /assets/",
     "start": "react-server-cli --port 3010 --js-port 3011",
-    "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check"
+    "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
+    "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js"
   },
   "license": "Apache-2.0",
   "dependencies": {

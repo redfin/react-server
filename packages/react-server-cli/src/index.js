@@ -6,6 +6,7 @@ function(module, filename) {
 	return module._compile("", filename);
 };
 
+require.extensions['.html'] =
 require.extensions['.md'] =
 	function(module, filename) {
 		const text = fs.readFileSync(filename, { encoding: 'utf-8' });
