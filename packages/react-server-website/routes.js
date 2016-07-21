@@ -5,6 +5,7 @@ module.exports = {
 		'./middleware/Theme',
 		'./middleware/PageHeader',
 		'./middleware/Analytics',
+		'./middleware/CacheControl',
 	],
 	routes: {
 		HelloWorld: {
