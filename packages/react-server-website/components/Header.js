@@ -7,15 +7,14 @@ export default class Header extends React.Component {
 	render () {
 		return (
 			<header>
-				<Link className="header-logo" path="/">
+				<Link reuseDom className="header-logo" path="/">
 					React Server
 				</Link>
 				<nav className="header-nav">
 					<ul>
-						<li><Link path="/docs/README">Docs</Link></li>
-						<li><Link path="/api">API</Link></li>
-						<li><Link path="https://slack.react-server.io/">Slack</Link></li>
-						<li><Link path="https://github.com/redfin/react-server">GitHub</Link></li>
+						<li><Link reuseDom path="/docs">Docs</Link></li>
+						<li><a target="_blank" href="https://slack.react-server.io/">Slack</a></li>
+						<li><a target="_blank" href="https://github.com/redfin/react-server">GitHub</a></li>
 					</ul>
 				</nav>
 			</header>
