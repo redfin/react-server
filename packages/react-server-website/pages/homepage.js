@@ -1,6 +1,7 @@
 import React from 'react';
 import Content from '../components/homepage/HomepageContent';
 import Footer from '../components/Footer';
+import '../middleware/Theme/button.less';
 import './homepage.less';
 
 export default class Homepage {
@@ -11,7 +12,7 @@ export default class Homepage {
 
 	getElements() {
 		return (
-			<div className="homepage rootContent">
+			<div className="homepage">
 				{/* TODO: Change from hardcoded serverVersion to dynamic. */}
 				<Content serverVersion="0.3.4"/>
 				<Footer/>
