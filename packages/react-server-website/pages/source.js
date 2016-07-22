@@ -4,6 +4,8 @@ import Docco from '../components/Docco';
 import DocTitle from '../components/doc-title';
 import SourceContents from '../components/source-contents';
 
+import './source.less';
+
 export default class SourcePage {
 	handleRoute(next) {
 		const page = this.getRequest().getRouteParams().path || 'routes.html';
@@ -21,12 +23,14 @@ export default class SourcePage {
 
 	getElements() {
 		return (
-			<RootContainer className='rootContent' when={this.bodyPromise}>
+			<RootContainer className='SourcePage'>
 				<RootContainer when={this.contentsPromise}>
 					<SourceContents />
 					<DocTitle titleProvider={SourceContents} />
 				</RootContainer>
-				<Docco />
+				<RootContainer className='rootContent' when={this.bodyPromise}>
+					<Docco />
+				</RootContainer>
 			</RootContainer>
 		);
 	}
