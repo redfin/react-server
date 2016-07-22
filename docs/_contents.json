@@ -10,11 +10,13 @@
 		{
 			"name": "Guides",
 			"pages": [
-				{ "name": "Writing Pages",           "path": "guides/writing-pages" },
-				{ "name": "How Logging Works",       "path": "guides/logging" },
-				{ "name": "Writing Middleware",      "path": "guides/writing-middleware" },
-				{ "name": "Understanding Rendering", "path": "guides/understanding-rendering" },
-				{ "name": "Using ReactServerAgent",  "path": "guides/using-react-server-agent"}
+				{ "name": "Writing Pages",                 "path": "guides/writing-pages" },
+				{ "name": "How Logging Works",             "path": "guides/logging" },
+				{ "name": "Writing Middleware",            "path": "guides/writing-middleware" },
+				{ "name": "Understanding Rendering",       "path": "guides/understanding-rendering" },
+				{ "name": "Using ReactServerAgent",        "path": "guides/using-react-server-agent"},
+				{ "name": "Using ReactServerCli",          "path": "guides/react-server-cli"},
+				{ "name": "Performing Client Transitions", "path": "guides/client-transitions"}
 			]
 		}
 	]
