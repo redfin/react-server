@@ -23,10 +23,9 @@ export default class DocsPage {
 	getElements() {
 		return (
 			<RootContainer className='DocsPage'>
-				{/* FIXME: `title` is not updating when clinking a link the doc contents. */}
 				<RootContainer when={this.contentsPromise}>
 					<DocContents />
-					<DocTitle title={DocContents.activePageName()} />
+					<DocTitle />
 				</RootContainer>
 				<RootContainer className="rootContent" when={this.bodyPromise}>
 					<DocBody />

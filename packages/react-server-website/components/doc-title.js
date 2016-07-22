@@ -1,11 +1,11 @@
 import React from 'react';
 import {Component, PropTypes} from 'react';
+import DocContents from "./doc-contents";
 import './doc-title.less';
 
 export default class DocTitle extends Component {
 	static getPropTypes() {
 		return {
-			title: PropTypes.string.isRequired,
 			viewSourceUrl: PropTypes.string,
 			serverVersion: PropTypes.string,
 		};
@@ -41,7 +41,7 @@ export default class DocTitle extends Component {
 		return (
 			<div className="DocTitle">
 				<div className="rootContent">
-					<h1 className="title">{this.props.title}</h1>
+					<h1 className="title">{DocContents.activePageName()}</h1>
 					{ctas}
 				</div>
 			</div>
