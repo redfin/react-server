@@ -1,0 +1,165 @@
+@import '../middleware/Theme/constants';
+
+.Header {
+	display: table;
+	width: 100%;
+	color: #585858;
+	background: white;
+
+	.route-homepage & {
+		.light-gray-to-black-background-color-gradient();
+		color: @almost-white;
+		text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+
+		.header-nav a {
+			color: inherit;
+			&:hover {
+				color: white;
+			}
+		}
+		.active a {
+			color: white;
+		}
+	}
+
+	.header-logo {
+		display: table-cell;
+		padding: 1.25rem;
+
+		color: inherit;
+		font-weight: 900;
+		font-size: 1rem;
+
+		svg {
+			height: 2rem;
+			margin-right: 1rem;
+			vertical-align: middle;
+			fill: currentColor;
+		}
+
+		@media (min-width: @min-medium-screen) {
+			padding: 1.25rem 2.5rem;
+			font-size: 2rem;
+
+			svg {
+				height: 3rem;
+			}
+		}
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+
+	.mobileToggle {
+		display: table-cell;
+		padding: 1.25rem;
+		text-align: right;
+
+		@media (min-width: @min-medium-screen) {
+			display: none;
+		}
+
+		svg {
+			height: 2rem;
+			fill: currentColor;
+			vertical-align: middle;
+		}
+	}
+
+	@max-small-screen: (@min-medium-screen - 1);
+	&.menuOpen {
+		color: @font-color;
+
+		.header-logo {
+			position: relative;
+			z-index: 9;
+		}
+
+		.mobileToggle {
+			position: relative;
+			z-index: 9;
+		}
+
+		.header-nav {
+			display: block;
+
+			@media (max-width: @max-small-screen) {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				padding: 5rem 0 0 0;
+
+				color: @font-color;
+				background: white;
+				text-align: left;
+
+				li {
+					text-decoration: none;
+
+					a,
+					a:active {
+						border-left: 0.25rem solid transparent;
+						border-bottom: 0;
+						padding: 1rem;
+						display: block;
+					}
+
+					&.active a {
+						border-color: @active-color;
+					}
+				}
+			}
+		}
+	}
+
+	.header-nav {
+		display: none;
+
+
+		padding: 0 2.5rem;
+		text-align: right;
+		vertical-align: middle;
+
+		@media (min-width: @min-medium-screen) {
+			display: table-cell;
+
+			ul,
+			li,
+			a {
+				display: inline-block;
+				height: 100%;
+			}
+		}
+
+		ul,
+		li {
+			padding: 0;
+			margin: 0;
+		}
+
+		a {
+			padding: 2.0rem 1.0rem 1.75rem 1.0rem;
+			color: #727272;
+			height: 100%;
+			box-sizing: border-box;
+			border-bottom: 0.25rem solid transparent;
+
+			&:hover {
+				text-decoration: none;
+			}
+		}
+
+		.active a,
+		.active a:hover {
+			border-color: @active-color;
+			color: #333333;
+		}
+		a:hover {
+			color: #333333;
+			border-color: transparent;
+		}
+	}
+}

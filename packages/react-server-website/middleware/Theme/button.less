@@ -1,0 +1,61 @@
+@import "constants";
+
+button {
+	font-family: 'Source Sans Pro', 'Helvetica', 'Arial', sans-serif!important; // Set specifically because browsers try to implement their own font families
+}
+
+.Button {
+	display: block;
+	text-decoration: none;
+	color: #FFFFFF;
+	background-color: @brand-color;
+
+	border-radius: 2px;
+	.default-box-shadow();
+	height: 3.5rem;
+	font-weight: 600;
+	padding: 1rem;
+	box-sizing: border-box;
+	width: 100%;
+
+	&,
+	& > * {
+		font-size: 1rem;
+
+		@media (min-width: @min-medium-screen) {
+			font-size: 1.25rem;
+		}
+	}
+
+	&:hover {
+		text-decoration: none;
+	}
+
+	&.secondary {
+		color: @font-color;
+		background-color: @almost-gray;
+		border-color: @border-color;
+	}
+
+	&.tertiary {
+		color: @gray;
+		border: 1px solid @dark-gray;
+		background-color: transparent;
+		box-shadow: 0 0;
+	}
+
+	&.small {
+		height: 2rem;
+		padding: 0.3rem;
+
+		&,
+		& > * {
+			font-size: 1rem;
+		}
+	}
+
+	@media (min-width: @min-medium-screen) {
+		display: inline-block;
+		width: auto;
+	}
+}

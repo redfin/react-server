@@ -1,0 +1,78 @@
+@import '../../middleware/Theme/constants';
+
+section.HeroSection {
+	display: table;
+	width: 100%;
+	height: 60vh;
+	padding-top: 5rem;
+	padding-bottom: 2rem;
+	.light-gray-to-black-background-color-gradient();
+
+	.banner-content {
+		color: @font-color-light;
+		display: table-cell;
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	.banner-titles {
+		margin-bottom: 3rem;
+		.default-text-shadow();
+	}
+
+	.banner-title {
+		font-weight: bold;
+		font-size: 2.5rem;
+		margin-top: 0;
+
+		@media (min-width: @min-medium-screen) {
+			font-size: 3rem;
+		}
+	}
+
+	.banner-subtitle {
+		font-size: 1.125rem;
+		margin-top: 0;
+
+		@media (min-width: @min-medium-screen) {
+			font-size: 1.5rem;
+		}
+	}
+
+	.Button {
+		display: block;
+
+		&.get-started-button {
+			margin-right: 0;
+		}
+
+		&.download-button {
+			margin-top: 1.25rem;
+			margin-left: 0;
+		}
+
+		@media (min-width: 600px) {
+			width: 350px;
+
+			&.get-started-button {
+				margin: 0 auto;
+			}
+
+			&.download-button {
+				margin: 1.25rem auto 0 auto;
+			}
+		}
+
+		@media (min-width: 875px) {
+			display: inline-block;
+
+			&.get-started-button {
+				margin-right: 1.25rem;
+			}
+
+			&.download-button {
+				margin-left: 1.25rem;
+			}
+		}
+	}
+}

@@ -38,6 +38,7 @@ const startImpl = ({
 		minify,
 		compileOnly,
 		jsUrl,
+		stats,
 		https: httpsOptions,
 		longTermCaching,
 }) => {
@@ -56,6 +57,7 @@ const startImpl = ({
 		minify,
 		outputUrl,
 		longTermCaching,
+		stats,
 	});
 
 	if (compileOnly) {
