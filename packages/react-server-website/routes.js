@@ -4,6 +4,7 @@ module.exports = {
 		'./middleware/RequestToPort',
 		'./middleware/Theme',
 		'./middleware/PageHeader',
+		'./middleware/PageFooter',
 		'./middleware/Analytics',
 		'./middleware/CacheControl',
 	],

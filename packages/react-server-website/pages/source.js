@@ -26,7 +26,6 @@ export default class SourcePage {
 					<SourceContents />
 				</RootElement>
 				<Docco />
-				<Footer/>
 			</RootContainer>
 		);
 	}
