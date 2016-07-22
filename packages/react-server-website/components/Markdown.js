@@ -13,6 +13,8 @@ export default class Markdown extends React.Component {
 	render() {
 		let content = this.props.children || this.props.source;
 
+		// The markdown handling returns a wad of HTML, so place it directly
+		// into the component.
 		return <div className="dangerous-markdown" dangerouslySetInnerHTML={{
 			__html: this._renderMarkdown(content),
 		}} />
@@ -41,6 +43,10 @@ export default class Markdown extends React.Component {
 	}
 
 	componentDidMount() {
+		// Our markdown documentation contains both internal and external links.
+		// We want to make sure that external links open in a new tab, and that
+		// internal links use client transitions for better performance.
+
 		[].slice.call(document.querySelectorAll('.dangerous-markdown a')).forEach(a => {
 			if (isInternal(a)) {
 				addOnClickHandler(a);
