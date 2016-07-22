@@ -1,6 +1,11 @@
 import React from "react";
 import {join} from "path";
-import {Link, getCurrentRequestContext} from "react-server";
+import PageNameMixin from "../lib/page-name-mixin";
+import {
+	Link,
+	getCurrentRequestContext,
+} from "react-server";
+
 import './doc-contents.less'
 
 const SourceContentsSection = ({name, pages}) => <div className='contentsSection'>
@@ -20,7 +25,15 @@ const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 	<Link reuseDom path={path}>{name}</Link>
 </li>
 
-export default function SourceContents({text}) {
-	const {contents} = JSON.parse(text);
-	return <div className='DocContents'>{contents.map(SourceContentsSection)}</div>
+export default class SourceContents extends React.Component {
+	render() {
+		return <div className='DocContents'>{
+			this.props.contents.map(SourceContentsSection)
+		}</div>
+	}
 }
+
+PageNameMixin(SourceContents, {
+	prefix: "/source/",
+	defaultName: "React Server Website Source",
+});
