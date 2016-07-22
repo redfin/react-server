@@ -30,21 +30,21 @@ module.exports = {
 };
 ```
 
-##What It Does
+## What It Does
 
 The CLI builds and runs a `react-server` project, using Express. It compiles JS(X) and CSS into efficiently loadable bundles with code splitting using webpack, and it supports hot reloading of React components on the client-side during development.
 
-##Built-in Features
+## Built-in Features
 
-###Babel Compilation
+### Babel Compilation
 It's rare to see a project these days in the JavaScript world that isn't at least experimenting with ES2015 and ES7. To make this easier, all code in your project will be run through Babel, and source maps will be generated back to the original file.
 
 To take advantage of the Babel compilation, you need to install the Babel plugins and presets you want and reference them in a `.babelrc` file in your code directory. For more on the `.babelrc` format, see [its documentation here](https://babeljs.io/docs/usage/babelrc/).
 
-##Options
+## Options
 Smart defaults are the goal, and `react-server-cli` has two base modes: **development** and **production**. `react-server-cli` will determine which base mode it's in by looking at the NODE_ENV environment variable. If it's not "production", then `react-server-cli` will assume we are in development mode.
 
-###Ways to add options
+### Ways to add options
 
 There are three ways to pass options to the CLI, through the command line, `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json` files. It searches for options this way:
 
@@ -57,7 +57,7 @@ There are three ways to pass options to the CLI, through the command line, `.rea
 
 Note that the programmatic API also searches for config files, although options sent in explicitly to the API function override the config file.
 
-###JSON options can be set per environment
+### JSON options can be set per environment
 
 If you are using either `.reactserverrc` or `package.json` to set your react-server options, you can provide environment-specific values in a sub-object at the key `env`. It looks like this:
 
@@ -77,7 +77,7 @@ If you are using either `.reactserverrc` or `package.json` to set your react-ser
 
 The values in a particular environment override the main settings. In this example configuration `port` will be set to 80 if `process.env.NODE_ENV` is `production`, 4000 if `process.env.NODE_ENV` is `staging`, and 5000 for any other situation.
 
-###Development mode: making a great DX
+### Development mode: making a great DX
 
 Development mode is the default, and its goals are rapid startup and code-test loops. Hot mode is enabled for all code, although at this time, editing the routes file or modules that export a Page class still requires a browser reload to see changes. Modules that export a React component should reload without a browser refresh.
 
@@ -85,11 +85,11 @@ In development mode, code is not minified in order to speed up startup time, so 
 
 We are also considering completely getting rid of server-side rendering in development mode by default to speed startup.
 
-###Production mode: optimizing delivery
+### Production mode: optimizing delivery
 
 Production mode's priority is optimization at the expense of startup time. A separate code bundle is generated for every entry point into your app so that there is at most just one JS and one CSS file loaded by the framework. All code is minified, and hot reloading is turned off.
 
-####Building static files for production use
+#### Building static files for production use
 
 In many production configurations, you may not want `react-server-cli` to serve up your static JavaScript and CSS files. Typically, this is because you have a more performant static file server already set up or because you upload all your static files to a CDN server.
 
@@ -99,7 +99,7 @@ To use `react-server-cli` in this sort of production setup, follow these steps:
 1. Upload the contents of `__clientTemp/build` to your static file server.
 1. `react-server-cli --production --js-url="http://mystaticfileserver.com/somedirectory/"` to start your HTML server depending on JavaScript and CSS files from your static file server.
 
-###Setting Options Manually
+### Setting Options Manually
 
 While development and production mode are good starting points, you can of course choose to override any of the setup by setting the following options:
 
