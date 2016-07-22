@@ -9,11 +9,14 @@ export default class SourcePage {
 		const page = this.getRequest().getRouteParams().path || 'routes.html';
 		this.bodyPromise = ReactServerAgent.get('/api/source', {page});
 		this.contentsPromise = ReactServerAgent.get('/api/source-contents')
+			.then(({body}) => body)
+			.then(SourceContents.setResponse)
 		return next();
 	}
 
 	getTitle() {
-		return this.getRequest().getRouteParams().path;
+		return this.contentsPromise
+			.then(() => `Source of ${SourceContents.activePageName()}`);
 	}
 
 	getElements() {
