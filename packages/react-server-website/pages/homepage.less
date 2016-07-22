@@ -1,9 +1,9 @@
 @import '../middleware/Theme/constants.less';
 
+
 section {
 	box-sizing: border-box;
 	padding: @small-section-pad;
-	border-bottom: 1px solid #CCCCCC;
 
 	@media (min-width: @min-medium-screen) {
 		padding: @medium-section-pad;
@@ -15,9 +15,12 @@ section {
 		pre {
 			background-color: #FFFFFF;
 		}
-
-		&.why-section {
-			border-bottom: 0 none;
-		}
 	}
 }
+
+.homepage {
+	.get-started-section {
+		border-bottom: 1px solid @border-color;
+	}
+}
+
