@@ -4,8 +4,8 @@
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "scripts": {
-    "build-assets": "react-server-cli --compile-only --minify --long-term-caching",
-    "start-prod": "react-server-cli --port 3010 --minify --long-term-caching --js-url /assets/ && npm run docs",
+    "build-assets": "react-server-cli --compile-only --minify --long-term-caching && npm run docs",
+    "start-prod": "react-server-cli --port 3010 --minify --long-term-caching --js-url /assets/",
     "start": "react-server-cli --port 3010 --js-port 3011",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
