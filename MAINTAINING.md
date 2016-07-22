@@ -27,3 +27,12 @@ us, though:
 
 - `lerna publish --skip-npm`
 - For each package: `npm publish packages/<package>`
+
+### Updating annotated source code
+
+- `git checkout gh-pages`
+- `git rebase master`
+- `npm run docs`
+- `git add annotated-src`
+- `git commit --amend`
+- `git push -f upstream gh-pages`
