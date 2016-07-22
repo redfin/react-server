@@ -7,12 +7,8 @@ import SourceContents from '../components/source-contents';
 export default class SourcePage {
 	handleRoute(next) {
 		const page = this.getRequest().getRouteParams().path || 'routes.html';
-		this.bodyPromise = new Promise(resolve => {
-			ReactServerAgent.get('/api/source', {page}).then(data => resolve(data));
-		});
-		this.contentsPromise = new Promise(resolve => {
-			ReactServerAgent.get('/api/source-contents').then(data => resolve(data));
-		});
+		this.bodyPromise = ReactServerAgent.get('/api/source', {page});
+		this.contentsPromise = ReactServerAgent.get('/api/source-contents')
 		return next();
 	}
 
@@ -30,15 +26,5 @@ export default class SourcePage {
 				<Footer/>
 			</RootContainer>
 		);
-	}
-
-	getMetaTags() {
-		return [
-			{charset: 'utf8'},
-			{'http-equiv': 'x-ua-compatible', 'content': 'ie=edge'},
-			{name: 'viewport', content: 'width=device-width, initial-scale=1'},
-			{name: 'description', content: 'React Server source, powered by React Server'},
-			{name: 'generator', content: 'React Server'},
-		];
 	}
 }
