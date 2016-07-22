@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>reactMiddlewareSpec.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>reactMiddlewareSpec.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> MemoryStream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'memory-stream'</span>);
+
+<span class="hljs-keyword">import</span> { _testFunctions } <span class="hljs-keyword">from</span> <span class="hljs-string">"../renderMiddleware"</span>;
+<span class="hljs-keyword">import</span> PageUtil <span class="hljs-keyword">from</span> <span class="hljs-string">"../util/PageUtil"</span>;
+
+<span class="hljs-keyword">import</span> NullValuesPage <span class="hljs-keyword">from</span> <span class="hljs-string">"./NullValuesPage"</span>;
+<span class="hljs-keyword">import</span> NullValuePromisesPage <span class="hljs-keyword">from</span> <span class="hljs-string">"./NullValuePromisesPage"</span>;
+<span class="hljs-keyword">import</span> NormalValuesPage <span class="hljs-keyword">from</span> <span class="hljs-string">"./NormalValuesPage"</span>;
+
+describe(<span class="hljs-string">"renderMiddleware"</span>, () =&gt; {
+	<span class="hljs-keyword">let</span> mockSocket,
+		page;
+
+	describe(<span class="hljs-string">"null values"</span>, () =&gt; {
+		beforeAll(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			page = PageUtil.createPageChain([<span class="hljs-keyword">new</span> NullValuesPage()]);
+		});
+
+		beforeEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			mockSocket = <span class="hljs-keyword">new</span> MemoryStream();
+		});
+
+		afterEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			mockSocket = <span class="hljs-literal">null</span>;
+		});
+
+		it(<span class="hljs-string">"don't render meta tags"</span>, (finishTest) =&gt; {
+			_testFunctions.renderMetaTags(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">''</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+
+		it(<span class="hljs-string">"don't render link tags"</span>, (finishTest) =&gt; {
+			_testFunctions.renderLinkTags(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">''</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+
+		it(<span class="hljs-string">"doesn't render base tag"</span>, (finishTest) =&gt; {
+			_testFunctions.renderBaseTag(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">''</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+	});
+
+	describe(<span class="hljs-string">"promises with null values"</span>, () =&gt; {
+		beforeAll(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			page = PageUtil.createPageChain([<span class="hljs-keyword">new</span> NullValuePromisesPage()]);
+		});
+
+		beforeEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			mockSocket = <span class="hljs-keyword">new</span> MemoryStream();
+		});
+
+		afterEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			mockSocket = <span class="hljs-literal">null</span>;
+		});
+
+		it(<span class="hljs-string">"don't render meta tags"</span>, (finishTest) =&gt; {
+			_testFunctions.renderMetaTags(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">''</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+
+		it(<span class="hljs-string">"don't render link tags"</span>, (finishTest) =&gt; {
+			_testFunctions.renderLinkTags(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">''</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+
+		it(<span class="hljs-string">"doesn't render base tag"</span>, (finishTest) =&gt; {
+			_testFunctions.renderBaseTag(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">''</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+	});
+
+	describe(<span class="hljs-string">"good values"</span>, () =&gt; {
+		beforeAll(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			page = PageUtil.createPageChain([<span class="hljs-keyword">new</span> NormalValuesPage()]);
+		});
+
+		beforeEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			mockSocket = <span class="hljs-keyword">new</span> MemoryStream();
+		});
+
+		afterEach(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			mockSocket = <span class="hljs-literal">null</span>;
+		});
+
+		it(<span class="hljs-string">"render a single meta tag"</span>, (finishTest) =&gt; {
+			_testFunctions.renderMetaTags(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">'&lt;meta charset="utf8"&gt;'</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+
+		it(<span class="hljs-string">"render a single link tags"</span>, (finishTest) =&gt; {
+			_testFunctions.renderLinkTags(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">'&lt;link data-react-server-link rel="prefetch" href="//www.google-analytics.com"&gt;'</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+
+		it(<span class="hljs-string">"render a base tag"</span>, (finishTest) =&gt; {
+			_testFunctions.renderBaseTag(page, mockSocket)
+				.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+					expect(mockSocket.toString()).toBe(<span class="hljs-string">'&lt;base href="//www.google.com"&gt;'</span>);
+				}, finishTest.fail)
+				.done(finishTest);
+		});
+	});
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

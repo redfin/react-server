@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>RootElement.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>RootElement.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/* eslint "react/no-deprecated": "warn" */</span>
+
+<span class="hljs-keyword">var</span> React = <span class="hljs-built_in">require</span>(<span class="hljs-string">'react'</span>);
+<span class="hljs-keyword">const</span> PropTypes = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prop-types'</span>);
+<span class="hljs-keyword">var</span> Q = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>);
+
+<span class="hljs-keyword">const</span> {isTheFold} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./TheFold'</span>);
+
+<span class="hljs-keyword">const</span> _ = {
+	<span class="hljs-attr">assign</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash/assign'</span>),
+};
+
+<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../logging'</span>).getLogger(__LOGGER__);
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RootElement</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+	<span class="hljs-keyword">constructor</span>(props) {
+		<span class="hljs-keyword">super</span>(props);
+		<span class="hljs-keyword">this</span>.state = {
+			<span class="hljs-attr">childProps</span>: props.childProps,
+		};
+	}
+
+	componentDidMount() {
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.props.subscribe) {
+			<span class="hljs-keyword">this</span>.props.subscribe(<span class="hljs-function"><span class="hljs-params">childProps</span> =&gt;</span> {
+				<span class="hljs-keyword">var</span> now            = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>;
+				<span class="hljs-keyword">var</span> name           = <span class="hljs-keyword">this</span>.getChildName();
+				<span class="hljs-keyword">var</span> count          = ++<span class="hljs-keyword">this</span>._changeCount;
+				<span class="hljs-keyword">var</span> fromMount      = now - <span class="hljs-keyword">this</span>._t0;
+				<span class="hljs-keyword">var</span> fromLastChange = now - <span class="hljs-keyword">this</span>._t1;
+				<span class="hljs-keyword">this</span>._t1           = now;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Log some stuff about the change.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				[<span class="hljs-string">`byName.<span class="hljs-subst">${name}</span>`</span>, <span class="hljs-string">'all'</span>].forEach(<span class="hljs-function"><span class="hljs-params">tag</span> =&gt;</span> {
+					logger.time(<span class="hljs-string">`change.fromMount.<span class="hljs-subst">${tag}</span>`</span>, fromMount);
+					logger.time(<span class="hljs-string">`change.fromLastChange.<span class="hljs-subst">${tag}</span>`</span>, fromLastChange);
+					logger.gauge(<span class="hljs-string">`change.count.<span class="hljs-subst">${tag}</span>`</span>, count);
+				});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Okay, now we’ve complained about it
+sufficiently, let’s go ahead and update.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">const</span> newChildProps = _.assign({}, <span class="hljs-keyword">this</span>.state.childProps, childProps);
+				<span class="hljs-keyword">this</span>.setState({
+					<span class="hljs-attr">childProps</span>: newChildProps,
+				});
+			});
+		}
+	}
+
+	componentWillUnmount() {
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.props.unsubscribe) <span class="hljs-keyword">this</span>.props.unsubscribe();
+	}
+
+	componentWillReceiveProps(nextProps) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Incase we receive new props such as during client transitions
+We will want to update our state’s childProp with any new childProps
+that may have been passed in. This still respects props as the ultimate source of truth</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">const</span> newChildProps = _.assign({}, <span class="hljs-keyword">this</span>.state.childProps, nextProps.childProps);
+		<span class="hljs-keyword">this</span>.setState({
+			<span class="hljs-attr">childProps</span>: newChildProps,
+		});
+	}
+
+	render() {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>We’ll use these to log stuff about re-renders.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>._t0) {
+			<span class="hljs-keyword">this</span>._t0 = <span class="hljs-keyword">this</span>._t1 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>;
+			<span class="hljs-keyword">this</span>._changeCount = <span class="hljs-number">0</span>;
+		}
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.props.children === <span class="hljs-string">'string'</span>) {
+
+			logger.error(
+				<span class="hljs-string">"Root elements cannot be raw text"</span>,
+				{ <span class="hljs-attr">text</span>: <span class="hljs-keyword">this</span>.props.children }
+			);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Don’t keep choking on it.  Just gut it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> /&gt;</span>;
+		}
+
+		return React.cloneElement(
+			React.Children.only(this.props.children),
+			this.state.childProps
+		);
+	}
+
+	getChildName() {
+		if (!this._childName){
+			this._childName = (React.Children.only(
+				this.props.children
+			).type.displayName||'Unknown').split('.').pop();
+		}
+		return this._childName;
+	}
+
+}
+
+module.exports = RootElement;
+
+RootElement.propTypes = {
+	listen: PropTypes.func,
+	when: PropTypes.object, // A promise.
+	childProps: PropTypes.object,
+	_isRootElement: PropTypes.bool,
+	children: PropTypes.node,
+	subscribe: PropTypes.func,
+	unsubscribe: PropTypes.func,
+};
+
+RootElement.defaultProps = {
+	_isRootElement: true,
+};
+
+RootElement.isRootElement = function(element) {
+	return element &amp;&amp; element.props &amp;&amp; element.props._isRootElement;
+}
+
+RootElement.getRootElementAttributes = function(element) {
+	var props = element.props;
+	var attrs = {};
+
+	if (props.className) attrs.class = props.className;
+
+</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>TODO: Others?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	[
+		<span class="hljs-string">'id'</span>,
+		<span class="hljs-string">'style'</span>,
+	].forEach(<span class="hljs-function"><span class="hljs-params">k</span> =&gt;</span> props[k] &amp;&amp; (attrs[k] = props[k]));
+
+	<span class="hljs-keyword">return</span> attrs;
+}
+
+RootElement.ensureRootElementWithContainer = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">element, container</span>) </span>{ <span class="hljs-comment">// eslint-disable-line react/display-name</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>If it’s <em>already</em> a root element (or the fold), pass it along.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (RootElement.isRootElement(element) || isTheFold(element) || (</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Alternatively, if it’s a control object pass it along.</p>
+<p>We exclude strings here since we already gripe about them
+at render time.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		!React.isValidElement(element) &amp;&amp; <span class="hljs-keyword">typeof</span> element !== <span class="hljs-string">'string'</span>
+	)){
+		<span class="hljs-keyword">return</span> element;
+	}
+
+	<span class="hljs-keyword">const</span> {listen, when} = container.props;
+
+	<span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RootElement</span> <span class="hljs-attr">listen</span>=<span class="hljs-string">{listen}</span> <span class="hljs-attr">when</span>=<span class="hljs-string">{when}</span>&gt;</span>{element}<span class="hljs-tag">&lt;/<span class="hljs-name">RootElement</span>&gt;</span></span>;
+}
+
+RootElement.ensureRootElement = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">element</span>)</span>{
+	<span class="hljs-keyword">return</span> RootElement.ensureRootElementWithContainer(element, {<span class="hljs-attr">props</span>:{}});
+}
+
+RootElement.installListener = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">element, listen</span>) </span>{
+	<span class="hljs-keyword">var</span> dfd = Q.defer(),
+		updater,
+		subscribe = <span class="hljs-function"><span class="hljs-params">callback</span> =&gt;</span> {updater = callback},
+		unsubscribe = listen(<span class="hljs-function"><span class="hljs-params">childProps</span> =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Once the component has mounted it will provide an updater.
+After that we can just short-circuit here and let it handle
+updating itself.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (updater) {
+				updater(childProps);
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>The promise itself will only resolve once, but we don’t
+want to <em>clone</em> multiple times.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (dfd.promise.isPending()) {
+				dfd.resolve(React.cloneElement(element, {
+					childProps,
+					subscribe,
+					unsubscribe,
+				}));
+			}
+		});
+	<span class="hljs-keyword">return</span> dfd.promise
+}
+
+RootElement.scheduleRender = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">element</span>) </span>{
+	<span class="hljs-keyword">var</span> {listen, when, componentLoader, childProps} = (element||{}).props||{};
+	<span class="hljs-keyword">if</span> (!(listen||when||componentLoader||childProps)) {
+		<span class="hljs-keyword">return</span> Q(element).then(RootElement.ensureRootElement);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>This is what we’ll ultimately resolve our return promise with.
+It may be changed by the output of <code>listen</code> or <code>when</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> rendered = element;
+	<span class="hljs-keyword">var</span> componentLoaderDeferred = componentLoader ? componentLoader() : <span class="hljs-literal">null</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Install the listener right away to start gathering props.
+It may be a gated emitter, but we want to make sure we squeeze
+props out of it from the beginning if it’s not.
+Finally gate on the <code>when</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> Q(listen &amp;&amp; RootElement.installListener(element, listen))
+		.then(<span class="hljs-function"><span class="hljs-params">el</span> =&gt;</span> el &amp;&amp; (rendered = el))
+		.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> Q.allSettled([when, componentLoaderDeferred]))
+		.then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
+			<span class="hljs-keyword">var</span> [whenResult, loadedComponent] = results;
+			<span class="hljs-keyword">if</span> (whenResult.value || loadedComponent.value || childProps) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>merge in child props from listen, when, and childProps</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">const</span> clonedChildProps = _.assign({}, rendered.props.childProps, whenResult.value, childProps);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>if we have a component loader specified, copy the resolved component
+and render that with the current child as a child of that component</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">const</span> currentChild = rendered.props.children;
+				<span class="hljs-keyword">const</span> childToRender = componentLoaderDeferred ? React.createElement(loadedComponent.value, <span class="hljs-literal">null</span>, currentChild) : currentChild;
+
+				<span class="hljs-keyword">return</span> React.cloneElement(rendered, {<span class="hljs-attr">childProps</span>: clonedChildProps}, childToRender);
+			}
+			<span class="hljs-keyword">return</span> rendered;
+		});
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

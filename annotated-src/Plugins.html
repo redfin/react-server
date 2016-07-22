@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Plugins.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Plugins.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/**
+ * Wrapper class around RLS-scoped ReactServerAgent plugins to avoid
+ * a circular dependency between ReactServerAgent and ReactServerAgent/Request.
+ *
+ * Note: It's possible that this module shouldn't exist at all. ReactServerAgent
+ * plugins maybe shouldn't be request-scoped; they could be set statically,
+ * and get their data from RLS if they wanted, instead. i.e., store something
+ * in RLS, then have the plugin retrieve it, and that way the code being
+ * executed is the same for _all_ requests)
+ */</span>
+
+<span class="hljs-keyword">var</span> RLS = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../util/RequestLocalStorage'</span>).getNamespace()
+;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Simple wrapper around an array the implements the
+API we want for adding/getting plugins</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PluginsHolder</span> </span>{
+
+	<span class="hljs-keyword">constructor</span> () {
+		<span class="hljs-keyword">this</span>.plugins = [];
+	}
+
+	asArray () {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>return a copy of the plugins array so that
+the returned array can’t change underneath
+the caller</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> [].concat(<span class="hljs-keyword">this</span>.plugins);
+	}
+
+	add (plugin) {
+		<span class="hljs-keyword">this</span>.plugins.push(plugin);
+	}
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getPlugins</span> (<span class="hljs-params">pluginType</span>) </span>{
+	<span class="hljs-keyword">return</span> (RLS()[pluginType] || (RLS()[pluginType] = <span class="hljs-keyword">new</span> PluginsHolder()));
+}
+
+
+<span class="hljs-built_in">module</span>.exports = {
+	<span class="hljs-attr">forRequest</span>:  getPlugins.bind(<span class="hljs-literal">null</span>, <span class="hljs-string">"request"</span>),
+	<span class="hljs-attr">forResponse</span>: getPlugins.bind(<span class="hljs-literal">null</span>, <span class="hljs-string">"response"</span>),
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

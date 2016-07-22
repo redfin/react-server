@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>renderMiddleware.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>renderMiddleware.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./logging'</span>).getLogger(__LOGGER__),
+	React = <span class="hljs-built_in">require</span>(<span class="hljs-string">'react'</span>),
+	ReactDOMServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'react-dom/server'</span>),
+	MobileDetect = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mobile-detect'</span>),
+	RequestContext = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./context/RequestContext'</span>),
+	RequestLocalStorage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./util/RequestLocalStorage'</span>),
+	DebugUtil = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./util/DebugUtil'</span>).default,
+	RLS = RequestLocalStorage.getNamespace(),
+	flab = <span class="hljs-built_in">require</span>(<span class="hljs-string">'flab'</span>),
+	Q = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>),
+	config = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./config'</span>),
+	ExpressServerRequest = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./ExpressServerRequest"</span>),
+
+	PageUtil = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./util/PageUtil'</span>),
+	ReactServerAgent = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./ReactServerAgent'</span>),
+	StringEscapeUtil = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./util/StringEscapeUtil'</span>),
+	{getRootElementAttributes} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./components/RootElement'</span>),
+	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./constants'</span>),
+	{flushLogsToResponse} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./logging/response'</span>);
+
+<span class="hljs-keyword">var</span> _ = {
+	<span class="hljs-attr">map</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash/map'</span>),
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>TODO FIXME ??
+It <em>might</em> be worthwhile to get rid of all the closure-y things in render()
+<a href="https://developers.google.com/speed/articles/optimizing-javascript">https://developers.google.com/speed/articles/optimizing-javascript</a></p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>If an element hasn’t rendered in this long it gets the axe.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> FAILSAFE_RENDER_TIMEOUT = <span class="hljs-number">20e3</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>If a page’s <code>handleRoute</code> fails to resolve this fast it gets the axe.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> FAILSAFE_ROUTER_TIMEOUT = <span class="hljs-number">20e3</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>We’ll use this for keeping track of request concurrency per worker.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> ACTIVE_REQUESTS = <span class="hljs-number">0</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Some non-content items that can live in the elements array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> ELEMENT_PENDING         = <span class="hljs-number">-1</span>;
+<span class="hljs-keyword">var</span> ELEMENT_ALREADY_WRITTEN = <span class="hljs-number">-2</span>;
+
+<span class="hljs-comment">/**
+ * renderMiddleware entrypoint. Called by express for every request.
+ */</span>
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next, routes</span>) </span>{
+	RequestLocalStorage.startRequest(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+		ACTIVE_REQUESTS++;
+
+		<span class="hljs-keyword">var</span> start = RLS().startTime = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+		<span class="hljs-keyword">var</span> startHR = process.hrtime();
+
+		logger.debug(<span class="hljs-string">`Incoming request for <span class="hljs-subst">${req.path}</span>`</span>);
+
+		initResponseCompletePromise(res);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>monkey-patch <code>res.write</code> so that we don’t try to write to the stream if it’s
+already closed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> origWrite = res.write;
+		res.write = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+			<span class="hljs-keyword">if</span> (!res.finished) {
+				origWrite.apply(res, <span class="hljs-built_in">arguments</span>);
+			} <span class="hljs-keyword">else</span> {
+				logger.error(<span class="hljs-string">"Attempted write after response finished"</span>, { <span class="hljs-attr">path</span>: req &amp;&amp; req.path || <span class="hljs-string">"unknown"</span>, <span class="hljs-attr">stack</span>: logger.stack() });
+			}
+		};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>TODO? pull this context building into its own middleware</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> RequestContext.Builder()
+			.setRoutes(routes)
+			.setDefaultXhrHeadersFromRequest(req)
+			.create({</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>TODO: context opts?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Need this stuff in for logging.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		context.setServerStash({ req, res, start, startHR });
+
+		context.setDeviceType(getDeviceType(req));
+
+		<span class="hljs-keyword">var</span> navigateDfd = Q.defer();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>setup navigation handler (TODO: should we have a ‘once’ version?)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		context.onNavigate( <span class="hljs-function">(<span class="hljs-params">err, page</span>) =&gt;</span> {
+
+			<span class="hljs-keyword">if</span> (!navigateDfd.promise.isPending()) {
+				logger.error(<span class="hljs-string">"Finished navigation after FAILSAFE_ROUTER_TIMEOUT"</span>, {
+					<span class="hljs-attr">page</span>: context.page,
+					<span class="hljs-attr">path</span>: req.path,
+				});
+				<span class="hljs-keyword">return</span>;
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Success.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			navigateDfd.resolve();
+
+
+			<span class="hljs-keyword">if</span> (err) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>The page can elect to proceed to render
+even with a non-2xx response.  If it
+<em>doesn’t</em> do so then we’re done.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">var</span> done = !(page &amp;&amp; page.getHasDocument());
+
+				<span class="hljs-keyword">if</span> (err.status === <span class="hljs-number">301</span> || err.status === <span class="hljs-number">302</span> || err.status === <span class="hljs-number">307</span>) {
+					<span class="hljs-keyword">if</span> (done){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>This adds a boilerplate body.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>						res.redirect(err.status, err.redirectUrl);
+					} <span class="hljs-keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>This expects our page to
+render a body.  Hope they
+know what they’re doing.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>						res.set(<span class="hljs-string">'Location'</span>, err.redirectUrl);
+					}
+				} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (done) {
+					<span class="hljs-keyword">if</span> (err.status === <span class="hljs-number">404</span>) {
+						next();
+					} <span class="hljs-keyword">else</span> {
+						next(err);
+					}
+				}
+				<span class="hljs-keyword">if</span> (done) {
+					logger.log(<span class="hljs-string">"onNavigate received a non-2xx HTTP code"</span>, err);
+					handleResponseComplete(req, res, context, start, page);
+					<span class="hljs-keyword">return</span>;
+				}
+			}
+			renderPage(req, res, context, start, page);
+
+		});
+
+
+		<span class="hljs-keyword">const</span> timeout = setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Don’t leave dead timers hanging around.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		navigateDfd.promise.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> clearTimeout(timeout));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>If we fail to navigate, we’ll throw a 500 and move on.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		navigateDfd.promise.catch(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			logger.error(<span class="hljs-string">"Failed to navigate after FAILSAFE_ROUTER_TIMEOUT"</span>, {
+				<span class="hljs-attr">page</span>: context.navigator.getCurrentRoute().name,
+				<span class="hljs-attr">path</span>: req.path,
+			});
+			handleResponseComplete(req, res, context, start, context.page);
+			next({<span class="hljs-attr">status</span>: <span class="hljs-number">500</span>});
+		});
+
+		context.navigate(<span class="hljs-keyword">new</span> ExpressServerRequest(req));
+
+	});
+};
+
+<span class="hljs-built_in">module</span>.exports.getActiveRequests = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> ACTIVE_REQUESTS;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initResponseCompletePromise</span>(<span class="hljs-params">res</span>)</span>{
+	<span class="hljs-keyword">var</span> dfd = Q.defer();
+
+	res.on(<span class="hljs-string">'close'</span>,  dfd.resolve);
+	res.on(<span class="hljs-string">'finish'</span>, dfd.resolve);
+
+	RLS().responseCompletePromise = dfd.promise;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handleResponseComplete</span>(<span class="hljs-params">req, res, context, start, page</span>) </span>{
+
+	RLS().responseCompletePromise.then(RequestLocalStorage.bind(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>All intentional response completion should funnel through
+this function.  If this value starts climbing gradually
+that’s an indication that we have some <em>unintentional</em>
+response completion going on that we should deal with.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		ACTIVE_REQUESTS--;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Note that if the navigator couldn’t even map the request to
+a page, we won’t be able to call middleware
+<code>handleComplete()</code> here.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (page) {
+			logRequestStats(req, res, context, start, page);
+
+			page.handleComplete();
+		}
+	}));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderPage</span>(<span class="hljs-params">req, res, context, start, page</span>) </span>{
+
+	<span class="hljs-keyword">var</span> routeName = context.navigator.getCurrentRoute().name;
+
+	logger.debug(<span class="hljs-string">"Route Name: "</span> + routeName);
+
+	<span class="hljs-keyword">var</span> timer = logger.timer(<span class="hljs-string">"lifecycle.individual"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Protects some browsers (Chrome, IE) against MIME sniffing attacks.
+see: <a href="http://security.stackexchange.com/a/12916">http://security.stackexchange.com/a/12916</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	res.set(<span class="hljs-string">'X-Content-Type-Options'</span>, <span class="hljs-string">'nosniff'</span>);
+
+	res.status(page.getStatus()||<span class="hljs-number">200</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Handy to have random access to this rather than needing to thread it
+through everywhere.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	RLS().page = page;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Each of these functions has the same signature and returns a
+promise, so we can chain them up with a promise reduction.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> lifecycleMethods;
+	<span class="hljs-keyword">if</span> (PageUtil.PageConfig.get(<span class="hljs-string">'isFragment'</span>)){
+		lifecycleMethods = fragmentLifecycle();
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (PageUtil.PageConfig.get(<span class="hljs-string">'isRawResponse'</span>)){
+		lifecycleMethods = rawResponseLifecycle();
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (req.query[ReactServerAgent.DATA_BUNDLE_PARAMETER]) {
+		lifecycleMethods = dataBundleLifecycle();
+	} <span class="hljs-keyword">else</span> {
+		lifecycleMethods = pageLifecycle();
+	}
+
+	lifecycleMethods.reduce(<span class="hljs-function">(<span class="hljs-params">chain, func</span>) =&gt;</span> chain
+		.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> func(req, res, context, start, page))
+		.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			timer.tick(func.name);
+			logger.time(<span class="hljs-string">`lifecycle.fromStart.<span class="hljs-subst">${func.name}</span>`</span>, <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span> - start);
+		})
+	).catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> {
+		logger.error(<span class="hljs-string">"Error in renderPage chain"</span>, err)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Register <code>finish</code> listener before ending response.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		handleResponseComplete(req, res, context, start, page);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Bummer.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		res.status(<span class="hljs-number">500</span>).end();
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>TODO: we probably want a “we’re not waiting any longer for this”
+timeout as well, and cancel the waiting deferreds</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rawResponseLifecycle</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">return</span> [
+		Q(), <span class="hljs-comment">// NOOP lead-in to prime the reduction</span>
+		setHttpHeaders,
+		setContentType,
+		writeResponseData,
+		handleResponseComplete,
+		endResponse,
+	];
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fragmentLifecycle</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">return</span> [
+		Q(), <span class="hljs-comment">// NOOP lead-in to prime the reduction</span>
+		setHttpHeaders,
+		writeDebugComments,
+		writeBody,
+		handleResponseComplete,
+		endResponse,
+	];
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dataBundleLifecycle</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">return</span> [
+		Q(), <span class="hljs-comment">// NOOP lead-in to prime the reduction</span>
+		setDataBundleContentType,
+		writeDataBundle,
+		handleResponseComplete,
+		endResponse,
+	];
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pageLifecycle</span>(<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">return</span> [
+		Q(), <span class="hljs-comment">// This is just a NOOP lead-in to prime the reduction.</span>
+		setHttpHeaders,
+		writeHeader,
+		startBody,
+		writeBody,
+		wrapUpLateArrivals,
+		closeBody,
+		handleResponseComplete,
+		endResponse,
+	];
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setDataBundleContentType</span>(<span class="hljs-params">req, res</span>) </span>{
+	res.set(<span class="hljs-string">'Content-Type'</span>, <span class="hljs-string">'application/json'</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setHttpHeaders</span>(<span class="hljs-params">req, res, context, start, pageObject</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>Write out custom page-defined http headers. Headers may be overwritten later on in the render chain
+(e.g. transfer encoding, content type)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">const</span> handler = <span class="hljs-function"><span class="hljs-params">header</span> =&gt;</span> res.set(header[<span class="hljs-number">0</span>], header[<span class="hljs-number">1</span>]);
+
+	<span class="hljs-keyword">return</span> Q(pageObject.getHeaders()).then(<span class="hljs-function"><span class="hljs-params">headers</span> =&gt;</span> headers.forEach(handler));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setContentType</span>(<span class="hljs-params">req, res, context, start, pageObject</span>) </span>{
+	res.set(<span class="hljs-string">'Content-Type'</span>, pageObject.getContentType());
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeHeader</span>(<span class="hljs-params">req, res, context, start, pageObject</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>This is awkward and imprecise.  We don’t want to put <code>&lt;script&gt;</code>
+tags between divs above the fold, so we’re going to keep separate
+track of time client and server side. Then we’ll put <code>&lt;noscript&gt;</code>
+tags with data elements representing offset from our <em>server</em> base
+time that we’ll apply to our <em>client</em> base time as a proxy for when
+the element arrived (when it’s actually when we <em>sent</em> it).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	RLS().timingDataT0 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>;
+
+	res.type(<span class="hljs-string">'html'</span>);
+	res.set(<span class="hljs-string">'Transfer-Encoding'</span>, <span class="hljs-string">'chunked'</span>);
+
+	res.write(<span class="hljs-string">'&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>note: these responses can currently come back out-of-order, as many are returning
+promises. scripts and stylesheets are guaranteed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> Q.all([
+		renderDebugComments(pageObject, res),
+		renderTitle(pageObject, res),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>PLAT-602: inline scripts come before stylesheets because
+stylesheet downloads block inline script execution.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		(pageObject.getJsBelowTheFold() &amp;&amp; !pageObject.getSplitJsLoad())
+			? Q()
+			: renderScripts(pageObject, res),
+		renderStylesheets(pageObject, res)
+			.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> Q.all([
+				renderMetaTags(pageObject, res),
+				renderLinkTags(pageObject, res),
+				renderBaseTag(pageObject, res),
+			])),
+	]).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>once we have finished rendering all of the pieces of the head element, we
+can close the head and start the body element.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		res.write(<span class="hljs-string">`&lt;/head&gt;`</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Get headers out right away so secondary resource download can start.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		flushRes(res);
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flushRes</span>(<span class="hljs-params">res</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>This method is only defined on the response object if the compress
+middleware is installed, so we need to guard our calls.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (res.flush) {
+		res.flush()
+		<span class="hljs-keyword">if</span> (!RLS().didLogFirstFlush){
+			RLS().didLogFirstFlush = <span class="hljs-literal">true</span>;
+			logger.time(<span class="hljs-string">'firstFlush'</span>, <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span> - RLS().startTime);
+		}
+	}
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderDebugComments</span> (<span class="hljs-params">pageObject, res</span>) </span>{
+	<span class="hljs-keyword">var</span> debugComments = pageObject.getDebugComments();
+	debugComments.map(<span class="hljs-function"><span class="hljs-params">debugComment</span> =&gt;</span> {
+		<span class="hljs-keyword">if</span> (!debugComment.label || !debugComment.value) {
+			logger.warning(<span class="hljs-string">"Debug comment is missing either a label or a value"</span>, debugComment);
+		}
+
+		res.write(<span class="hljs-string">`&lt;!-- <span class="hljs-subst">${debugComment.label}</span>: <span class="hljs-subst">${debugComment.value}</span> --&gt;`</span>);
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>resolve immediately.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> Q(<span class="hljs-string">""</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeDebugComments</span> (<span class="hljs-params">req, res, context, start, pageObject</span>) </span>{
+	<span class="hljs-keyword">return</span> Q(renderDebugComments(pageObject, res));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderTitle</span> (<span class="hljs-params">pageObject, res</span>) </span>{
+	<span class="hljs-keyword">return</span> pageObject.getTitle().then(<span class="hljs-function">(<span class="hljs-params">title</span>) =&gt;</span> {
+		res.write(<span class="hljs-string">`&lt;title&gt;<span class="hljs-subst">${title}</span>&lt;/title&gt;`</span>);
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">attrfy</span> (<span class="hljs-params">value</span>) </span>{
+	<span class="hljs-keyword">return</span> value.replace(<span class="hljs-regexp">/"/g</span>, <span class="hljs-string">'&amp;quot;'</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderMetaTags</span> (<span class="hljs-params">pageObject, res</span>) </span>{
+	<span class="hljs-keyword">var</span> metaTags = pageObject.getMetaTags();
+
+	<span class="hljs-keyword">var</span> metaTagsRendered = metaTags.map(<span class="hljs-function"><span class="hljs-params">metaTagPromise</span> =&gt;</span> {
+		<span class="hljs-keyword">return</span> metaTagPromise.then(PageUtil.makeArray).then(<span class="hljs-function"><span class="hljs-params">metaTags</span> =&gt;</span> metaTags.forEach(<span class="hljs-function"><span class="hljs-params">metaTag</span> =&gt;</span> {
+			<span class="hljs-keyword">if</span> (metaTag) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>TODO: escaping</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">if</span> ((metaTag.name &amp;&amp; metaTag.httpEquiv) || (metaTag.name &amp;&amp; metaTag.charset) || (metaTag.charset &amp;&amp; metaTag.httpEquiv)) {
+					<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Meta tag cannot have more than one of name, httpEquiv, and charset"</span>, metaTag);
+				}
+
+				<span class="hljs-keyword">if</span> ((metaTag.name &amp;&amp; !metaTag.content) || (metaTag.httpEquiv &amp;&amp; !metaTag.content)) {
+					<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Meta tag has name or httpEquiv but does not have content"</span>, metaTag);
+				}
+
+				<span class="hljs-keyword">if</span> (metaTag.noscript) res.write(<span class="hljs-string">`&lt;noscript&gt;`</span>);
+				res.write(<span class="hljs-string">`&lt;meta`</span>);
+
+				<span class="hljs-keyword">if</span> (metaTag.name) res.write(<span class="hljs-string">` name="<span class="hljs-subst">${attrfy(metaTag.name)}</span>"`</span>);
+				<span class="hljs-keyword">if</span> (metaTag.httpEquiv) res.write(<span class="hljs-string">` http-equiv="<span class="hljs-subst">${attrfy(metaTag.httpEquiv)}</span>"`</span>);
+				<span class="hljs-keyword">if</span> (metaTag.charset) res.write(<span class="hljs-string">` charset="<span class="hljs-subst">${attrfy(metaTag.charset)}</span>"`</span>);
+				<span class="hljs-keyword">if</span> (metaTag.property) res.write(<span class="hljs-string">` property="<span class="hljs-subst">${attrfy(metaTag.property)}</span>"`</span>);
+				<span class="hljs-keyword">if</span> (metaTag.content) res.write(<span class="hljs-string">` content="<span class="hljs-subst">${attrfy(metaTag.content)}</span>"`</span>);
+
+				res.write(<span class="hljs-string">`&gt;`</span>)
+				<span class="hljs-keyword">if</span> (metaTag.noscript) res.write(<span class="hljs-string">`&lt;/noscript&gt;`</span>);
+			}
+		}));
+	});
+
+	<span class="hljs-keyword">return</span> Q.all(metaTagsRendered);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderLinkTags</span> (<span class="hljs-params">pageObject, res</span>) </span>{
+	<span class="hljs-keyword">var</span> linkTags = pageObject.getLinkTags();
+
+	<span class="hljs-keyword">var</span> linkTagsRendered = linkTags.map(<span class="hljs-function"><span class="hljs-params">linkTagPromise</span> =&gt;</span> {
+		<span class="hljs-keyword">return</span> linkTagPromise.then(PageUtil.makeArray).then(<span class="hljs-function"><span class="hljs-params">linkTags</span> =&gt;</span> linkTags.forEach(<span class="hljs-function"><span class="hljs-params">linkTag</span> =&gt;</span> {
+			<span class="hljs-keyword">if</span> (linkTag) {
+				<span class="hljs-keyword">if</span> (!linkTag.rel) {
+					<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`&lt;link&gt; tag specified without 'rel' attr`</span>);
+				}
+
+				res.write(<span class="hljs-string">`&lt;link <span class="hljs-subst">${PAGE_LINK_NODE_ID}</span> <span class="hljs-subst">${
+					<span class="hljs-built_in">Object</span>.keys(linkTag)
+						.map(attr =&gt; <span class="hljs-string">`<span class="hljs-subst">${attr}</span>="<span class="hljs-subst">${attrfy(linkTag[attr])}</span>"`</span>)
+						.join(<span class="hljs-string">' '</span>)
+				}</span>&gt;`</span>);
+			}
+		}));
+	});
+
+	<span class="hljs-keyword">return</span> Q.all(linkTagsRendered);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderBaseTag</span>(<span class="hljs-params">pageObject, res</span>) </span>{
+	<span class="hljs-keyword">return</span> pageObject.getBase().then(<span class="hljs-function">(<span class="hljs-params">base</span>) =&gt;</span> {
+		<span class="hljs-keyword">if</span> (base !== <span class="hljs-literal">null</span>) {
+			<span class="hljs-keyword">if</span> (!base.href &amp;&amp; !base.target) {
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"&lt;base&gt; needs at least one of 'href' or 'target'"</span>);
+			}
+			<span class="hljs-keyword">var</span> tag = <span class="hljs-string">"&lt;base"</span>;
+			<span class="hljs-keyword">if</span> (base.href) {
+				tag += <span class="hljs-string">` href="<span class="hljs-subst">${attrfy(base.href)}</span>"`</span>;
+			}
+			<span class="hljs-keyword">if</span> (base.target) {
+				tag += <span class="hljs-string">` target="<span class="hljs-subst">${attrfy(base.target)}</span>"`</span>;
+			}
+			tag += <span class="hljs-string">"&gt;"</span>;
+			res.write(tag);
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderScriptsSync</span>(<span class="hljs-params">scripts, res</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
+immediately.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	scripts.forEach( <span class="hljs-function">(<span class="hljs-params">script</span>) =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>make sure there’s a leading ‘/‘</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (!script.type) script.type = <span class="hljs-string">"text/javascript"</span>;
+
+		<span class="hljs-keyword">if</span> (script.href) {
+			res.write(<span class="hljs-string">`&lt;script src="<span class="hljs-subst">${script.href}</span>" type="<span class="hljs-subst">${script.type}</span>"&gt;&lt;/script&gt;`</span>);
+		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (script.text) {
+			res.write(<span class="hljs-string">`&lt;script type="<span class="hljs-subst">${script.type}</span>"&gt;<span class="hljs-subst">${script.text}</span>&lt;/script&gt;`</span>);
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Script cannot be rendered because it has neither an href nor a text attribute: "</span> + script);
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderScriptsAsync</span>(<span class="hljs-params">scripts, res</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Nothing to do if there are no scripts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (!scripts.length) <span class="hljs-keyword">return</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Don’t need “type” in <script> tags anymore.</p>
+<p><a href="http://www.w3.org/TR/html/scripting-1.html#the-script-element">http://www.w3.org/TR/html/scripting-1.html#the-script-element</a></p>
+<blockquote>
+<p>The default, which is used if the attribute is absent, is "text/javascript".</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	res.write(<span class="hljs-string">"&lt;script&gt;"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>Lazily load LAB the first time we spit out async scripts.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (!RLS().didLoadLAB){
+
+		<span class="hljs-keyword">const</span> globalDefaults = {<span class="hljs-attr">AlwaysPreserveOrder</span>:<span class="hljs-literal">true</span>};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>The “cache-preloading” option in stock LABjs doesn’t work in modern
+Chrome. If you’re configured for splitJsLoad then you’d better have
+xhr access to your scripts!  They need to either be on the same
+domain or have CORS headers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (RLS().page.getSplitJsLoad()) {
+			globalDefaults.UseCORSXHR = <span class="hljs-literal">true</span>;
+		}
+
+		<span class="hljs-keyword">if</span> (process.env.NODE_ENV === <span class="hljs-string">"test"</span>) { <span class="hljs-comment">// eslint-disable-line no-process-env</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>ZombieJS does not handle loading async scripts in the proper order and ensuring that .wait() waits for
+execution.  Thus, we need to force LABjs to not use local XHRs in order for all tests to work properly.
+This used to work prior to combining the HTML and JS servers into a single server because the JS files
+were considered part of a different domain when running tests, so it never used XHR preloading, it used
+“cache preloading”.
+<a href="https://github.com/getify/LABjs/blob/master/LAB.src.js#L152-L175">https://github.com/getify/LABjs/blob/master/LAB.src.js#L152-L175</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			globalDefaults.UseLocalXHR = <span class="hljs-literal">false</span>;
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>This is the full implementation of LABjs.
+Pass <code>?_debug_lab=1</code> for unminified source with debugging output.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		res.write(DebugUtil.getLab() ? flab.src : flab.min);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>We always want scripts to be executed in order.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		res.write(<span class="hljs-string">`$LAB.setGlobalDefaults(<span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(globalDefaults)}</span>);`</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>We’ll use this to store state between calls (see below).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		res.write(<span class="hljs-string">"window._tLAB=$LAB"</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>If we’re splitting our JS load from the execution of our JS then we
+need to tell LABjs to preload our bundles but hold off on executing
+them.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (RLS().page.getSplitJsLoad()) res.write(<span class="hljs-string">".cork()"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>Only need to do this part once.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		RLS().didLoadLAB = <span class="hljs-literal">true</span>;
+	} <span class="hljs-keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>The assignment to <code>_tLAB</code> here is so we maintain a single
+LAB chain through all of our calls to <code>renderScriptsAsync</code>.</p>
+<p>Each call to this function emits output that looks
+something like:</p>
+<p>  _tLAB=_tLAB.script(…).wait(…) …</p>
+<p>The result is that <code>window._tLAB</code> winds up holding the
+final state of the LAB chain after each call, so that same
+LAB chain can be appended to in the <em>next</em> call (if there
+is one).</p>
+<p>You can think of a LAB chain as being similar to a promise
+chain.  The output of <code>$LAB.script()</code> or <code>$LAB.wait()</code> is
+an object that itself has <code>script()</code> and <code>wait()</code> methods.
+So long as the output of each call is used as the input for
+the next call our code (both async loaded scripts and
+inline JS) will be executed <em>in order</em>.</p>
+<p>If we start a <em>new</em> chain directly from <code>$LAB</code> (the root
+chain), we can wind up with <em>out of order</em> execution.</p>
+<p>We want everything to be executed in order, so we maintain
+one master chain for the page.  This chain is
+<code>window._tLAB</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		res.write(<span class="hljs-string">"_tLAB=_tLAB"</span>);
+	}
+
+	scripts.forEach(<span class="hljs-function"><span class="hljs-params">script</span> =&gt;</span> {
+
+		<span class="hljs-keyword">if</span> (script.href) {
+			<span class="hljs-keyword">var</span> LABScript = { <span class="hljs-attr">src</span>: script.href };
+
+			<span class="hljs-keyword">if</span> (script.crossOrigin){
+				LABScript.crossOrigin = script.crossOrigin;
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>If we don’t have any other options we can shave a
+few bytes by just passing the string.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (<span class="hljs-built_in">Object</span>.keys(LABScript).length === <span class="hljs-number">1</span>){
+				LABScript = LABScript.src;
+			}
+
+			<span class="hljs-keyword">if</span> (script.condition) {
+				res.write(<span class="hljs-string">`.script(function(){if(<span class="hljs-subst">${script.condition}</span>) return <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(LABScript)}</span>})`</span>);
+			} <span class="hljs-keyword">else</span> {
+				res.write(<span class="hljs-string">`.script(<span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(LABScript)}</span>)`</span>);
+			}
+
+		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (script.text) {
+			<span class="hljs-keyword">if</span> (script.condition) {
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Script using `text` cannot be loaded conditionally"</span>);
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>The try/catch dance here is so exceptions get their
+own time slice and can’t mess with execution of the
+LAB chain.</p>
+<p>The binding to <code>this</code> is so enclosed references to
+<code>this</code> correctly get the <code>window</code> object (despite
+being in a strict context).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			res.write(<span class="hljs-string">`.wait(function(){<span class="hljs-subst">${
+				script.strict?<span class="hljs-string">'"use strict";'</span>:<span class="hljs-string">''</span>
+			}</span>try{<span class="hljs-subst">${
+				script.text
+			}</span>}catch(e){setTimeout(function(){throw(e)},1)}}.bind(this))`</span>);
+
+		} <span class="hljs-keyword">else</span> {
+
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Script needs either `href` or `text`: "</span> + script);
+		}
+	});
+
+	res.write(<span class="hljs-string">";&lt;/script&gt;"</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderScripts</span>(<span class="hljs-params">pageObject, res</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>Want to gather these into one list of scripts, because we care if
+there are any non-JS scripts in the whole bunch.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> scripts = pageObject.getSystemScripts().concat(pageObject.getScripts());
+
+	<span class="hljs-keyword">var</span> thereIsAtLeastOneNonJSScript = scripts.filter(
+		<span class="hljs-function"><span class="hljs-params">script</span> =&gt;</span> script.type &amp;&amp; script.type !== <span class="hljs-string">"text/javascript"</span>
+	).length;
+
+	<span class="hljs-keyword">if</span> (thereIsAtLeastOneNonJSScript){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>If there are non-JS scripts we can’t use LAB for async
+loading.  We still want to preserve script execution order,
+so we’ll cut over to all-synchronous loading.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		renderScriptsSync(scripts, res);
+	} <span class="hljs-keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>Otherwise, we can do async script loading.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		renderScriptsAsync(scripts, res);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>resolve immediately.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> Q(<span class="hljs-string">""</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderStylesheets</span> (<span class="hljs-params">pageObject, res</span>) </span>{
+
+	<span class="hljs-keyword">const</span> writeTag = <span class="hljs-function"><span class="hljs-params">styleSheet</span> =&gt;</span> {
+		<span class="hljs-keyword">if</span> (!styleSheet) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>skip. a promise resolving to nothing is the only way to decide
+to not output a stylesheet if you return a promise</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span>;
+		}
+		<span class="hljs-keyword">if</span> (styleSheet.href) {
+			res.write(<span class="hljs-string">`&lt;link rel="stylesheet" type="<span class="hljs-subst">${styleSheet.type}</span>" media="<span class="hljs-subst">${styleSheet.media}</span>" href="<span class="hljs-subst">${styleSheet.href}</span>" <span class="hljs-subst">${PAGE_CSS_NODE_ID}</span>&gt;`</span>);
+		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (styleSheet.text) {
+			res.write(<span class="hljs-string">`&lt;style type="<span class="hljs-subst">${styleSheet.type}</span>" media="<span class="hljs-subst">${styleSheet.media}</span>" <span class="hljs-subst">${PAGE_CSS_NODE_ID}</span>&gt;<span class="hljs-subst">${styleSheet.text}</span>&lt;/style&gt;`</span>);
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Style cannot be rendered because it has neither an href nor a text attribute: "</span> + styleSheet);
+		}
+	};
+
+	<span class="hljs-keyword">const</span> styles = PageUtil.standardizeStyles(pageObject.getHeadStylesheets());
+
+	<span class="hljs-keyword">return</span> styles.reduce( <span class="hljs-function">(<span class="hljs-params">prev, styleP</span>) =&gt;</span> {
+		<span class="hljs-keyword">return</span> prev.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> styleP.then(writeTag));
+	}, Q());
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">startBody</span>(<span class="hljs-params">req, res, context, start, page</span>) </span>{
+
+	<span class="hljs-keyword">var</span> routeName = context.navigator.getCurrentRoute().name
+
+	<span class="hljs-keyword">return</span> page.getBodyClasses().then(<span class="hljs-function">(<span class="hljs-params">classes</span>) =&gt;</span> {
+		classes.push(<span class="hljs-string">`route-<span class="hljs-subst">${routeName}</span>`</span>)
+		res.write(<span class="hljs-string">`&lt;body class='<span class="hljs-subst">${classes.join(<span class="hljs-string">' '</span>)}</span>'&gt;`</span>);
+	}).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> page.getBodyStartContent()).then(<span class="hljs-function">(<span class="hljs-params">texts</span>) =&gt;</span> texts.forEach(<span class="hljs-function">(<span class="hljs-params">text</span>) =&gt;</span> {
+		res.write(text);
+	})).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+		res.write(<span class="hljs-string">`&lt;div id='content' <span class="hljs-subst">${PAGE_CONTENT_NODE_ID}</span>&gt;`</span>);
+	});
+}
+
+<span class="hljs-comment">/**
+ * Writes out the ReactElements to the response. Returns a promise that fulfills when
+ * all the ReactElements have been written out.
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeBody</span>(<span class="hljs-params">req, res, context, start, page</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>standardize to an array of EarlyPromises of ReactElements</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> elementPromises = PageUtil.standardizeElements(page.getElements());</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>This is where we’ll store our rendered HTML strings.  A value of
+<code>undefined</code> means we haven’t rendered that element yet.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> rendered = elementPromises.map(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> ELEMENT_PENDING);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>We need to return a promise that resolves when we’re done, so we’ll
+maintain an array of deferreds that we punch out as we render
+elements and we’ll return a promise that resolves when they’ve all
+been hit.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> dfds = elementPromises.map(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> Q.defer());
+
+	<span class="hljs-keyword">var</span> doElement = <span class="hljs-function">(<span class="hljs-params">element, index</span>) =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>Exceeded <code>FAILSAFE_RENDER_TIMEOUT</code>.  Bummer.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (rendered[index] === ELEMENT_ALREADY_WRITTEN) <span class="hljs-keyword">return</span>;
+
+		rendered[index] = renderElement(res, element, context);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>If we’ve just rendered the next element to be written we’ll
+write it out.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		writeElements(res, rendered);
+
+		dfds[index].resolve();
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>Render elements as their data becomes available.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	elementPromises.forEach(<span class="hljs-function">(<span class="hljs-params">promise, index</span>) =&gt;</span> promise
+		.then(<span class="hljs-function"><span class="hljs-params">element</span> =&gt;</span> doElement(element, index))
+		.catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+			logger.error(<span class="hljs-string">`Error rendering element <span class="hljs-subst">${index}</span>`</span>, e)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>TODO: the error handling here should probably be merged
+somehow with renderElement so that we get timing info.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>In the case where there was an exception thrown while rendering,
+the next three lines are effectively a no-op. In the case where
+the element promise was rejected, this prevents a hang until
+FAILSAFE_RENDER_TIMEOUT has passed.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>No way we can recover in the second case, so let’s just move on.
+We’ll call <code>writeElements</code> just in case everything is ready
+after us.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>This doesn’t completely handle the extremely unlikely case that:
+    1) <code>renderElement</code> successfully rendered this element, and
+    2) <code>writeElements</code> successfully wrote it, but…
+    3) <code>writeElements</code> threw after this element was written.</p>
+<p>We’ll make a good-faith effort, but in this rare case writeElements is probably
+going to fail again when we call it here. At least if that happens, <em>this</em>
+particular element should show up properly on the page, even though the page
+overall could be totally horked. And we won’t have a 20s timeout…</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">try</span> {
+				<span class="hljs-keyword">if</span> (rendered[index] !== ELEMENT_ALREADY_WRITTEN) {
+					rendered[index] = <span class="hljs-string">''</span>;
+					writeElements(res, rendered);
+				}
+			} <span class="hljs-keyword">finally</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>try <em>really</em> hard to resolve this deferred, to avoid a 20s hang.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				dfds[index].resolve();
+			}
+		})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <p>just in case writeElements throws in our error callback above.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		.catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> logger.error(<span class="hljs-string">`Error recovering from error rendering element <span class="hljs-subst">${index}</span>`</span>, e))
+	);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <p>Some time has already elapsed since the request started.
+Note that you can override <code>FAILSAFE_RENDER_TIMEOUT</code> with a
+<code>?_debug_render_timeout={ms}</code> query string parameter.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> totalWait     = DebugUtil.getRenderTimeout() || FAILSAFE_RENDER_TIMEOUT
+		,   timeRemaining = totalWait - (<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span> - start)
+
+	<span class="hljs-keyword">var</span> retval = Q.defer();
+	<span class="hljs-keyword">var</span> writeBodyDfd = Q.defer();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <p>If we exceed the timeout then we’ll just send empty elements for
+anything that hadn’t rendered yet.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	writeBodyDfd.promise.catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <p>Write out what we’ve got.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		writeElements(res, rendered.map(
+			<span class="hljs-function"><span class="hljs-params">value</span> =&gt;</span> value === ELEMENT_PENDING?<span class="hljs-string">''</span>:value
+		));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <p>If it hasn’t arrived by now, we’re not going to wait for it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		RLS().lateArrivals = <span class="hljs-literal">undefined</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <p>Let the client know it’s not getting any more data.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		renderScriptsAsync([{ <span class="hljs-attr">text</span>: <span class="hljs-string">`__reactServerClientController.failArrival()`</span> }], res)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <p>Log timeout error but still resolve so we continue in the lifecycle process</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		logger.error(<span class="hljs-string">"Error in writeBody"</span>, err);
+		retval.resolve();
+	});
+
+	Q.all(dfds.map(<span class="hljs-function"><span class="hljs-params">dfd</span> =&gt;</span> dfd.promise)).then(writeBodyDfd.resolve);
+
+	<span class="hljs-keyword">const</span> timeout = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <p>give some additional information when we time out</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		writeBodyDfd.reject({
+			<span class="hljs-attr">message</span>: <span class="hljs-string">"Timed out rendering."</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <p><code>timeRemaining</code> is how long we waited before timing out</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			timeWaited: timeRemaining,
+			<span class="hljs-attr">elements</span>: rendered.map(<span class="hljs-function"><span class="hljs-params">val</span> =&gt;</span> {
+				<span class="hljs-keyword">if</span> (val === ELEMENT_ALREADY_WRITTEN) {
+					<span class="hljs-keyword">return</span> <span class="hljs-string">'W'</span>; <span class="hljs-comment">// written</span>
+				} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (val === ELEMENT_PENDING) {
+					<span class="hljs-keyword">return</span> <span class="hljs-string">'P'</span>; <span class="hljs-comment">// not rendered</span>
+				} <span class="hljs-keyword">else</span> {
+					<span class="hljs-keyword">return</span> <span class="hljs-string">'R'</span>; <span class="hljs-comment">// rendered, not yet written</span>
+				}
+			}),
+		});
+	}, timeRemaining);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <p>Don’t leave dead timers hanging around.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	writeBodyDfd.promise.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+		clearTimeout(timeout);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <p>writeBody ran successfully, sweet</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		retval.resolve();
+	});
+
+	<span class="hljs-keyword">return</span> retval.promise;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeResponseData</span>(<span class="hljs-params">req, res, context, start, page</span>) </span>{
+	page.setExpressRequest(req);
+	page.setExpressResponse(res);
+	<span class="hljs-keyword">return</span> page.getResponseData().then(<span class="hljs-function"><span class="hljs-params">data</span> =&gt;</span> {
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> data !== <span class="hljs-string">'undefined'</span>) {
+			res.write(data);
+		}
+	});
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeDataBundle</span>(<span class="hljs-params">req, res</span>) </span>{
+
+	<span class="hljs-keyword">const</span> cache = ReactServerAgent.cache();
+
+	<span class="hljs-keyword">return</span> Q.allSettled(
+		cache.getPendingRequests().map(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.entry.dfd.promise)
+	).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> res.write(<span class="hljs-built_in">JSON</span>.stringify(cache.dehydrate())));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderElement</span>(<span class="hljs-params">res, element, context</span>) </span>{
+
+	<span class="hljs-keyword">if</span> (element.containerOpen || element.containerClose || element.isTheFold){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <p>Short-circuit out.  Don’t want timing for control objects.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> element;
+	}
+
+	<span class="hljs-keyword">var</span> name  = PageUtil.getElementDisplayName(element)
+		,   start = RLS().startTime
+		,   timer = logger.timer(<span class="hljs-string">`renderElement.individual.<span class="hljs-subst">${name}</span>`</span>)
+		,   html  = <span class="hljs-string">''</span>
+		,   attrs = {}
+
+	<span class="hljs-keyword">try</span> {
+		<span class="hljs-keyword">if</span> (element !== <span class="hljs-literal">null</span>) {
+			html = ReactDOMServer.renderToString(
+				React.cloneElement(element, { <span class="hljs-attr">context</span>: context })
+			);
+			attrs = getRootElementAttributes(element);
+		}
+	} <span class="hljs-keyword">catch</span> (err) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <p>A component failing to render is not fatal.  We’ve already
+started the page with a 200 response.  We’ve even opened
+the <code>data-react-server-root-id</code> div for this component.  We need
+to close it out and move on.  This is a bummer, and we’ll
+log it, but it’s too late to totally bail out.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		logger.error(<span class="hljs-string">`Error with element <span class="hljs-subst">${name}</span>'s lifecycle methods`</span>, err);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <p>We time how long <em>this</em> element’s render took, and also how long
+since the beginning of the request it took us to spit this element
+out.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> individualTime = timer.stop();
+	logger.time(<span class="hljs-string">`renderElement.fromStart.<span class="hljs-subst">${name}</span>`</span>, <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span> - start);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <p>We <em>also</em> keep track of the <em>total</em> time we spent rendering during
+each request so we can keep track of that overhead.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	RLS().renderTime || (RLS().renderTime = <span class="hljs-number">0</span>);
+	RLS().renderTime += individualTime;
+
+	<span class="hljs-keyword">return</span> { html, attrs };
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <p>Write as many elements out in a row as possible and then flush output.
+We render elements as their data becomes available, so they might fill in
+out-of-order.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeElements</span>(<span class="hljs-params">res, elements</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <p>Pick up where we left off.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> start = RLS().nextElement||(RLS().nextElement=<span class="hljs-number">0</span>);
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = start; i &lt; elements.length; RLS().nextElement = ++i){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <p>If we haven’t rendered the next element yet, we’re done.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (elements[i] === ELEMENT_PENDING) <span class="hljs-keyword">break</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <p>Got one!</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		writeElement(res, elements[i], i);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <p>Free for GC.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		elements[i] = ELEMENT_ALREADY_WRITTEN;
+
+		<span class="hljs-keyword">if</span> (PageUtil.PageConfig.get(<span class="hljs-string">'isFragment'</span>)) <span class="hljs-keyword">continue</span>;
+
+		<span class="hljs-keyword">if</span> (RLS().haveBootstrapped) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <p>We’ve already bootstrapped, so we can immediately tell the
+client controller to wake the new element we just sent.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			wakeElementRange(res, i, i);
+		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (i === elements.length - <span class="hljs-number">1</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <p>Page didn’t emit <code>&lt;TheFold/&gt;</code>.  Now we’re done.
+This wakes everything up through <code>i</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			bootstrapClient(res, i);
+		}
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <p>It may be a while before we render the next element, so if we just
+wrote anything let’s send it down right away.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (i !== start) flushRes(res);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">writeElement</span>(<span class="hljs-params">res, element, i</span>)</span>{
+	<span class="hljs-keyword">if</span> (!element) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <p>A falsy element was a render error.  We’ve gotta
+emit a root for it, so we’ll cook up an empty
+element object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		element = {
+			<span class="hljs-attr">attrs</span> : {},
+			<span class="hljs-attr">html</span>  : <span class="hljs-string">''</span>,
+		}
+	}
+	<span class="hljs-keyword">if</span> (element.containerOpen) {
+		res.write(<span class="hljs-string">`&lt;div <span class="hljs-subst">${PAGE_CONTAINER_NODE_ID}</span>=<span class="hljs-subst">${i}</span><span class="hljs-subst">${
+			_.map(element.containerOpen, (v, k) =&gt; <span class="hljs-string">` <span class="hljs-subst">${k}</span>="<span class="hljs-subst">${attrfy(v)}</span>"`</span>)
+		}</span>&gt;`</span>);
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (element.containerClose) {
+		res.write(<span class="hljs-string">'&lt;/div&gt;'</span>);
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (element.isTheFold) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <p>Okay, we’ve sent all of our above-the-fold HTML,
+now we can let the client start waking nodes up.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		bootstrapClient(res, i)
+	} <span class="hljs-keyword">else</span> {
+		res.write(<span class="hljs-string">`&lt;div data-react-server-root-id=<span class="hljs-subst">${
+			i
+		}</span> data-react-server-timing-offset="<span class="hljs-subst">${
+</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-91">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <p>Mark when we sent it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			new Date - RLS().timingDataT0
+		}"${
+			_.map(element.attrs, (v, k) =&gt; ` ${k}="${attrfy(v)}"`)
+		}&gt;${element.html}&lt;/div&gt;`);
+	}
+}
+
+function logAboveTheFoldTime(res) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <p>write a synchronous script to record the time on the browser when above the fold content shows up
+this is a proxy for “first paint” when the DOM is parsed and painted</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	renderScriptsSync([{<span class="hljs-attr">text</span>:<span class="hljs-string">'__displayAboveTheFold=new Date;'</span> +
+		<span class="hljs-string">'window.performance &amp;&amp; window.performance.mark &amp;&amp; window.performance.mark("displayAboveTheFold.fromStart");'</span>}], res);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bootstrapClient</span>(<span class="hljs-params">res, lastElementSent</span>) </span>{
+
+	logAboveTheFoldTime(res);
+
+	<span class="hljs-keyword">if</span> (RLS().page.getSplitJsLoad()) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <p>If we’ve corked our LABjs chain then we need to start executing JS.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		renderScriptsSync([{<span class="hljs-attr">text</span>:<span class="hljs-string">'_tLAB.uncork()'</span>}], res);
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (RLS().page.getJsBelowTheFold()) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <p>Otherwise if we’ve deferred <em>all</em> JS below the fold then we need to
+kick off our fetch/load of the page JS now.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		renderScripts(RLS().page, res);
+	}
+
+	<span class="hljs-keyword">var</span> initialContext = {
+		<span class="hljs-string">'ReactServerAgent.cache'</span>: ReactServerAgent.cache().dehydrate(),
+		<span class="hljs-string">'deviceType'</span>: RequestContext.getCurrentRequestContext().getDeviceType(),
+	};
+
+	res.expose(initialContext, <span class="hljs-string">'InitialContext'</span>);
+	res.expose(getNonInternalConfigs(), <span class="hljs-string">"Config"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-95">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-95">&#182;</a>
+              </div>
+              <p>Using naked <code>rfBootstrap()</code> instead of <code>window.rfBootstrap()</code>
+because the browser’s error message if it isn’t defined is more
+helpful this way.  With <code>window.rfBootstrap()</code> the error is just
+“undefined is not a function”.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	renderScriptsAsync([{
+		<span class="hljs-attr">text</span>: <span class="hljs-string">`<span class="hljs-subst">${res.locals.state}</span>;rfBootstrap();`</span>,
+	}], res);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-96">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-96">&#182;</a>
+              </div>
+              <p>This actually needs to happen <em>synchronously</em> with this current
+function to avoid letting responses slip in between.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	setupLateArrivals(res);
+
+	wakeElementRange(res, <span class="hljs-number">0</span>, lastElementSent);
+
+	RLS().haveBootstrapped = <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">wakeElementRange</span>(<span class="hljs-params">res, startIndex, endIndex</span>) </span>{
+	endIndex = endIndex || startIndex;
+	renderScriptsAsync([{
+		<span class="hljs-attr">text</span>: <span class="hljs-string">`__reactServerClientController.nodeArrival(<span class="hljs-subst">${startIndex}</span>,<span class="hljs-subst">${endIndex}</span>)`</span>,
+	}], res);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setupLateArrivals</span>(<span class="hljs-params">res</span>) </span>{
+	<span class="hljs-keyword">var</span> start = RLS().startTime;
+	<span class="hljs-keyword">var</span> notLoaded = ReactServerAgent.cache().getPendingRequests();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <p>This is for reporting purposes.  We’re going to log how many late
+requests there were, but we won’t actually emit the log line until
+all of the requests have resolved.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	ReactServerAgent.cache().markLateRequests();
+
+	notLoaded.forEach( <span class="hljs-function"><span class="hljs-params">pendingRequest</span> =&gt;</span> {
+		pendingRequest.entry.whenDataReadyInternal().then( <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+			logger.time(<span class="hljs-string">"lateArrival"</span>, <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span> - start);
+			renderScriptsAsync([{
+				<span class="hljs-attr">text</span>: <span class="hljs-string">`__reactServerClientController.dataArrival(<span class="hljs-subst">${
+					<span class="hljs-built_in">JSON</span>.stringify(pendingRequest.url)
+				}</span>, <span class="hljs-subst">${
+					StringEscapeUtil.escapeForScriptTag(<span class="hljs-built_in">JSON</span>.stringify(pendingRequest.entry.dehydrate()))
+				}</span>);`</span>,
+			}], res);
+
+		})
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-98">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-98">&#182;</a>
+              </div>
+              <p>TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> promises = notLoaded.map( <span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> result.entry.dfd.promise );
+	RLS().lateArrivals = Q.allSettled(promises)
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">wrapUpLateArrivals</span>(<span class="hljs-params"></span>)</span>{
+	<span class="hljs-keyword">return</span> RLS().lateArrivals;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">closeBody</span>(<span class="hljs-params">req, res</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-99">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-99">&#182;</a>
+              </div>
+              <p>Flush timing/log data to the response document</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (DebugUtil.getOutputLogs()) {
+		flushLogsToResponse(res);
+	}
+	res.write(<span class="hljs-string">"&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"</span>);
+	<span class="hljs-keyword">return</span> Q();
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">endResponse</span>(<span class="hljs-params">req, res</span>) </span>{
+	res.end();
+	<span class="hljs-keyword">return</span> Q();
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logRequestStats</span>(<span class="hljs-params">req, res, context, start</span>)</span>{
+	<span class="hljs-keyword">var</span> allRequests = ReactServerAgent.cache().getAllRequests()
+		,   notLoaded   = ReactServerAgent.cache().getLateRequests()
+		,   sock        = req.socket
+		,   stash       = context.getServerStash()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-100">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-100">&#182;</a>
+              </div>
+              <p>The socket can be re-used for multiple requests with keep-alive.
+Fortunately, until HTTP/2 rolls around, the requests over a given
+socket will happen serially.  So we can just keep track of the
+previous values for each socket and log the delta for a given
+request.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	stash.bytesR = sock.bytesRead    - (sock._preR||(sock._preR=<span class="hljs-number">0</span>));
+	stash.bytesW = sock.bytesWritten - (sock._preW||(sock._preW=<span class="hljs-number">0</span>));
+
+	sock._preR += stash.bytesR;
+	sock._preW += stash.bytesW;
+
+	logger.gauge(<span class="hljs-string">"countDataRequests"</span>, allRequests.length);
+	logger.gauge(<span class="hljs-string">"countLateArrivals"</span>, notLoaded.length, {<span class="hljs-attr">hi</span>: <span class="hljs-number">1</span>});
+	logger.gauge(<span class="hljs-string">"bytesRead"</span>, stash.bytesR, {<span class="hljs-attr">hi</span>: <span class="hljs-number">1</span>&lt;&lt;<span class="hljs-number">12</span>});
+	logger.gauge(<span class="hljs-string">"bytesWritten"</span>, stash.bytesW, {<span class="hljs-attr">hi</span>: <span class="hljs-number">1</span>&lt;&lt;<span class="hljs-number">18</span>});
+
+	<span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span> - start;
+
+	logger.time(<span class="hljs-string">`responseCode.<span class="hljs-subst">${res.statusCode}</span>`</span>, time);
+	logger.time(<span class="hljs-string">"totalRequestTime"</span>, time);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-101">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-101">&#182;</a>
+              </div>
+              <p>Only populated for full pages and fragments.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (RLS().renderTime){
+		logger.time(<span class="hljs-string">"totalRenderTime"</span>, RLS().renderTime);
+	}
+
+	<span class="hljs-keyword">if</span> (notLoaded.length) {
+		logger.time(<span class="hljs-string">"totalRequestTimeWithLateArrivals"</span>, time);
+	}
+
+	<span class="hljs-keyword">return</span> Q();
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getNonInternalConfigs</span>(<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">var</span> nonInternal = {};
+	<span class="hljs-keyword">var</span> fullConfig = config();
+	<span class="hljs-built_in">Object</span>.keys(fullConfig).forEach( <span class="hljs-function"><span class="hljs-params">configKey</span> =&gt;</span> {
+		<span class="hljs-keyword">if</span> (configKey !== <span class="hljs-string">'internal'</span>) {
+			nonInternal[configKey] = fullConfig[configKey];
+		}
+	});
+	<span class="hljs-keyword">return</span> nonInternal;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getDeviceType</span>(<span class="hljs-params">req</span>) </span>{
+	<span class="hljs-keyword">var</span> md = <span class="hljs-keyword">new</span> MobileDetect(req.get(<span class="hljs-string">'user-agent'</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-102">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-102">&#182;</a>
+              </div>
+              <p>“mobile” is the union of “phone” and “tablet” <em>except</em> for
+“unknown” mobile devices, which are <em>neither</em> phone <em>nor</em> tablet.</p>
+<p><a href="http://hgoebl.github.io/mobile-detect.js/doc/MobileDetect.html#mobile">http://hgoebl.github.io/mobile-detect.js/doc/MobileDetect.html#mobile</a></p>
+<p>:rage:</p>
+<p>We’ll call them “phone” to avoid introducing a weird third device
+type that depends on this implementation quirk of mobile-detect.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (md.tablet()) <span class="hljs-keyword">return</span> <span class="hljs-string">"tablet"</span>;
+	<span class="hljs-keyword">if</span> (md.phone ()) <span class="hljs-keyword">return</span> <span class="hljs-string">"phone"</span>;
+	<span class="hljs-keyword">if</span> (md.mobile()) <span class="hljs-keyword">return</span> <span class="hljs-string">"phone"</span>;
+	<span class="hljs-keyword">return</span> <span class="hljs-string">"desktop"</span>;
+}
+
+<span class="hljs-built_in">module</span>.exports._testFunctions = {
+	renderMetaTags,
+	renderLinkTags,
+	renderBaseTag,
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

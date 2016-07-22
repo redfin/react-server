@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>loggingClient.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>loggingClient.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">import</span> {Suite} <span class="hljs-keyword">from</span> <span class="hljs-string">"benchmark"</span>;
+<span class="hljs-keyword">import</span> logging <span class="hljs-keyword">from</span> <span class="hljs-string">"../logging/client"</span>;
+
+<span class="hljs-keyword">const</span> n = <span class="hljs-number">1000</span>;
+
+<span class="hljs-keyword">let</span> enclosedDeferred;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NoopTransport</span> </span>{
+	<span class="hljs-keyword">constructor</span>() {
+		<span class="hljs-keyword">this</span>.name = <span class="hljs-string">'noop'</span>;
+		<span class="hljs-keyword">this</span>.level = <span class="hljs-string">'info'</span>;
+	}
+
+	log(level, msg, meta, callback) {
+		<span class="hljs-keyword">if</span> (meta === n || meta.ms === n) {
+			enclosedDeferred.resolve();
+		}
+		callback(<span class="hljs-literal">null</span>, <span class="hljs-literal">true</span>);
+	}
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NoopTimeTransport</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">NoopTransport</span> </span>{
+	<span class="hljs-keyword">constructor</span>() {
+		<span class="hljs-keyword">super</span>();
+		<span class="hljs-keyword">this</span>.level = <span class="hljs-string">'fast'</span>;
+	}
+}
+
+<span class="hljs-keyword">const</span> noTransportLogger   = logging.getLogger({<span class="hljs-attr">name</span>: <span class="hljs-string">"noTransports"</span>});
+<span class="hljs-keyword">const</span> noopTransportLogger = logging.getLogger({<span class="hljs-attr">name</span>: <span class="hljs-string">"noopTransport"</span>});
+
+noopTransportLogger.add(NoopTransport)
+noopTransportLogger.timeLogger.add(NoopTimeTransport)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">run</span>(<span class="hljs-params">logger, method</span>) </span>{
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">deferred</span>) </span>{
+		enclosedDeferred = deferred;
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) {
+			logger[method](<span class="hljs-string">"test"</span>, i);
+		}
+	}
+}
+
+<span class="hljs-keyword">new</span> Suite()
+	.add(<span class="hljs-string">"info no transports"</span>,  run(noTransportLogger,   <span class="hljs-string">'info'</span>))
+	.add(<span class="hljs-string">"info noop transport"</span>, run(noopTransportLogger, <span class="hljs-string">'info'</span>), { <span class="hljs-attr">defer</span>: <span class="hljs-literal">true</span> })
+	.add(<span class="hljs-string">"time no transports"</span>,  run(noTransportLogger,   <span class="hljs-string">'time'</span>))
+	.add(<span class="hljs-string">"time noop transport"</span>, run(noopTransportLogger, <span class="hljs-string">'time'</span>), { <span class="hljs-attr">defer</span>: <span class="hljs-literal">true</span> })
+	.on(<span class="hljs-string">'cycle'</span>, (v) =&gt; <span class="hljs-built_in">console</span>.log(v.target.name + <span class="hljs-string">"\t"</span> + v.target.stats.mean)) <span class="hljs-comment">// eslint-disable-line no-console</span>
+	.run();</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

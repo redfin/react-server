@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>ReactServerAgent.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>ReactServerAgent.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> RLS = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./util/RequestLocalStorage'</span>).getNamespace()
+	,	Cache = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./ReactServerAgent/Cache"</span>)
+	,	Request = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./ReactServerAgent/Request"</span>)
+	,	Plugins = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./ReactServerAgent/Plugins"</span>)
+;
+
+
+<span class="hljs-keyword">const</span> DATA_BUNDLE_PARAMETER = <span class="hljs-string">'_react_server_data_bundle'</span>;
+<span class="hljs-keyword">const</span> DATA_BUNDLE_OPTS      = {[DATA_BUNDLE_PARAMETER]: <span class="hljs-number">1</span>};
+
+<span class="hljs-keyword">var</span> API = {
+
+	DATA_BUNDLE_PARAMETER,
+
+	<span class="hljs-keyword">get</span> (url, data) {
+		<span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> Request(<span class="hljs-string">'GET'</span>, url, API.cache());
+		<span class="hljs-keyword">if</span> (data) req.query(data);
+		<span class="hljs-keyword">return</span> req;
+	},
+
+	head (url, data) {
+		<span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> Request(<span class="hljs-string">'HEAD'</span>, url, API.cache());
+		<span class="hljs-keyword">if</span> (data) req.query(data);
+		<span class="hljs-keyword">return</span> req;
+	},
+
+	del (url, data) {
+		<span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> Request(<span class="hljs-string">'DELETE'</span>, url, API.cache());
+		<span class="hljs-keyword">if</span> (data) req.send(data);
+		<span class="hljs-keyword">return</span> req;
+	},
+
+	patch (url, data) {
+		<span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> Request(<span class="hljs-string">'PATCH'</span>, url, API.cache());
+		<span class="hljs-keyword">if</span> (data) req.send(data);
+		<span class="hljs-keyword">return</span> req;
+	},
+
+	post (url, data) {
+		<span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> Request(<span class="hljs-string">'POST'</span>, url, API.cache());
+		<span class="hljs-keyword">if</span> (data) req.send(data);
+		<span class="hljs-keyword">return</span> req;
+	},
+
+	put (url, data) {
+		<span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> Request(<span class="hljs-string">'PUT'</span>, url, API.cache());
+		<span class="hljs-keyword">if</span> (data) req.send(data);
+		<span class="hljs-keyword">return</span> req;
+	},
+
+	<span class="hljs-comment">/**
+	 * Exposes the ReactServerAgent request data cache from RequestLocalStorage.
+	 */</span>
+	cache () {
+		<span class="hljs-keyword">var</span> cache = RLS().cache;
+		<span class="hljs-keyword">if</span> (!cache) {
+			cache = RLS().cache = <span class="hljs-keyword">new</span> Cache();
+		}
+		<span class="hljs-keyword">return</span> cache;
+	},
+
+	_clearCache () {
+		<span class="hljs-keyword">delete</span> RLS().cache;
+	},
+
+	<span class="hljs-comment">/**
+	 * Adds a plugin function that can be used to modify the Request
+	 * object before the request is actually
+	 * triggered.
+	 *
+	 * The callback function will take the Request instance as a parameter:
+	 * ```
+	 * var defaultHeaders = { ... };
+	 * ReactServerAgent.plugRequest(function (request) {
+	 *     // e.g.
+	 *     request.set(defaultHeaders)
+	 * })
+	 * ```
+	 */</span>
+	plugRequest (pluginFunc) {
+		Plugins.forRequest().add(pluginFunc);
+	},
+
+	<span class="hljs-comment">/**
+	 * Adds a plugin function that can be used to modify the response
+	 * object before it is passed the caller's callback.
+	 *
+	 * The callback function will take err and response as parameters
+	 * (like the callback to `end()`), and the request as well:
+	 * ```
+	 * ReactServerAgent.plugResponse(function (err, response, request) {
+	 *     // e.g.
+	 *     console.log("Response received!", res.body);
+	 *     res.wasLogged = true; // or whatever
+	 * })
+	 * ```
+	 */</span>
+	plugResponse (pluginFunc) {
+		Plugins.forResponse().add(pluginFunc);
+	},
+
+	_fetchDataBundle(url) {
+		<span class="hljs-keyword">return</span> API.get(url, DATA_BUNDLE_OPTS).then(<span class="hljs-function"><span class="hljs-params">data</span> =&gt;</span> <span class="hljs-built_in">JSON</span>.stringify(data.body));
+	},
+
+	_rehydrateDataBundle(data) {
+		API.cache().rehydrate(<span class="hljs-built_in">JSON</span>.parse(data))
+	},
+
+}
+
+
+
+<span class="hljs-built_in">module</span>.exports = API;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

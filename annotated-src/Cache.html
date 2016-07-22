@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Cache.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="handlePage.html">
+                  handlePage.js
+                </a>
+              
+                
+                <a class="source" href="loggingClient.html">
+                  loggingClient.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequestSpec.html">
+                  ClientRequestSpec.js
+                </a>
+              
+                
+                <a class="source" href="NormalValuesPage.html">
+                  NormalValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuePromisesPage.html">
+                  NullValuePromisesPage.js
+                </a>
+              
+                
+                <a class="source" href="NullValuesPage.html">
+                  NullValuesPage.js
+                </a>
+              
+                
+                <a class="source" href="reactMiddlewareSpec.html">
+                  reactMiddlewareSpec.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="response.html">
+                  response.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="DebugUtil.html">
+                  DebugUtil.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Cache.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../logging'</span>).getLogger(__LOGGER__)
+	,	Q = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>)
+	,	merge = <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/merge"</span>)
+	,	isEqual = <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/isEqual"</span>)
+;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>TODO: we should figure out a way to consolidate this with SuperAgentExtender</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> responseBodyParsers = {
+	<span class="hljs-string">'application/json'</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">text</span>) </span>{
+		<span class="hljs-keyword">if</span> (text &amp;&amp; text.trim) {
+			text = text.trim();
+		}
+		<span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^{}&amp;&amp;/</span>.test(text)) {
+			text = text.substr(<span class="hljs-number">4</span>);
+		}
+		<span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.parse(text);
+	},
+}
+
+<span class="hljs-comment">/**
+ * An entry in the RequestDataCache
+ */</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CacheEntry</span> </span>{
+
+	<span class="hljs-comment">/**
+	 * @param cache [required] the RequestDataCache instance that owns this
+	 *        `CacheEntry`.
+	 * @param requestData a request data descriptor. Won't be passed if this
+	 *        CacheEntry is in the process of being rehydrated
+	 * @param cacheWhiteList [optional] the whitelist of repsonse fields that
+	 *        will be serialized with this entry. Not passed when rehydrating.
+	 */</span>
+	<span class="hljs-keyword">constructor</span> (cache, requestData = {}, cacheWhitelist) {
+		<span class="hljs-keyword">this</span>.cache = cache;
+		<span class="hljs-keyword">this</span>.cacheWhitelist = cacheWhitelist;
+		<span class="hljs-keyword">this</span>.requesters = <span class="hljs-number">0</span>;
+		<span class="hljs-keyword">this</span>.dfd = Q.defer();
+		<span class="hljs-keyword">this</span>.loaded = <span class="hljs-literal">false</span>;
+		<span class="hljs-keyword">this</span>.res = <span class="hljs-literal">undefined</span>;
+		<span class="hljs-keyword">this</span>.err = <span class="hljs-literal">undefined</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>copy the rest of the properties from input requestData
+to this.requestData</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		<span class="hljs-keyword">this</span>.url = requestData.urlPath;
+		<span class="hljs-keyword">this</span>.requestData = {};
+		<span class="hljs-built_in">Object</span>.keys(requestData)
+			.forEach(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> {<span class="hljs-keyword">this</span>.requestData[key] = requestData[key]});
+	}
+
+	dehydrate ( {responseBodyOnly} = {} ) {
+
+		<span class="hljs-keyword">var</span> err = <span class="hljs-keyword">this</span>.err;
+		<span class="hljs-keyword">if</span> (err) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>create a shallow copy of the error object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> errCopy = merge({}, err);
+			<span class="hljs-keyword">if</span> (errCopy.response) {
+				errCopy.response = <span class="hljs-keyword">this</span>._copyResponseForDehydrate(errCopy.response, { responseBodyOnly });
+			}
+		}
+
+		<span class="hljs-keyword">return</span> {
+			<span class="hljs-attr">url</span>: <span class="hljs-keyword">this</span>.url,
+			<span class="hljs-attr">requestData</span>: <span class="hljs-keyword">this</span>.requestData,
+			<span class="hljs-attr">requesters</span>: <span class="hljs-keyword">this</span>.requesters,
+			<span class="hljs-attr">loaded</span>: <span class="hljs-keyword">this</span>.loaded,
+			<span class="hljs-attr">res</span>: <span class="hljs-keyword">this</span>._copyResponseForDehydrate(<span class="hljs-keyword">this</span>.res, { responseBodyOnly }),
+			<span class="hljs-attr">err</span>: errCopy,
+		};
+	}
+
+	<span class="hljs-comment">/**
+	 * _copyResponseForDehydrate attempts to construct a canonical form of the response object
+	 * that can be used later to reconstruct it. Its primary goal is to avoid duplication of
+	 * the response body in both the `.text` and `.body` properties of the cached response object.
+	 *
+	 * There are several ways this could have been handled, but the purest way (as of right now)
+	 * from the standpoint of the API appears to be to provide parsing functions for known
+	 * response types (e.g., "application/json"). If the response content-type is known, we'll
+	 * simply serialize a placeholder (`_hasBody`) indicating that we should try to reparse the
+	 * body from the response text when rehydrating. If there is a parsed body on the response at
+	 * the time of dehydrating and we *don't* recognize the response type, we'll serialize both
+	 * `.text` and `.body`, paying a penalty in response size, but guaranteeing correctness.
+	 * (We'll also log a warning saying that we should probably add another response type).
+	 *
+	 */</span>
+	_copyResponseForDehydrate (res, {responseBodyOnly} = {}) {
+		<span class="hljs-keyword">if</span> (!res) <span class="hljs-keyword">return</span> res;
+
+		<span class="hljs-keyword">var</span> resCopy = {};
+		<span class="hljs-keyword">if</span> (responseBodyOnly) {
+			resCopy.body = res.body;
+			<span class="hljs-keyword">return</span> resCopy;
+		}
+
+		<span class="hljs-keyword">var</span> parseable = !!responseBodyParsers[res.type];
+
+		<span class="hljs-built_in">Object</span>.keys(res).forEach( <span class="hljs-function">(<span class="hljs-params">prop</span>) =&gt;</span> {
+			<span class="hljs-keyword">if</span> (<span class="hljs-string">"body"</span> === prop &amp;&amp; parseable) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>don’t copy body if it’s a well-known (easily-parsed) content-type</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				resCopy._hasBody = <span class="hljs-literal">true</span>;
+			} <span class="hljs-keyword">else</span> {
+				<span class="hljs-keyword">if</span> (<span class="hljs-string">"body"</span> === prop) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>‘parseable’ must be false. we should log a warning</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>					logger.warning(<span class="hljs-string">`ReactServerAgent needs responseBodyParser for content-type: <span class="hljs-subst">${res.type}</span> to avoid duplicating data in cache body`</span>);
+				}
+				resCopy[prop] = res[prop];
+			}
+		});
+		<span class="hljs-keyword">return</span> resCopy;
+	}
+
+	rehydrate (state) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>NOTE: rehydrate will be called <em>TWICE</em> for late arrivals:
+once initially, when not loaded, and once again when
+the request arrives</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		<span class="hljs-keyword">var</span> err = state.err;
+		<span class="hljs-keyword">if</span> (err) {
+			err.response = <span class="hljs-keyword">this</span>._rehydrateResponse(err.response);
+		}
+
+		<span class="hljs-keyword">this</span>.url = state.url;
+		<span class="hljs-keyword">this</span>.requestData = state.requestData;
+		<span class="hljs-keyword">this</span>.requesters = state.requesters;
+		<span class="hljs-keyword">this</span>.loaded = state.loaded;
+		<span class="hljs-keyword">this</span>.res = <span class="hljs-keyword">this</span>._rehydrateResponse(state.res);
+		<span class="hljs-keyword">this</span>.err = err;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>TODO FIXME: these won’t work if the response from the server was an error</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.loaded) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>call setResponse to resolve the deferred</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.res) {
+				<span class="hljs-keyword">this</span>.setResponse(<span class="hljs-keyword">this</span>.res);
+			} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.err) {
+				<span class="hljs-keyword">this</span>.setError(<span class="hljs-keyword">this</span>.err);
+			}
+			logger.debug(<span class="hljs-string">`Rehydrating resolved url to cache: <span class="hljs-subst">${<span class="hljs-keyword">this</span>.url}</span>`</span>);
+		} <span class="hljs-keyword">else</span> {
+			logger.debug(<span class="hljs-string">`Rehydrating pending url to cache without data: <span class="hljs-subst">${<span class="hljs-keyword">this</span>.url}</span>`</span>);
+		}
+	}
+
+	_rehydrateResponse (res) {
+		<span class="hljs-keyword">if</span> (!res) <span class="hljs-keyword">return</span> res;
+
+		<span class="hljs-keyword">if</span> (res._hasBody) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>re-parse the text of the response body serialized by the server.
+if the body wasn’t in a known format, it will have been included directly</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+			<span class="hljs-keyword">var</span> parse = responseBodyParsers[res.type];
+			<span class="hljs-keyword">if</span> (!parse) {
+				logger.warning(<span class="hljs-string">`Unparseable content type for <span class="hljs-subst">${<span class="hljs-keyword">this</span>.url}</span>: <span class="hljs-subst">${res.type}</span>, but response._hasBody was true. (This may be a bug in ReactServerAgent)`</span>);
+			}
+			res.body = parse &amp;&amp; res.text &amp;&amp; res.text.length
+				? parse(res.text)
+				: <span class="hljs-literal">null</span>;
+			<span class="hljs-keyword">delete</span> res._hasBody;
+		}
+
+		<span class="hljs-keyword">return</span> res;
+	}
+
+	setResponse (res) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>TODO: store superagent response? or body? or payload?</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		<span class="hljs-keyword">if</span> (SERVER_SIDE){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Pull out the pieces of the response we care about.
+This would be a NOOP client-side, so we’ll skip it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			res = <span class="hljs-keyword">this</span>._trimResponseData(res);
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Stash away a reference to the response.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.res    = res;
+		<span class="hljs-keyword">this</span>.loaded = <span class="hljs-literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Resolve with a serialized copy.  We’ll unserialize for each
+requester.  This way we provide a fresh copy each time so mutations
+don’t leak.</p>
+<p>This also leaves <em>us</em> with a clean copy of the original response.
+This is important to ensure that we provide the same data from the
+cache when we wake up in the browser as we initially provide on the
+server.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.dfd.resolve(<span class="hljs-built_in">JSON</span>.stringify(res));
+	}
+
+	setError (err) {
+
+		<span class="hljs-keyword">if</span> (SERVER_SIDE) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>If the error was caused by a server response, trim it
+and serialize it like a regular response</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (err &amp;&amp; err.response) {
+				err.response = <span class="hljs-keyword">this</span>._trimResponseData(err.response);
+			}
+		}
+
+		<span class="hljs-keyword">this</span>.err = err;
+		<span class="hljs-keyword">this</span>.loaded = <span class="hljs-literal">true</span>;
+
+		<span class="hljs-keyword">if</span> (SERVER_SIDE) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Deep copy, to make sure nobody plays with the
+object we put in the cache</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			err = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-built_in">JSON</span>.stringify(err));
+		}
+
+		<span class="hljs-keyword">this</span>.dfd.reject(err);
+	}
+
+	_parsePromise(dfd) {
+		<span class="hljs-keyword">return</span> dfd.promise.then(<span class="hljs-function"><span class="hljs-params">val</span> =&gt;</span> <span class="hljs-built_in">JSON</span>.parse(val));
+	}
+
+	whenDataReady () {
+		<span class="hljs-keyword">if</span> (SERVER_SIDE) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>server-side, we increment the number of requesters
+we expect to retrieve the data on the frontend</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">this</span>.requesters += <span class="hljs-number">1</span>;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._parsePromise(<span class="hljs-keyword">this</span>.dfd);
+		} <span class="hljs-keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>client-side, whenever someone retrieves data from the cache,
+we decrement the number of retrievals expected, and when we
+hit zero, remove the cache entry.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._requesterDecrementingPromise(<span class="hljs-keyword">this</span>.dfd);
+		}
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>for internal (react-server middleware) calls</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	whenDataReadyInternal () {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.dfd.promise;
+	}
+
+	decrementRequesters () {
+		logger.debug(<span class="hljs-string">"Decrementing: "</span> + <span class="hljs-keyword">this</span>.url);
+		<span class="hljs-keyword">this</span>.requesters -= <span class="hljs-number">1</span>;
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.requesters === <span class="hljs-number">0</span>) {
+			<span class="hljs-keyword">this</span>.cache._removeEntry(<span class="hljs-keyword">this</span>);
+		}
+	}
+
+	<span class="hljs-comment">/**
+	 * Chain a promise with another promise that decrements
+	 * the number of expected requesters.
+	 */</span>
+	_requesterDecrementingPromise (dfd) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>regardless of whether we’re resolved with a ‘res’ or ‘err’,
+we want to decrement requests. the appropriate ‘success’ or ‘error’
+callback will be executed on whatever is chained after this method</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._parsePromise(dfd).fin( <span class="hljs-function"><span class="hljs-params">resOrErr</span> =&gt;</span> {
+			<span class="hljs-keyword">this</span>.decrementRequesters();
+			<span class="hljs-keyword">return</span> resOrErr;
+		});
+	}
+
+	isForSameRequest (requestData) {
+		<span class="hljs-keyword">var</span> otherRD = requestData;
+		<span class="hljs-keyword">var</span> myRD = <span class="hljs-keyword">this</span>.requestData;
+
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">same</span>(<span class="hljs-params">propName</span>) </span>{
+			<span class="hljs-keyword">return</span> isEqual(myRD[propName], otherRD[propName]);
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>specifying the order of checks here to let the fast/common checks
+fail first</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> same(<span class="hljs-string">"urlPath"</span>)
+			&amp;&amp; same(<span class="hljs-string">"method"</span>)
+			&amp;&amp; same(<span class="hljs-string">"type"</span>)
+			&amp;&amp; same(<span class="hljs-string">"queryParams"</span>)
+			&amp;&amp; same(<span class="hljs-string">"postParams"</span>);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Pull out the properties of the superagent response that we care
+about and produce an object that’s suitable for writing as JSON.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	_trimResponseData (res) {
+		<span class="hljs-keyword">var</span> result = {};
+		[
+			<span class="hljs-string">"body"</span>,
+			<span class="hljs-string">"text"</span>,
+			<span class="hljs-string">"type"</span>,
+
+			<span class="hljs-comment">/*'files'*/</span> <span class="hljs-comment">// TODO</span>
+
+			<span class="hljs-comment">/* "header",*/</span> <span class="hljs-comment">// header is no longer included by default in the cache to save space</span>
+			<span class="hljs-string">"status"</span>,
+			<span class="hljs-string">"statusType"</span>,
+			<span class="hljs-string">"info"</span>,
+			<span class="hljs-string">"ok"</span>,
+			<span class="hljs-string">"clientError"</span>,
+			<span class="hljs-string">"serverError"</span>,
+			<span class="hljs-string">"error"</span>,
+
+			<span class="hljs-string">"accepted"</span>,
+			<span class="hljs-string">"noContent"</span>,
+			<span class="hljs-string">"badRequest"</span>,
+			<span class="hljs-string">"unauthorized"</span>,
+			<span class="hljs-string">"notAcceptable"</span>,
+			<span class="hljs-string">"notFound"</span>,
+			<span class="hljs-string">"forbidden"</span>,
+		].forEach( <span class="hljs-function"><span class="hljs-params">prop</span> =&gt;</span> {
+			result[prop] = res[prop];
+		});
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.cacheWhitelist) {
+			<span class="hljs-keyword">this</span>.cacheWhitelist.forEach( <span class="hljs-function"><span class="hljs-params">prop</span> =&gt;</span> {
+				result[prop] = res[prop];
+			});
+		}
+
+		<span class="hljs-keyword">return</span> result;
+	}
+
+}
+
+
+<span class="hljs-comment">/**
+ * Cache of responses to API requests made server-side that will be
+ * serialized as part of the initial page request and replayed in the
+ * browser.
+ */</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RequestDataCache</span> </span>{
+
+	<span class="hljs-keyword">constructor</span> () {
+		<span class="hljs-comment">/*
+		 * Map[String -&gt; CacheEntry[]]
+		 */</span>
+		<span class="hljs-keyword">this</span>.dataCache = {};
+	}
+
+	dehydrate ({responseBodyOnly=<span class="hljs-literal">false</span>} = {}) {
+
+		<span class="hljs-keyword">var</span> out = {
+			<span class="hljs-attr">dataCache</span>: {},
+		};
+
+		<span class="hljs-keyword">var</span> dataCache = <span class="hljs-keyword">this</span>.dataCache;
+		<span class="hljs-built_in">Object</span>.keys(dataCache).forEach(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>as a nice-to-have for FragmentDataCache, if there’s only one entry
+for a given URL, don’t serialize it as an array, serialize it as a single
+CacheEntry</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> dehydratedEntries =
+				dataCache[url].map(<span class="hljs-function"><span class="hljs-params">entry</span> =&gt;</span> entry.dehydrate({ responseBodyOnly }));
+			out.dataCache[url] = dehydratedEntries.length === <span class="hljs-number">1</span> ? dehydratedEntries[<span class="hljs-number">0</span>] : dehydratedEntries;
+
+		});
+
+		<span class="hljs-keyword">return</span> out;
+	}
+
+	rehydrate (state) {
+
+		logger.debug(<span class="hljs-string">"Rehydrating RequestDataCache"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>clear state</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> dataCache = <span class="hljs-keyword">this</span>.dataCache = {};
+
+		<span class="hljs-built_in">Object</span>.keys(state.dataCache).forEach(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> {
+
+			<span class="hljs-keyword">var</span> entries = state.dataCache[url];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>convert entries to an array, if it was serialized as
+a single entry</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			entries = <span class="hljs-built_in">Array</span>.isArray(entries) ? entries : [entries];
+			dataCache[url] = entries.map(<span class="hljs-function"><span class="hljs-params">entryData</span> =&gt;</span> {
+				<span class="hljs-keyword">var</span> newEntry = <span class="hljs-keyword">new</span> CacheEntry(<span class="hljs-keyword">this</span>);
+				newEntry.rehydrate(entryData);
+				<span class="hljs-keyword">return</span> newEntry;
+			})
+		});
+
+	}
+
+	<span class="hljs-comment">/**
+	 * Get (optionally creating if necessary) the entry for the given
+	 * requestData from the cache.
+	 *
+	 * @param createIfMissing boolean default false
+	 * @param cacheWhitelist array default []
+	 */</span>
+	entry (requestData, createIfMissing = <span class="hljs-literal">false</span>, cacheWhitelist = []) {
+		<span class="hljs-keyword">if</span> (!requestData.urlPath) {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Missing requestData.urlPath"</span>);
+		}
+
+		logger.debug(<span class="hljs-string">`Getting ReactServerAgent request data cache entry for <span class="hljs-subst">${requestData.urlPath}</span>`</span>)
+
+		<span class="hljs-keyword">var</span> cacheEntry = <span class="hljs-keyword">this</span>._findEntry(requestData);
+		<span class="hljs-keyword">if</span> (!cacheEntry &amp;&amp; createIfMissing) {
+			cacheEntry = <span class="hljs-keyword">this</span>._addEntry(requestData, cacheWhitelist);
+		}
+
+		<span class="hljs-keyword">return</span> cacheEntry;
+	}
+
+	_findEntry (requestData) {
+		<span class="hljs-keyword">var</span> urlPath = requestData.urlPath;
+		<span class="hljs-keyword">var</span> entries = <span class="hljs-keyword">this</span>.dataCache[urlPath] || [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>old-school loop so we can break early</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; entries.length; i++) {
+			<span class="hljs-keyword">var</span> entry = entries[i];
+			<span class="hljs-keyword">if</span> (entry.isForSameRequest(requestData)) {
+				<span class="hljs-keyword">return</span> entry;
+			}
+		}
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+	}
+
+	<span class="hljs-comment">/**
+	 * Add a new CacheEntry for the request described by `requestData`
+	 *
+	 * @param requestData the request data descriptor, as defined by
+	 *        Request._getCacheAffectingData.
+	 * @param cacheWhiteList the whitelist of fields that will be provided
+	 *        on the request.
+	 */</span>
+	_addEntry (requestData, cacheWhitelist) {
+		<span class="hljs-keyword">var</span> urlPath = requestData.urlPath,
+			entries = <span class="hljs-keyword">this</span>.dataCache[urlPath] || (<span class="hljs-keyword">this</span>.dataCache[urlPath] = []),
+			newEntry = <span class="hljs-keyword">new</span> CacheEntry(<span class="hljs-keyword">this</span>, requestData, cacheWhitelist);
+		entries.push(newEntry);
+		<span class="hljs-keyword">return</span> newEntry
+	}
+
+	_removeEntry (entry) {
+		<span class="hljs-keyword">var</span> urlPath = entry.requestData.urlPath,
+			entries = <span class="hljs-keyword">this</span>.dataCache[urlPath],
+			idx = entries.indexOf(entry);
+		<span class="hljs-keyword">if</span> (idx &gt;= <span class="hljs-number">0</span>) {
+			entries.splice(idx, <span class="hljs-number">1</span>);
+		}
+		<span class="hljs-keyword">this</span>.checkCacheDepleted();
+	}
+
+	markLateRequests () {
+		<span class="hljs-keyword">this</span>.getPendingRequests().forEach(<span class="hljs-function"><span class="hljs-params">req</span> =&gt;</span> {req.entry.late = <span class="hljs-literal">true</span>});
+	}
+
+	getLateRequests () {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.getAllRequests().filter(<span class="hljs-function"><span class="hljs-params">req</span> =&gt;</span> req.entry.late);
+	}
+
+	getPendingRequests () {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.getAllRequests().filter(<span class="hljs-function"><span class="hljs-params">req</span> =&gt;</span> !req.entry.loaded);
+	}
+
+	getAllRequests() {
+		<span class="hljs-keyword">var</span> all = [];
+		<span class="hljs-built_in">Object</span>.keys(<span class="hljs-keyword">this</span>.dataCache).forEach(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> {
+			<span class="hljs-keyword">this</span>.dataCache[url].forEach(<span class="hljs-function"><span class="hljs-params">entry</span> =&gt;</span> {
+				all.push({ url, entry })
+			})
+		});
+		<span class="hljs-keyword">return</span> all;
+	}
+
+	whenAllPendingResolve () {
+		<span class="hljs-keyword">var</span> promises = <span class="hljs-keyword">this</span>.getAllRequests().map(<span class="hljs-function"><span class="hljs-params">req</span> =&gt;</span> req.entry.dfd.promise);
+		<span class="hljs-keyword">return</span> Q.allSettled(promises);
+	}
+
+	<span class="hljs-comment">/**
+	 * Fires when the cache has been completely depleted, which is used as a signal to render when there was a timeout on the server.
+	 */</span>
+	whenCacheDepleted () {
+		<span class="hljs-keyword">this</span>.whenCacheDepletedDfd = <span class="hljs-keyword">this</span>.whenCacheDepletedDfd || Q.defer();
+
+		<span class="hljs-keyword">this</span>.checkCacheDepleted();
+
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.whenCacheDepletedDfd.promise;
+	}
+
+	checkCacheDepleted() {
+		logger.debug(<span class="hljs-string">"_checkCacheDepleted"</span>);
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.whenCacheDepletedDfd) {
+			<span class="hljs-keyword">var</span> totalRequestersPending = <span class="hljs-number">0</span>;
+			<span class="hljs-keyword">this</span>.getAllRequests().forEach(<span class="hljs-function"><span class="hljs-params">req</span> =&gt;</span> {
+				<span class="hljs-keyword">if</span> (req.entry.loaded) {
+					totalRequestersPending += req.entry.requesters;
+				}
+			});
+			logger.debug(<span class="hljs-string">`Checking for depleted cache, with <span class="hljs-subst">${totalRequestersPending}</span> requesters left`</span>);
+			<span class="hljs-keyword">if</span> (totalRequestersPending === <span class="hljs-number">0</span>) <span class="hljs-keyword">this</span>.whenCacheDepletedDfd.resolve();
+		}
+	}
+
+	lateArrival (url, dehydratedEntry) {
+		logger.debug(<span class="hljs-string">`Late arrival for <span class="hljs-subst">${url}</span>`</span>);
+		<span class="hljs-keyword">var</span> entry = <span class="hljs-keyword">this</span>._findEntry(dehydratedEntry.requestData);
+		<span class="hljs-keyword">if</span> (entry) {
+			entry.rehydrate(dehydratedEntry);
+		} <span class="hljs-keyword">else</span> {
+			logger.debug(<span class="hljs-string">"WTF?"</span>);
+		}
+	}
+
+}
+
+<span class="hljs-built_in">module</span>.exports = RequestDataCache;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

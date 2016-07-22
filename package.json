@@ -8,7 +8,7 @@
     "changelog": "lerna-changelog",
     "clean": "rimraf lerna-debug.log && lerna run clean",
     "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done",
-    "docs": "docco packages/react-server/core/**/*.js -o annotated-src",
+    "docs": "docco packages/react-server/core/**/*.js packages/react-server/core/*.js -o annotated-src",
     "lint": "lerna run lint",
     "nuke": "npm run clean && lerna clean --yes && rm -rf node_modules",
     "postinstall": "npm run bootstrap-no-i",
