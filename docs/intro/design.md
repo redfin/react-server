@@ -1,5 +1,3 @@
-# Design Principles
-
 1. **Best practices for data flow in React are (still) changing fast**. When
    Facebook announced Flux as a design pattern, it took them some time to
    release an implementation, and when they did, it had some definite rough

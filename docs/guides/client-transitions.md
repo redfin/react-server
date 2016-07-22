@@ -1,5 +1,3 @@
-# Client Transitions
-
 React-server provides blazing fast server-side render of web pages.  This is
 important for landing experience and for web crawlers, but it's only part of
 the picture!  The great strength of `react-server` is that the _same code_
