@@ -8,7 +8,7 @@
       ec2:
          key_name: walkscore_base_keypair2
          group: react-server
-         instance_type: t2.nano
+         instance_type: t2.medium
          image: ami-d732f0b7
          region: us-west-2
          vpc_subnet_id: subnet-d94db0ae
@@ -35,5 +35,26 @@
   user: ubuntu
 
   tasks:
+    - name: Gather facts about instances
+      action: ec2_facts
+
     - name: Set up Docker
       script: docker-setup.sh
+
+    - name: Copy Docker Compose configuration
+      copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
+
+    - name: Deploy services
+      shell: sudo docker-compose up -d
+
+    - name: Wait for the service to become available
+      wait_for: port=80 delay=20
+
+    - name: Register instances with load balancer
+      local_action:
+        module: ec2_elb
+        instance_id: '{{ ansible_ec2_instance_id }}'
+        ec2_elbs: react-server-no-ssl
+        region: us-west-2
+        state: present
+        wait: no
