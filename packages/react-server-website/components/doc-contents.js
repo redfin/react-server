@@ -1,7 +1,14 @@
 import React from "react";
 import {join} from "path";
-import {Link, getCurrentRequestContext} from "react-server";
+import {
+	Link,
+	getCurrentRequestContext,
+	RequestLocalStorage,
+} from "react-server";
+
 import './doc-contents.less'
+
+const RLS = RequestLocalStorage.getNamespace();
 
 const ContentsSection = ({name, pages}) => (
 	<div className='contentsSection'>
@@ -22,6 +29,29 @@ const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 	<Link reuseDom path={path}>{name}</Link>
 </li>
 
-export default function DocContents({contents}) {
-	return <div className='DocContents'>{contents.map(ContentsSection)}</div>
+export default class DocContents extends React.Component {
+
+	static setResponse(res) {
+		const path = getCurrentRequestContext().getCurrentPath().replace("/docs/", "");
+
+		// This is all we care about stashing away.  We'll _also_ receive the
+		// response as a prop on our instance, later.  We just need the active
+		// page _before_ our element is created (for the page title, etc)
+		RLS().activePageName = (res.contents.reduce((page, section) => (
+			page || section.pages.find(page => page.path === path)
+		), null) || {name: "React Server Documentation"}).name;
+
+		// Pass it along.
+		return res;
+	}
+
+	static activePageName() {
+		return RLS().activePageName;
+	}
+
+	render() {
+		return <div className='DocContents'>{
+			this.props.contents.map(ContentsSection)
+		}</div>
+	}
 }
