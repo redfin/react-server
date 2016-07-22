@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>PageUtil.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  util.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="LABString.html">
+                  LABString.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>PageUtil.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Q = <span class="hljs-built_in">require</span>(<span class="hljs-string">"q"</span>),
+	React = <span class="hljs-built_in">require</span>(<span class="hljs-string">'react'</span>),
+	logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../logging"</span>).getLogger(__LOGGER__),
+	RLS = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./RequestLocalStorage"</span>).getNamespace();
+
+<span class="hljs-keyword">var</span> {isRootContainer, flattenForRender} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../components/RootContainer'</span>);
+<span class="hljs-keyword">var</span> {ensureRootElement, scheduleRender} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../components/RootElement'</span>);
+<span class="hljs-keyword">var</span> {isTheFold, markTheFold} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../components/TheFold'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>There are three data structures defined here that are relevant for page and
+middleware authors:</p>
+<ul>
+<li>PAGE_MIXIN   : Methods that will be automatically defined on your class.</li>
+<li>PAGE_METHODS : Chained methods that may be overridden in your class.</li>
+<li>PAGE_HOOKS   : Non-chained methods that may be defined in your class.</li>
+</ul>
+<p>These three data structure define the page interface.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>These methods will be available on your page/middleware object.</p>
+<p>Accidental definition of a method with a conflicting name directly on your
+class will generate an error.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> PAGE_MIXIN = {
+	getExpressRequest  : makeGetter(<span class="hljs-string">'expressRequest'</span>),  <span class="hljs-comment">// Only available with `isRawResponse`.</span>
+	getExpressResponse : makeGetter(<span class="hljs-string">'expressResponse'</span>), <span class="hljs-comment">// Only available with `isRawResponse`.</span>
+	getRequest         : makeGetter(<span class="hljs-string">'request'</span>),
+	getConfig          : key =&gt; PageConfig.get(key),
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Each item here represents a method that page/middleware objects may override.</p>
+<p>The keys here are method names.</p>
+<p>The values are tuples containing:</p>
+<ul>
+<li>Default implementation of the method.</li>
+<li>Normalization function applied to method output.</li>
+</ul>
+<p>Note that each of these methods receives an argument, which is the next
+implementation of the method in the call chain.</p>
+<pre><code>- Middleware implementations _should_ call <span class="hljs-keyword">this</span> <span class="hljs-keyword">in</span> most cases.*
+- Page implementations _may_ call <span class="hljs-keyword">this</span> (it will be the <span class="hljs-keyword">default</span> implementation).
+</code></pre><ul>
+<li>Consider carefully before deciding not to call <code>next()</code> in middleware.
+Other middleware (and the page itself) may exhibit undefined behavior if a
+given method is not called.  Generally, only skip calling <code>next()</code> for
+short-circuit responses (e.g. a redirect from <code>handleRoute</code>).</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> PAGE_METHODS = {
+	handleRoute        : [() =&gt; ({code: <span class="hljs-number">200</span>}), Q],
+	getContentType     : [() =&gt; <span class="hljs-string">"text/html; charset=utf-8"</span>, _ =&gt; _],
+	getTitle           : [() =&gt; <span class="hljs-string">""</span>, Q],
+	getScripts         : [() =&gt; [], standardizeScripts],
+	getSystemScripts   : [() =&gt; [], standardizeScripts],
+	getBodyStartContent: [() =&gt; [], Q],
+	getHeadStylesheets : [() =&gt; [], standardizeStyles],
+	getDebugComments   : [() =&gt; [], standardizeDebugComments],
+	getMetaTags        : [() =&gt; [], standardizeMetaTags],
+	getLinkTags        : [() =&gt; [], standardizeLinkTags],
+	getBase            : [() =&gt; <span class="hljs-literal">null</span>, Q],
+	getBodyClasses     : [() =&gt; [], Q],
+	getElements        : [() =&gt; [], standardizeElements],
+	getResponseData    : [() =&gt; <span class="hljs-string">""</span>, Q],
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>These are similar to <code>PAGE_METHODS</code>, but differ as follows:</p>
+<ul>
+<li>They are not chained.</li>
+<li>They do not have default implementations.</li>
+</ul>
+<p>Each page and middleware that implements a page hook will have its hook
+called in turn.  Hooks do not receive a <code>next()</code> method, and are not
+responsible for merging return values.</p>
+<p>The keys here are method names.</p>
+<p>The values are empty placeholder tuples.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> PAGE_HOOKS = {
+	addConfigValues : [], <span class="hljs-comment">// Define new configuration values.</span>
+	setConfigValues : [], <span class="hljs-comment">// Alter existing configuration values.</span>
+	handleComplete  : [], <span class="hljs-comment">// Do stuff after the response has been sent.</span>
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>These methods are only defined on the page <em>chain</em> which is used internally
+within react-server.  Page/middleware authers can ignore this.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> PAGE_CHAIN_PROTOTYPE = {
+	setExpressRequest  : makeSetter(<span class="hljs-string">'expressRequest'</span>),
+	setExpressResponse : makeSetter(<span class="hljs-string">'expressResponse'</span>),
+	setRequest         : makeSetter(<span class="hljs-string">'request'</span>),
+	getRequest         : makeGetter(<span class="hljs-string">'request'</span>),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>TODO: Kill these?  They’re only used to patch values
+through from navigator to renderMiddleware within react-server itself.
+They don’t need to be exposed publicly.</p>
+<p>The way to set a response code for your page is to return it from
+<code>handleRoute()</code> as e.g. <code>{code: 200}</code>.</p>
+<p>The way to opt-in to rendering a document for a non-2xx response
+code is to include <code>hasDocument: true</code> in your <code>handleRoute()</code>
+response object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	getStatus          : makeGetter(<span class="hljs-string">'status'</span>),
+	setStatus          : makeSetter(<span class="hljs-string">'status'</span>),
+	getHasDocument     : makeGetter(<span class="hljs-string">'hasDocument'</span>),
+	setHasDocument     : makeSetter(<span class="hljs-string">'hasDocument'</span>),
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>We log all method calls on the page chain for debugging purposes.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">Object</span>.keys(PAGE_CHAIN_PROTOTYPE).forEach(method =&gt; {
+	PAGE_CHAIN_PROTOTYPE[method] = logInvocation(method, PAGE_CHAIN_PROTOTYPE[method]);
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>These are helpers for <code>PAGE_MIXIN</code> and <code>PAGE_CHAIN_PROTOTYPE</code> methods.</p>
+<p>Note that getters and setters don’t actually modify the page/middleware
+object directly, but rather stash values in request local storage.  Values
+are therefore shared between the page and all middleware.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeGetter</span>(<span class="hljs-params">key</span>)</span>{
+	<span class="hljs-keyword">return</span> () =&gt; (RLS().mixinValues||{})[key];
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeSetter</span>(<span class="hljs-params">key</span>)</span>{
+	<span class="hljs-keyword">return</span> val =&gt; {
+		(RLS().mixinValues||(RLS().mixinValues={}))[key] = val;
+	}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>This attaches <code>PAGE_MIXIN</code> methods to page/middleware classes.</p>
+<p>It does this only <em>once</em>, and thereafter short-circuits.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">lazyMixinPageUtilMethods</span>(<span class="hljs-params">page</span>)</span>{
+	<span class="hljs-keyword">var</span> proto = <span class="hljs-built_in">Object</span>.getPrototypeOf(page);
+	<span class="hljs-keyword">if</span> (proto._haveMixedInPageUtilMethods) <span class="hljs-keyword">return</span>;
+
+	proto._haveMixedInPageUtilMethods = <span class="hljs-literal">true</span>;
+
+	<span class="hljs-built_in">Object</span>.keys(PAGE_MIXIN).forEach(method =&gt; {
+		<span class="hljs-keyword">if</span> (proto[method]){
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`PAGE_MIXINS method override: <span class="hljs-subst">${
+				(proto.constructor||{}</span>).name
+			}.<span class="hljs-subst">${method}</span>`</span>);
+		}
+		proto[method] = PAGE_MIXIN[method];
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>These <code>standardize*</code> functions show what will happen to the output of your
+page methods.</p>
+<p>For middleware authors: Be aware that these standardization functions will
+have been applied to the output of <code>next()</code> before you get access to it.</p>
+<p>These functions are also exposed via <code>PageUtil.standardize*</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-comment">/**
+ * This method takes in anything returned from a Page.getElements call and
+ * returns the elements in a standardized format: an array of EarlyPromises of
+ * ReactElements.
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">standardizeElements</span>(<span class="hljs-params">elements</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>The return value could be a single element or an array.
+First, let’s make sure that it’s an array.
+Then, ensure that all elements are wrapped in promises.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> PageUtil
+		.makeArray(elements)
+		.map(e =&gt; isRootContainer(e)?flattenForRender(e):e)
+		.reduce((m, e) =&gt; m.concat(<span class="hljs-built_in">Array</span>.isArray(e)?e:[e]), [])
+		.map(e =&gt; isTheFold(e)?markTheFold():e)
+		.map(ensureRootElement)
+		.map(scheduleRender)
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">standardizeDebugComments</span>(<span class="hljs-params">debugComments</span>) </span>{
+	<span class="hljs-keyword">return</span> PageUtil.makeArray(debugComments);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">standardizeMetaTags</span>(<span class="hljs-params">metaTags</span>) </span>{
+	<span class="hljs-keyword">return</span> PageUtil.makeArray(metaTags).map(metaTag =&gt; Q(metaTag));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">standardizeLinkTags</span>(<span class="hljs-params">linkTags</span>) </span>{
+	<span class="hljs-keyword">return</span> PageUtil.makeArray(linkTags).map(linkTag =&gt; Q(linkTag));
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">standardizeScripts</span>(<span class="hljs-params">scripts</span>) </span>{
+	<span class="hljs-keyword">return</span> PageUtil.makeArray(scripts).map((script) =&gt; {
+		<span class="hljs-keyword">if</span> (!(script.href || script.text)) {
+			script = { href:script }
+		}
+
+		<span class="hljs-keyword">if</span> (!script.type) script.type = <span class="hljs-string">"text/javascript"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Default is strict mode unless otherwise specified.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (!script.hasOwnProperty(<span class="hljs-string">'strict'</span>)) script.strict = <span class="hljs-literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>if the answer was a string, let’s make a script object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> script;
+	})
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">standardizeStyles</span>(<span class="hljs-params">styles</span>) </span>{
+	<span class="hljs-keyword">return</span> PageUtil.makeArray(styles).map(styleOrP =&gt; {
+		<span class="hljs-keyword">return</span> Q(styleOrP).then(style =&gt; {
+			<span class="hljs-keyword">if</span> (!style) {
+				<span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+			}
+			<span class="hljs-keyword">if</span> (style.href || style.text) {
+				<span class="hljs-keyword">if</span> (!style.type) style.type = <span class="hljs-string">"text/css"</span>;
+				<span class="hljs-keyword">if</span> (!style.media) style.media = <span class="hljs-string">""</span>;
+
+				<span class="hljs-keyword">return</span> style;
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>if the answer was a string, let’s make a script object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> {href:style, type:<span class="hljs-string">"text/css"</span>, media:<span class="hljs-string">""</span>};
+		});
+	})
+}
+
+<span class="hljs-keyword">var</span> PageConfig = (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+	<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../logging"</span>).getLogger(__LOGGER__({label: <span class="hljs-string">'PageConfig'</span>}));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>This gets bound to the outer <code>PageConfig</code>.</p>
+<p>Only <code>PageConfig.get(key)</code> is generally useful.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> PageConfig = {
+
+		get(key) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>No access until all <code>Page.addConfigValues()</code> and
+<code>Page.setConfigValues()</code> methods are complete.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (!RLS().pageConfigFinalized){
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Premature access: "<span class="hljs-subst">${key}</span>"`</span>);
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>The key <em>must</em> exist.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (!_getCurrentConfigObject().hasOwnProperty(key)){
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Invalid key: "<span class="hljs-subst">${key}</span>"`</span>);
+			}
+
+			<span class="hljs-keyword">return</span> _getCurrentConfigObject()[key];
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Don’t call this.  It’s called for you.
+The <code>page</code> here is a page chain.
+It’s called <code>page</code> in <code>Navigator</code> and <code>renderMiddleware</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		initFromPageWithDefaults(page, defaults) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>First set the framework level defaults.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			_setDefaults(defaults);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Then let page/middleware define new config defaults,
+and finally let page/middleware alter existing
+config values.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			page.addConfigValues().forEach(_setDefaults);
+			page.setConfigValues().forEach(_setValues);
+
+			logger.debug(<span class="hljs-string">'Final'</span>, _getCurrentConfigObject());
+
+			RLS().pageConfigFinalized = <span class="hljs-literal">true</span>;
+		},
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Below here are helpers. They are hidden from outside callers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> _set = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">isDefault, obj</span>) </span>{
+		<span class="hljs-keyword">var</span> config = _getCurrentConfigObject();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Copy input values into it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-built_in">Object</span>.keys(obj||{}).forEach(key =&gt; {
+			<span class="hljs-keyword">var</span> keyExists = config.hasOwnProperty(key);
+			<span class="hljs-keyword">if</span> (isDefault &amp;&amp; keyExists){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Can’t make this fatal, because request
+forwarding uses a dirty RLS() context.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				logger.warning(<span class="hljs-string">`Duplicate PageConfig default: "<span class="hljs-subst">${key}</span>"`</span>);
+			} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!isDefault &amp;&amp; !keyExists) {
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Missing PageConfig default: "<span class="hljs-subst">${key}</span>"`</span>);
+			}
+
+			logger.debug(<span class="hljs-string">`<span class="hljs-subst">${isDefault?"Default":"Set"}</span> "<span class="hljs-subst">${key}</span>" =&gt; "<span class="hljs-subst">${obj[key]}</span>"`</span>);
+
+			config[key] = obj[key];
+		});
+	};
+
+	<span class="hljs-keyword">var</span> _setDefaults = _set.bind({}, <span class="hljs-literal">true</span>);
+	<span class="hljs-keyword">var</span> _setValues   = _set.bind({}, <span class="hljs-literal">false</span>);
+
+	<span class="hljs-keyword">var</span> _getCurrentConfigObject = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>Return the current mutable config.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> RLS().pageConfig || (RLS().pageConfig = {});
+	}
+
+	<span class="hljs-keyword">return</span> PageConfig;
+})();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>This is used to log method calls on the page <em>chain</em>.  Method calls on
+individual page/middleware objects are not automatically logged.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logInvocation</span>(<span class="hljs-params">name, func</span>)</span>{
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+		logger.debug(<span class="hljs-string">`Call <span class="hljs-subst">${name}</span>`</span>);
+		<span class="hljs-keyword">return</span> func.apply(<span class="hljs-keyword">this</span>, [].slice.call(<span class="hljs-built_in">arguments</span>));
+	}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>Return <code>fn</code> with a wrapper that puts its return value through <code>standardize</code>
+on the way out.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeStandard</span>(<span class="hljs-params">standardize, fn</span>)</span>{
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+		<span class="hljs-keyword">return</span> standardize(fn.apply(<span class="hljs-literal">null</span>, [].slice.call(<span class="hljs-built_in">arguments</span>)));
+	}
+}
+
+<span class="hljs-keyword">var</span> PageUtil = <span class="hljs-built_in">module</span>.exports = {
+	PAGE_METHODS,
+
+	standardizeElements,
+	standardizeMetaTags,
+	standardizeScripts,
+	standardizeStyles,
+
+	PageConfig,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>Given an array of page/middleware instances, return an object that
+implements the interface defined by the union of:</p>
+<ul>
+<li>PAGE_CHAIN_PROTOTYPE</li>
+<li>PAGE_METHODS</li>
+<li>PAGE_HOOKS</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	createPageChain(pages) {
+		<span class="hljs-comment">/* eslint-disable no-loop-func */</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>This will be our return value.</p>
+<p>This <code>Object.create()</code> call creates a new empty object
+(<code>{}</code>) with <code>PAGE_CHAIN_PROTOTYPE</code> as its prototype.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> pageChain = <span class="hljs-built_in">Object</span>.create(PAGE_CHAIN_PROTOTYPE);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Make sure all page classes have been augmented with the
+methods provided by <code>PAGE_MIXIN</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		pages.forEach(lazyMixinPageUtilMethods);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Wire up the chained methods.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> method <span class="hljs-keyword">in</span> PAGE_METHODS){
+
+			<span class="hljs-keyword">if</span> (!PAGE_METHODS.hasOwnProperty(method)) <span class="hljs-keyword">continue</span>;
+
+			<span class="hljs-keyword">var</span> [defaultImpl, standardize] = PAGE_METHODS[method];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Take bound methods for each page/middleware that
+implements (plus the default implementation), and
+chain them together so that each receives as an
+argument the rest of the chain in the form of an
+arity-zero function.</p>
+<p>The <code>next</code> argument in the reduction here is the
+accumulated chain.  It is what each implementation
+will receive as <em>its</em> <code>next</code> argument.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			pageChain[method] = logInvocation(method, pages
+				.filter      (page =&gt; page[method])
+				.map         (page =&gt; page[method].bind(page))
+				.concat      ([defaultImpl])
+				.map         (makeStandard.bind(<span class="hljs-literal">null</span>, standardize))
+				.reduceRight ((next, cur) =&gt; cur.bind(<span class="hljs-literal">null</span>, next))
+			);
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Wire up the un-chained methods.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-built_in">Object</span>.keys(PAGE_HOOKS).forEach(method =&gt; {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Grab a list of pages that implement this method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> implementors = pages.filter(page =&gt; page[method]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>The resulting function calls each implementor’s
+method in turn and returns an array containing in
+their return values.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			pageChain[method] = logInvocation(method, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>The <code>arguments</code> object isn’t a real array.
+Pre-es5 <code>Function.apply()</code> required a real
+array.  This <code>[].slice.call(arguments)</code>
+idiom creates a real array with the elements
+of the <code>arguments</code> object.</p>
+<p>See: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">var</span> args = [].slice.call(<span class="hljs-built_in">arguments</span>);
+
+				<span class="hljs-keyword">return</span> implementors.map(
+					page =&gt; page[method].apply(page, args)
+				)
+			});
+		});
+
+		<span class="hljs-keyword">return</span> pageChain;
+		<span class="hljs-comment">/* eslint-enable no-loop-func */</span>
+	},
+
+	makeArray(valueOrArray) {
+		<span class="hljs-keyword">if</span> (!<span class="hljs-built_in">Array</span>.isArray(valueOrArray)) {
+			<span class="hljs-keyword">return</span> [valueOrArray];
+		}
+		<span class="hljs-keyword">return</span> valueOrArray;
+	},
+
+	getElementDisplayName(element){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Gotta be a react element.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (!(element &amp;&amp; element.type &amp;&amp; element.props)) <span class="hljs-keyword">return</span> <span class="hljs-string">'None'</span>;
+
+		<span class="hljs-keyword">var</span> name = element.type.displayName;
+
+		<span class="hljs-keyword">if</span> (!name) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>If the element doesn’t have a <code>displayName</code>, but it
+has only a single child, we’ll look at the child to
+see if it has a nice name.  This helps bypass
+anonymous wrapper elements.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (React.Children.count(element.props.children) === <span class="hljs-number">1</span>){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>Sigh.  <code>React.Children.count</code> will happily
+return 1 if the node contains only text, and
+then <code>React.Children.only</code> will happily
+<em>blow up</em> if it receives that text saying it
+expects a single child… which
+<code>React.Children.count</code> just told us we
+have… :goberzerk:</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">try</span> {
+					name = PageUtil.getElementDisplayName(
+						React.Children.only(
+							element.props.children
+						)
+					);
+				} <span class="hljs-keyword">catch</span> (e) { <span class="hljs-comment">/* Pass. */</span> }
+			}
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Some of our names are namespaced with dot-separation.  We
+just want the most significant part at the end.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> (name||<span class="hljs-string">'Unknown'</span>).split(<span class="hljs-string">'.'</span>).pop();
+	},
+
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>common.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  util.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="LABString.html">
+                  LABString.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>common.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> stats = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./stats'</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>These are the primary log levels.
+Your logger object has a method for each of these.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> LOG_LEVELS = {
+	emergency : <span class="hljs-number">0</span>,
+	alert     : <span class="hljs-number">1</span>,
+	critical  : <span class="hljs-number">2</span>,
+	error     : <span class="hljs-number">3</span>,
+	warning   : <span class="hljs-number">4</span>,
+	notice    : <span class="hljs-number">5</span>,
+	info      : <span class="hljs-number">6</span>,
+	debug     : <span class="hljs-number">7</span>,
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Need these to be shared across react-server and corvair (can actually be modified
+by the logging modules).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> config = (global._REACT_SERVER_CONFIG || (global._REACT_SERVER_CONFIG = {
+	main: {
+		baseLevel: <span class="hljs-string">'error'</span>,
+		levels: LOG_LEVELS,
+		colors: {
+			emergency : <span class="hljs-string">'red'</span>,
+			alert     : <span class="hljs-string">'red'</span>,
+			critical  : <span class="hljs-string">'red'</span>,
+			error     : <span class="hljs-string">'red'</span>,
+			warning   : <span class="hljs-string">'yellow'</span>,
+			notice    : <span class="hljs-string">'yellow'</span>,
+			info      : <span class="hljs-string">'green'</span>,
+			debug     : <span class="hljs-string">'blue'</span>,
+		},
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>This config is for an internal logger used by the <code>time</code> method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	time: {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>TODO: Some day, when slow times are rare, we should set
+this to ‘slow’ in production to surface performance issues.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		baseLevel: <span class="hljs-string">'none'</span>,
+		levels: {
+			none: <span class="hljs-number">0</span>, <span class="hljs-comment">// Not used.  Disables in production.</span>
+			slow: <span class="hljs-number">1</span>,
+			fine: <span class="hljs-number">2</span>,
+			fast: <span class="hljs-number">3</span>,
+		},
+		colors: {
+			slow: <span class="hljs-string">'red'</span>,
+			fine: <span class="hljs-string">'yellow'</span>,
+			fast: <span class="hljs-string">'green'</span>,
+		},
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>This config is for an internal logger used by the <code>gauge</code> method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	gauge: {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>TODO: Some day, when abnormal values are rare, we should
+set this to ‘lo’ in production to surface issues.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		baseLevel: <span class="hljs-string">'no'</span>,
+		levels: {
+			no: <span class="hljs-number">0</span>, <span class="hljs-comment">// Not used.  Disables in production.</span>
+			hi: <span class="hljs-number">1</span>,
+			lo: <span class="hljs-number">2</span>,
+			ok: <span class="hljs-number">3</span>,
+		},
+		colors: {
+			hi: <span class="hljs-string">'red'</span>,
+			lo: <span class="hljs-string">'red'</span>,
+			ok: <span class="hljs-string">'green'</span>,
+		},
+	},
+}));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>These need to be shared across react-server and corvair, too.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> loggers = (global._REACT_SERVER_LOGGERS || (global._REACT_SERVER_LOGGERS = {}));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>We may have loggers with the same name in different groups, so we’ll give
+each group its own container.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> (!<span class="hljs-built_in">Object</span>.keys(loggers).length){
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> group <span class="hljs-keyword">in</span> config){
+		<span class="hljs-keyword">if</span> (!config.hasOwnProperty(group)) <span class="hljs-keyword">continue</span>;
+		loggers[group] = {};
+	}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>This is just a cache.
+Don’t want to instantiate a given logger more than once.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getLoggerForConfig = makeLogger =&gt; {
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, opts</span>)</span>{
+		<span class="hljs-keyword">return</span> loggers[group][opts.name] || (
+			loggers[group][opts.name] = makeLogger(group, opts)
+		);
+	}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>This is a helper function that takes an internal <code>makeLogger</code>
+function and produces a public <code>getLogger</code> function.  The produced
+<code>getLogger</code> function calls the provided <code>makeLogger</code> function for
+each of our two loggers and then stitches the stats logger onto the main
+logger.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> makeGetLogger = makeLogger =&gt; (
+	opts =&gt; stats.getCombinedLogger(getLoggerForConfig(makeLogger), opts)
+);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Just a handy helper for iteration.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> forEachLogger = callback =&gt; <span class="hljs-built_in">Object</span>.keys(config).forEach(group =&gt; {
+	<span class="hljs-built_in">Object</span>.keys(loggers[group]).forEach(logger =&gt; {
+		callback(loggers[group][logger], group);
+	});
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Return a stack trace.  Strip <code>strip</code> extra frames off (optional).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stack</span>(<span class="hljs-params">strip=0</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>No stack property on Error objects in ie9, unfortunately.
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Stack">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Stack</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> (<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>().stack || <span class="hljs-string">''</span>).split(<span class="hljs-string">"\n"</span>).slice(<span class="hljs-number">2</span>+strip).join(<span class="hljs-string">"\n"</span>)
+}
+
+<span class="hljs-built_in">module</span>.exports = { config, loggers, stack, makeGetLogger, forEachLogger };</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

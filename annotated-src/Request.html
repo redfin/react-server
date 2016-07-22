@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Request.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  util.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="LABString.html">
+                  LABString.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Request.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> superagent = <span class="hljs-built_in">require</span>(<span class="hljs-string">'superagent'</span>)
+,	logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../logging'</span>).getLogger(__LOGGER__)
+,	Q = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>)
+,	Plugins = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./Plugins"</span>)
+,	{ mixin } = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./util"</span>)
+;
+
+<span class="hljs-comment">/**
+ * Implements a subset of superagent's API. Packages up arguments
+ * to pass to superagent under the hood.
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Request</span>(<span class="hljs-params">method, urlPath, cache</span>) </span>{
+	<span class="hljs-keyword">this</span>._method = method;
+	<span class="hljs-keyword">this</span>._urlPath = urlPath;
+	<span class="hljs-keyword">this</span>._cache = cache;
+
+	<span class="hljs-keyword">this</span>._queryParams = [];
+	<span class="hljs-keyword">this</span>._postParams = {};
+	<span class="hljs-keyword">this</span>._headers = {};
+	<span class="hljs-keyword">this</span>._timeout = <span class="hljs-literal">null</span>;
+	<span class="hljs-keyword">this</span>._type = <span class="hljs-string">"json"</span>; <span class="hljs-comment">// superagent's default</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>public field</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">this</span>.aborted = <span class="hljs-literal">undefined</span>; <span class="hljs-comment">//default to undefined</span>
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>we implement a subset of superagent’s API. for the other methods,
+for now, we’ll just throw an exception if they’re called. By default,
+all methods throw exceptions, and we override some below</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">Object</span>.keys(superagent.Request.prototype)
+	.forEach( propName =&gt; {
+		<span class="hljs-keyword">var</span> originalProp = superagent.Request.prototype[propName];
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> originalProp === <span class="hljs-string">'function'</span>) {
+			Request.prototype[propName] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${propName}</span>() from superagent's API isn't implemented yet.`</span>);
+			}
+		}
+	});
+
+Request.prototype.agent = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">agent</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> agent === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._agent;
+	}
+	<span class="hljs-keyword">this</span>._agent = agent;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.method = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">method</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> method === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._method;
+	}
+	<span class="hljs-keyword">this</span>._method = method;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.urlPath = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">urlPath</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> urlPath === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._urlPath;
+	}
+	<span class="hljs-keyword">this</span>._urlPath = urlPath;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.query = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">queryParams</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> queryParams === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Request.query does not support retrieving the current query string"</span>);
+	}
+	<span class="hljs-keyword">this</span>._queryParams.push(queryParams);
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.send = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">postParams</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> postParams === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> mixin({}, <span class="hljs-keyword">this</span>._postParams);
+	}
+	mixin(<span class="hljs-keyword">this</span>._postParams, postParams);
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.set = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">headers</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> headers === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> mixin({}, <span class="hljs-keyword">this</span>._headers);
+	}
+	mixin(<span class="hljs-keyword">this</span>._headers, headers);
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.timeout = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">timeout</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> timeout === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._timeout;
+	}
+	<span class="hljs-keyword">this</span>._timeout = timeout;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+Request.prototype.type = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">type</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> type === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._type;
+	}
+	<span class="hljs-keyword">this</span>._type = type;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+<span class="hljs-comment">/**
+ * Wrap superagent's end() method to create an entry in a request-local
+ * data cache that will be serialized to the client and replayed in the
+ * browser.
+ */</span>
+Request.prototype.end = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">fn</span>) </span>{
+
+	<span class="hljs-keyword">if</span> (!fn || fn.length !== <span class="hljs-number">2</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>a superagent requirement, as of ~v1.0; We’re providing a default callback here.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		fn = (a, b) =&gt; {}; <span class="hljs-comment">// eslint-disable-line no-unused-vars</span>
+	}
+
+	<span class="hljs-keyword">var</span> executeRequest = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">cb</span>) </span>{
+		applyRequestPlugins(<span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>set up some params</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> saRequest = buildSuperagentRequest.call(<span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>actually execute the request via superagent</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		superagent.Request.prototype.end.call(saRequest, cb);
+
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	}.bind(<span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>helper, for cleaner code below</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> wrapResponseCallback = responsePluginApplyingCallback.bind(<span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>only do caching for responses for GET requests for now</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._method !== <span class="hljs-string">'GET'</span>) {
+		<span class="hljs-keyword">return</span> executeRequest(wrapResponseCallback(fn));
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>get cache entry for url if exists; if server-side, create one if it doesn’t already exist.
+the cache key here needs to be the same server-side and client-side, so the full URL, complete
+with host (which can vary between client and server) is not usable. The URL path (without the
+host) works fine though.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> entry = <span class="hljs-keyword">this</span>._cache.entry(<span class="hljs-keyword">this</span>._getCacheAffectingData(), SERVER_SIDE <span class="hljs-comment">/* createIfMissing */</span>, <span class="hljs-keyword">this</span>._cacheWhitelist);
+	<span class="hljs-keyword">if</span> (!SERVER_SIDE &amp;&amp; !entry) {
+		<span class="hljs-keyword">return</span> executeRequest(wrapResponseCallback(fn));
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>no previous requesters? fire the request</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (entry.requesters === <span class="hljs-number">0</span>) {
+		executeRequest(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, res</span>) </span>{
+			<span class="hljs-keyword">if</span> (err) {
+				entry.setError(err);
+				<span class="hljs-keyword">return</span>;
+			}
+			entry.setResponse(res);
+		});
+	}
+
+	entry.whenDataReady().nodeify(wrapResponseCallback(fn));
+
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>private function</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">applyRequestPlugins</span> (<span class="hljs-params">req</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>run any registered plugins</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Plugins.forRequest().asArray().forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">pluginFunc</span>) </span>{
+		pluginFunc.apply(<span class="hljs-literal">null</span>, [req]);
+	})
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>private function; called with a Request instance bound to
+<code>this</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">responsePluginApplyingCallback</span>(<span class="hljs-params">cb</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>partly pedantic, partly so the code in the wrapped callback
+is shorter; saving plugins here guarantees that plugins added
+<em>after</em> the request is made, but <em>before</em> the response comes
+aren’t called for this particular request</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> thisReq = <span class="hljs-keyword">this</span>;
+	<span class="hljs-keyword">var</span> plugins = Plugins.forResponse().asArray();
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, res</span>) </span>{
+		plugins.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">pluginFunc</span>) </span>{
+			pluginFunc.apply(<span class="hljs-literal">null</span>, [err, res, thisReq]);
+		});
+		cb(err, res);
+	}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>private function; called with a Request instance bound
+to <code>this</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">buildSuperagentRequest</span>(<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">var</span> req = superagent(<span class="hljs-keyword">this</span>._method, <span class="hljs-keyword">this</span>._buildUrl());
+
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._agent){
+		req.agent(<span class="hljs-keyword">this</span>._agent);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>superagent has some weird, implicit file upload support
+that only works if you don’t set <code>type</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._type &amp;&amp; <span class="hljs-keyword">this</span>._type !== <span class="hljs-string">'form-data'</span>) {
+		req.type(<span class="hljs-keyword">this</span>._type);
+	}
+
+	req.set(<span class="hljs-keyword">this</span>._headers);
+	<span class="hljs-keyword">this</span>._queryParams.forEach(params =&gt; req.query(params));
+
+	<span class="hljs-keyword">var</span> postParams = <span class="hljs-keyword">this</span>._postParams;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>convert params to FormData if the request type is form-data</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._type === <span class="hljs-string">"form-data"</span>) {
+		<span class="hljs-keyword">if</span> (!SERVER_SIDE) {
+			<span class="hljs-keyword">var</span> formData = <span class="hljs-keyword">new</span> FormData();
+			<span class="hljs-keyword">if</span> (postParams) {
+				<span class="hljs-keyword">var</span> paramKeys = <span class="hljs-built_in">Object</span>.keys(postParams);
+				paramKeys.forEach(key =&gt; {
+					formData.append(key, postParams[key]);
+				});
+			}
+			postParams = formData;
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`ReactServerAgent.type("form-data") not allowed server-side`</span>);
+		}
+	}
+
+	req.send(postParams);
+
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._timeout) {
+		req.timeout(<span class="hljs-keyword">this</span>._timeout);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>cache the internal request, so that we can cancel it
+if necessary (see: <code>abort()</code>)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">this</span>._superagentReq = req;
+
+	<span class="hljs-keyword">return</span> req;
+}
+
+Request.prototype._buildUrl = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>only modify relative paths</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._urlPrefix &amp;&amp; <span class="hljs-keyword">this</span>._urlPath.charAt(<span class="hljs-number">0</span>) === <span class="hljs-string">'/'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._urlPrefix + <span class="hljs-keyword">this</span>._urlPath;
+	}
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._urlPath;
+}
+
+Request.prototype._getCacheAffectingData = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">return</span> {
+		urlPath: <span class="hljs-keyword">this</span>._urlPath,
+		method: <span class="hljs-keyword">this</span>._method,
+		queryParams: <span class="hljs-keyword">this</span>._queryParams,
+		postParams: <span class="hljs-keyword">this</span>._postParams,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>headers: this._headers, // headers are not included</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		type: <span class="hljs-keyword">this</span>._type,
+	};
+}
+
+Request.prototype.getProtocol = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Returns undefined if no protocol found.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> (<span class="hljs-keyword">this</span>._buildUrl().match(<span class="hljs-regexp">/^(.+?):/</span>)||[])[<span class="hljs-number">1</span>];
+}
+
+<span class="hljs-comment">/**
+ * Convenience method to treat the request as then-able (promise-like).
+ * This is shorthand for the simple case. If you want access to the full
+ * power of the underlying promise library, use `Request.asPromise()`
+ */</span>
+Request.prototype.then = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"><span class="hljs-comment">/*arguments*/</span></span>) </span>{
+	<span class="hljs-keyword">var</span> promise = <span class="hljs-keyword">this</span>.asPromise();
+	<span class="hljs-keyword">return</span> promise.then.apply(promise, <span class="hljs-built_in">arguments</span>);
+};
+
+<span class="hljs-comment">/**
+ * Convenience method wrapping `.end()` and returning a promise
+ * that is resolved if the request is successful, and rejected if
+ * the request results in an error.
+ */</span>
+Request.prototype.asPromise = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">var</span> dfd = Q.defer();
+	dfd.promise.catch(logRequestError.bind(<span class="hljs-keyword">this</span>));
+	<span class="hljs-keyword">this</span>.end(dfd.makeNodeResolver());
+	<span class="hljs-keyword">return</span> dfd.promise;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>private method; ‘this’ bound to request object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logRequestError</span>(<span class="hljs-params">err</span>) </span>{
+
+	<span class="hljs-keyword">var</span> {response} = err;
+	<span class="hljs-keyword">if</span> (!response) {
+		logger.warning(<span class="hljs-string">`ReactServerAgent raised exception for URL <span class="hljs-subst">${this._urlPath}</span>`</span>, err);
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.notFound) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>404? don’t care about response</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		logger.warning(<span class="hljs-string">`Resource not found on server: <span class="hljs-subst">${this._urlPath}</span>`</span>);
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.serverError) {
+		logger.warning(<span class="hljs-string">`Received server error for URL <span class="hljs-subst">${this._urlPath}</span>`</span>, err);
+	} <span class="hljs-keyword">else</span> {
+		logger.warning(<span class="hljs-string">`Unexpected status code returned for URL <span class="hljs-subst">${this._urlPath}</span>`</span>, err);
+	}
+}
+
+<span class="hljs-comment">/**
+ * Overriding superagent use() function to give a more descriptive
+ * error message than just not including it altogether.
+ */</span>
+Request.prototype.use = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`use() function is superseded by plugRequest(...)`</span>);
+}
+
+<span class="hljs-comment">/**
+ * Get/Set the prefix used for relative URLs
+ */</span>
+Request.prototype.urlPrefix = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">urlPrefix</span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> urlPrefix === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._urlPrefix;
+	}
+	<span class="hljs-keyword">this</span>._urlPrefix = urlPrefix;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+<span class="hljs-comment">/**
+ * Abort the active request. Passes through to superagent's
+ * `abort()` method. Sets 'aborted' flag on this request
+ */</span>
+Request.prototype.abort = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._superagentReq) {
+		<span class="hljs-keyword">this</span>.aborted = <span class="hljs-literal">true</span>;
+		<span class="hljs-keyword">this</span>._superagentReq.abort();
+	}
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+<span class="hljs-comment">/**
+ * Enables saving the 'header' property in the response cache.
+ * This is disabled by default to save space in the cache.
+ */</span>
+Request.prototype.withHeaderInResponse = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+	<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>._cacheWhitelist === <span class="hljs-string">'undefined'</span>) {
+		<span class="hljs-keyword">this</span>._cacheWhitelist = [];
+	}
+	<span class="hljs-keyword">this</span>._cacheWhitelist.push(<span class="hljs-string">'header'</span>);
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+}
+
+
+<span class="hljs-built_in">module</span>.exports = Request;</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

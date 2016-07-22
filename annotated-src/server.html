@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>server.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  util.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="LABString.html">
+                  LABString.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>server.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> winston = <span class="hljs-built_in">require</span>(<span class="hljs-string">'winston'</span>)
+,   common  = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./common'</span>)
+,   _ = {
+	mapValues     : <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/mapValues"</span>),
+	pickBy        : <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/pickBy"</span>),
+	isPlainObject : <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/isPlainObject"</span>),
+	isEmpty       : <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/isEmpty"</span>),
+	trimStart     : <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/trimStart"</span>),
+	truncate      : <span class="hljs-built_in">require</span>(<span class="hljs-string">"lodash/truncate"</span>),
+};
+
+<span class="hljs-keyword">var</span> makeLogger = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, opts</span>)</span>{
+	<span class="hljs-keyword">var</span> config = common.config[group];
+
+	<span class="hljs-keyword">var</span> fileTransport = <span class="hljs-keyword">new</span> (winston.transports.File)({
+		name      : <span class="hljs-string">'file'</span>,
+		level     : config.baseLevel,
+		stream    : process.stdout,
+		json      : <span class="hljs-literal">false</span>,
+		timestamp : global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT,
+	});
+
+	<span class="hljs-keyword">var</span> logger = <span class="hljs-keyword">new</span> (winston.Logger)({
+		transports: [
+			fileTransport,
+		],
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Need to be able to refresh this.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	(logger.updateColorize = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+		logger.transports.file.label = colorizeName(opts);
+		logger.transports.file.colorize = global.COLORIZE_REACT_SERVER_LOG_OUTPUT;
+	})();
+
+	logger.setLevels(config.levels);
+
+	logger.rewriters.push(errorInterceptor);
+
+	logger.stack = common.stack;
+
+	winston.addColors(config.colors);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>For instantiating new transports later.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	logger.opts = opts;
+
+	(config.extraTransports||[])
+		.forEach(transport =&gt; logger.add(transport, opts));
+
+	<span class="hljs-keyword">return</span> logger;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Error objects are weird.  Let’s turn them into normal objects.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">errorInterceptor</span> (<span class="hljs-params">level, msg, meta</span>) </span>{
+
+	<span class="hljs-keyword">if</span> (meta <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
+		meta = {error: meta};
+	} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (meta &amp;&amp; meta.status &amp;&amp; meta.response) {
+		meta = {error: meta};
+	}
+
+	<span class="hljs-keyword">if</span> (_.isPlainObject(meta)) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>allow {error: <someError>} as a valid <code>meta</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		meta = _.mapValues(meta, normalizeError);
+	}
+	<span class="hljs-keyword">return</span> meta;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>massage the error into a format suitable for logging</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">normalizeError</span> (<span class="hljs-params">err</span>) </span>{
+	<span class="hljs-keyword">if</span> (err <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Error</span>) {
+		<span class="hljs-keyword">return</span> _.pickBy({
+			message: err.message,
+			stack: err.stack,
+		}, val =&gt; !_.isEmpty(val));
+	}
+
+	<span class="hljs-keyword">if</span> (err &amp;&amp; err.status &amp;&amp; err.response) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>this is probably a superagent error response. we definitely don’t
+want to log the whole thing</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> {
+			response: {
+				status: err.status,
+				responseText: _.truncate(_.trimStart(err.response ? err.response.text : <span class="hljs-string">"&lt;no response body&gt;"</span>), <span class="hljs-number">200</span>),
+			},
+		}
+	}
+
+	<span class="hljs-keyword">return</span> err;
+}
+
+
+<span class="hljs-keyword">var</span> getLogger = common.makeGetLogger(makeLogger);
+
+<span class="hljs-keyword">var</span> colorizeName = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">opts</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Only colorize if we’re attached to a terminal.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (!global.COLORIZE_REACT_SERVER_LOG_OUTPUT) <span class="hljs-keyword">return</span> opts.name;
+
+	<span class="hljs-keyword">return</span> <span class="hljs-string">`\x1B[38;5;<span class="hljs-subst">${opts.color.server}</span>m<span class="hljs-subst">${opts.name}</span>\x1B[0m`</span>;
+}
+
+<span class="hljs-keyword">var</span> setLevel = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, level</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Update level for any future loggers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	common.config[group].baseLevel = level;
+
+	common.forEachLogger((logger, loggerGroup) =&gt; {
+		<span class="hljs-keyword">if</span> (loggerGroup === group) logger.transports.file.level = level;
+	});
+}
+
+<span class="hljs-keyword">var</span> addTransport = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, transport</span>)</span>{
+
+	<span class="hljs-keyword">if</span> (!common.config[group].extraTransports){
+		common.config[group].extraTransports = [];
+	}
+
+	common.config[group].extraTransports.push(transport);
+
+	common.forEachLogger((logger, loggerGroup) =&gt; {
+		<span class="hljs-keyword">if</span> (loggerGroup === group) logger.add(transport, logger.opts);
+	});
+}
+
+<span class="hljs-keyword">var</span> addRewriter = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">rewriter</span>)</span>{
+	common.forEachLogger(logger =&gt; logger.rewriters.push(rewriter));
+}
+
+<span class="hljs-keyword">var</span> setTimestamp = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">bool</span>)</span>{
+
+	global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT = bool;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Update any loggers that are alredy set up.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	common.forEachLogger(logger =&gt; {
+		<span class="hljs-keyword">if</span> (logger.transports.file) {
+			logger.transports.file.timestamp = bool;
+		}
+	});
+}
+
+<span class="hljs-keyword">var</span> setColorize = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">bool</span>)</span>{
+
+	global.COLORIZE_REACT_SERVER_LOG_OUTPUT = bool;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Update any loggers that are alredy set up.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	common.forEachLogger(logger =&gt; {
+		<span class="hljs-keyword">if</span> (logger.updateColorize) {
+			logger.updateColorize();
+		}
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Default is only if we’re directly attached to a terminal.
+Can be overridden (This <code>setColorize</code> function is exported).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>setColorize(process.stdout.isTTY);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Just the default.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>setTimestamp(<span class="hljs-literal">true</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+	addTransport,
+	addRewriter,
+	getLogger,
+	setColorize,
+	setLevel,
+	setTimestamp,
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

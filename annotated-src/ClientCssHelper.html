@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>ClientCssHelper.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  util.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="LABString.html">
+                  LABString.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>ClientCssHelper.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../logging'</span>).getLogger(__LOGGER__);
+<span class="hljs-keyword">var</span> {PAGE_CSS_NODE_ID} = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../constants'</span>);
+<span class="hljs-keyword">var</span> Q = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>);
+<span class="hljs-keyword">var</span> PageUtil = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./PageUtil'</span>)
+
+<span class="hljs-keyword">var</span> loadedCss = {};
+
+<span class="hljs-built_in">module</span>.exports = {
+
+	registerPageLoad: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">registerPageLoad</span>(<span class="hljs-params"></span>) </span>{
+		<span class="hljs-keyword">if</span> (SERVER_SIDE) {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"ClientCssHelper.registerPageLoad can't be called server-side"</span>);
+		}
+		<span class="hljs-keyword">const</span> urlBase = location.protocol + <span class="hljs-string">"//"</span> + location.host;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>for each css node in the head that the react-server server wrote to the response, note it down in the cache, so that
+we can remove it on a page to page transition.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> serverWrittenLinkNodes = <span class="hljs-built_in">document</span>.head.querySelectorAll(<span class="hljs-string">`link[<span class="hljs-subst">${PAGE_CSS_NODE_ID}</span>],style[<span class="hljs-subst">${PAGE_CSS_NODE_ID}</span>]`</span>);
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; serverWrittenLinkNodes.length; i++) {
+			<span class="hljs-keyword">var</span> key, styleNode = serverWrittenLinkNodes[i];
+			<span class="hljs-keyword">if</span> (styleNode.href) {
+				key = styleNode.href;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>The browser will give us a full URL even if we only put a
+path in on the server.  So, if we’re comparing against just
+a path here we need to strip the base off to avoid a flash
+of unstyled content.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">if</span> (key.indexOf(urlBase) === <span class="hljs-number">0</span>) {
+					key = key.substr(urlBase.length);
+				}
+			} <span class="hljs-keyword">else</span> {
+				key = styleNode.innerHTML;
+			}
+			loadedCss[key] = styleNode;
+		}
+	},
+
+	ensureCss: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ensureCss</span>(<span class="hljs-params">routeName, pageObject</span>) </span>{
+		<span class="hljs-keyword">if</span> (SERVER_SIDE) {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"ClientCssHelper.registerPageLoad can't be called server-side"</span>);
+		}
+
+		<span class="hljs-keyword">return</span> Q.all(PageUtil.standardizeStyles(pageObject.getHeadStylesheets())).then(newCss =&gt; {
+			<span class="hljs-keyword">var</span> newCssByKey = {};
+			newCss
+				.filter(style =&gt; !!style)
+				.forEach(style =&gt; {newCssByKey[<span class="hljs-keyword">this</span>._keyFromStyleSheet(style)] = style});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>first, remove the unneeded CSS link elements.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-built_in">Object</span>.keys(loadedCss).forEach(loadedCssKey =&gt; {
+
+				<span class="hljs-keyword">if</span> (!newCssByKey[loadedCssKey]) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>remove the corresponding node from the DOM.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>					logger.debug(<span class="hljs-string">"Removing stylesheet: "</span> + loadedCssKey);
+					<span class="hljs-keyword">var</span> node = loadedCss[loadedCssKey];
+					node.parentNode.removeChild(node);
+					<span class="hljs-keyword">delete</span> loadedCss[loadedCssKey];
+				}
+			});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>next add the style URLs that weren’t already loaded.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> Q.all(<span class="hljs-built_in">Object</span>.keys(newCssByKey).map(newCssKey =&gt; {
+				<span class="hljs-keyword">var</span> retval;
+				<span class="hljs-keyword">if</span> (!loadedCss[newCssKey]) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>this means that the CSS is not currently present in the
+document, so we need to add it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>					logger.debug(<span class="hljs-string">"Adding stylesheet: "</span> + newCssKey);
+
+					<span class="hljs-keyword">var</span> style = newCssByKey[newCssKey];
+					<span class="hljs-keyword">var</span> styleTag;
+
+					<span class="hljs-keyword">if</span> (style.href) {
+						styleTag = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'link'</span>);
+						styleTag.rel = <span class="hljs-string">'stylesheet'</span>;
+						styleTag.href = style.href;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>If we <em>can</em> wait for the CSS to be loaded before
+proceeding, let’s do so.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>						<span class="hljs-keyword">if</span> (<span class="hljs-string">'onload'</span> <span class="hljs-keyword">in</span> styleTag) {
+							<span class="hljs-keyword">var</span> dfd = Q.defer();
+							styleTag.onload = dfd.resolve;
+							retval = dfd.promise;
+						}
+					} <span class="hljs-keyword">else</span> {
+						styleTag = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'style'</span>);
+						styleTag.innerHTML = style.text;
+					}
+					styleTag.type = style.type;
+					styleTag.media = style.media;
+
+					loadedCss[newCssKey] = styleTag;
+					<span class="hljs-built_in">document</span>.head.appendChild(styleTag);
+				} <span class="hljs-keyword">else</span> {
+					logger.debug(<span class="hljs-string">`Stylesheet already loaded (no-op): <span class="hljs-subst">${newCssKey}</span>`</span>);
+				}
+				<span class="hljs-keyword">return</span> retval;
+			}));
+		});
+	},
+
+	_keyFromStyleSheet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">style</span>) </span>{
+		<span class="hljs-keyword">return</span> style.href || style.text;
+	},
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

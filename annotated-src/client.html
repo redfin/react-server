@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>client.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cache.html">
+                  Cache.js
+                </a>
+              
+                
+                <a class="source" href="Plugins.html">
+                  Plugins.js
+                </a>
+              
+                
+                <a class="source" href="Request.html">
+                  Request.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  util.js
+                </a>
+              
+                
+                <a class="source" href="History.html">
+                  History.js
+                </a>
+              
+                
+                <a class="source" href="RootContainer.html">
+                  RootContainer.js
+                </a>
+              
+                
+                <a class="source" href="RootElement.html">
+                  RootElement.js
+                </a>
+              
+                
+                <a class="source" href="TheFold.html">
+                  TheFold.js
+                </a>
+              
+                
+                <a class="source" href="Navigator.html">
+                  Navigator.js
+                </a>
+              
+                
+                <a class="source" href="RequestContext.html">
+                  RequestContext.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="stats.html">
+                  stats.js
+                </a>
+              
+                
+                <a class="source" href="ClientCssHelper.html">
+                  ClientCssHelper.js
+                </a>
+              
+                
+                <a class="source" href="LABString.html">
+                  LABString.js
+                </a>
+              
+                
+                <a class="source" href="PageUtil.html">
+                  PageUtil.js
+                </a>
+              
+                
+                <a class="source" href="RequestLocalStorage.html">
+                  RequestLocalStorage.js
+                </a>
+              
+                
+                <a class="source" href="StringEscapeUtil.html">
+                  StringEscapeUtil.js
+                </a>
+              
+                
+                <a class="source" href="bundleNameUtil.html">
+                  bundleNameUtil.js
+                </a>
+              
+                
+                <a class="source" href="navigateTo.html">
+                  navigateTo.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>client.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*
+ * This is a shim logging module for use in the browser.
+ *
+ * Our server-side logging library doesn't work client-side.  This just
+ * implements the interface with basic output to `console.log`.
+ *
+ * <span class="hljs-doctag">TODO:</span> For production use we should mimic the interface with NOOPs.
+ *
+ */</span>
+
+<span class="hljs-keyword">var</span> common = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./common'</span>)
+
+<span class="hljs-keyword">var</span> _console = [<span class="hljs-string">'log'</span>,<span class="hljs-string">'error'</span>,<span class="hljs-string">'warn'</span>,<span class="hljs-string">'debug'</span>,<span class="hljs-string">'info'</span>].reduce((m,v) =&gt; {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>IE9 doesn’t even <em>define</em> console unless the dev tools are open.
+IE9 also needs a real function for <code>apply</code> to work.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	m[v] = (<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">console</span> === <span class="hljs-string">'undefined'</span>)
+		?() =&gt; {}
+		:<span class="hljs-built_in">Function</span>.prototype.bind.call(<span class="hljs-built_in">console</span>[v]||<span class="hljs-built_in">console</span>.log, <span class="hljs-built_in">console</span>)
+	<span class="hljs-keyword">return</span> m;
+}, {});
+
+<span class="hljs-keyword">var</span> lvl_map = {
+	emergency : <span class="hljs-string">'error'</span>,
+	alert     : <span class="hljs-string">'error'</span>,
+	critical  : <span class="hljs-string">'error'</span>,
+	error     : <span class="hljs-string">'error'</span>,
+	warning   : <span class="hljs-string">'warn'</span>,
+	notice    : <span class="hljs-string">'warn'</span>,
+	debug     : <span class="hljs-string">'debug'</span>,
+	info      : <span class="hljs-string">'info'</span>,
+};
+<span class="hljs-keyword">var</span> clog = lvl =&gt; _console[lvl_map[lvl] || <span class="hljs-string">'log'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>IE9 also doesn’t support color.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> monochrome = <span class="hljs-keyword">typeof</span> _console.log == <span class="hljs-string">"object"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>We don’t chain our transports in the same way as winston client-side, but
+we’ll conform more-or-less to winston’s interface for the <code>log</code> method for
+consistency’s sake.  This means passing a function as the fourth argument.
+We’ll use a noop.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> noop = () =&gt; {};
+
+<span class="hljs-keyword">var</span> makeLogger = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, opts</span>)</span>{
+	<span class="hljs-keyword">var</span> config = common.config[group]
+
+	<span class="hljs-keyword">var</span> logger = {
+		opts,
+		name: opts.name,
+		level: config.baseLevel,
+		log: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">level, msg, meta</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>We want an array of arguments to apply to
+<code>console.log</code> so we don’t trail an <code>undefined</code> when
+<code>meta</code> isn’t passed.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> args = [msg];
+			<span class="hljs-keyword">if</span> (meta !== <span class="hljs-keyword">void</span> <span class="hljs-number">0</span>) args.push(meta);
+
+			<span class="hljs-keyword">this</span>.transports.forEach(transport =&gt; {
+				<span class="hljs-keyword">if</span> (config.levels[level] &gt; config.levels[transport.level]) <span class="hljs-keyword">return</span>;
+				setTimeout(transport.log.bind(transport, level, msg, meta, noop), <span class="hljs-number">0</span>);
+			});
+
+			<span class="hljs-keyword">if</span> (config.levels[level] &gt; config.levels[<span class="hljs-keyword">this</span>.level]) <span class="hljs-keyword">return</span>;
+
+			clog(level).apply(
+				_console,
+				(monochrome?[<span class="hljs-string">`<span class="hljs-subst">${level}</span>: [<span class="hljs-subst">${opts.name}</span>]`</span>]:[
+					<span class="hljs-string">'%c'</span>+level+<span class="hljs-string">'%c: [%c'</span>+opts.name+<span class="hljs-string">'%c]'</span>,
+					<span class="hljs-string">'color: '</span>+config.colors[level],
+					<span class="hljs-string">'color: black'</span>,
+					<span class="hljs-string">'color: '</span>+opts.color.client,
+					<span class="hljs-string">'color: black'</span>,
+				]).concat(args)
+			);
+		},
+		transports: [],
+		add: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transport, opts</span>)</span>{
+			<span class="hljs-keyword">this</span>.transports.push(<span class="hljs-keyword">new</span> transport(opts));
+		},
+		stack: common.stack,
+	}
+
+	<span class="hljs-built_in">Object</span>.keys(config.levels).forEach(level =&gt; {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>note that this has to be an ES-5 style function and cannot be an arrow function
+because arguments doesn’t bind to the arrow function’s arguments; it would bind
+to makeLogger’s arguments.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		logger[level] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+			logger.log.apply(logger, [level].concat([].slice.call(<span class="hljs-built_in">arguments</span>)));
+		}
+	});
+
+	(config.extraTransports||[])
+		.forEach(transport =&gt; logger.add(transport, opts));
+
+	<span class="hljs-keyword">return</span> logger;
+}
+
+<span class="hljs-keyword">var</span> getLogger = common.makeGetLogger(makeLogger);
+
+<span class="hljs-keyword">var</span> setLevel = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, level</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Update level for any future loggers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	common.config[group].baseLevel = level;
+
+	common.forEachLogger((logger, loggerGroup) =&gt; {
+		<span class="hljs-keyword">if</span> (loggerGroup === group) logger.level = level;
+	});
+}
+
+<span class="hljs-keyword">var</span> addTransport = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">group, transport</span>)</span>{
+
+	<span class="hljs-keyword">if</span> (!common.config[group].extraTransports){
+		common.config[group].extraTransports = [];
+	}
+
+	common.config[group].extraTransports.push(transport);
+
+	common.forEachLogger((logger, loggerGroup) =&gt; {
+		<span class="hljs-keyword">if</span> (loggerGroup === group) logger.add(transport, logger.opts);
+	});
+}
+
+<span class="hljs-built_in">module</span>.exports = { getLogger, setLevel, addTransport };</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
