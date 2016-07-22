@@ -1,12 +1,16 @@
 @import "../middleware/Theme/constants";
 
 .DocTitle {
-	padding: 3rem;
+	padding: @small-section-pad;
 	.light-gray-to-black-background-color-gradient();
+
+	@media(min-width: @min-medium-screen) {
+		padding: @medium-section-pad;
+	}
 
 	h1 {
 		color: @font-color-light;
-		margin-top: 0;
+		margin: 0;
 		.default-text-shadow();
 	}
 
