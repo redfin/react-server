@@ -25,7 +25,7 @@ export default class DocsPage {
 			<RootContainer className='DocsPage'>
 				<RootContainer when={this.contentsPromise}>
 					<DocContents />
-					<DocTitle />
+					<DocTitle titleProvider={DocContents} />
 				</RootContainer>
 				<RootContainer className="rootContent" when={this.bodyPromise}>
 					<DocBody />
