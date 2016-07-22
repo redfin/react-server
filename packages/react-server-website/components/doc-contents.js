@@ -6,6 +6,8 @@ import {
 	RequestLocalStorage,
 } from "react-server";
 
+import SvgDropdown from './assets/SvgDropdown';
+
 import './doc-contents.less'
 
 const RLS = RequestLocalStorage.getNamespace();
@@ -30,6 +32,12 @@ const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 </li>
 
 export default class DocContents extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			menuOpen: false,
+		};
+	}
 
 	static setResponse(res) {
 		const path = getCurrentRequestContext().getCurrentPath().replace("/docs/", "");
@@ -49,9 +57,27 @@ export default class DocContents extends React.Component {
 		return RLS().activePageName;
 	}
 
+	componentDidMount() {
+		getCurrentRequestContext().navigator.on( "navigateStart", this.closeMenu.bind(this) );
+	}
+
 	render() {
-		return <div className='DocContents'>{
-			this.props.contents.map(ContentsSection)
-		}</div>
+		return <div className={'DocContents ' + (this.state.menuOpen ? 'menuOpen' : '')}>
+			<h2 className='contentsActivePage' onClick={this.toggleMenuOpen.bind(this)}>
+				{DocContents.activePageName()} <SvgDropdown />
+			</h2>
+			<div className="contentsSections">{
+				this.props.contents.map(ContentsSection)
+			}</div>
+		</div>
+	}
+
+	toggleMenuOpen() {
+		console.log("MENUOPEN: ",this.state.menuOpen);
+		this.setState( {menuOpen: !this.state.menuOpen} );
+	}
+
+	closeMenu() {
+		this.setState( {menuOpen: false} );
 	}
 }
