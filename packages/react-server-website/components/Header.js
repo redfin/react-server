@@ -31,6 +31,7 @@ const links = [
 ]
 
 const HeaderLink = ({label, path, internal}) => {
+	// Internal links use Client Transitions for faster load times.
 	if (internal) {
 		return <li key={path} {...classIfActive(path, internal)}><Link path={path}>{label}</Link></li>
 	} else {
@@ -63,6 +64,10 @@ export default class Header extends React.Component {
 	}
 
 	componentDidMount() {
+		// Because Client Transitions will reload the content, not the page, we
+		// make sure that a navigation action also closes the modal.
+		// If we didn't do this, you'd wind up on a new page but still have the
+		// menu open.
 		getCurrentRequestContext().navigator.on( "navigateStart", this.closeMenu.bind(this) );
 	}
 
@@ -94,6 +99,9 @@ export default class Header extends React.Component {
 	}
 
 	toggleMenuOpen() {
+		// For mobile devices, the menu is basically a modal - it takes over the
+		// whole viewport. To prevent the user from scrolling the page behind
+		// the navigation menu, we prevent touchmove from firing.
 		if (!this.state.menuOpen) {
 			this.refs.headerNav.addEventListener('touchmove', function(event) {
 				event.preventDefault();
