@@ -1,7 +1,6 @@
 import React from 'react';
 import Content from '../components/homepage/HomepageContent';
 import Footer from '../components/Footer';
-import '../middleware/Theme/button.less';
 import './homepage.less';
 
 export default class Homepage {

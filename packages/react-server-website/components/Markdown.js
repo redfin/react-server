@@ -13,7 +13,7 @@ export default class Markdown extends React.Component {
 	render() {
 		let content = this.props.children || this.props.source;
 
-		return <span dangerouslySetInnerHTML={{ __html: this._renderMarkdown(content) }} />
+		return <div dangerouslySetInnerHTML={{ __html: this._renderMarkdown(content) }} />
 	}
 
 	_renderMarkdown(content) {

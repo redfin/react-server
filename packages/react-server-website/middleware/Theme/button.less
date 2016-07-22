@@ -9,9 +9,9 @@ button {
 	text-decoration: none;
 	color: #FFFFFF;
 	background-color: @brand-color;
-	border: 1px solid @brand-color;
+
 	border-radius: 2px;
-	box-shadow: 2px 2px #333333;
+	.default-box-shadow();
 	height: 3.5rem;
 	font-weight: 600;
 	padding: 1rem;
@@ -37,8 +37,21 @@ button {
 		border-color: @border-color;
 	}
 
+	&.tertiary {
+		color: @gray;
+		border: 1px solid @dark-gray;
+		background-color: transparent;
+		box-shadow: 0 0;
+	}
+
 	&.small {
-		font-size: 1rem;
+		height: 2rem;
+		padding: 0.3rem;
+
+		&,
+		& > * {
+			font-size: 1rem;
+		}
 	}
 
 	@media (min-width: @min-medium-screen) {

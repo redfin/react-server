@@ -3,6 +3,7 @@ import {join} from "path";
 import {RootContainer, RootElement} from "react-server";
 
 import Repo from "../lib/repo";
+import DocTitle from "../components/doc-title";
 import DocBody from "../components/doc-body";
 import DocContents from "../components/doc-contents";
 
@@ -23,6 +24,11 @@ export default class DocsPage {
 			<RootElement when={this.contentsPromise}>
 				<DocContents />
 			</RootElement>
+			{/* TODO: Set the server version dynamically. */}
+			<DocTitle
+				title="Test Title"
+				viewSourceUrl="/"
+				serverVersion="0.3.4" />
 			<DocBody />
 		</RootContainer>
 	}
