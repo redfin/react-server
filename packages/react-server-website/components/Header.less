@@ -1,15 +1,27 @@
 @import '../middleware/Theme/constants';
 
+
+.fixedHeaderSpacer {
+	// Counteracts height of fixed position Header
+	height: 4.5rem;
+
+	@media (min-width: @min-medium-screen) {
+		height: 5.5rem;
+	}
+}
+
 .Header {
 	display: table;
 	width: 100%;
 	color: #585858;
 	background: white;
+	border-bottom: 1px solid @border-color;
 
 	.route-homepage & {
 		.light-gray-to-black-background-color-gradient();
 		color: @almost-white;
 		text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+		border-bottom: 0;
 
 		.header-nav a {
 			color: inherit;
@@ -61,7 +73,7 @@
 		}
 
 		svg {
-			height: 2rem;
+			height: 1.5rem;
 			fill: currentColor;
 			vertical-align: middle;
 		}
@@ -69,7 +81,7 @@
 
 	@max-small-screen: (@min-medium-screen - 1);
 	&.menuOpen {
-		color: @font-color;
+		color: #585858;
 
 		.header-logo {
 			position: relative;

@@ -68,21 +68,24 @@ export default class Header extends React.Component {
 
 	render () {
 		return (
-			<header className={this.state.menuOpen ? "menuOpen Header" : "Header"}>
-				<Link className="header-logo" path="/">
-					<SvgLogo />React Server
-				</Link>
+			<div>
+				<div className="fixedHeaderSpacer"></div>
+				<header className={this.state.menuOpen ? "menuOpen Header" : "Header"}>
+					<Link className="header-logo" path="/">
+						<SvgLogo />React Server
+					</Link>
 
-				<div className="mobileToggle" onClick={this.toggleMenuOpen.bind(this)}>
-					<MenuControl open={this.state.menuOpen} />
-				</div>
+					<div className="mobileToggle" onClick={this.toggleMenuOpen.bind(this)}>
+						<MenuControl open={this.state.menuOpen} />
+					</div>
 
-				<nav className="header-nav" ref="headerNav">
-					<ul>
-						{links.map(HeaderLink)}
-					</ul>
-				</nav>
-			</header>
+					<nav className="header-nav" ref="headerNav">
+						<ul>
+							{links.map(HeaderLink)}
+						</ul>
+					</nav>
+				</header>
+			</div>
 		);
 	}
 
