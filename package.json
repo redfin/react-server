@@ -5,7 +5,7 @@
     "//": "TODO: Drop `kill-singletons`... eventually",
     "bootstrap-no-i": "npm run kill-singletons && lerna bootstrap",
     "kill-singletons": "lerna exec -- rm -rf node_modules/react",
-    "docs": "docco packages/react-server/core/**/*.js -o annotated-src",
+    "docs": "docco packages/react-server/core/**/*.js packages/react-server/core/*.js -o annotated-src",
     "test": "lerna run test",
     "clean": "rimraf lerna-debug.log && lerna run clean",
     "nuke": "lerna clean && rm -r node_modules",

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>gulp-common.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="babel-opts.html">
+                  babel-opts.js
+                </a>
+              
+                
+                <a class="source" href="gulp-common.html">
+                  gulp-common.js
+                </a>
+              
+                
+                <a class="source" href="ClientController.html">
+                  ClientController.js
+                </a>
+              
+                
+                <a class="source" href="ClientRequest.html">
+                  ClientRequest.js
+                </a>
+              
+                
+                <a class="source" href="ExpressServerRequest.html">
+                  ExpressServerRequest.js
+                </a>
+              
+                
+                <a class="source" href="FramebackController.html">
+                  FramebackController.js
+                </a>
+              
+                
+                <a class="source" href="ReactServerAgent.html">
+                  ReactServerAgent.js
+                </a>
+              
+                
+                <a class="source" href="client.html">
+                  client.js
+                </a>
+              
+                
+                <a class="source" href="common.html">
+                  common.js
+                </a>
+              
+                
+                <a class="source" href="config.html">
+                  config.js
+                </a>
+              
+                
+                <a class="source" href="constants.html">
+                  constants.js
+                </a>
+              
+                
+                <a class="source" href="logging.html">
+                  logging.js
+                </a>
+              
+                
+                <a class="source" href="renderMiddleware.html">
+                  renderMiddleware.js
+                </a>
+              
+                
+                <a class="source" href="server.html">
+                  server.js
+                </a>
+              
+                
+                <a class="source" href="big.html">
+                  big.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>gulp-common.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> babel = <span class="hljs-built_in">require</span>(<span class="hljs-string">"gulp-babel"</span>);
+
+<span class="hljs-built_in">module</span>.exports = {
+	es6Transform: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>stage:1 needed since es7.objectRestSpread is a stage 1 ES7 proposal</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> babel(<span class="hljs-built_in">require</span>(<span class="hljs-string">"./babel-opts"</span>));
+	},
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
