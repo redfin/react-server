@@ -1,7 +1,7 @@
 import React from 'react';
 import {ReactServerAgent, RootContainer, RootElement} from 'react-server';
 import Docco from '../components/Docco';
-import Footer from '../components/Footer';
+import DocTitle from '../components/doc-title';
 import SourceContents from '../components/source-contents';
 
 export default class SourcePage {
@@ -22,9 +22,10 @@ export default class SourcePage {
 	getElements() {
 		return (
 			<RootContainer className='rootContent' when={this.bodyPromise}>
-				<RootElement when={this.contentsPromise}>
+				<RootContainer when={this.contentsPromise}>
 					<SourceContents />
-				</RootElement>
+					<DocTitle titleProvider={SourceContents} />
+				</RootContainer>
 				<Docco />
 			</RootContainer>
 		);
