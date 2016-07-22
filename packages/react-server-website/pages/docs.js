@@ -6,6 +6,7 @@ import Repo from "../lib/repo";
 import DocTitle from "../components/doc-title";
 import DocBody from "../components/doc-body";
 import DocContents from "../components/doc-contents";
+import "./docs.less";
 
 export default class DocsPage {
 	handleRoute(next) {
@@ -20,16 +21,17 @@ export default class DocsPage {
 	}
 
 	getElements() {
-		return <RootContainer className='rootContent' when={this.bodyPromise}>
-			<RootElement when={this.contentsPromise}>
-				<DocContents />
-			</RootElement>
-			{/* TODO: Set the server version dynamically. */}
-			<DocTitle
-				title="Test Title"
-				viewSourceUrl="/"
-				serverVersion="0.3.4" />
-			<DocBody />
-		</RootContainer>
+		return (
+			<RootContainer className='DocsPage'>
+				{/* FIXME: `title` is not updating when clinking a link the doc contents. */}
+				<DocTitle title={DocContents.activePageName()} />
+				<RootContainer className="rootContent" when={this.bodyPromise}>
+					<RootElement when={this.contentsPromise}>
+						<DocContents />
+					</RootElement>
+					<DocBody />
+				</RootContainer>
+			</RootContainer>
+		);
 	}
 }

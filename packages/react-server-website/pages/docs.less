@@ -1,0 +1,13 @@
+@import "../middleware/Theme/constants";
+
+.DocsPage {
+	& > .rootContent {
+		margin-top: 0;
+	}
+
+	.DocTitle {
+		@media (min-width: @min-medium-screen) {
+			padding-left: calc(33% + @medium-screen-gutter);
+		}
+	}
+}
