@@ -15,7 +15,7 @@ A binding of URL paths to a Page class that can render the results for those URL
 `page: Page`
 * The page to render
 
-#Page
+# Page
 
 An HTML page to be rendered. Note that this Page may be rendered as a result
 of either an HTTP request or a client-side navigation. The Page’s core

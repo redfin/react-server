@@ -5,7 +5,7 @@
    release an implementation, and when they did, it had some definite rough
    spots (singletons, string actions, lots of boilerplate). A bunch of other
    implementations that used the same basic model with different ideas had
-   cropped up ([redux](redux.js.org), [mobx](https://github.com/mobxjs/mobx),
+   cropped up ([redux](http://redux.js.org), [mobx](https://github.com/mobxjs/mobx),
    [alt](http://alt.js.org/)), and Facebook announced
    [Relay](https://facebook.github.io/relay/) as a design pattern, and open
    sourced that, too, but it was clear at the time that a lot of teams at
