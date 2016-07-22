@@ -3,7 +3,7 @@ import React from 'react';
 import Remarkable from 'remarkable';
 import hljs from '../lib/highlight.js';
 
-import {logging} from 'react-server';
+import {logging, navigateTo} from 'react-server';
 
 import './Markdown.less';
 
@@ -37,4 +37,43 @@ export default class Markdown extends React.Component {
 
 		return md.render(content);
 	}
+
+	componentDidMount() {
+		const aTags = document.getElementsByTagName('a');
+		logger.info(aTags);
+		logger.info(typeof aTags);
+		const len = aTags.length;
+		for (let i = 0; i < len; i++) {
+			let a = aTags[i];
+			if (isInternal(a)) {
+				addOnClickHandler(a);
+			} else {
+				addTargetBlank(a);
+			}
+		}
+	}
+}
+
+function isInternal(a) {
+	const href = a.getAttribute('href');
+	return href.startsWith('/');
+}
+
+function addOnClickHandler(a) {
+	a.onclick = function (e) {
+		// See Link.jsx in react-server/core/Link
+		if (!e.metaKey) {
+			e.preventDefault();
+			e.stopPropagation();
+			navigateTo(a.getAttribute('href'), {
+				reuseDom: true,
+			});
+		} else {
+			// do normal browser navigate
+		}
+	}
+}
+
+function addTargetBlank(a) {
+	a.setAttribute('target', '_blank');
 }
