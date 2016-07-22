@@ -64,6 +64,7 @@ function addOnClickHandler(a) {
 			e.stopPropagation();
 			navigateTo(a.getAttribute('href'), {
 				reuseDom: true,
+				bundleData: true,
 			});
 		} else {
 			// do normal browser navigate

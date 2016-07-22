@@ -26,7 +26,7 @@ const ContentsLink = ({name, path}) => ContentsLinkWithMungedPath(
 )
 
 const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
-	<Link reuseDom path={path}>{name}</Link>
+	<Link reuseDom bundleData path={path}>{name}</Link>
 </li>
 
 export default class DocContents extends React.Component {
