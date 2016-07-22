@@ -1,9 +1,11 @@
-@import "../../middleware/Theme/constants";
+@import '../../middleware/Theme/constants';
 
-.HeroSection {
+section.HeroSection {
 	display: table;
 	width: 100%;
 	height: 60vh;
+	padding-top: 5rem;
+	padding-bottom: 2rem;
 	.background-color-top-left();
 
 	.banner-content {
@@ -71,16 +73,4 @@
 			}
 		}
 	}
-}
-
-
-.background-color-top-left() {
-	background: rgba(88,88,88,1);
-	background: -moz-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
-	background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(88,88,88,1)), color-stop(100%, rgba(51,51,51,1)));
-	background: -webkit-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
-	background: -o-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
-	background: -ms-linear-gradient(-45deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
-	background: linear-gradient(135deg, rgba(88,88,88,1) 0%, rgba(51,51,51,1) 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#585858', endColorstr='#333333', GradientType=1 );
 }
