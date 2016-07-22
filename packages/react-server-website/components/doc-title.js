@@ -40,8 +40,10 @@ export default class DocTitle extends Component {
 
 		return (
 			<div className="DocTitle">
-				<h1 className="title">{this.props.title}</h1>
-				{ctas}
+				<div className="doc-title-contents">
+					<h1 className="title">{this.props.title}</h1>
+					{ctas}
+				</div>
 			</div>
 		);
 	}
