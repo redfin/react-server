@@ -12,7 +12,7 @@ export default class Footer extends React.Component {
 				</p>
 				<p>
 					<small>
-						<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a> Talk with us on <a href="https://react-server.slack.com/">Slack</a>.
+						<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a> Talk with us on <a href="https://slack.react-server.io/">Slack</a>.
 					</small>
 				</p>
 				<a href="https://github.com/redfin/react-server" className="github-button" data-count-href="/redfin/react-server/stargazers" data-count-api="/repos/redfin/react-server#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star redfin/react-server on GitHub">Star</a>
