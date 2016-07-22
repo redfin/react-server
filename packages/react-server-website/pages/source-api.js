@@ -1,6 +1,8 @@
 import path from 'path';
 
-export default class PageDocApi {
+const extractBody = new RegExp('<body[^>]*>((.|[\n\r])*)<\/body>');
+
+export default class SourceApi {
 	setConfigValues() {
 		return {isRawResponse: true};
 	}
@@ -16,7 +18,8 @@ export default class PageDocApi {
 				reject(new Error('Authorization Denied'));
 			}
 			try {
-				resolve(require(filepath))
+				const contents = require(filepath);
+				resolve(extractBody.exec(contents)[1]);
 			} catch (e) {
 				reject(e);
 			}

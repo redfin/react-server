@@ -8,7 +8,7 @@
     "start-prod": "react-server-cli --port 3010 --minify --long-term-caching --js-url /assets/ && npm run docs",
     "start": "react-server-cli --port 3010 --js-port 3011",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
-    "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js"
+    "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },
   "license": "Apache-2.0",
   "dependencies": {

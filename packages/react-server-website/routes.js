@@ -18,6 +18,11 @@ module.exports = {
 			method: 'get',
 			page: './pages/docs',
 		},
+		source: {
+			path: ['/source:path(.*)'],
+			method: 'get',
+			page: './pages/source',
+		},
 		DocsApi: {
 			path: ['/api/docs'],
 			method: 'get',
@@ -29,9 +34,14 @@ module.exports = {
 			page: './pages/contents-api',
 		},
 		DoccoApi: {
-			path: ['/api/docco'],
+			path: ['/api/source'],
 			method: 'get',
-			page: './pages/docco-api',
+			page: './pages/source-api',
+		},
+		SourceContentsApi: {
+			path: ['/api/source-contents'],
+			method: 'get',
+			page: './pages/source-contents-api',
 		},
 	},
 };
