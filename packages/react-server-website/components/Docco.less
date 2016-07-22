@@ -1,6 +1,11 @@
+@import "../middleware/Theme/constants";
+
 /*--------------------- Layout ----------------------------*/
 #container { min-height: 100%; }
 
+#title h1 {
+	display: none; // we already have this on the page
+}
 
 p {
   margin: 15px 0 0px;
@@ -136,12 +141,13 @@ ul.sections > li > div {
 }
 
 /*---------------------- Low resolutions (> 320px) ---------------------*/
-@media only screen and (min-width: 320px) {
+@media only screen and (min-width: 220px) {
   .pilwrap { display: none; }
 
   ul.sections > li > div {
     display: block;
-    padding:5px 10px 0 10px;
+    padding: 0;
+	margin: 0;
   }
 
   ul.sections > li > div.annotation ul, ul.sections > li > div.annotation ol {
@@ -153,7 +159,7 @@ ul.sections > li > div {
     -webkit-box-shadow: inset 0 0 5px #e5e5ee;
     box-shadow: inset 0 0 5px #e5e5ee;
     border: 1px solid #dedede;
-    margin:5px 10px 5px 10px;
+    margin: 0;
     padding-bottom: 5px;
   }
 
@@ -168,8 +174,8 @@ ul.sections > li > div {
   }
 }
 
-/*----------------------  (> 481px) ---------------------*/
-@media only screen and (min-width: 481px) {
+/*----------------------  (> 1000px) ---------------------*/
+@media only screen and (min-width: 1000px) {
   #container {
     position: relative;
   }
@@ -206,11 +212,7 @@ ul.sections > li > div {
 
 
   #background {
-    position: absolute;
-    top: 0; bottom: 0;
-    width: 350px;
-    border-right: 1px solid #e5e5ee;
-    z-index: -1;
+    display: none;
   }
 
   ul.sections > li > div.annotation ul, ul.sections > li > div.annotation ol {
@@ -226,10 +228,10 @@ ul.sections > li > div {
   }
 
   ul.sections > li > div.annotation {
-    max-width: 350px;
-    min-width: 350px;
+    // max-width: 350px;
+    // min-width: 350px;
+	width: 33%;
     min-height: 5px;
-    padding: 13px;
     overflow-x: hidden;
     white-space: normal;
     vertical-align: top;
@@ -270,26 +272,6 @@ ul.sections > li > div {
 
   ul.sections > li > div.annotation:hover .pilcrow {
     opacity: 1;
-  }
-}
-
-/*---------------------- (> 1025px) ---------------------*/
-@media only screen and (min-width: 1025px) {
-
-  body {
-    line-height: 24px;
-  }
-
-  #background {
-    width: 525px;
-  }
-  ul.sections > li > div.annotation {
-    max-width: 525px;
-    min-width: 525px;
-    padding: 10px 25px 1px 50px;
-  }
-  ul.sections > li > div.content {
-    padding: 9px 15px 16px 25px;
   }
 }
 

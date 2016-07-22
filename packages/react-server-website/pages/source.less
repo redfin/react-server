@@ -1,9 +1,36 @@
 @import "../middleware/Theme/constants";
+@import "../components/Markdown";
 
 .SourcePage .rootContent {
-	padding: 0 0 0 calc(270px + 2rem) !important;
-	box-sizing: border-box;
-	margin: 0 !important;
-	width: 100vw !important;
-	max-width: 100% !important;
+	@media (min-width: @min-medium-screen) {
+		padding: 0 0 0 ~"calc(270px + 2rem)" !important;
+		box-sizing: border-box;
+		margin: 0 !important;
+		width: 100vw !important;
+		max-width: 100% !important;
+	}
+
+	@media (min-width: 1000px) {
+		.sections li {
+			display: table;
+			width: 100%;
+		}
+
+		.annotation,
+		.content {
+			display: table-cell;
+		}
+
+		.annotation {
+			width: 33%;
+		}
+
+		.content {
+			width: 67%;
+
+			.highlight {
+				background: @background-color;
+			}
+		}
+	}
 }
