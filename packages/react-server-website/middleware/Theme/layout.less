@@ -4,16 +4,31 @@
 	z-index: 999; // above all the things
 }
 
+.DocContents {
+	@media(min-width: @min-medium-screen) {
+		width: ~"calc(33% - 2rem )";
+		max-width: 240px;
+		float: left;
+
+		top: 3rem;
+		left: @medium-screen-gutter;
+	}
+
+	@media(min-width: @min-large-screen) {
+		.DocContents {
+			right: auto;
+
+			left: @large-screen-gutter;
+		}
+	}
+}
+
 .rootContent {
 	width: 100%;
 	max-width: @max-content-width;
 
 	padding: 0rem @small-screen-gutter;
 	box-sizing: border-box;
-
-	.DocContents {
-		box-sizing: border-box;
-	}
 
 	section {
 		padding-top: @small-section-pad;
@@ -24,27 +39,11 @@
 		width: @medium-content-width;
 		padding: 0rem @medium-screen-gutter;
 		margin-left: 33%;
-
-		.DocContents {
-			width: ~"calc(33% - 2rem )";
-			max-width: 270px;
-			position: absolute;
-			right: @medium-content-width;
-
-			margin-left: @medium-screen-gutter;
-		}
 	}
 
 	@media (min-width: @min-large-screen) {
 		width: 100%;
 		margin-left: auto;
 		margin-right: auto;
-
-		.DocContents {
-			right: auto;
-			left: 0rem;
-
-			margin-left: @large-screen-gutter;
-		}
 	}
 }

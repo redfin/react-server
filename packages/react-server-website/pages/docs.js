@@ -1,6 +1,6 @@
 import React from 'react';
 import {join} from "path";
-import {RootContainer, RootElement} from "react-server";
+import {RootContainer} from "react-server";
 
 import Repo from "../lib/repo";
 import DocTitle from "../components/doc-title";
@@ -24,11 +24,11 @@ export default class DocsPage {
 		return (
 			<RootContainer className='DocsPage'>
 				{/* FIXME: `title` is not updating when clinking a link the doc contents. */}
-				<DocTitle title={DocContents.activePageName()} />
+				<RootContainer when={this.contentsPromise}>
+					<DocContents />
+					<DocTitle title={DocContents.activePageName()} />
+				</RootContainer>
 				<RootContainer className="rootContent" when={this.bodyPromise}>
-					<RootElement when={this.contentsPromise}>
-						<DocContents />
-					</RootElement>
 					<DocBody />
 				</RootContainer>
 			</RootContainer>

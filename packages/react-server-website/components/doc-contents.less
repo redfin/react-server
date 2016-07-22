@@ -5,22 +5,19 @@
 
 .DocContents {
 	position: relative;
+	box-sizing: border-box;
 
 	padding: 0;
-	margin: 0 -@small-screen-gutter;
 	width: 100vw;
 
 	background: white;
 
 	@media (min-width: @min-medium-screen) {
-		padding: 1.5rem;
 		margin: 0;
 
 		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
 		border: 1px solid @border-color;
 		border-radius: 2px;
-
-		top: 7rem;
 	}
 
 	.contentsActivePage {
