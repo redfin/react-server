@@ -10,25 +10,33 @@
 		max-width: 100% !important;
 	}
 
+	.sections #title {
+		display: none;
+	}
 	@media (min-width: 1000px) {
 		.sections li {
 			display: table;
 			width: 100%;
+			margin-top: 1rem;
 		}
 
 		.annotation,
 		.content {
 			display: table-cell;
+			border-top: 1px solid @border-color;
 		}
 
 		.annotation {
 			width: 33%;
+			padding: 1rem;
 		}
 
 		.content {
 			width: 67%;
+			padding: 0;
 
 			.highlight {
+				padding: 1rem;
 				background: @background-color;
 			}
 		}
