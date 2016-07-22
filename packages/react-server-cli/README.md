@@ -189,6 +189,16 @@ Sets the severity level for the logs being reported. Values are, in ascending or
 
 Default is **'debug'** in development mode and **'notice'** in production.
 
+#### --stats
+
+Outputs webpack stats to `__clientTemp/build/stats.json`.  Recommended for use with `webpack-bundle-size-analyzer`
+
+```
+» cat __clientTemp/build/stats.json | webpack-bundle-size-analyzer
+react: 577.1 KB (24.4%)
+react-server: 423.35 KB (17.9%)
+```
+
 #### --help, -?
 Shows command line options.
 
