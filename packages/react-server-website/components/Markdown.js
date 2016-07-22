@@ -13,7 +13,9 @@ export default class Markdown extends React.Component {
 	render() {
 		let content = this.props.children || this.props.source;
 
-		return <div dangerouslySetInnerHTML={{ __html: this._renderMarkdown(content) }} />
+		return <div className="dangerous-markdown" dangerouslySetInnerHTML={{
+			__html: this._renderMarkdown(content),
+		}} />
 	}
 
 	_renderMarkdown(content) {
@@ -39,18 +41,13 @@ export default class Markdown extends React.Component {
 	}
 
 	componentDidMount() {
-		const aTags = document.getElementsByTagName('a');
-		logger.info(aTags);
-		logger.info(typeof aTags);
-		const len = aTags.length;
-		for (let i = 0; i < len; i++) {
-			let a = aTags[i];
+		[].slice.call(document.querySelectorAll('.dangerous-markdown a')).forEach(a => {
 			if (isInternal(a)) {
 				addOnClickHandler(a);
 			} else {
 				addTargetBlank(a);
 			}
-		}
+		});
 	}
 }
 
