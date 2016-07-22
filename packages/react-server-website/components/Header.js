@@ -32,9 +32,9 @@ const links = [
 
 const HeaderLink = ({label, path, internal}) => {
 	if (internal) {
-		return <li {...classIfActive(path, internal)}><Link path={path}>{label}</Link></li>
+		return <li key={path} {...classIfActive(path, internal)}><Link path={path}>{label}</Link></li>
 	} else {
-		return <li {...classIfActive(path, internal)}><a target="_blank" href={path}>{label}</a></li>
+		return <li key={path} {...classIfActive(path, internal)}><a target="_blank" href={path}>{label}</a></li>
 	}
 }
 
