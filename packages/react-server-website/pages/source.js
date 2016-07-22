@@ -1,5 +1,5 @@
 import React from 'react';
-import {ReactServerAgent, RootContainer, RootElement} from 'react-server';
+import {ReactServerAgent, RootContainer} from 'react-server';
 import Docco from '../components/Docco';
 import DocTitle from '../components/doc-title';
 import SourceContents from '../components/source-contents';
