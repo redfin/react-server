@@ -1,5 +1,3 @@
-# Understanding Rendering
-
 Given that react-server is about using universal JavaScript to make server-
 and client-side rendering as similar as possible, it can be hard to understand
 which part of a large react-server application is rendering any given part of
