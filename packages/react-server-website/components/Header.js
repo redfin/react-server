@@ -9,13 +9,13 @@ import './Header.less';
 
 const links = [
 	{
-		label: "Source",
-		path: "/source",
+		label: "Docs",
+		path: "/docs",
 		internal: true,
 	},
 	{
-		label: "Docs",
-		path: "/docs",
+		label: "Source",
+		path: "/source",
 		internal: true,
 	},
 	{
