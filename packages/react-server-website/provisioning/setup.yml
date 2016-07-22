@@ -1,0 +1,60 @@
+- name: Launch instances
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: Provision a set of instances
+      ec2:
+         key_name: walkscore_base_keypair2
+         group: react-server
+         instance_type: t2.medium
+         image: ami-d732f0b7
+         region: us-west-2
+         vpc_subnet_id: subnet-d94db0ae
+         assign_public_ip: yes
+         instance_profile_name: react-server-box
+         wait: yes
+         exact_count: 1
+         count_tag:
+            Name: react-server-box
+         instance_tags:
+            Name: react-server-box
+      register: ec2
+
+    - name: Add all instance public IPs to host group
+      add_host: hostname={{ item.public_ip }} groups=react-server-box-hosts
+      with_items: '{{ ec2.instances }}'
+
+    - name: Wait for SSH to come up
+      wait_for: host={{ item.public_dns_name }} port=22 delay=30 timeout=320 state=started
+      with_items: '{{ ec2.instances }}'
+
+- name: Configuration
+  hosts: react-server-box-hosts
+  user: ubuntu
+
+  tasks:
+    - name: Gather facts about instances
+      action: ec2_facts
+
+    - name: Set up Docker
+      script: docker-setup.sh
+
+    - name: Copy Docker Compose configuration
+      copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
+
+    - name: Deploy services
+      shell: sudo docker-compose up -d
+
+    - name: Wait for the service to become available
+      wait_for: port=80 delay=20
+
+    - name: Register instances with load balancer
+      local_action:
+        module: ec2_elb
+        instance_id: '{{ ansible_ec2_instance_id }}'
+        ec2_elbs: react-server-no-ssl
+        region: us-west-2
+        state: present
+        wait: no

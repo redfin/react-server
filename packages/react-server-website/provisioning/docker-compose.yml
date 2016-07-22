@@ -1,18 +1,14 @@
 version: '2'
 services:
   node:
-    build:
-      context: .
-      dockerfile: Dockerfile.node
+    image: davidalber/react-server-docs-node
   nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
+    image: davidalber/react-server-docs-nginx
     depends_on:
      - node
     links:
      - node:react-server-docs
     ports:
-     - "8080:80"
+     - "80:80"
     volumes_from:
      - node:ro
