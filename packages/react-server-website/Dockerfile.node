@@ -15,6 +15,6 @@ RUN cp __clientTemp/build/* /www/data/assets/
 
 VOLUME /www/data/assets
 
-EXPOSE 3010 3011
+EXPOSE 3010
 
 CMD [ "npm", "run", "start-prod" ]
