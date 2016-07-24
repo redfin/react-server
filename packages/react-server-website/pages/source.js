@@ -1,7 +1,7 @@
 import React from 'react';
 import {ReactServerAgent, RootContainer} from 'react-server';
-import Docco from '../components/Docco';
-import DocTitle from '../components/doc-title';
+import SourceBody from '../components/source-body';
+import PageTitle from '../components/page-title';
 import SourceContents from '../components/source-contents';
 
 import './source.less';
@@ -26,10 +26,10 @@ export default class SourcePage {
 			<RootContainer className='SourcePage'>
 				<RootContainer when={this.contentsPromise}>
 					<SourceContents />
-					<DocTitle titleProvider={SourceContents} />
+					<PageTitle titleProvider={SourceContents} />
 				</RootContainer>
 				<RootContainer className='rootContent' when={this.bodyPromise}>
-					<Docco />
+					<SourceBody />
 				</RootContainer>
 			</RootContainer>
 		);

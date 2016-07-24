@@ -3,7 +3,7 @@ import {join} from "path";
 import {RootContainer} from "react-server";
 
 import Repo from "../lib/repo";
-import DocTitle from "../components/doc-title";
+import DocTitle from "../components/page-title";
 import DocBody from "../components/doc-body";
 import DocContents from "../components/doc-contents";
 import "./docs.less";

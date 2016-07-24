@@ -1,5 +1,5 @@
 import React from 'react';
-import Content from '../components/homepage/HomepageContent';
+import HomepageBody from '../components/homepage-body';
 import './homepage.less';
 
 export default class Homepage {
@@ -11,7 +11,7 @@ export default class Homepage {
 	getElements() {
 		return (
 			<div className="homepage">
-				<Content />
+				<HomepageBody />
 			</div>
 		);
 	}
