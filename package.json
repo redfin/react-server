@@ -23,7 +23,7 @@
     "express": "4.11.2",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
-    "gulp-changed": "1.1.1",
+    "gulp-changed": "1.3.1",
     "gulp-eslint": "^3.0.1",
     "gulp-filter": "2.0.0",
     "gulp-if": "1.2.5",
@@ -54,6 +54,6 @@
     "zombie": "4.1.0"
   },
   "engine": {
-  	"node": ">4.2.1"
+    "node": ">4.2.1"
   }
 }
