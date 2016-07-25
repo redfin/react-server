@@ -1,8 +1,8 @@
 import React from 'react';
 import {Component, PropTypes} from 'react';
-import './doc-title.less';
+import './page-title.less';
 
-export default class DocTitle extends Component {
+export default class PageTitle extends Component {
 	static getPropTypes() {
 		return {
 			viewSourceUrl: PropTypes.string,
@@ -39,7 +39,7 @@ export default class DocTitle extends Component {
 		}
 
 		return (
-			<div className="DocTitle">
+			<div className="PageTitle">
 				<div className="rootContent">
 					<h1 className="title">{this.props.titleProvider.activePageName()}</h1>
 					{ctas}
