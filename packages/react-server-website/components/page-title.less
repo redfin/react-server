@@ -1,0 +1,22 @@
+@import "../middleware/Theme/constants";
+
+.PageTitle {
+	padding: @small-section-pad 0;
+	.light-gray-to-black-background-color-gradient();
+
+	@media(min-width: @min-medium-screen) {
+		padding: @medium-section-pad 0;
+	}
+
+	h1 {
+		color: @font-color-light;
+		margin: 0;
+		.default-text-shadow();
+	}
+
+	.title-ctas {
+		.Button:nth-child(2n) {
+			margin-left: 1rem;
+		}
+	}
+}

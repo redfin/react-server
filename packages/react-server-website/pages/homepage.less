@@ -1,0 +1,30 @@
+@import '../middleware/Theme/constants.less';
+
+
+section {
+	box-sizing: border-box;
+	padding: @small-section-pad;
+
+	@media (min-width: @min-medium-screen) {
+		padding: @medium-section-pad;
+	}
+
+	&:nth-child(2) {
+		background-color: #f5f5f5;
+
+		pre {
+			background-color: #FFFFFF;
+		}
+	}
+}
+
+.homepage {
+	.get-started-section {
+		border-bottom: 1px solid @border-color;
+	}
+
+	.dangerous-markdown {
+		max-width: 740px;
+		margin: 0 auto;
+	}
+}

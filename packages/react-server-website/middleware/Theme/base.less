@@ -1,0 +1,70 @@
+// @import 'reset'; // Disabled until we have time to rig up all the basics to look good
+@import 'constants';
+@import 'layout';
+@import 'button';
+
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,900,600|Source+Code+Pro');
+
+body {
+	overflow-y: scroll;
+
+	margin: 0rem;
+	padding: 0rem;
+
+	font-family: 'Source Sans Pro', 'Helvetica', 'Arial', sans-serif;
+	font-size: 16px;
+	color: @font-color;
+}
+
+
+// core html
+
+p {
+	line-height: 1.5;
+	margin-bottom: 1rem;
+}
+
+a {
+	color: @brand-color;
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+	&:active,
+	&:focus {
+		text-decoration: none;
+	}
+}
+
+pre,
+code {
+	white-space: pre-wrap;
+}
+
+// typography
+
+.page-title {
+	font-size: 2rem;
+	color: @background-color;
+}
+
+.section-title,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+	font-weight: 600;
+}
+
+strong {
+	font-weight: 600;
+}
+
+small {
+	font-size: 16px;
+}
