@@ -20,6 +20,13 @@ cache:
   - packages/react-server-test-pages/node_modules
   - packages/react-server-website/node_modules
 
+before_cache:
+  - rm -f packages/react-server-integration-tests/node_modules/react-server-cli/package.json
+  - rm -f packages/react-server-integration-tests/node_modules/react-server/package.json
+  - rm -f packages/react-server-test-pages/node_modules/react-server-cli/package.json
+  - rm -f packages/react-server-test-pages/node_modules/react-server-data-bundle-cache/package.json
+  - rm -f packages/react-server-test-pages/node_modules/react-server/package.json
+
 env:
   - CXX=g++-4.8
 addons:
