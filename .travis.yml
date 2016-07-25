@@ -7,7 +7,18 @@ node_js:
 cache:
   directories:
   - node_modules
-  - packages/*/node_modules
+  - packages/babel-plugin-react-server/node_modules
+  - packages/babel-preset-react-server/node_modules
+  - packages/generator-react-server/node_modules
+  - packages/react-server/node_modules
+  - packages/react-server-cli/node_modules
+  - packages/react-server-data-bundle-cache/node_modules
+  - packages/react-server-examples/node_modules
+  - packages/react-server-gulp-module-tagger/node_modules
+  - packages/react-server-integration-tests/node_modules
+  - packages/react-server-module-tagger/node_modules
+  - packages/react-server-test-pages/node_modules
+  - packages/react-server-website/node_modules
 
 env:
   - CXX=g++-4.8
