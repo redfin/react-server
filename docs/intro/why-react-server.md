@@ -1,5 +1,3 @@
-# react-server
-
 React is an amazing library for client-side user interface, and it has the
 added benefit of being able to be rendered on the server, which is crucial for
 SEO, SEM, and user experience. However, server-side rendering in practice is

@@ -1,5 +1,3 @@
-# react-server-cli
-
 A simple command line app that will compile a routes file for the client and start up express. To use:
 
 1. `npm install --save react-server-cli react-server`
