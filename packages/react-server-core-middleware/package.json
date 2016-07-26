@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src -d lib",
+    "clean": "rimraf lib",
     "test": "eslint src"
   },
   "repository": {
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
-    "babel-cli": "^6.11.4"
+    "babel-cli": "^6.11.4",
+    "rimraf": "^2.5.4"
   }
 }
