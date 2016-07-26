@@ -51,7 +51,7 @@ export default (routes, opts = {}) => {
 		let route = routes.routes[routeName];
 		let formats = normalizeRoutesPage(route.page);
 		for (let format of Object.keys(formats)) {
-			const absolutePathToPage = path.resolve(routesDirAbsolute, formats[format]);
+			const absolutePathToPage = require.resolve(path.resolve(routesDirAbsolute, formats[format]));
 
 			entrypoints[`${routeName}${format !== "default" ? "-" + format : ""}`] = [
 				...entrypointBase,
@@ -120,7 +120,8 @@ const statsToManifest = (stats) => {
 }
 
 const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats) => {
-	const extractTextLoader = require.resolve("./NonCachingExtractTextLoader") + "?{remove:true}!css-loader";
+	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
+	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
 	let webpackConfig = {
 		entry: entrypoints,
 		output: {
@@ -166,12 +167,12 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 		},
 		resolve: {
 			root: [
-				path.resolve("./node_modules/react-server-cli/node_modules"),
+				path.resolve(path.join(__dirname, "../node_modules")),
 			],
 		},
 		resolveLoader: {
 			root: [
-				path.resolve("./node_modules/react-server-cli/node_modules"),
+				path.resolve(path.join(__dirname, "../node_modules")),
 			],
 		},
 		plugins: [
@@ -235,14 +236,15 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 const writeWebpackCompatibleRoutesFile = (routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) => {
 	let routesOutput = [];
 
+	const coreMiddleware = require.resolve("react-server-core-middleware");
 	const existingMiddleware = routes.middleware ? routes.middleware.map((middlewareRelativePath) => {
 		return `unwrapEs6Module(require("${path.relative(workingDirAbsolute, path.resolve(routesDir, middlewareRelativePath))}"))`
 	}) : [];
 	routesOutput.push(`
 var manifest = ${manifest ? JSON.stringify(manifest) : "undefined"};
 function unwrapEs6Module(module) { return module.__esModule ? module.default : module }
-var coreJsMiddleware = unwrapEs6Module(require('react-server-cli/target/coreJsMiddleware'));
-var coreCssMiddleware = unwrapEs6Module(require('react-server-cli/target/coreCssMiddleware'));
+var coreJsMiddleware = require('${coreMiddleware}').coreJsMiddleware;
+var coreCssMiddleware = require('${coreMiddleware}').coreCssMiddleware;
 module.exports = {
 	middleware:[
 		coreJsMiddleware(${JSON.stringify(staticUrl)}, manifest),

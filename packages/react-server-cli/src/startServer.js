@@ -93,6 +93,7 @@ const startImpl = ({
 			return {
 				stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
 				started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
+					.catch(e => {logger.error(e); throw e})
 					.then(() => logger.notice(`Ready for requests on port ${port}.`)),
 			};
 		}

@@ -11,8 +11,8 @@
     "q": "^1.4.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "../react-server",
-    "react-server-cli": "../react-server-cli",
+    "react-server": "^0.3.4",
+    "react-server-cli": "^0.4.0",
     "rimraf": "^2.5.2",
     "superagent": "1.2.0"
   }

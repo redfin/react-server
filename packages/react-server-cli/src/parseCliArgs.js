@@ -1,4 +1,5 @@
 import yargs from "yargs"
+import fs from "fs"
 
 export default (args = process.argv) => {
 	var parsedArgs = yargs(args)
@@ -102,7 +103,23 @@ export default (args = process.argv) => {
 	// we remove all the options that have undefined as their value; those are the
 	// ones that weren't on the command line, and we don't want them to override
 	// defaults or config files.
-	return camelize(removeUndefinedValues(parsedArgs));
+	return sslize(camelize(removeUndefinedValues(parsedArgs)));
+
+}
+
+const sslize = argv => {
+
+	if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase) {
+		argv.https = {
+			key: argv.httpsKey ? fs.readFileSync(argv.httpsKey) : undefined,
+			cert: argv.httpsCert ? fs.readFileSync(argv.httpsCert) : undefined,
+			ca: argv.httpsCa ? fs.readFileSync(argv.httpsCa) : undefined,
+			pfx: argv.httpsPfx ? fs.readFileSync(argv.httpsPfx) : undefined,
+			passphrase: argv.httpsPassphrase,
+		}
+	}
+
+	return argv;
 }
 
 const removeUndefinedValues = (input) => {

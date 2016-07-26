@@ -39,7 +39,7 @@ addons:
       - g++-4.8
 
 before_script:
-  - npm run bootstrap
+  - npm run bootstrap-no-i
 
 after_failure:
   - npm run debug
