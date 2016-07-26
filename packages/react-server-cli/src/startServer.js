@@ -253,9 +253,9 @@ const handleCompilationErrors = (err, stats) => {
 		return new Error(err);
 		// TODO: inspect stats to see if there are errors -sra.
 	} else if (stats.hasErrors()) {
-		logger.error("There were errors in the JavaScript compilation.");
+		console.error("There were errors in the JavaScript compilation.");
 		stats.toJson().errors.forEach((error) => {
-			logger.error(error);
+			console.error(error);
 		});
 		return new Error("There were errors in the JavaScript compilation.");
 	} else if (stats.hasWarnings()) {
