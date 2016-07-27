@@ -44,8 +44,12 @@
     - name: Copy Docker Compose configuration
       copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
 
+    - name: Copy NGINX configuration
+      copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
+
     - name: Deploy services
-      shell: sudo docker-compose up -d
+      shell: docker-compose up -d
+      become: true
 
     - name: Wait for the service to become available
       wait_for: port=80 delay=20

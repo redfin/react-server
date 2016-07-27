@@ -1,7 +1,7 @@
 version: '2'
 services:
   docs:
-    image: davidalber/react-server-docs-node
+    image: reactserver/react-server-website
   slackin:
     image: davidalber/slackin
     environment:
@@ -9,7 +9,7 @@ services:
      - SLACK_SUBDOMAIN=react-server
      - SLACK_API_TOKEN
   nginx:
-    image: davidalber/react-server-docs-nginx
+    image: nginx:1.10.1
     depends_on:
      - docs
      - slackin
@@ -20,3 +20,5 @@ services:
      - "80:80"
     volumes_from:
      - docs:ro
+    volumes:
+     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro

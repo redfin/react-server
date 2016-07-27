@@ -1,13 +1,7 @@
-FROM node:6.3.0
-
-WORKDIR /usr/src/
-RUN git clone https://github.com/davidalber/react-server.git
-WORKDIR /usr/src/react-server
-RUN git checkout hackathon-website
-
-RUN npm run bootstrap
+FROM reactserver/react-server
 
 WORKDIR /usr/src/react-server/packages/react-server-website
+COPY . .
 
 RUN npm run build-assets
 RUN mkdir -p /www/data/assets
