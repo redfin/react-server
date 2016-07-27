@@ -34,13 +34,17 @@
 		}
 	}
 
-	.header-logo {
+	& > * {
 		display: table-cell;
+	}
+
+	.header-logo {
 		padding: 1.25rem;
 
 		color: inherit;
 		font-weight: 900;
 		font-size: 1rem;
+		text-decoration: none;
 
 		svg {
 			height: 2rem;
@@ -58,13 +62,9 @@
 			}
 		}
 
-		&:hover {
-			text-decoration: none;
-		}
 	}
 
 	.mobileToggle {
-		display: table-cell;
 		padding: 1.25rem;
 		text-align: right;
 
@@ -83,11 +83,7 @@
 	&.menuOpen {
 		color: #585858;
 
-		.header-logo {
-			position: relative;
-			z-index: 9;
-		}
-
+		.header-logo,
 		.mobileToggle {
 			position: relative;
 			z-index: 9;
@@ -98,10 +94,10 @@
 
 			@media (max-width: @max-small-screen) {
 				position: fixed;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					left: 0;
 				padding: 5rem 0 0 0;
 
 				color: @font-color;
@@ -109,8 +105,6 @@
 				text-align: left;
 
 				li {
-					text-decoration: none;
-
 					a,
 					a:active {
 						border-left: 0.25rem solid transparent;
@@ -128,8 +122,7 @@
 	}
 
 	.header-nav {
-		display: none;
-
+		display: none; // Override on small screens
 
 		padding: 0 2.5rem;
 		text-align: right;
@@ -158,9 +151,11 @@
 			height: 100%;
 			box-sizing: border-box;
 			border-bottom: 0.25rem solid transparent;
+			text-decoration: none;
 
 			&:hover {
-				text-decoration: none;
+				color: #333333;
+				border-color: transparent;
 			}
 		}
 
@@ -168,10 +163,6 @@
 		.active a:hover {
 			border-color: @active-color;
 			color: #333333;
-		}
-		a:hover {
-			color: #333333;
-			border-color: transparent;
 		}
 	}
 }
