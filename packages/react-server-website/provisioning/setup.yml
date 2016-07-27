@@ -44,6 +44,9 @@
     - name: Copy Docker Compose configuration
       copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
 
+    - name: Copy NGINX configuration
+      copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
+
     - name: Deploy services
       shell: sudo docker-compose up -d
 
