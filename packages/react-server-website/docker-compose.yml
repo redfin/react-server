@@ -5,9 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile.node
   nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
+    image: nginx:1.10.1
     depends_on:
      - node
     links:
@@ -16,3 +14,5 @@ services:
      - "8080:80"
     volumes_from:
      - node:ro
+    volumes:
+     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
