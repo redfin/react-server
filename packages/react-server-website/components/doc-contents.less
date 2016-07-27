@@ -15,9 +15,9 @@
 	@media (min-width: @min-medium-screen) {
 		margin: 0;
 
-		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
 		border: 1px solid @border-color;
 		border-radius: 2px;
+		.default-box-shadow()
 	}
 
 	.contentsActivePage {
@@ -25,13 +25,12 @@
 		@media (min-width: @min-medium-screen) {
 			display: none;
 		}
+		margin: 0;
+		padding: 0.5rem @small-screen-gutter;
 
 		border-top: 1px solid @border-color;
 		border-bottom: 1px solid @border-color;
-		padding: 0.5rem @small-screen-gutter;
-		margin: 0;
 		font-size: 1rem;
-
 	}
 
 	.contentsActivePage svg {
@@ -63,33 +62,27 @@
 	}
 
 
+	ul,
+	li,
 	h3 {
 		padding: 0;
 		margin: 0;
+	}
 
+	h3 {
 		font-size: 1rem;
-		font-weight: 600;
 	}
 
-	ul,
 	li {
-		margin: 0;
-		padding: 0;
 		list-style-type: none;
-	}
-
-	li {
 		margin-top: 1rem;
 
 		a {
 			color: @font-color;
-
-			&:hover {
-				color: @active-color;
-				text-decoration: none;
-			}
+			text-decoration: none;
 		}
 
+		a:hover,
 		&.active a {
 			color: @active-color;
 		}
