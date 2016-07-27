@@ -12,6 +12,7 @@ cache:
   - packages/generator-react-server/node_modules
   - packages/react-server/node_modules
   - packages/react-server-cli/node_modules
+  - packages/react-server-core-middleware/node_modules
   - packages/react-server-data-bundle-cache/node_modules
   - packages/react-server-examples/node_modules
   - packages/react-server-gulp-module-tagger/node_modules
@@ -19,15 +20,6 @@ cache:
   - packages/react-server-module-tagger/node_modules
   - packages/react-server-test-pages/node_modules
   - packages/react-server-website/node_modules
-
-before_cache:
-  - rm -f packages/react-server-integration-tests/node_modules/react-server-cli/package.json
-  - rm -f packages/react-server-integration-tests/node_modules/react-server/package.json
-  - rm -f packages/react-server-test-pages/node_modules/react-server-cli/package.json
-  - rm -f packages/react-server-test-pages/node_modules/react-server-data-bundle-cache/package.json
-  - rm -f packages/react-server-test-pages/node_modules/react-server/package.json
-  - rm -f packages/react-server-website/node_modules/react-server-cli/package.json
-  - rm -f packages/react-server-website/node_modules/react-server/package.json
 
 env:
   - CXX=g++-4.8
@@ -39,7 +31,7 @@ addons:
       - g++-4.8
 
 before_script:
-  - npm run bootstrap
+  - npm run bootstrap-no-i
 
 after_failure:
   - npm run debug

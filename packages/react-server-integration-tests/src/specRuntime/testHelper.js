@@ -251,7 +251,8 @@ var testSetupFn = function (specFile, routes) {
 			const {stop, started} = startServer(specFile, routes);
 			started.then(done, (e) => {
 				console.error("There was an error while starting the server.");
-				throw e;
+				// No point in continuing.
+				setTimeout(() => {throw e});
 			});
 			stopFns.push(stop);
 		} catch (e) {

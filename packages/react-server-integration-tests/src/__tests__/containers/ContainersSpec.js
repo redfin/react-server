@@ -32,7 +32,6 @@ describe("A page's root elements", () => {
 		"/singlePromiseInArray"             : "promise in an array",
 		"/singleRootElementNoArray"         : "RootElement with no array",
 		"/singleRootElementInArray"         : "RootElement in an array",
-		"/singleRootElementInArray"         : "RootElement in an array",
 		"/singleRootContainerNoArray"       : "RootContainer with no array",
 		"/singleRootContainerInArray"       : "RootContainer in an array",
 		"/singleRootElementInRootContainer" : "RootElement in a RootContainer",

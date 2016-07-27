@@ -15,4 +15,5 @@ require.extensions['.md'] =
 
 module.exports = {
 	start: require("./startServer").default,
+	parseCliArgs: require("./parseCliArgs").default,
 };

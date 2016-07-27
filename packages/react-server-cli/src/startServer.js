@@ -93,6 +93,7 @@ const startImpl = ({
 			return {
 				stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
 				started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
+					.catch(e => {logger.error(e); throw e})
 					.then(() => logger.notice(`Ready for requests on port ${port}.`)),
 			};
 		}
@@ -252,9 +253,9 @@ const handleCompilationErrors = (err, stats) => {
 		return new Error(err);
 		// TODO: inspect stats to see if there are errors -sra.
 	} else if (stats.hasErrors()) {
-		logger.error("There were errors in the JavaScript compilation.");
+		console.error("There were errors in the JavaScript compilation.");
 		stats.toJson().errors.forEach((error) => {
-			logger.error(error);
+			console.error(error);
 		});
 		return new Error("There were errors in the JavaScript compilation.");
 	} else if (stats.hasWarnings()) {

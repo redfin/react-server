@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "description": "A react-server instance",
   "main": "HelloWorld.js",
+  "private": true,
   "scripts": {
-    "build-assets": "npm run docs && react-server-cli --compile-only --minify",
-    "start-prod": "react-server-cli --port 3010 --minify --js-url /assets/",
-    "start": "react-server-cli --port 3010 --js-port 3011",
+    "build-assets": "npm run docs && node ./cli.js --compile-only --minify",
+    "start-prod": "node ./cli.js --port 3010 --minify --js-url /assets/",
+    "start": "node ./cli.js --port 3010 --js-port 3011",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },
@@ -17,8 +18,8 @@
     "highlight.js": "^9.5.0",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "../react-server",
-    "react-server-cli": "../react-server-cli",
+    "react-server": "^0.3.4",
+    "react-server-cli": "^0.4.0",
     "remarkable": "^1.6.2",
     "superagent": "1.2.0"
   },
