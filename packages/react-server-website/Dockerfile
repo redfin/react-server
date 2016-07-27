@@ -1,6 +1,7 @@
 FROM reactserver/react-server
 
 WORKDIR /usr/src/react-server/packages/react-server-website
+COPY . .
 
 RUN npm run build-assets
 RUN mkdir -p /www/data/assets
