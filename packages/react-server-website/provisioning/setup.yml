@@ -1,3 +1,12 @@
+- name: Get current inventory
+  hosts: tag_Name_react_server_box
+  user: ubuntu
+  tasks:
+    - action: ec2_facts
+
+    - name: Add existing hosts to group
+      group_by: key=existing_hosts
+
 - name: Launch instances
   hosts: localhost
   connection: local
@@ -15,7 +24,7 @@
          assign_public_ip: yes
          instance_profile_name: react-server-box
          wait: yes
-         exact_count: 1
+         exact_count: 2
          count_tag:
             Name: react-server-box
          instance_tags:
@@ -62,3 +71,21 @@
         region: us-west-2
         state: present
         wait: no
+
+    - name: Give ELB time to put new instance into service
+      pause: seconds=30
+
+- name: Stop old hosts
+  hosts: existing_hosts
+  connection: local
+  user: ubuntu
+
+  tasks:
+    - action: ec2_facts
+
+    - name: Terminate instance
+      local_action:
+        module: ec2
+        state: 'absent'
+        region: us-west-2
+        instance_id: '{{ ansible_ec2_instance_id }}'
