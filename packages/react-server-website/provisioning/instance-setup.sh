@@ -15,3 +15,7 @@ sudo apt-get install -y docker-engine
 # Set up Docker Compose.
 sudo sh -c "curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
 sudo chmod +x /usr/local/bin/docker-compose
+
+# Set up other dependencies.
+sudo apt-get install -y python-pip
+sudo pip install boto3
