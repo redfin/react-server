@@ -3,10 +3,14 @@
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
-    "test": "PORT=8771 gulp test",
+    "test": "npm run build && npm run jasmine",
+    "jasmine": "PORT=8771 JASMINE_CONFIG_PATH=jasmine.json jasmine",
+    "build": "babel src -d target",
     "clean": "rimraf target __clientTemp npm-debug.log*"
   },
   "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "jasmine": "^2.4.1",
     "lodash": "^4.8.2",
     "q": "^1.4.1",
     "react": "~0.14.2",
