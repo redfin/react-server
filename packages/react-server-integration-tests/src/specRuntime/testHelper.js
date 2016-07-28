@@ -274,13 +274,17 @@ var testTeardownFn = function (done) {
 // convenience function to start a react-server server before each test. make sure to
 // call stopServerAfterEach so that the server is stopped.
 var startServerBeforeEach = function (specFile, routes) {
-	beforeEach(testSetupFn(specFile, routes));
+
+	// Give ourselves a while to start up (increase the timeout).
+	beforeEach(testSetupFn(specFile, routes), 10000);
 }
 
 // convenience function to start a react-server server before all the tests. make sure to
 // call stopServerAfterEach so that the server is stopped.
 var startServerBeforeAll = function (specFile, routes) {
-	beforeAll(testSetupFn(specFile, routes));
+
+	// Give ourselves a while to start up (increase the timeout).
+	beforeAll(testSetupFn(specFile, routes), 10000);
 }
 
 // convenience function to stop a react-server server after each test. to be paired
