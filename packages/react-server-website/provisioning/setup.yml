@@ -1,3 +1,12 @@
+- name: Get current inventory
+  hosts: tag_Name_react_server_box
+  user: ubuntu
+  tasks:
+    - action: ec2_facts
+
+    - name: Add existing hosts to group
+      group_by: key=existing_hosts
+
 - name: Launch instances
   hosts: localhost
   connection: local
@@ -15,7 +24,7 @@
          assign_public_ip: yes
          instance_profile_name: react-server-box
          wait: yes
-         exact_count: 1
+         exact_count: 2
          count_tag:
             Name: react-server-box
          instance_tags:
@@ -27,7 +36,7 @@
       with_items: '{{ ec2.instances }}'
 
     - name: Wait for SSH to come up
-      wait_for: host={{ item.public_dns_name }} port=22 delay=30 timeout=320 state=started
+      wait_for: host={{ item.public_dns_name }} port=22 delay=5 timeout=320 state=started
       with_items: '{{ ec2.instances }}'
 
 - name: Configuration
@@ -38,8 +47,11 @@
     - name: Gather facts about instances
       action: ec2_facts
 
-    - name: Set up Docker
-      script: docker-setup.sh
+    - name: Set up instance packages
+      script: instance-setup.sh
+
+    - name: Instal Slack API token
+      script: decrypt_credentials.py -k slack.api.token > slack-api-token
 
     - name: Copy Docker Compose configuration
       copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
@@ -48,11 +60,11 @@
       copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
 
     - name: Deploy services
-      shell: docker-compose up -d
+      shell: SLACK_API_TOKEN=`cat slack-api-token | tr -d '\n'` docker-compose up -d
       become: true
 
     - name: Wait for the service to become available
-      wait_for: port=80 delay=20
+      wait_for: port=80 delay=5
 
     - name: Register instances with load balancer
       local_action:
@@ -62,3 +74,21 @@
         region: us-west-2
         state: present
         wait: no
+
+    - name: Give ELB time to put new instance into service
+      pause: seconds=30
+
+- name: Stop old hosts
+  hosts: existing_hosts
+  connection: local
+  user: ubuntu
+
+  tasks:
+    - action: ec2_facts
+
+    - name: Terminate instance
+      local_action:
+        module: ec2
+        state: 'absent'
+        region: us-west-2
+        instance_id: '{{ ansible_ec2_instance_id }}'
