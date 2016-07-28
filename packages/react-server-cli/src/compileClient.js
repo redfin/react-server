@@ -167,6 +167,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 		},
 		resolve: {
 			root: [
+				path.resolve(path.join(process.cwd(), "node_modules")),
 				path.resolve(path.join(__dirname, "../node_modules")),
 			],
 		},
