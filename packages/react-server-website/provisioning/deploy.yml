@@ -1,0 +1,17 @@
+- name: Get current inventory
+  hosts: tag_Name_react_server_box
+  user: ubuntu
+  tasks:
+    - name: Copy Docker Compose configuration
+      copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
+
+    - name: Copy NGINX configuration
+      copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
+
+    - name: Pull containers
+      shell: docker-compose pull
+      become: true
+
+    - name: Restart services
+      shell: docker-compose restart
+      become: true
