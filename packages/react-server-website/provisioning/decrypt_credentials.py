@@ -10,7 +10,7 @@ Use this script to decrypt credentials that were secured using the
 "react-server-key" KMS key.
 """
 
-CREDENTIALS = "CiBbAtEwdYIxxPI8vGiKYis3wg50uTv7BgqE9ToloMO22RLVAQEBAgB4WwLRMHWCMcTyPLxoimIrN8IOdLk7+wYKhPU6JaDDttkAAACsMIGpBgkqhkiG9w0BBwaggZswgZgCAQAwgZIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMPJG4ubfWdH4NfODaAgEQgGUsBv5V/jbXL8JbSxnBy2cY8ycUd9YwGRV/eOg02UtcSwHr3hjQq2f8VME5/Hb2lW9viKbhjx7yKIqXvCSOnhLVZPE/rSEFaWpWFB3y6RCiM/MqKFEhS5TVED/Ep3eVhDiwjVKfRQ=="
+CREDENTIALS = "AQECAHhbAtEwdYIxxPI8vGiKYis3wg50uTv7BgqE9ToloMO22QAAAKwwgakGCSqGSIb3DQEHBqCBmzCBmAIBADCBkgYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAyoRYB+NK3K3BSeY/ACARCAZV0HyDnvcGe/FdzqUB1TiJAYQvaRwhf9rq9xpr503VbU+Wmx6043gnZ52u3e1xKB8bVX3hIFzlQGsF1WYT6RQqaClKlNl76MBl9dQ5nC+mpmgDx1Sp8Tpcxh48iY98V/IOdXW4ZA"
 
 def decrypt(args):
     kms = boto3.client('kms', 'us-west-2')
