@@ -2,6 +2,9 @@
   hosts: tag_Name_react_server_box
   user: ubuntu
   tasks:
+    - name: Install Slack API token
+      script: decrypt_credentials.py -k slack.api.token > slack-api-token
+
     - name: Copy Docker Compose configuration
       copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
 
@@ -9,9 +12,9 @@
       copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
 
     - name: Pull containers
-      shell: docker-compose pull
+      shell: docker-compose pull && docker-compose build
       become: true
 
     - name: Restart services
-      shell: docker-compose restart
+      shell: docker-compose stop && SLACK_API_TOKEN=`cat slack-api-token | tr -d '\n'` docker-compose up -d
       become: true
