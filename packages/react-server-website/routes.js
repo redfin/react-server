@@ -7,6 +7,7 @@ module.exports = {
 		'./middleware/PageFooter',
 		'./middleware/Analytics',
 		'./middleware/CacheControl',
+		'./middleware/DataBundleCache',
 	],
 	routes: {
 		homepage: {
