@@ -8,8 +8,8 @@ import './source.less';
 
 export default class SourcePage {
 	handleRoute(next) {
-		const page = this.getRequest().getRouteParams().path || 'routes.html';
-		this.bodyPromise = ReactServerAgent.get('/api/source', {page});
+		const page = this.getRequest().getRouteParams().path;
+		this.bodyPromise = page && ReactServerAgent.get('/api/source', {page});
 		this.contentsPromise = ReactServerAgent.get('/api/source-contents')
 			.then(({body}) => body)
 			.then(SourceContents.setResponse)
