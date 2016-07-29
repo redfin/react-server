@@ -19,4 +19,4 @@ npm run start
 # go to http://localhost:3010
 ```
 
-That hooks you up with [react-server-cli](/react-server-cli), which will take care of the server part and get you up and running right away.
+That hooks you up with [react-server-cli](/docs/guides/react-server-cli), which will take care of the server part and get you up and running right away.
