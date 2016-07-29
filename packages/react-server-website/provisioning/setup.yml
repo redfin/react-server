@@ -50,7 +50,7 @@
     - name: Set up instance packages
       script: instance-setup.sh
 
-    - name: Instal Slack API token
+    - name: Install Slack API token
       script: decrypt_credentials.py -k slack.api.token > slack-api-token
 
     - name: Copy Docker Compose configuration
