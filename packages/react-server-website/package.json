@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "react-server-website",
   "version": "0.0.1",
   "description": "A react-server instance",
   "main": "HelloWorld.js",
