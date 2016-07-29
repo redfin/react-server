@@ -20,7 +20,7 @@ const links = [
 	},
 	{
 		label: "Slack",
-		path: "http://slack.react-server.io/",
+		path: "https://slack.react-server.io/",
 		internal: false,
 	},
 	{
