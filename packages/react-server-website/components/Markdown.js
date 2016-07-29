@@ -49,7 +49,7 @@ export default class Markdown extends React.Component {
 
 		[].slice.call(document.querySelectorAll('.dangerous-markdown a')).forEach(a => {
 			if (isInternal(a)) {
-				addOnClickHandler(a);
+				addOnClickHandler(a, this.props);
 			} else {
 				addTargetBlank(a);
 			}
@@ -57,21 +57,30 @@ export default class Markdown extends React.Component {
 	}
 }
 
+Markdown.propTypes = {
+	source     : React.PropTypes.string,
+	reuseDom   : React.PropTypes.bool,
+	bundleData : React.PropTypes.bool,
+}
+
+Markdown.defaultProps = {
+	reuseDom   : false,
+	bundleData : true,
+}
+
 function isInternal(a) {
 	const href = a.getAttribute('href');
 	return href.startsWith('/');
 }
 
-function addOnClickHandler(a) {
+// TODO: Let's make this available as a helper from React Server core.
+function addOnClickHandler(a, {reuseDom, bundleData}) {
 	a.onclick = function (e) {
 		// See Link.jsx in react-server/core/Link
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			navigateTo(a.getAttribute('href'), {
-				reuseDom: true,
-				bundleData: true,
-			});
+			navigateTo(a.getAttribute('href'), {reuseDom, bundleData});
 		} else {
 			// do normal browser navigate
 		}
