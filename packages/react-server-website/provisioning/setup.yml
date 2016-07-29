@@ -70,7 +70,7 @@
       local_action:
         module: ec2_elb
         instance_id: '{{ ansible_ec2_instance_id }}'
-        ec2_elbs: react-server-no-ssl
+        ec2_elbs: react-server-io
         region: us-west-2
         state: present
         wait: no
