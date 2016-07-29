@@ -38,7 +38,7 @@ export default class DocContents extends React.Component {
 	}
 
 	componentDidMount() {
-		getCurrentRequestContext().navigator.on( "navigateStart", this.closeMenu.bind(this) );
+		getCurrentRequestContext().navigator.on("loadComplete", this.closeMenu.bind(this));
 	}
 
 	render() {
