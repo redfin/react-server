@@ -8,7 +8,7 @@ export default class SourceApi {
 	}
 
 	getContentType() {
-		return 'text/html';
+		return 'application/json';
 	}
 
 	getResponseData() {
@@ -18,8 +18,8 @@ export default class SourceApi {
 				reject(new Error('Authorization Denied'));
 			}
 			try {
-				const contents = require(filepath);
-				resolve(extractBody.exec(contents)[1]);
+				const text = extractBody.exec(require(filepath))[1]
+				resolve(JSON.stringify({text}));
 			} catch (e) {
 				reject(e);
 			}

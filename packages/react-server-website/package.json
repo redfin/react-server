@@ -20,6 +20,7 @@
     "react-dom": "~0.14.2",
     "react-server": "^0.3.4",
     "react-server-cli": "^0.4.0",
+    "react-server-data-bundle-cache": "^0.3.4",
     "remarkable": "^1.6.2",
     "superagent": "1.2.0"
   },

@@ -33,7 +33,7 @@ const links = [
 const HeaderLink = ({label, path, internal}) => {
 	// Internal links use Client Transitions for faster load times.
 	if (internal) {
-		return <li key={path} {...classIfActive(path, internal)}><Link path={path}>{label}</Link></li>
+		return <li key={path} {...classIfActive(path, internal)}><Link path={path} bundleData>{label}</Link></li>
 	} else {
 		return <li key={path} {...classIfActive(path, internal)}><a target="_blank" href={path}>{label}</a></li>
 	}
