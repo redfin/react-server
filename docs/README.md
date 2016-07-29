@@ -6,7 +6,7 @@ bring-your-own Flux implementation stack.  At Redfin, we use
 [Spring MVC](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html)
 and [Reflux](https://github.com/reflux/refluxjs), respectively, but it shouldn't
 matter what technology you chose for either.  Choosing a tech stack is out of
-scope for our documentation, but come swing by our gitter if you'd like to talk
+scope for our documentation, but come swing by our [slack](https://slack.react-server.io/) if you'd like to talk
 about it.
 
 If you still aren't convinced on React Server, check out our

@@ -12,7 +12,7 @@ You could:
 - [Build new features][build-new-features]
 - [Help triage issues][help-triage-issues]
 
-Not sure where to start? Join us [on gitter](https://gitter.im/redfin/react-server) and ask!
+Not sure where to start? Join us [on slack](https://slack.react-server.io/) and ask!
 
 ## Getting started
 
