@@ -18,6 +18,7 @@ services:
      - slackin:slackin
     ports:
      - "80:80"
+     - "443:443"
     volumes_from:
      - docs:ro
     volumes:
