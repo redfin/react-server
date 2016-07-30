@@ -7,12 +7,15 @@ import DocTitle from "../components/page-title";
 import DocBody from "../components/doc-body";
 import DocContents from "../components/doc-contents";
 import DataBundleCacheManager from '../middleware/DataBundleCache';
+import GetStartedSection from '../components/content/HomeGetStartedSection.md';
 import "./docs.less";
 
 export default class DocsPage {
 	handleRoute(next) {
-		const path = this.getRequest().getRouteParams().path || "README";
-		this.bodyPromise = Repo.getFile(join("/docs", `${path}.md`));
+		const {path} = this.getRequest().getRouteParams();
+		this.bodyPromise = path
+			?Repo.getFile(join("/docs", `${path}.md`))
+			:Promise.resolve({text: GetStartedSection})
 		this.contentsPromise = Repo.getContents()
 			.then(DocContents.setResponse)
 			.then(DataBundleCacheManager.addContents.bind({}, '/docs/'))
