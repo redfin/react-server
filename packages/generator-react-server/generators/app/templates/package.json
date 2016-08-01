@@ -4,7 +4,7 @@
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "scripts": {
-    "start": "react-server --port 3010 --js-port 3011",
+    "start": "react-server start",
     "test": "xo && nsp check && ava test.js"
   },
   "license": "Apache-2.0",

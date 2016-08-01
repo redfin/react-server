@@ -4,7 +4,7 @@ simultaneously, so port conflicts will fail the tests.  Make sure
 to update this manifest when adding a test that starts a server.
 
 ## generator-react-server 
-3010, 3011
+3000, 3001
 
 ## react-server-integration-test
 8771, 3001

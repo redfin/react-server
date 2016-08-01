@@ -29,7 +29,7 @@ yo react-server
 # compile and run the new app
 npm run compile
 npm run start
-# go to http://localhost:3010
+# go to http://localhost:3000
 ```
 
 That hooks you up with [`react-server-cli`](packages/react-server-cli), which
