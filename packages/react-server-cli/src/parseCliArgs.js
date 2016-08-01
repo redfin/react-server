@@ -126,7 +126,7 @@ export default (args = process.argv) => {
 const sslize = argv => {
 
 	if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase) {
-		argv.https = {
+		argv.httpsOptions = {
 			key: argv.httpsKey ? fs.readFileSync(argv.httpsKey) : undefined,
 			cert: argv.httpsCert ? fs.readFileSync(argv.httpsCert) : undefined,
 			ca: argv.httpsCa ? fs.readFileSync(argv.httpsCa) : undefined,

@@ -41,7 +41,7 @@ const startImpl = ({
 		compileOnly,
 		jsUrl,
 		stats,
-		https: httpsOptions,
+		httpsOptions,
 		longTermCaching,
 }) => {
 	const routesPath = path.resolve(process.cwd(), routesFile);
