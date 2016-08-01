@@ -44,10 +44,6 @@ const startImpl = ({
 		https: httpsOptions,
 		longTermCaching,
 }) => {
-	if ((httpsOptions.key || httpsOptions.cert || httpsOptions.ca) && httpsOptions.pfx) {
-		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
-	}
-
 	const routesPath = path.resolve(process.cwd(), routesFile);
 	const routes = require(routesPath);
 

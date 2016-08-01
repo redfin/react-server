@@ -116,10 +116,6 @@ export default (args = process.argv) => {
 		process.exit(1); // eslint-disable-line no-process-exit
 	}
 
-	if (parsedArgs.https && (parsedArgs.httpsKey || parsedArgs.httpsCert || parsedArgs.httpsCa || parsedArgs.httpsPfx || parsedArgs.httpsPassphrase)) {
-		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
-	}
-
 	// we remove all the options that have undefined as their value; those are the
 	// ones that weren't on the command line, and we don't want them to override
 	// defaults or config files.
@@ -137,6 +133,14 @@ const sslize = argv => {
 			pfx: argv.httpsPfx ? fs.readFileSync(argv.httpsPfx) : undefined,
 			passphrase: argv.httpsPassphrase,
 		}
+	}
+
+	if (argv.https && (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase)) {
+		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
+	}
+
+	if ((argv.key || argv.cert || argv.ca) && argv.pfx) {
+		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
 	}
 
 	return argv;
