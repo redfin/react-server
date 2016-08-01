@@ -165,6 +165,12 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 				},
 			],
 		},
+		resolve: {
+			alias: {
+				// React needs to be a singleton.
+				react: path.resolve(path.join(process.cwd(), "node_modules/react")),
+			},
+		},
 		resolveLoader: {
 			root: [
 				path.resolve(path.join(__dirname, "../node_modules")),
