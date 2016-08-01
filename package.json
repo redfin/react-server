@@ -2,9 +2,9 @@
   "private": true,
   "scripts": {
     "bootstrap": "npm i && npm run bootstrap-no-i",
-    "bootstrap-no-i": "npm run kill-singletons && lerna bootstrap && npm run make-singletons",
+    "//": "TODO: Drop `kill-singletons`... eventually",
+    "bootstrap-no-i": "npm run kill-singletons && lerna bootstrap",
     "kill-singletons": "lerna exec -- rm -rf node_modules/react",
-    "make-singletons": "npm run kill-singletons && lerna exec -- ln -s ../../node_modules/react node_modules/react",
     "test": "lerna run test",
     "clean": "rimraf lerna-debug.log && lerna run clean",
     "nuke": "lerna clean && rm -r node_modules",
