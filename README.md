@@ -3,7 +3,7 @@
 [![Build Status][build-badge-img]][build-url]
 [![NPM version][npm-version-img]][npm-url]
 [![NPM downloads per month][npm-downloads-img]][npm-url]
-[![Chat on Gitter][gitter-img]][gitter-url]
+[![Chat on Slack][slack-img]][slack-url]
 [![NPM license][npm-license-img]][npm-url]
 [![Powered by Redfin][redfin-img]][redfin-url]
 
@@ -81,5 +81,5 @@ See [the contributing guide](CONTRIBUTING.md) to get started.
 [npm-version-img]: https://badge.fury.io/js/react-server.svg
 [npm-license-img]: https://img.shields.io/npm/l/react-server.svg
 [npm-downloads-img]: https://img.shields.io/npm/dm/react-server.svg
-[gitter-url]: https://gitter.im/redfin/react-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-[gitter-img]: https://badges.gitter.im/redfin/react-server.svg
+[slack-url]: https://slack.react-server.io/
+[slack-img]: https://slack.react-server.io/badge.svg
