@@ -2,7 +2,7 @@ import yargs from "yargs"
 import fs from "fs"
 
 export default (args = process.argv) => {
-	var parsedArgs = yargs(args)
+	var argsDefinition = yargs(args)
 		.usage('Usage: $0 [options]')
 		.option("routes-file", {
 			describe: "The routes file to load. Default is 'routes.js'.",
@@ -94,7 +94,27 @@ export default (args = process.argv) => {
 		.help('?')
 		.alias('?', 'help')
 		.demand(0)
-		.argv;
+
+	const commands = {
+		"start"   : "Start the server",
+		"compile" : "Compile static assets",
+		"init"    : "Create a routes file and a .reactserverrc",
+	}
+
+	Object.keys(commands)
+		.forEach(k => argsDefinition = argsDefinition.command(k, commands[k]));
+
+	var parsedArgs = argsDefinition.argv;
+
+	parsedArgs.command = parsedArgs._[2];
+
+	if (!commands[parsedArgs.command]) {
+		argsDefinition.showHelp();
+		if (parsedArgs.command) {
+			console.log("Invalid command: " + parsedArgs.command);
+		}
+		process.exit(1); // eslint-disable-line no-process-exit
+	}
 
 	if (parsedArgs.https && (parsedArgs.httpsKey || parsedArgs.httpsCert || parsedArgs.httpsCa || parsedArgs.httpsPfx || parsedArgs.httpsPassphrase)) {
 		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
