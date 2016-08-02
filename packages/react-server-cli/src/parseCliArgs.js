@@ -3,7 +3,7 @@ import fs from "fs"
 
 export default (args = process.argv) => {
 	var argsDefinition = yargs(args)
-		.usage('Usage: $0 [options]')
+		.usage('Usage: $0 <command> [options]')
 		.option("routes-file", {
 			describe: "The routes file to load. Default is 'routes.js'.",
 		})
