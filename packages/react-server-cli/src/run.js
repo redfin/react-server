@@ -5,6 +5,7 @@ import findOptionsInFiles from "./findOptionsInFiles"
 import defaultOptions from "./defaultOptions"
 import ConfigurationError from "./ConfigurationError"
 
+/* eslint-disable consistent-return */
 export default function run(options = {}) {
 
 	// for the option properties that weren't sent in, look for a config file
@@ -32,7 +33,7 @@ export default function run(options = {}) {
 	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
 
 	try {
-		require("./" + path.join("commands", options.command)).default(options);
+		return require("./" + path.join("commands", options.command)).default(options);
 	} catch (e) {
 		if (e instanceof ConfigurationError) {
 			console.error(chalk.red(e.message));
