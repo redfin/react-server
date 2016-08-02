@@ -299,7 +299,7 @@ named export, `run`, which takes has the following signature:
 ```javascript
 import {run} from "react-server-cli"
 
-start({
+run({
     command         : "start",
     routes          : "./routes.json",
     port            : 3000,
@@ -318,5 +318,5 @@ your own CLI:
 ```javascript
 import {run, parseCliArgs} from "react-server-cli"
 
-start(parseCliArgs());
+run(parseCliArgs());
 ```
