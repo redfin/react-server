@@ -2,7 +2,7 @@
 var React = require('react'),
 	ReactDOM = require('react-dom'),
 	MobileDetect = require('mobile-detect'),
-	logger = require('./logging').getLogger(__LOGGER__),
+	logging = require('./logging'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	Q = require('q'),
@@ -22,6 +22,8 @@ var _ = {
 };
 
 var RLS = RequestLocalStorage.getNamespace();
+
+var logger = logging.getLogger(__LOGGER__);
 
 // for dev tools
 window.React = React;
@@ -340,6 +342,8 @@ class ClientController extends EventEmitter {
 		context.onNavigate( (err, page) => {
 			logger.debug('Executing navigate action');
 
+			this._handleDebugParams(page);
+
 			if (err) {
 				// redirects are sent as errors, so let's handle it if that's the case.
 				if (err.status && (err.status === 301 || err.status === 302)) {
@@ -412,6 +416,22 @@ class ClientController extends EventEmitter {
 
 		});
 
+	}
+
+	_handleDebugParams(page) {
+		const params = page.getRequest().getQuery();
+
+		// Allow adjustment of log levels.
+		_.forEach({
+			_react_server_log_level       : 'main',
+			_react_server_log_level_main  : 'main',
+			_react_server_log_level_time  : 'time',
+			_react_server_log_level_gauge : 'gauge',
+		}, (type, param) => {
+			if (params[param]) {
+				logging.setLevel(type,  params[param]);
+			}
+		});
 	}
 
 	_renderTitle(page) {
