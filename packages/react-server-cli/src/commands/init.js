@@ -44,7 +44,8 @@ const CONFIG = {
 export default function init(){
 
 	if (!fileExists("package.json")) {
-		throw new ConfigurationError("Missing package.json.  Please run `npm init` first.");
+		console.log(chalk.yellow("No package.json found.  Running `npm init --yes`"));
+		spawnSync("npm", ["init", "--yes"], {stdio: "inherit"});
 	}
 
 	Object.keys(CONFIG).forEach(fn => {

@@ -4,7 +4,6 @@ To get started:
 
 ```bash
 $ npm install -g react-server-cli
-$ npm init
 $ react-server init
 $ react-server add-page '/' Homepage
 $ react-server start
