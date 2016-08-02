@@ -96,9 +96,10 @@ export default (args = process.argv) => {
 		.demand(0)
 
 	const commands = {
-		"start"   : "Start the server",
-		"compile" : "Compile static assets",
-		"init"    : "Create a routes file and a .reactserverrc",
+		"start"    : "Start the server",
+		"compile"  : "Compile static assets",
+		"init"     : "Initialize a React Server site",
+		"add-page" : "Add a page to an existing site",
 	}
 
 	Object.keys(commands)

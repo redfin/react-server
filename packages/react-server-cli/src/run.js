@@ -1,7 +1,9 @@
 import path from "path";
+import chalk from "chalk";
 import mergeOptions from "./mergeOptions"
 import findOptionsInFiles from "./findOptionsInFiles"
 import defaultOptions from "./defaultOptions"
+import ConfigurationError from "./ConfigurationError"
 
 export default function run(options = {}) {
 
@@ -29,5 +31,13 @@ export default function run(options = {}) {
 
 	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
 
-	return require("./" + path.join("commands", options.command)).default(options);
+	try {
+		require("./" + path.join("commands", options.command)).default(options);
+	} catch (e) {
+		if (e instanceof ConfigurationError) {
+			console.error(chalk.red(e.message));
+		} else {
+			throw e;
+		}
+	}
 }

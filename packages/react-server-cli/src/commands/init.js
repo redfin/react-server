@@ -2,6 +2,7 @@ import _ from "lodash";
 import fs from "fs";
 import {spawnSync} from "child_process";
 import chalk from "chalk";
+import fileExists from "../fileExists";
 import ConfigurationError from "../ConfigurationError";
 
 const DEPENDENCIES = [
@@ -14,10 +15,17 @@ const DEPENDENCIES = [
 	"react-dom@~0.14.2",
 ]
 
+const DEV_DEPENDENCIES = [
+
+	// TODO: These, too.
+	"webpack-dev-server@~1.13.0",
+	"webpack@^1.13.1",
+]
+
 const CONFIG = {
 	"routes.json": {
 		middleware: [],
-		routes: [],
+		routes: {},
 	},
 	".reactserverrc": {
 		routesFile: "routes.json",
@@ -33,19 +41,8 @@ const CONFIG = {
 	},
 }
 
-export default function init(options){
-	try {
-		_init(options);
-	} catch (e) {
-		if (e instanceof ConfigurationError) {
-			console.error(chalk.red(e.message));
-		} else {
-			throw e;
-		}
-	}
-}
+export default function init(){
 
-function _init() {
 	if (!fileExists("package.json")) {
 		throw new ConfigurationError("Missing package.json.  Please run `npm init` first.");
 	}
@@ -60,6 +57,10 @@ function _init() {
 
 	spawnSync("npm", ["install", "--save", ...DEPENDENCIES], {stdio: "inherit"});
 
+	console.log(chalk.yellow("Installing devDependencies"));
+
+	spawnSync("npm", ["install", "--save-dev", ...DEV_DEPENDENCIES], {stdio: "inherit"});
+
 	_.forEach(CONFIG, (config, fn) => {
 		console.log(chalk.yellow("Generating " + fn));
 
@@ -67,13 +68,4 @@ function _init() {
 	});
 
 	console.log(chalk.green("All set!"));
-}
-
-function fileExists(fn) {
-	try {
-		fs.statSync(fn);
-		return true;
-	} catch (e) {
-		return false;
-	}
 }
