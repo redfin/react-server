@@ -2,9 +2,7 @@ import path from "path";
 import mergeOptions from "./mergeOptions"
 import findOptionsInFiles from "./findOptionsInFiles"
 import defaultOptions from "./defaultOptions"
-import callerDependency from "./callerDependency";
-
-const reactServer = require(callerDependency("react-server"));
+import reactServer from "./react-server";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 

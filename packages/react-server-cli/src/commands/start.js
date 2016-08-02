@@ -5,10 +5,8 @@ import pem from "pem"
 import compression from "compression"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "../compileClient"
-import callerDependency from "../callerDependency";
 import handleCompilationErrors from "../handleCompilationErrors";
-
-const reactServer = require(callerDependency("react-server"));
+import reactServer from "../react-server";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 

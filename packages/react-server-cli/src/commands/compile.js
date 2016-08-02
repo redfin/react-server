@@ -1,10 +1,7 @@
 import compileClient from "../compileClient"
-import callerDependency from "../callerDependency";
 import handleCompilationErrors from "../handleCompilationErrors";
 
-const reactServer = require(callerDependency("react-server"));
-
-const logger = reactServer.logging.getLogger(__LOGGER__);
+const logger = require("react-server").logging.getLogger(__LOGGER__);
 
 export default function compile(options){
 	const {compiler} = compileClient(options);
