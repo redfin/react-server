@@ -1,6 +1,6 @@
-import reactServer from "./react-server";
+import {logging} from "./react-server";
 
-const logger = reactServer.logging.getLogger(__LOGGER__);
+const logger = logging.getLogger(__LOGGER__);
 
 // takes in the err and stats object returned by a webpack compilation and returns
 // an error object if something serious happened, or null if things are ok.
