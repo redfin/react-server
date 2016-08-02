@@ -2,8 +2,9 @@ import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
 import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
+import {logging} from "../react-server";
 
-const logger = require("react-server").logging.getLogger(__LOGGER__);
+const logger = logging.getLogger(__LOGGER__);
 
 export default function compile(options){
 	setupLogging(options);
