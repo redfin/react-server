@@ -6,6 +6,7 @@ import ExtractTextPlugin from "extract-text-webpack-plugin"
 import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
 import crypto from "crypto"
 import StatsPlugin from "webpack-stats-plugin"
+import callerDependency from "./callerDependency"
 
 
 // commented out to please eslint, but re-add if logging is needed in this file.
@@ -164,6 +165,13 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 					exclude: /node_modules/,
 				},
 			],
+		},
+		resolve: {
+			alias: {
+				// These need to be singletons.
+				"react"        : callerDependency("react"),
+				"react-server" : callerDependency("react-server"),
+			},
 		},
 		resolveLoader: {
 			root: [

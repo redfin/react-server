@@ -1,4 +1,3 @@
-import reactServer, { logging } from "react-server"
 import http from "http"
 import https from "https"
 import express from "express"
@@ -10,8 +9,11 @@ import WebpackDevServer from "webpack-dev-server"
 import compileClient from "./compileClient"
 import mergeOptions from "./mergeOptions"
 import findOptionsInFiles from "./findOptionsInFiles"
+import callerDependency from "./callerDependency";
 
-const logger = logging.getLogger(__LOGGER__);
+const reactServer = require(callerDependency("react-server"));
+
+const logger = reactServer.logging.getLogger(__LOGGER__);
 
 // if used to start a server, returns an object with two properties, started and
 // stop. started is a promise that resolves when all necessary servers have been
@@ -305,9 +307,9 @@ const serverToStopPromise = (server) => {
 }
 
 const setupLogging = (logLevel, timingLogLevel, gaugeLogLevel) => {
-	logging.setLevel('main',  logLevel);
-	logging.setLevel('time',  timingLogLevel);
-	logging.setLevel('gauge', gaugeLogLevel);
+	reactServer.logging.setLevel('main',  logLevel);
+	reactServer.logging.setLevel('time',  timingLogLevel);
+	reactServer.logging.setLevel('gauge', gaugeLogLevel);
 }
 
 const logProductionWarnings = ({hot, minify, jsUrl, longTermCaching}) => {

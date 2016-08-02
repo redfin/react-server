@@ -81,7 +81,15 @@ function installDeps() {
 			if (error) {
 				reject(error);
 			} else {
-				resolve();
+				const localDeps = ['react-server-cli', 'react-server']
+					.map(dep => path.resolve(path.join(__dirname, '../..', dep)));
+				cp.exec('npm install ' + localDeps.join(' '), (error) => {
+					if (error) {
+						reject(error);
+					} else {
+						resolve();
+					}
+				});
 			}
 		});
 	});

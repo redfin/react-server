@@ -7,7 +7,7 @@
   "author": "Doug Wade <doug.wade@redfin.com>",
   "scripts": {
     "clean": "rm -rf build __clientTemp",
-    "start": "npm run clean && npm run styles && react-server-cli",
+    "start": "npm run clean && npm run styles && react-server",
     "styles": "node-sass styles/index.scss build/styles/index.css && node-sass styles/network.scss build/styles/network.css",
     "test": "xo && nsp check"
   },
