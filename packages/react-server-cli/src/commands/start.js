@@ -7,6 +7,8 @@ import WebpackDevServer from "webpack-dev-server"
 import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
 import reactServer from "../react-server";
+import setupLogging from "../setupLogging";
+import logProductionWarnings from "../logProductionWarnings";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
@@ -15,6 +17,9 @@ const logger = reactServer.logging.getLogger(__LOGGER__);
 // started. stop is a method to stop all servers. It takes no arguments and
 // returns a promise that resolves when the server has stopped.
 export default function start(options){
+	setupLogging(options);
+	logProductionWarnings(options);
+
 	const {
 		port,
 		jsPort,
