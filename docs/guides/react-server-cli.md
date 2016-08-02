@@ -142,7 +142,7 @@ In this case you'll want to specify a `jsUrl` key in your production config:
 ```json
 {
 	...
-	env: {
+	"env": {
 		"production": {
 			...
 			"jsUrl": "http://mystaticfileserver.com/somedirectory/"
@@ -153,7 +153,7 @@ In this case you'll want to specify a `jsUrl` key in your production config:
 
 ### Commands
 
-#### init
+#### `init`
 
 Generate:
 - `routes.json`
@@ -163,15 +163,15 @@ Generate:
 Install:
 - `react-server`
 
-#### add-page PATH CLASSNAME
+#### `add-page <urlPath> <ClassName>`
 
 Add a stub of a new page class.
 
-#### start
+#### `start`
 
 Start the server.  If running with local client assets, build those.
 
-#### compile
+#### `compile`
 
 Compile the client JavaScript only, and don't start any servers. This is what
 you want to do if you are building the client JavaScript to be hosted on a CDN
