@@ -68,8 +68,13 @@ function exists(filename, dir) {
 function runsSuccessfully(command, dir) {
 	return new Promise((resolve) => {
 		cp.exec(command, {
-			cwd: dir
-		}, (error) => {
+			cwd: dir,
+		}, (error, stdout, stderr) => {
+			if (error) {
+				console.error(error);
+				console.error(stdout);
+				console.error(stderr);
+			}
 			resolve(!error);
 		});
 	});

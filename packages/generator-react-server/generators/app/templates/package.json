@@ -5,7 +5,8 @@
   "main": "HelloWorld.js",
   "scripts": {
     "start": "react-server start",
-    "test": "xo && nsp check && ava test.js"
+    "lint": "eslint routes.js test.js pages",
+    "test": "npm run lint && nsp check && ava test.js"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -19,15 +20,9 @@
   },
   "devDependencies": {
     "ava": "^0.15.1",
-    "eslint-config-xo-react": "^0.8.0",
-    "eslint-plugin-react": "^5.1.1",
-    "nsp": "^2.3.3",
-    "xo": "^0.16.0"
-  },
-  "xo": {
-    "esnext": true,
-    "extends": "xo-react",
-    "globals": ["__LOGGER__"],
-    "ignores": ["__clientTemp/**/*", "build/**/*"]
+    "babel-eslint": "^6.1.2",
+    "eslint": "3.2.2",
+    "eslint-plugin-react": "6.0.0",
+    "nsp": "^2.3.3"
   }
 }

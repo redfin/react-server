@@ -43,6 +43,7 @@ module.exports = yeoman.Base.extend({
 		[
 			'_nsprc',
 			'_babelrc',
+			'_eslintrc',
 			'_gitignore',
 			'_reactserverrc',
 		].forEach(function (filename) {

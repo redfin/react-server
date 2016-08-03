@@ -37,7 +37,13 @@
   },
   "repository": "redfin/react-server",
   "scripts": {
-    "test": "ava test --tap && eslint generators/ && nsp check",
+
+    "//": "Keep these in sync",
+    "prepublish": "cp ../../.eslintrc generators/app/templates/_eslintrc",
+
+    "test": "npm run ava && npm run lint && nsp check",
+    "ava": "ava test --tap",
+    "lint": "eslint generators/ test/",
     "clean": "rimraf npm-debug.log*"
   },
   "license": "Apache-2.0"
