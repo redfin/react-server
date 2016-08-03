@@ -1,4 +1,3 @@
-'use strict';
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
@@ -25,12 +24,12 @@ module.exports = yeoman.Base.extend({
 				}
 
 				return warnings.concat(errors).join('\n');
-			}
+			},
 		}, {
 			type: 'confirm',
 			name: 'dockerCfg',
 			message: 'Do you want to generate a Docker file and Docker Compose file?',
-			default: false
+			default: false,
 		}];
 
 		return this.prompt(prompts).then(function (props) {
@@ -45,7 +44,7 @@ module.exports = yeoman.Base.extend({
 			'_nsprc',
 			'_babelrc',
 			'_gitignore',
-			'_reactserverrc'
+			'_reactserverrc',
 		].forEach(function (filename) {
 			var fn = filename.replace('_', '.');
 			_this.fs.copyTpl(
@@ -61,7 +60,7 @@ module.exports = yeoman.Base.extend({
 			'package.json',
 			'README.md',
 			'routes.js',
-			'test.js'
+			'test.js',
 		];
 
 		if (this.props.dockerCfg) {
@@ -80,5 +79,5 @@ module.exports = yeoman.Base.extend({
 
 	install: function () {
 		this.npmInstall();
-	}
+	},
 });

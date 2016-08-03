@@ -24,7 +24,7 @@ function getResponseCode(url) {
 		const req = http.get({
 			hostname: 'localhost',
 			port: 3000,
-			path: url
+			path: url,
 		}, res => {
 			resolve(res.statusCode);
 		});

@@ -12,6 +12,7 @@
     "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done"
   },
   "devDependencies": {
+    "babel-eslint": "^6.1.2",
     "babel-plugin-react-require": "^2.1.0",
     "babel-plugin-react-server": "^0.3.3",
     "babel-plugin-transform-runtime": "~6.12.0",
