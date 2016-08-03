@@ -12,8 +12,7 @@
     "production": {
        "jsUrl": "/assets/",
        "logLevel": "error",
-       "minify": true,
-       "port": "80"
+       "minify": true
     }
   }
 }
