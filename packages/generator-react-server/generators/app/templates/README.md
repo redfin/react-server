@@ -37,11 +37,11 @@ There are three tests called by the testing target; to run them independently
 you'll likely want to install some dependencies globally
 
 ```shell
-npm i -g xo ava nsp
+npm i -g eslint eslint-plugin-react babel-eslint ava nsp
 ```
 
 The first test is a linter, which checks for common bugs and code style; you can
-run it with `xo`.
+run it with `eslint <file-or-directory>`.
 
 The second test is a security auditing test, which checks for known security
 issues with the installed dependencies; you can run it with `nsp check`.
