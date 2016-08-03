@@ -12,6 +12,8 @@ module.exports = {
 		if (SERVER_SIDE) {
 			throw new Error("ClientCssHelper.registerPageLoad can't be called server-side");
 		}
+		const urlBase = location.protocol + "//" + location.host;
+
 		// for each css node in the head that the react-server server wrote to the response, note it down in the cache, so that
 		// we can remove it on a page to page transition.
 		var serverWrittenLinkNodes = document.head.querySelectorAll(`link[${PAGE_CSS_NODE_ID}],style[${PAGE_CSS_NODE_ID}]`);
@@ -19,6 +21,14 @@ module.exports = {
 			var key, styleNode = serverWrittenLinkNodes[i];
 			if (styleNode.href) {
 				key = styleNode.href;
+
+				// The browser will give us a full URL even if we only put a
+				// path in on the server.  So, if we're comparing against just
+				// a path here we need to strip the base off to avoid a flash
+				// of unstyled content.
+				if (key.indexOf(urlBase) === 0) {
+					key = key.substr(urlBase);
+				}
 			} else {
 				key = styleNode.innerHTML;
 			}
