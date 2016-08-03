@@ -8,3 +8,6 @@ to update this manifest when adding a test that starts a server.
 
 ## react-server-integration-test
 8771, 8772
+
+## react-server-website
+3010, 3011
