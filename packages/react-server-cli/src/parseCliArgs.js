@@ -2,8 +2,8 @@ import yargs from "yargs"
 import fs from "fs"
 
 export default (args = process.argv) => {
-	var parsedArgs = yargs(args)
-		.usage('Usage: $0 [options]')
+	var argsDefinition = yargs(args)
+		.usage('Usage: $0 <command> [options]')
 		.option("routes-file", {
 			describe: "The routes file to load. Default is 'routes.js'.",
 		})
@@ -94,10 +94,27 @@ export default (args = process.argv) => {
 		.help('?')
 		.alias('?', 'help')
 		.demand(0)
-		.argv;
 
-	if (parsedArgs.https && (parsedArgs.httpsKey || parsedArgs.httpsCert || parsedArgs.httpsCa || parsedArgs.httpsPfx || parsedArgs.httpsPassphrase)) {
-		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
+	const commands = {
+		"start"    : "Start the server",
+		"compile"  : "Compile static assets",
+		"init"     : "Initialize a React Server site",
+		"add-page" : "Add a page to an existing site",
+	}
+
+	Object.keys(commands)
+		.forEach(k => argsDefinition = argsDefinition.command(k, commands[k]));
+
+	var parsedArgs = argsDefinition.argv;
+
+	parsedArgs.command = parsedArgs._[2];
+
+	if (!commands[parsedArgs.command]) {
+		argsDefinition.showHelp();
+		if (parsedArgs.command) {
+			console.log("Invalid command: " + parsedArgs.command);
+		}
+		process.exit(1); // eslint-disable-line no-process-exit
 	}
 
 	// we remove all the options that have undefined as their value; those are the
@@ -110,13 +127,21 @@ export default (args = process.argv) => {
 const sslize = argv => {
 
 	if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase) {
-		argv.https = {
+		argv.httpsOptions = {
 			key: argv.httpsKey ? fs.readFileSync(argv.httpsKey) : undefined,
 			cert: argv.httpsCert ? fs.readFileSync(argv.httpsCert) : undefined,
 			ca: argv.httpsCa ? fs.readFileSync(argv.httpsCa) : undefined,
 			pfx: argv.httpsPfx ? fs.readFileSync(argv.httpsPfx) : undefined,
 			passphrase: argv.httpsPassphrase,
 		}
+	}
+
+	if (argv.https && (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase)) {
+		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
+	}
+
+	if ((argv.key || argv.cert || argv.ca) && argv.pfx) {
+		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
 	}
 
 	return argv;

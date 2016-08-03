@@ -16,7 +16,7 @@ yo react-server
 npm run compile
 npm run start
 
-# go to http://localhost:3010
+# go to http://localhost:3000
 ```
 
 That hooks you up with [react-server-cli](/docs/guides/react-server-cli), which will get you up and running right away.

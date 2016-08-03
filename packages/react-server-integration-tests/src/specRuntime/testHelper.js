@@ -3,7 +3,7 @@ var	fs = require("fs"),
 	mkdirp = require("mkdirp"),
 	path = require("path"),
 	Browser = require('zombie'),
-	start = require('react-server-cli').start,
+	CLI = require('react-server-cli'),
 	crypto = require('crypto');
 
 // This needs to be different from the port used by the tests that still live
@@ -101,10 +101,12 @@ var startServer = function (specFile, routes) {
 
 	var routesFile = writeRoutesFile(specFile, routes, testTempDir);
 
-	return start({
+	return CLI.run({
+		command: "start",
 		routesFile: routesFile,
 		hot: false,
 		port: PORT,
+		jsPort: +PORT+1,
 		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",

@@ -1,5 +1,5 @@
 require("babel-core/register");
 
-const {start, parseCliArgs} = require(".");
+const {run, parseCliArgs} = require(".");
 
-start(parseCliArgs());
+run(parseCliArgs());

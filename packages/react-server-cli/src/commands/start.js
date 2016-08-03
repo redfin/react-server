@@ -1,17 +1,14 @@
 import http from "http"
 import https from "https"
 import express from "express"
-import path from "path"
 import pem from "pem"
 import compression from "compression"
-import defaultOptions from "./defaultOptions"
 import WebpackDevServer from "webpack-dev-server"
-import compileClient from "./compileClient"
-import mergeOptions from "./mergeOptions"
-import findOptionsInFiles from "./findOptionsInFiles"
-import callerDependency from "./callerDependency";
-
-const reactServer = require(callerDependency("react-server"));
+import compileClient from "../compileClient"
+import handleCompilationErrors from "../handleCompilationErrors";
+import reactServer from "../react-server";
+import setupLogging from "../setupLogging";
+import logProductionWarnings from "../logProductionWarnings";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
@@ -19,103 +16,59 @@ const logger = reactServer.logging.getLogger(__LOGGER__);
 // stop. started is a promise that resolves when all necessary servers have been
 // started. stop is a method to stop all servers. It takes no arguments and
 // returns a promise that resolves when the server has stopped.
-export default (options = {}) => {
-	// for the option properties that weren't sent in, look for a config file
-	// (either .reactserverrc or a reactServer section in a package.json). for
-	// options neither passed in nor in a config file, use the defaults.
-	options = mergeOptions(defaultOptions, findOptionsInFiles() || {}, options);
-
-	setupLogging(options.logLevel, options.timingLogLevel, options.gaugeLogLevel);
+export default function start(options){
+	setupLogging(options);
 	logProductionWarnings(options);
 
-	return startImpl(options);
-}
-
-const startImpl = ({
-		routesFile,
-		host,
+	const {
 		port,
 		jsPort,
 		hot,
-		minify,
-		compileOnly,
 		jsUrl,
-		stats,
-		https: httpsOptions,
+		httpsOptions,
 		longTermCaching,
-}) => {
-	if ((httpsOptions.key || httpsOptions.cert || httpsOptions.ca) && httpsOptions.pfx) {
-		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
+	} = options;
+
+	const {serverRoutes, compiler} = compileClient(options);
+
+	const startServers = (keys) => {
+		// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
+		// server.
+		let startJsServer = startDummyJsServer;
+
+		if (!jsUrl) {
+			// if jsUrl is not set, we need to start up a JS server, either hot load
+			// or static.
+			startJsServer = hot ? startHotLoadJsServer : startStaticJsServer;
+		}
+
+		logger.notice("Starting servers...")
+
+		const jsServer = startJsServer(compiler, jsPort, longTermCaching, keys);
+		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, keys));
+
+		return {
+			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
+			started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
+				.catch(e => {logger.error(e); throw e})
+				.then(() => logger.notice(`Ready for requests on port ${port}.`)),
+		};
 	}
 
-	const routesPath = path.resolve(process.cwd(), routesFile);
-	const routes = require(routesPath);
-
-	const outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
-
-	const {serverRoutes, compiler} = compileClient(routes, {
-		routesDir: path.dirname(routesPath),
-		hot,
-		minify,
-		outputUrl,
-		longTermCaching,
-		stats,
-	});
-
-	if (compileOnly) {
-		logger.notice("Starting compilation of client JavaScript...");
-		compiler.run((err, stats) => {
-			const error = handleCompilationErrors(err, stats);
-			if (!error) {
-				logger.notice("Successfully compiled client JavaScript.");
-			} else {
-				logger.error(error);
-			}
+	if (httpsOptions === true) {
+		// if httpsOptions was true (and so didn't send in keys), generate keys.
+		pem.createCertificate({days:1, selfSigned:true}, (err, keys) => {
+			if (err) throw err;
+			return startServers({key: keys.serviceKey, cert:keys.certificate});
 		});
-		// TODO: it's odd that this returns something different than the other branch;
-		// should probably separate compile and start into two different exported functions.
-		return null;
-	} else {
-		const startServers = (keys) => {
-			// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
-			// server.
-			let startJsServer = startDummyJsServer;
-
-			if (!jsUrl) {
-				// if jsUrl is not set, we need to start up a JS server, either hot load
-				// or static.
-				startJsServer = hot ? startHotLoadJsServer : startStaticJsServer;
-			}
-
-			logger.notice("Starting servers...")
-
-			const jsServer = startJsServer(compiler, jsPort, longTermCaching, keys);
-			const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, keys));
-
-			return {
-				stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
-				started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
-					.catch(e => {logger.error(e); throw e})
-					.then(() => logger.notice(`Ready for requests on port ${port}.`)),
-			};
-		}
-
-		if (httpsOptions === true) {
-			// if httpsOptions was true (and so didn't send in keys), generate keys.
-			pem.createCertificate({days:1, selfSigned:true}, (err, keys) => {
-				if (err) throw err;
-				return startServers({key: keys.serviceKey, cert:keys.certificate});
-			});
-		} else if (httpsOptions) {
-			// in this case, we assume that httpOptions is an object that can be passed
-			// in to https.createServer as options.
-			return startServers(httpsOptions);
-		} else {
-			// use http.
-			return startServers();
-		}
+	} else if (httpsOptions) {
+		// in this case, we assume that httpOptions is an object that can be passed
+		// in to https.createServer as options.
+		return startServers(httpsOptions);
 	}
-	return null; // For eslint. :p
+
+	// Default.  Use http.
+	return startServers();
 }
 
 // given the server routes file and a port, start a react-server HTML server at
@@ -246,29 +199,6 @@ const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) 
 	};
 };
 
-// takes in the err and stats object returned by a webpack compilation and returns
-// an error object if something serious happened, or null if things are ok.
-const handleCompilationErrors = (err, stats) => {
-	if (err) {
-		logger.error("Error during webpack build.");
-		logger.error(err);
-		return new Error(err);
-		// TODO: inspect stats to see if there are errors -sra.
-	} else if (stats.hasErrors()) {
-		console.error("There were errors in the JavaScript compilation.");
-		stats.toJson().errors.forEach((error) => {
-			console.error(error);
-		});
-		return new Error("There were errors in the JavaScript compilation.");
-	} else if (stats.hasWarnings()) {
-		logger.warning("There were warnings in the JavaScript compilation. Note that this is normal if you are minifying your code.");
-		// for now, don't enumerate warnings; they are absolutely useless in minification mode.
-		// TODO: handle this more intelligently, perhaps with a --reportwarnings flag or with different
-		// behavior based on whether or not --minify is set.
-	}
-	return null;
-}
-
 // returns a method that can be used to stop the server. the returned method
 // returns a promise to indicate when the server is actually stopped.
 const serverToStopPromise = (server) => {
@@ -304,32 +234,4 @@ const serverToStopPromise = (server) => {
 			});
 		});
 	};
-}
-
-const setupLogging = (logLevel, timingLogLevel, gaugeLogLevel) => {
-	reactServer.logging.setLevel('main',  logLevel);
-	reactServer.logging.setLevel('time',  timingLogLevel);
-	reactServer.logging.setLevel('gauge', gaugeLogLevel);
-}
-
-const logProductionWarnings = ({hot, minify, jsUrl, longTermCaching}) => {
-	// if the server is being launched with some bad practices for production mode, then we
-	// should output a warning. if arg.jsurl is set, then hot and minify are moot, since
-	// we aren't serving JavaScript & CSS at all.
-	if ((!jsUrl && (hot || !minify)) ||  process.env.NODE_ENV !== "production" || !longTermCaching) { //eslint-disable-line no-process-env
-		logger.warning("PRODUCTION WARNING: the following current settings are discouraged in production environments. (If you are developing, carry on!):");
-		if (hot) {
-			logger.warning("-- Hot reload is enabled. To disable, set hot to false (--hot=false at the command-line) or set NODE_ENV=production.");
-		}
-
-		if (!minify) {
-			logger.warning("-- Minification is disabled. To enable, set minify to true (--minify at the command-line) or set NODE_ENV=production.");
-		}
-
-		if (!longTermCaching) {
-			logger.warning("-- Long-term caching is disabled. To enable, set longTermCaching to true (--long-term-caching at the command-line) or set NODE_ENV=production to turn on.");
-		}
-		logger.info(`NODE_ENV is set to ${process.env.NODE_ENV}`); //eslint-disable-line no-process-env
-	}
-
 }

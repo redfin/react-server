@@ -23,7 +23,7 @@ function getResponseCode(url) {
 	return new Promise((resolve, reject) => {
 		const req = http.get({
 			hostname: 'localhost',
-			port: 3010,
+			port: 3000,
 			path: url
 		}, res => {
 			resolve(res.statusCode);

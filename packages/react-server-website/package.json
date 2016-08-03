@@ -5,9 +5,9 @@
   "main": "HelloWorld.js",
   "private": true,
   "scripts": {
-    "build-assets": "npm run docs && node ./cli.js --compile-only --minify",
-    "start-prod": "node ./cli.js --port 3010 --minify --js-url /assets/",
-    "start": "node ./cli.js --port 3010 --js-port 3011",
+    "build-assets": "npm run docs && NODE_ENV=production node ./cli.js compile",
+    "start-prod": "NODE_ENV=production node ./cli.js start",
+    "start": "node ./cli.js start",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },

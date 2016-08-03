@@ -20,8 +20,9 @@ import callerDependency from "./callerDependency"
 // once the compiler has been run. The file path returned from the promise
 // can be required and passed in to reactServer.middleware().
 // TODO: add options for sourcemaps.
-export default (routes, opts = {}) => {
+export default (opts = {}) => {
 	const {
+		routes,
 		workingDir = "./__clientTemp",
 		routesDir = ".",
 		outputDir = workingDir + "/build",
@@ -343,9 +344,9 @@ const writeClientBootstrapFile = (outputDir, opts) => {
 		}
 		var reactServer = require("react-server");
 		window.rfBootstrap = function() {
-			reactServer.logging.setLevel('main',  ${opts.logLevel});
-			reactServer.logging.setLevel('time',  ${opts.timingLogLevel});
-			reactServer.logging.setLevel('gauge', ${opts.gaugeLogLevel});
+			reactServer.logging.setLevel('main',  ${JSON.stringify(opts.logLevel)});
+			reactServer.logging.setLevel('time',  ${JSON.stringify(opts.timingLogLevel)});
+			reactServer.logging.setLevel('gauge', ${JSON.stringify(opts.gaugeLogLevel)});
 			new reactServer.ClientController({routes: require("./routes_client")}).init();
 		}`
 	);
