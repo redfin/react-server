@@ -667,13 +667,21 @@ class ClientController extends EventEmitter {
 		//
 		// Always render in order to proritize content higher in the
 		// page.
-		//
-		elementPromises.reduce((chain, promise, index) => chain.then(
-			() => promise.then(element => rootNodePromises[index]
-				.then(root => renderElement(element, root, index))
-				.catch(e => logger.error(`Error with element render ${index}`, e))
-			).catch(e => logger.error(`Error with element promise ${index}`, e))
-		), Q()).then(retval.resolve);
+		elementPromises.reduce((chain, promise, index) => chain
+			.then(() => promise
+				.then(element => rootNodePromises[index]
+					.then(root => renderElement(element, root, index))
+					.catch(e => {
+						// The only case where this should evaluate to false is
+						// when `element` is a containerClose/containerOpen object
+						const componentType = typeof element.type === 'function'
+							? element.props.children.type.name
+							: 'element';
+						logger.error(`Error with ${componentType} render ${index}`, e);
+					})
+				).catch(e => logger.error(`Error with element promise ${index}`, e))
+			),
+		Q()).then(retval.resolve);
 
 		// Look out for a failsafe timeout from the server on our
 		// first render.

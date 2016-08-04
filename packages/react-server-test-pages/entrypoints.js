@@ -45,4 +45,4 @@ module.exports = {
 		entry: "/error/logs",
 		description: "Generate errors in the logs",
 	},
-}
+};

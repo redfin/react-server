@@ -668,7 +668,7 @@ function writeBody(req, res, context, start, page) {
 	elementPromises.forEach((promise, index) => promise
 		.then(element => doElement(element, index))
 		.catch(e => {
-			logger.error(`Error rendering element ${index}`, e)
+			logger.error(`Error rendering element ${index}`, e);
 			// TODO: the error handling here should probably be merged
 			// somehow with renderElement so that we get timing info.
 
