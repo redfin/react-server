@@ -27,7 +27,7 @@ module.exports = {
 				// a path here we need to strip the base off to avoid a flash
 				// of unstyled content.
 				if (key.indexOf(urlBase) === 0) {
-					key = key.substr(urlBase);
+					key = key.substr(urlBase.length);
 				}
 			} else {
 				key = styleNode.innerHTML;
