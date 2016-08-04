@@ -6,7 +6,6 @@ and interactivity on the client side.
 To start in development mode:
 
 ```shell
-npm run compile
 npm start
 ```
 
@@ -29,7 +28,6 @@ npm start -- --port=4000
 To run the tests
 
 ```shell
-npm run compile
 npm test
 ```
 
