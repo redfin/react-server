@@ -1,3 +1,32 @@
+
+
+## v0.4.1 (2016-08-04)
+
+#### Enhancement
+* `generator-react-server`, `react-server-cli`, `react-server`
+  * [#490](https://github.com/redfin/react-server/pull/490) Cli commands. ([@gigabo](https://github.com/gigabo))
+* `react-server`
+  * [#481](https://github.com/redfin/react-server/pull/481) Add debug params for log level adjustment in browser. ([@gigabo](https://github.com/gigabo))
+* `generator-react-server`, `react-server-cli`
+  * [#484](https://github.com/redfin/react-server/pull/484) Make `react-server-cli` work as a global install. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server`
+  * [#500](https://github.com/redfin/react-server/pull/500) Address a flash of unstyled content on the website. ([@gigabo](https://github.com/gigabo))
+* `react-server-cli`
+  * [#460](https://github.com/redfin/react-server/pull/460) Just don't mess with `resolve.root` at all. ([@gigabo](https://github.com/gigabo))
+  * [#458](https://github.com/redfin/react-server/pull/458) Tell webpack to look for _our_ deps first. ([@gigabo](https://github.com/gigabo))
+  * [#373](https://github.com/redfin/react-server/pull/373) Ensure that if `common` exists in the manifest, we include it.. ([@egid](https://github.com/egid))
+
+#### Commiters: 7
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- David Alber ([davidalber](https://github.com/davidalber))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Eric Gideon ([egid](https://github.com/egid))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Perry Shuman ([Noirbot](https://github.com/Noirbot))
+- Tim Duffey ([decoy31](https://github.com/decoy31))
+
 ## v0.4.0 (2016-07-16)
 
 #### Enhancement
@@ -127,3 +156,6 @@
 - Bo Borgerson ([gigabo](https://github.com/gigabo))
 - Douglas Wade ([doug-wade](https://github.com/doug-wade))
 - Rob Landers ([withinboredom](https://github.com/withinboredom))
+
+> @ changelog /Users/doug.wade/code/react-server
+> lerna-changelog
