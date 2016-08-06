@@ -1,3 +1,9 @@
+# This Docker Compose file enables launching the constellation of
+# services in a way that is very similar to how we deploy this in
+# production.
+#
+# See running-with-docker-compose.md for details.
+
 version: '2'
 services:
   docs:
