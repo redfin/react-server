@@ -3,6 +3,7 @@ import https from "https"
 import express from "express"
 import pem from "pem"
 import compression from "compression"
+import bodyParser from "body-parser"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
@@ -83,6 +84,8 @@ const startHtmlServer = (serverRoutes, port, httpsOptions) => {
 			logger.info("Starting HTML server...");
 
 			server.use(compression());
+			server.use(bodyParser.urlencoded({ extended: false }))
+			server.use(bodyParser.json())
 			reactServer.middleware(server, require(serverRoutes));
 
 			httpServer.on('error', (e) => {

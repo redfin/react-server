@@ -17,6 +17,7 @@
     "babel-core": "^6.10.4",
     "babel-loader": "~6.2.2",
     "babel-runtime": "^6.3.19",
+    "body-parser": "^1.15.2",
     "chunk-manifest-webpack-plugin": "0.0.1",
     "compression": "~1.6.2",
     "css-loader": "~0.15.4",
