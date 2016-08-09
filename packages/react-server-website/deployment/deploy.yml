@@ -11,10 +11,18 @@
     - name: Copy NGINX configuration
       copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
 
-    - name: Pull containers
-      shell: docker-compose pull && docker-compose build
+    - name: Pull images
+      shell: docker-compose pull
+      become: true
+
+    - name: Stop services
+      shell: docker-compose stop
+      become: true
+
+    - name: Remove docs container and volume
+      shell: docker-compose rm -vf docs
       become: true
 
     - name: Restart services
-      shell: docker-compose stop && SLACK_API_TOKEN=`cat slack-api-token | tr -d '\n'` docker-compose up -d
+      shell: SLACK_API_TOKEN=`cat slack-api-token | tr -d '\n'` docker-compose up -d
       become: true
