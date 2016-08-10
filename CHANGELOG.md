@@ -1,4 +1,21 @@
+## v0.4.2 (2016-08-10)
 
+#### Enhancement
+* `react-server-cli`
+  * [#513](https://github.com/redfin/react-server/pull/513) add body-parser middleware for express. ([@mattiasewers](https://github.com/mattiasewers))
+
+#### Bug fix
+* `react-server`
+  * [#501](https://github.com/redfin/react-server/pull/501) Prevent another type of flash of unstyled content. ([@gigabo](https://github.com/gigabo))
+  * [#518](https://github.com/redfin/react-server/pull/518) Eliminate a frameback navigation initialization race. ([@gigabo](https://github.com/gigabo))
+
+#### Commiters: 6
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- David Alber ([davidalber](https://github.com/davidalber))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Mattias Ewers ([mattiasewers](https://github.com/mattiasewers))
+- Omer Zach ([omerzach](https://github.com/omerzach))
 
 ## v0.4.1 (2016-08-04)
 
@@ -157,5 +174,3 @@
 - Douglas Wade ([doug-wade](https://github.com/doug-wade))
 - Rob Landers ([withinboredom](https://github.com/withinboredom))
 
-> @ changelog /Users/doug.wade/code/react-server
-> lerna-changelog
