@@ -12,15 +12,15 @@
       copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
 
     - name: Pull images
-      shell: docker-compose pull
+      command: docker-compose pull
       become: true
 
     - name: Stop services
-      shell: docker-compose stop
+      command: docker-compose stop
       become: true
 
     - name: Remove docs container and volume
-      shell: docker-compose rm -vf docs
+      command: docker-compose rm -vf docs
       become: true
 
     - name: Restart services
