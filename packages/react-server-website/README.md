@@ -16,3 +16,9 @@ $ npm start
 ```
 
 Then visit http://localhost:3010.
+
+## Running with Docker Compose
+
+See [Running with Docker Compose](running-with-docker-compose.md) to
+learn how to run the full fleet of services locally in a way that is
+similar to production.

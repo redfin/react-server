@@ -1,18 +1,33 @@
+# This Docker Compose file enables launching the constellation of
+# services in a way that is very similar to how we deploy this in
+# production.
+#
+# See running-with-docker-compose.md for details.
+
 version: '2'
 services:
-  node:
+  docs:
     build:
       context: .
       dockerfile: Dockerfile
+  slackin:
+    image: davidalber/slackin
+    environment:
+     - SLACK_COC=https://github.com/redfin/react-server/blob/master/CODE_OF_CONDUCT.md
+     - SLACK_SUBDOMAIN=react-server
+     - SLACK_API_TOKEN
   nginx:
     image: nginx:1.10.1
     depends_on:
-     - node
+     - docs
+     - slackin
     links:
-     - node:react-server-docs
+     - docs:react-server-docs
+     - slackin:slackin
     ports:
      - "8080:80"
+     - "8443:443"
     volumes_from:
-     - node:ro
+     - docs:ro
     volumes:
      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
