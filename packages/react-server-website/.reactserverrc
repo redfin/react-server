@@ -5,7 +5,7 @@
   "jsPort": 3011,
   "hot": false,
   "minify": false,
-  "longTermCaching": false,
+  "longTermCaching": true,
   "https": false,
   "logLevel": "debug",
   "env": {
