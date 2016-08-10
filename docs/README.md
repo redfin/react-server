@@ -10,17 +10,17 @@ scope for our documentation, but come swing by our [slack](https://slack.react-s
 about it.
 
 If you still aren't convinced on React Server, check out our
-[Why React Server](/intro/why-react-server.md) doc, which explains why you might want
-to use React Server, and the [Design Doc](/intro/design.md), which explains why we
+[Why React Server](intro/why-react-server.md) doc, which explains why you might want
+to use React Server, and the [Design Doc](intro/design.md), which explains why we
 built React Server and some of the decisions we made along the way.
 
 To get started working with a new React Server project, you'll probably want to
-check out the [Writing pages guide](/guides/writing-pages.md) first, which details how
+check out the [Writing pages guide](guides/writing-pages.md) first, which details how
 to create a new web page in a React Server app.  You'll also want to check out
 the [Page API](/guides/page-api.md), and you may want to also check out
-[Writing Middleware](/guides/writing-middleware.md), which explains how to write code
+[Writing Middleware](guides/writing-middleware.md), which explains how to write code
 that runs for every route.
 
 To dig deeper into understanding React Server, you may want to learn about
-[how logging works](/guides/logging.md), [client transitions](/guides/client-transitions.md),
-and [understanding rendering](/guides/understanding-rendering.md).
+[how logging works](guides/logging.md), [client transitions](guides/client-transitions.md),
+and [understanding rendering](guides/understanding-rendering.md).
