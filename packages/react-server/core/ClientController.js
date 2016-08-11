@@ -580,10 +580,10 @@ class ClientController extends EventEmitter {
 				//
 				if (this._reuseDom) {
 					oldRootElement = document.querySelector(
-						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
+						`*[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 					);
 					oldRootContainer = document.querySelector(
-						`div[${PAGE_CONTAINER_NODE_ID}="${index}"]`
+						`*[${PAGE_CONTAINER_NODE_ID}="${index}"]`
 					);
 				}
 
@@ -650,7 +650,11 @@ class ClientController extends EventEmitter {
 
 			_.forEach(
 				getRootElementAttributes(element),
-				(v, k) => root.setAttribute(k, v)
+				(v, k) => {
+					if (k !== 'tagName') {
+						root.setAttribute(k, v)
+					}
+				}
 			);
 
 			totalRenderTime += timer.stop();
@@ -724,7 +728,7 @@ class ClientController extends EventEmitter {
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
-				document.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
+				document.querySelectorAll(`*[${REACT_SERVER_DATA_ATTRIBUTE}]`)
 			).forEach((root, i) => {
 				if (i >= index) {
 					// Since this node has a "data-react-server-root-id"
@@ -738,7 +742,7 @@ class ClientController extends EventEmitter {
 			});
 
 			[].slice.call(
-				document.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
+				document.querySelectorAll(`*[${PAGE_CONTAINER_NODE_ID}]`)
 			).forEach((root, i) => {
 				if (i >= index) {
 					// Gotta get rid of our containers,
@@ -860,7 +864,7 @@ class ClientController extends EventEmitter {
 		for (var i = startIndex; i <= endIndex; i++) {
 			this._ensureRootNodeDfd(i).resolve(
 				this.mountNode.querySelector(
-					`div[${REACT_SERVER_DATA_ATTRIBUTE}="${i}"]`
+					`*[${REACT_SERVER_DATA_ATTRIBUTE}="${i}"]`
 				)
 			);
 		}

@@ -866,26 +866,34 @@ function writeElement(res, element, i){
 			html  : '',
 		}
 	}
+
+	let tagName = 'div';
+	if (element.attrs.tagName) {
+		tagName = element.attrs.tagName;
+		delete element.attrs.tagName;
+	}
+
 	if (element.containerOpen) {
-		res.write(`<div ${PAGE_CONTAINER_NODE_ID}=${i}${
-			_.map(element.containerOpen, (v, k) => ` ${k}="${attrfy(v)}"`)
+		res.write(`<${tagName} ${PAGE_CONTAINER_NODE_ID}=${i}${
+			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
 		}>`);
 	} else if (element.containerClose) {
-		res.write('</div>');
+		res.write(`</${tagName}>`);
 	} else if (element.isTheFold) {
 
 		// Okay, we've sent all of our above-the-fold HTML,
 		// now we can let the client start waking nodes up.
 		bootstrapClient(res, i)
 	} else {
-		res.write(`<div data-react-server-root-id=${
+
+		res.write(`<${tagName} data-react-server-root-id=${
 			i
 		} data-react-server-timing-offset="${
 			// Mark when we sent it.
 			new Date - RLS().timingDataT0
 		}"${
 			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
-		}>${element.html}</div>`);
+		}>${element.html}</${tagName}>`);
 	}
 }
 
