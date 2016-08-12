@@ -44,7 +44,9 @@
     "yargs": "~3.15.0"
   },
   "devDependencies": {
+    "node-sass": "^3.8.0",
     "nsp": "^2.4.0",
-    "rimraf": "^2.5.2"
+    "rimraf": "^2.5.2",
+    "sass-loader": "^4.0.0"
   }
 }
