@@ -4,6 +4,7 @@ const parseCliArgs = require("./parseCliArgs").default;
 
 require.extensions['.css'] =
 require.extensions['.less'] =
+require.extensions['.scss'] =
 function(module, filename) {
 	return module._compile("", filename);
 };
