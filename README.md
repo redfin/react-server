@@ -26,8 +26,7 @@ npm install -g generator-react-server
 # make a new react-server project in the CURRENT directory
 yo react-server
 
-# compile and run the new app
-npm run compile
+# run the new app
 npm run start
 # go to http://localhost:3000
 ```
