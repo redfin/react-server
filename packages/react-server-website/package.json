@@ -5,9 +5,9 @@
   "main": "HelloWorld.js",
   "private": true,
   "scripts": {
-    "build-assets": "npm run docs && NODE_ENV=production node ./cli.js compile",
-    "start-prod": "NODE_ENV=production node ./cli.js start",
-    "start": "node ./cli.js start",
+    "build-assets": "npm run docs && NODE_ENV=production react-server compile",
+    "start-prod": "NODE_ENV=production react-server start",
+    "start": "react-server start",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },
