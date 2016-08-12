@@ -1,3 +1,24 @@
+## v0.4.3 (2016-08-12)
+
+#### Enhancement
+* `react-server-cli`
+  * [#543](https://github.com/redfin/react-server/pull/543) Add sass support. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-cli`
+  * [#528](https://github.com/redfin/react-server/pull/528) Don't require node 6 to run react-server-cli. ([@lidawang](https://github.com/lidawang))
+  * [#523](https://github.com/redfin/react-server/pull/523) Declare chalk dependency. ([@doug-wade](https://github.com/doug-wade))
+  * [#533](https://github.com/redfin/react-server/pull/533) Don't require CLI users to install webpack locally. ([@gigabo](https://github.com/gigabo))
+
+#### Commiters: 7
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Dharam Gollapudi ([dharamgollapudi](https://github.com/dharamgollapudi))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Eric Gideon ([egid](https://github.com/egid))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Lida Wang ([lidawang](https://github.com/lidawang))
+- nattofriends ([nattofriends](https://github.com/nattofriends))
+
 ## v0.4.2 (2016-08-10)
 
 #### Enhancement
