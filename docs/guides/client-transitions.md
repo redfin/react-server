@@ -45,7 +45,7 @@ a little bit about the _type_ of navigation ahead of time you can make it
 _even better_.  Here are some options for improving client transitions.  Each
 of these may be passed either as a `prop` on a `<Link>` tag _or_ as a
 key/value pair in an `options` object passed as a second argument to the
-`ClientRequest` constructor.
+`navigateTo` function.
 
 ### `bundleData`
 
