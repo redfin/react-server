@@ -1,13 +1,13 @@
 {
   "name": "react-server-website",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "private": true,
   "scripts": {
-    "build-assets": "npm run docs && NODE_ENV=production node ./cli.js compile",
-    "start-prod": "NODE_ENV=production node ./cli.js start",
-    "start": "node ./cli.js start",
+    "build-assets": "npm run docs && NODE_ENV=production react-server compile",
+    "start-prod": "NODE_ENV=production react-server start",
+    "start": "react-server start",
     "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },
@@ -19,7 +19,7 @@
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
     "react-server": "^0.4.2",
-    "react-server-cli": "^0.4.2",
+    "react-server-cli": "^0.4.3",
     "react-server-data-bundle-cache": "^0.4.2",
     "remarkable": "^1.6.2",
     "superagent": "1.2.0"

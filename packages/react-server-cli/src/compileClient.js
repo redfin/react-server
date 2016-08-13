@@ -47,7 +47,10 @@ export default (opts = {}) => {
 
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
-	const entrypointBase = hot ? [`webpack-dev-server/client?${outputUrl}`,"webpack/hot/only-dev-server"] : [];
+	const entrypointBase = hot ? [
+		require.resolve("webpack-dev-server/client") + "?" + outputUrl,
+		require.resolve("webpack/hot/only-dev-server"),
+	] : [];
 	let entrypoints = {};
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
@@ -158,6 +161,11 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 				{
 					test: /\.less/,
 					loader: extractTextLoader + "!less-loader",
+					exclude: /node_modules/,
+				},
+				{
+					test: /\.scss$/,
+					loader: extractTextLoader + "!sass-loader",
 					exclude: /node_modules/,
 				},
 				{

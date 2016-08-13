@@ -1,14 +1,14 @@
 {
   "name": "react-server-test-pages",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
   "scripts": {
     "prepublish": "gulp build",
-    "start": "node ./cli.js start",
+    "start": "react-server start",
     "test": "gulp test",
-    "debug": "node-debug --debug-brk=0 -p 9000 ./cli.js start",
+    "debug": "node-debug --debug-brk=0 -p 9000 react-server start",
     "clean": "rimraf npm-debug.log* __clientTemp target"
   },
   "author": "Bo Borgerson",
@@ -19,7 +19,7 @@
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-server": "^0.4.2",
-    "react-server-cli": "^0.4.2",
+    "react-server-cli": "^0.4.3",
     "react-server-data-bundle-cache": "^0.4.2",
     "superagent": "1.2.0"
   },

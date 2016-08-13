@@ -33,6 +33,10 @@ module.exports = {
 		entry: "/styles/promises",
 		description: "Stylesheets returned from promises",
 	},
+	Sass: {
+		entry: "/styles/sass",
+		description: "SASS styles",
+	},
 	NavigationDataBundleCache: {
 		entry: "/navigation/data-bundle-cache",
 		description: "Data bundle cache",

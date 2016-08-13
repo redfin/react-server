@@ -62,7 +62,7 @@ single-page application (SPA)?
 possible?
 - How can I make my app resilient when my backend has high latency spikes?
 
-`react-server` is a framework designed to make universal (neé isomorphic) React
+`react-server` is a framework designed to make universal (née isomorphic) React
 easier to write, providing standard answers for these questions and more. When
 you write your app for `react-server`, you concentrate on your React components,
 and `react-server` takes care of everything else that's needed to run and deploy

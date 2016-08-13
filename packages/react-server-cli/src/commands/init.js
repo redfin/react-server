@@ -15,13 +15,6 @@ const DEPENDENCIES = [
 	"react-dom@~0.14.2",
 ]
 
-const DEV_DEPENDENCIES = [
-
-	// TODO: These, too.
-	"webpack-dev-server@~1.13.0",
-	"webpack@^1.13.1",
-]
-
 const CONFIG = {
 	"routes.json": {
 		middleware: [],
@@ -59,8 +52,6 @@ export default function init(){
 	spawnSync("npm", ["install", "--save", ...DEPENDENCIES], {stdio: "inherit"});
 
 	console.log(chalk.yellow("Installing devDependencies"));
-
-	spawnSync("npm", ["install", "--save-dev", ...DEV_DEPENDENCIES], {stdio: "inherit"});
 
 	_.forEach(CONFIG, (config, fn) => {
 		console.log(chalk.yellow("Generating " + fn));
