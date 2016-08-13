@@ -650,11 +650,7 @@ class ClientController extends EventEmitter {
 
 			_.forEach(
 				getRootElementAttributes(element),
-				(v, k) => {
-					if (k !== 'tagName') {
-						root.setAttribute(k, v)
-					}
-				}
+				(v, k) => {root.setAttribute(k, v)}
 			);
 
 			totalRenderTime += timer.stop();

@@ -15,7 +15,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PageUtil = require('./util/PageUtil'),
 	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
-	{getRootElementAttributes} = require('./components/RootElement'),
+	{getRootElementAttributes, getRootElementTagName} = require('./components/RootElement'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
 var _ = {
@@ -786,6 +786,7 @@ function renderElement(res, element, context) {
 	,   timer = logger.timer(`renderElement.individual.${name}`)
 	,   html  = ''
 	,   attrs = {}
+	,		tagName = 'div'
 
 	try {
 		if (element !== null) {
@@ -793,6 +794,7 @@ function renderElement(res, element, context) {
 				React.cloneElement(element, { context: context })
 			);
 			attrs = getRootElementAttributes(element);
+			tagName = getRootElementTagName(element);
 		}
 	} catch (err) {
 		// A component failing to render is not fatal.  We've already
@@ -814,7 +816,7 @@ function renderElement(res, element, context) {
 	RLS().renderTime || (RLS().renderTime = 0);
 	RLS().renderTime += individualTime;
 
-	return { html, attrs };
+	return { html, attrs, tagName };
 }
 
 // Write as many elements out in a row as possible and then flush output.
@@ -866,12 +868,12 @@ function writeElement(res, element, i){
 			html  : '',
 		}
 	}
-
-	let tagName = 'div';
-	if (element.attrs.tagName) {
-		tagName = element.attrs.tagName;
-		delete element.attrs.tagName;
-	}
+	let tagName = element.tagName || 'div';
+	console.log('el', element)
+	// if (element.attrs.tagName) {
+	// 	tagName = element.attrs.tagName;
+	// 	delete element.attrs.tagName;
+	// }
 
 	if (element.containerOpen) {
 		res.write(`<${tagName} ${PAGE_CONTAINER_NODE_ID}=${i}${

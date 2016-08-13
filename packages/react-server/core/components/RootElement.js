@@ -103,8 +103,11 @@ RootElement.getRootElementAttributes = function(element) {
 		'id',
 		'style',
 	].forEach(k => props[k] && (attrs[k] = props[k]));
-	attrs.tagName = props.tagName || 'div';
 	return attrs;
+}
+
+RootElement.getRootElementTagName = function(element) {
+	return element.props.tagName || 'div';
 }
 
 RootElement.ensureRootElementWithContainer = function(element, container) {

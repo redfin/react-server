@@ -23,11 +23,15 @@ RootContainer.defaultProps = {
 }
 
 RootContainer.flattenForRender = function(element) {
-	let attrs = getRootElementAttributes(element) || {};
-	attrs.tagName = attrs.tagName || 'div';
-	return [{containerOpen: true, attrs: attrs}]
+	let tagName = element.props.tagName || 'div';
+	return [{containerOpen: true,
+			attrs: getRootElementAttributes(element),
+			tagName: tagName,
+		}]
 		.concat(prepChildren(element))
-		.concat([{containerClose: true, attrs: attrs}])
+		.concat([{containerClose: true,
+				tagName: tagName,
+		}])
 		.reduce((m,v) => m.concat(Array.isArray(v)?v:[v]), [])
 }
 
