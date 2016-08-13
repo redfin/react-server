@@ -1,2 +1,3 @@
+**/docker-compose.yml
 node_modules
-provisioning
+deployment
