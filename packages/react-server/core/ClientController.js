@@ -599,7 +599,7 @@ class ClientController extends EventEmitter {
 					mountNode = oldRootContainer;
 					this._updateContainerNodeAttributes(
 						mountNode,
-						element.containerOpen
+						element.attrs
 					);
 				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
 					mountNode = mountNode.parentNode;
@@ -613,7 +613,8 @@ class ClientController extends EventEmitter {
 						// our new mountNode.
 						mountNode = this._createContainerNode(
 							mountNode,
-							element.containerOpen,
+							element.tagName,
+							element.attrs,
 							index
 						);
 					} else if (element.containerClose) {
@@ -625,7 +626,11 @@ class ClientController extends EventEmitter {
 
 						// Need a new root element in our
 						// current mountNode.
-						root = this._createReactServerRootNode(mountNode, index)
+						root = this._createReactServerRootNode(
+							mountNode,
+							element.tagName,
+							index
+						);
 					}
 				}
 
@@ -754,15 +759,15 @@ class ClientController extends EventEmitter {
 	/**
 	 * This method creates a new div to render a ReactElement in to at the end of the mount node.
 	 */
-	_createReactServerRootNode(mountNode, index) {
-		var root = document.createElement("div");
+	_createReactServerRootNode(mountNode, tagName, index) {
+		var root = document.createElement(tagName || 'div');
 		root.setAttribute(REACT_SERVER_DATA_ATTRIBUTE, index);
 		mountNode.appendChild(root);
 		return root;
 	}
 
-	_createContainerNode(mountNode, attrs, i) {
-		var node = document.createElement("div");
+	_createContainerNode(mountNode, tagName, attrs, i) {
+		var node = document.createElement(tagName || 'div');
 		node.setAttribute(PAGE_CONTAINER_NODE_ID, i);
 		_.forEach(attrs, (v, k) => node.setAttribute(k, v));
 		mountNode.appendChild(node);

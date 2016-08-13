@@ -125,9 +125,8 @@ RootElement.ensureRootElementWithContainer = function(element, container) {
 		return element;
 	}
 
-	const {listen, when} = container.props;
-
-	return <RootElement listen={listen} when={when}>{element}</RootElement>;
+	const {listen, when, tagName} = container.props;
+	return <RootElement listen={listen} when={when} tagName={tagName}>{element}</RootElement>;
 }
 
 RootElement.ensureRootElement = function(element){

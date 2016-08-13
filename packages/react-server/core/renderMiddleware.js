@@ -869,11 +869,6 @@ function writeElement(res, element, i){
 		}
 	}
 	let tagName = element.tagName || 'div';
-	console.log('el', element)
-	// if (element.attrs.tagName) {
-	// 	tagName = element.attrs.tagName;
-	// 	delete element.attrs.tagName;
-	// }
 
 	if (element.containerOpen) {
 		res.write(`<${tagName} ${PAGE_CONTAINER_NODE_ID}=${i}${
