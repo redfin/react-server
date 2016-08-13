@@ -7,6 +7,7 @@ services:
     environment:
      - SLACK_COC=https://github.com/redfin/react-server/blob/master/CODE_OF_CONDUCT.md
      - SLACK_SUBDOMAIN=react-server
+     - SLACK_INTERVAL=30000
      - SLACK_API_TOKEN
   nginx:
     image: nginx:1.10.1
