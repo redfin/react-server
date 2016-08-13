@@ -1,8 +1,9 @@
 import {RootContainer, RootElement, Link} from "react-server";
+require("./attributes.css");
 
 const url = color => `/root/attributes?color=${color}`;
 
-const Links = opts => <span>
+const ColorLinks = opts => <span>
 	<Link path={url( "red"    )} {...opts}>Red</    Link><span> | </span>
 	<Link path={url( "yellow" )} {...opts}>Yellow</ Link><span> | </span>
 	<Link path={url( "green"  )} {...opts}>Green</  Link>
@@ -13,16 +14,33 @@ export default class RootAttributesPage {
 		const color = this.getRequest().getQuery().color || "white";
 		const style = `background-color: ${color}`;
 		return <RootContainer>
-			<div>Background below the hr should be <em>{color}</em></div>
-			<div><Links /> (normal)</div>
-			<div><Links reuseDom={true}/> (reuseDom)</div>
-			<hr />
+
+			<h2>style</h2>
+			<div><ColorLinks /> (normal)</div>
+			<div><ColorLinks reuseDom={true}/> (reuseDom)</div>
 			<RootContainer style={style}>
-				<div>RootContainer</div>
+				<div className="example">RootContainer should be {color}</div>
 			</RootContainer>
 			<RootElement style={style}>
-				<div>RootElement</div>
+				<div className="example">RootElement should be {color}</div>
 			</RootElement>
+
+			<h2>className</h2>
+			<RootContainer className="example-class">
+				<div className="example">RootContainer should be "salmon" have the css class "example-class" applied when inspected</div>
+			</RootContainer>
+			<RootElement className="example-class">
+				<div className="example">RootElement should be "salmon" have the css class "example-class" applied when inspected</div>
+			</RootElement>
+
+			<h2>tagName</h2>
+			<RootContainer tagName="section">
+				<div className="example">RootContainer should be "turquoise" and have the node type "section" when inspected</div>
+			</RootContainer>
+			<RootElement tagName="section">
+				<div className="example">RootElement should be "turquoise" and have the node type "section" when inspected</div>
+			</RootElement>
+
 		</RootContainer>
 	}
 }
