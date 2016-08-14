@@ -3,6 +3,7 @@ module.exports = {
 	middleware: [
 		'./middleware/RequestToPort',
 		'./middleware/Theme',
+		'./middleware/Favicon',
 		'./middleware/PageHeader',
 		'./middleware/PageFooter',
 		'./middleware/Analytics',
