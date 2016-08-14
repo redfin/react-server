@@ -11,7 +11,7 @@ const NetworkCard = ({id, name, location, company}) => {
 };
 
 NetworkCard.propTypes = {
-	company: React.PropTypes.string,
+	company: React.PropTypes.any,
 	href: React.PropTypes.string,
 	id: React.PropTypes.string,
 	location: React.PropTypes.shape({
