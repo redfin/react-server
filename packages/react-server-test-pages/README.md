@@ -7,7 +7,6 @@ it), it's for interactive testing during development.
 Setup (from the repo root):
 
 ```bash
-$ npm install
 $ npm run bootstrap
 $ cd packages/react-server-test-pages
 $ npm start
@@ -16,10 +15,10 @@ $ npm start
 Then hit http://localhost:3000/ to see what's available.
 
 If you make changes in `packages/react-server` you'll need to `CTRL-C` and
-re-install `react-server` locally to pick them up.
+re-build `react-server` to pick them up.
 
 ```bash
-$ npm install react-server@../react-server && npm start
+$ cd ../react-server && npm run prepublish && cd - && npm start
 ```
 
 If you wish to run the test server in debug mode, simply replace `npm start` with `npm run debug`.
