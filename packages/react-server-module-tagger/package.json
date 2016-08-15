@@ -4,6 +4,7 @@
   "description": "calculates module level config",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint *.js",
     "test": "ava test.js",
     "clean": "del npm-debug.log*"
   },
