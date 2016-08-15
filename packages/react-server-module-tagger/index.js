@@ -1,27 +1,19 @@
 var isWindows = ('win32' === process.platform);
 
 /**
- * A util function for tagging modules.  Expects to find data on its prototype
- * as follows
- *     {
- *         file: {
- *             path: the path to the file to tag
- *         }
- *         config: {
- *             trim: the string to trim off the front of the logger name
- *         }
- *     }
+ * A util function for tagging modules.
  * @example
- *     const file = '/path/to/my/file.js';
- *     loggerSpec.bind({file, { trim: 'path.to.' }})(file, '({label: "foo"})')
+ *     tagger({filePath: '/path/to/my/file.js', trim: 'path.to.', optString: '({label: "foo"})')
  *     // returns '{\"label\":\"foo\",\"name\":\"my.file\",\"color\":{\"server\":87,\"client\":\"rgb(42,212,212)\"}}'
- * @param  {String} fullMatch May also be provided as this.file.path, the path to the file
+ * @param  {String} filePath  The path to the file
  * @param  {String} optString The label to add to the module tag, in the form '({label:"$label"})'
+ * @param  {String} trim      The prefix to remove from the logger name
+ * @param  {String} basePath  The path to the root of the project
  * @return {String}           A json object containing a module identifier
  */
 module.exports = function(arg){
 	var optString = arg.optString
-	,   fn   = arg.filePath ? arg.filePath : arg.fullMatch
+	,   fn   = arg.filePath
 	,   trim = arg.trim || ''
 	,   basePath = arg.basePath || ''
 	,   opts = {}
