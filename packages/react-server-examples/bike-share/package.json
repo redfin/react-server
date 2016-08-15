@@ -7,7 +7,7 @@
   "author": "Doug Wade <doug.wade@redfin.com>",
   "scripts": {
     "clean": "rm -rf build __clientTemp",
-    "start": "npm run clean && npm run styles && react-server",
+    "start": "npm run clean && npm run styles && react-server start",
     "styles": "node-sass styles/index.scss build/styles/index.css && node-sass styles/network.scss build/styles/network.css",
     "test": "xo && nsp check"
   },
@@ -16,8 +16,8 @@
     "babel-runtime": "^6.6.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "^0.3.3",
-    "react-server-cli": "^0.3.3",
+    "react-server": "^0.4.2",
+    "react-server-cli": "^0.4.2",
     "superagent": "1.2.0"
   },
   "devDependencies": {
