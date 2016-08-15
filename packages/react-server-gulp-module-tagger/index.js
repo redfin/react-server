@@ -15,6 +15,12 @@ module.exports = function(config) {
 	config || (config = {});
 	config.basePath = module.filename.replace(THIS_MODULE,'');
 	return forEach(function(stream, file){
-		return stream.pipe(replace(REPLACE_TOKEN, loggerSpec.bind({file, config})));
+		return stream.pipe(replace(REPLACE_TOKEN, (match, optString) => {
+			return loggerSpec({
+				filePath: file.path,
+				basePath: config.basePath,
+				trim: config.trim, optString,
+			});
+		}));
 	});
 }

@@ -10,14 +10,13 @@ To transpile your source for use with
 npm i -D gulp react-server-module-tagger
 ```
 
-Then require and call the function.  The tagger expects to have config and file
-data on its prototype, so use `.bind`.
+Then require and call the function.
 
 ```javascript
 const tagger = require('react-server-module-tagger');
-const filepath = 'path/to/my/output.js';
+const filePath = 'path/to/my/output.js';
 const optString = '({label:"foo"})'
-const moduleTag = tagger.bind({ file: { path: filepath }, config: { trim: 'path/to'} })(filepath, optString));
+const moduleTag = tagger({ filePath, trim: 'path/to', optString });
 ```
 
 returns a logger instance that will have consistent coloring on the server and

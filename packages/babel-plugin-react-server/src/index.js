@@ -8,13 +8,12 @@ module.exports = function() {
 				const {node} = p;
 				const {name} = node;
 
-				const config = { trim: state.opts.trim };
+				const trim = state.opts.trim;
 				const parent = path.resolve(path.join(process.cwd(), '..')) + path.sep;
-				const fp = this.file.opts.filename.replace(parent, '');
-				const file =  { path: fp };
+				const filePath = this.file.opts.filename.replace(parent, '');
 
 				//TODO: Support labels
-				const moduleTag = loggerSpec.bind({ file, config })(fp);
+				const moduleTag = loggerSpec({ filePath, trim });
 
 				let tokens;
 				if (state.opts.tokens) {
