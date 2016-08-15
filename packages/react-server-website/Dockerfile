@@ -4,10 +4,11 @@ WORKDIR /usr/src/react-server/packages/react-server-website
 COPY . .
 
 RUN npm run build-assets
-RUN mkdir -p /www/data/assets
-RUN cp __clientTemp/build/* /www/data/assets/
+RUN mkdir -p /www/assets
+RUN cp __clientTemp/build/* /www/assets/
+RUN cp favicon.ico /www/
 
-VOLUME /www/data/assets
+VOLUME /www
 
 EXPOSE 3010
 
