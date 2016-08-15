@@ -11,7 +11,7 @@ services:
       context: .
       dockerfile: Dockerfile
   slackin:
-    image: davidalber/slackin
+    image: reactserver/react-server-website-slackin
     environment:
      - SLACK_COC=https://github.com/redfin/react-server/blob/master/CODE_OF_CONDUCT.md
      - SLACK_SUBDOMAIN=react-server
