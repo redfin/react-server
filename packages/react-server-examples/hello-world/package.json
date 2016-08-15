@@ -5,7 +5,7 @@
   "description": "",
   "main": "HelloWorld.js",
   "scripts": {
-    "start": "react-server",
+    "start": "react-server start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sasha Aickin",
@@ -17,8 +17,8 @@
     "babel-runtime": "~6.5",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "~0.2.0",
-    "react-server-cli": "~0.2.0",
+    "react-server": "~0.4.2",
+    "react-server-cli": "~0.4.2",
     "superagent": "1.2.0"
   }
 }
