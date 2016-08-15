@@ -19,10 +19,11 @@ var isWindows = ('win32' === process.platform);
  * @param  {String} optString The label to add to the module tag, in the form '({label:"$label"})'
  * @return {String}           A json object containing a module identifier
  */
-module.exports = function(fullMatch, optString){
-	var fn   = this.file && this.file.path ? this.file.path : fullMatch
-	,   trim = this.config.trim || ''
-	,   basePath = this.config.basePath || ''
+module.exports = function(arg){
+	var optString = arg.optString
+	,   fn   = arg.filePath ? arg.filePath : arg.fullMatch
+	,   trim = arg.trim || ''
+	,   basePath = arg.basePath || ''
 	,   opts = {}
 
 	if (fn.indexOf(basePath) !== 0) {
