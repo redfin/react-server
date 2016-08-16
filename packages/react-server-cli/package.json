@@ -29,6 +29,7 @@
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "lodash": "^4.14.1",
+    "look-up": "^0.8.3",
     "mkdirp": "~0.5.1",
     "node-libs-browser": "~0.5.2",
     "node-sass": "^3.8.0",

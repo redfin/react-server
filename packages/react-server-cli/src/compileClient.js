@@ -184,7 +184,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 		},
 		resolveLoader: {
 			root: [
-				path.resolve(path.join(__dirname, "../node_modules")),
+				path.resolve(path.join(path.dirname(require.resolve("webpack")), "../..")),
 			],
 		},
 		plugins: [
