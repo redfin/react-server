@@ -66,10 +66,10 @@ export default function start(options){
 		// in this case, we assume that httpOptions is an object that can be passed
 		// in to https.createServer as options.
 		return startServers(httpsOptions);
+	} else {
+		// Default.  Use http.
+		return startServers();
 	}
-
-	// Default.  Use http.
-	return startServers();
 }
 
 // given the server routes file and a port, start a react-server HTML server at
