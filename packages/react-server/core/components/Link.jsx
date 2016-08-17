@@ -6,7 +6,8 @@ module.exports = React.createClass({
 	displayName: 'Link',
 
 	propTypes: {
-		path       : React.PropTypes.string.isRequired,
+		path       : React.PropTypes.string,
+		href       : React.PropTypes.string,
 		bundleData : React.PropTypes.bool,
 		frameback  : React.PropTypes.bool,
 		reuseDom   : React.PropTypes.bool,
@@ -24,7 +25,7 @@ module.exports = React.createClass({
 
 	render: function () {
 		return (
-			<a href={this.props.path} onClick={this._onClick} className={this.props.className}>{this.props.children}</a>
+			<a href={this.props.path || this.props.href} onClick={this._onClick} className={this.props.className}>{this.props.children}</a>
 		);
 	},
 
@@ -37,7 +38,7 @@ module.exports = React.createClass({
 			e.preventDefault();
 			e.stopPropagation();
 			const {bundleData, frameback, reuseDom, reuseFrame} = this.props;
-			navigateTo(this.props.path, {
+			navigateTo(this.props.path || this.props.href, {
 				bundleData,
 				frameback,
 				reuseDom,
