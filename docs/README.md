@@ -17,7 +17,7 @@ built React Server and some of the decisions we made along the way.
 To get started working with a new React Server project, you'll probably want to
 check out the [Writing pages guide](guides/writing-pages.md) first, which details how
 to create a new web page in a React Server app.  You'll also want to check out
-the [Page API](/guides/page-api.md), and you may want to also check out
+the [Page API](page-api.md), and you may want to also check out
 [Writing Middleware](guides/writing-middleware.md), which explains how to write code
 that runs for every route.
 
