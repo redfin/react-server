@@ -1,3 +1,28 @@
+## v0.4.4 (2016-08-17)
+
+#### Enhancement
+* `react-server-cli`
+  * [#579](https://github.com/redfin/react-server/pull/579) Add .sass support. ([@alex88](https://github.com/alex88))
+* `react-server`
+  * [#573](https://github.com/redfin/react-server/pull/573) Add support to Link for href. ([@doug-wade](https://github.com/doug-wade))
+
+#### Bug fix
+* `react-server-cli`
+  * [#568](https://github.com/redfin/react-server/pull/568) Fixed bug in https handling. ([@CreepGin](https://github.com/CreepGin))
+* `react-server-examples`
+  * [#550](https://github.com/redfin/react-server/pull/550) Updated bike-share example. ([@hzhu](https://github.com/hzhu))
+  * [#557](https://github.com/redfin/react-server/pull/557) #555 update hello world to lastest react server and cli. ([@doug-wade](https://github.com/doug-wade))
+
+#### Commiters: 8
+- Alessandro Tagliapietra ([alex88](https://github.com/alex88))
+- Amila Welihinda ([amilajack](https://github.com/amilajack))
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- David ([CreepGin](https://github.com/CreepGin))
+- David Alber ([davidalber](https://github.com/davidalber))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Henry Zhu ([hzhu](https://github.com/hzhu))
+
 ## v0.4.3 (2016-08-12)
 
 #### Enhancement

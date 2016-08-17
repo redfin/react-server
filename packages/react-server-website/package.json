@@ -1,6 +1,6 @@
 {
   "name": "react-server-website",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "private": true,
@@ -18,14 +18,14 @@
     "highlight.js": "^9.5.0",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "^0.4.2",
-    "react-server-cli": "^0.4.3",
-    "react-server-data-bundle-cache": "^0.4.2",
+    "react-server": "^0.4.4",
+    "react-server-cli": "^0.4.4",
+    "react-server-data-bundle-cache": "^0.4.4",
     "remarkable": "^1.6.2",
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "babel-preset-react-server": "^0.3.3",
+    "babel-preset-react-server": "^0.4.4",
     "docco": "^0.7.0",
     "nsp": "^2.3.3"
   }

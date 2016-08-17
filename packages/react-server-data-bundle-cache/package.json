@@ -1,6 +1,6 @@
 {
   "name": "react-server-data-bundle-cache",
-  "version": "0.4.2",
+  "version": "0.4.4",
   "description": "React Server Data Bundle Cache",
   "main": "index.js",
   "repository": "redfin/react-server",
@@ -17,10 +17,10 @@
     "stratocacher-layer-lru": "0.0.12"
   },
   "peerDependencies": {
-    "react-server": "^0.4.2"
+    "react-server": "^0.4.4"
   },
   "devDependencies": {
-    "react-server-gulp-module-tagger": "^0.3.3",
+    "react-server-gulp-module-tagger": "^0.4.4",
     "rimraf": "^2.5.2"
   }
 }
