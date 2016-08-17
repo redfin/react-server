@@ -44,5 +44,8 @@
     "lint": "eslint generators/ test/",
     "clean": "rimraf npm-debug.log*"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 4.3.1"
+  }
 }
