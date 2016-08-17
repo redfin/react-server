@@ -20,6 +20,7 @@
     "react-server": "^0.4.2"
   },
   "devDependencies": {
+    "react-server-gulp-module-tagger": "^0.3.3",
     "rimraf": "^2.5.2"
   }
 }

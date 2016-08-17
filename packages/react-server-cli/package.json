@@ -46,7 +46,9 @@
     "yargs": "~3.15.0"
   },
   "devDependencies": {
+    "babel-preset-react-server": "^0.3.3",
     "nsp": "^2.4.0",
+    "react-server-gulp-module-tagger": "^0.3.3",
     "rimraf": "^2.5.2"
   }
 }
