@@ -164,7 +164,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 					exclude: /node_modules/,
 				},
 				{
-					test: /\.scss$/,
+					test: /\.s(a|c)ss$/,
 					loader: extractTextLoader + "!sass-loader",
 					exclude: /node_modules/,
 				},
