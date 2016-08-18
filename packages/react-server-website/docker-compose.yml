@@ -17,6 +17,7 @@ services:
      - SLACK_SUBDOMAIN=react-server
      - SLACK_INTERVAL=30000
      - SLACK_API_TOKEN
+    restart: unless-stopped
   nginx:
     image: nginx:1.10.1
     depends_on:
