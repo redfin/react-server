@@ -16,12 +16,12 @@
     "babel-runtime": "^6.6.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "^0.4.2",
-    "react-server-cli": "^0.4.2",
+    "react-server": "^0.4.5",
+    "react-server-cli": "^0.4.5",
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "babel-preset-react-server": "^0.3.0",
+    "babel-preset-react-server": "^0.4.4",
     "eslint-config-xo-react": "^0.7.0",
     "eslint-plugin-react": "^5.1.1",
     "node-sass": "^3.7.0",

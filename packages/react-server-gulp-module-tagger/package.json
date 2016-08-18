@@ -1,6 +1,6 @@
 {
   "name": "react-server-gulp-module-tagger",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A gulp plugin to replace tags with module information",
   "main": "index.js",
   "scripts": {

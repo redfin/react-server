@@ -1,3 +1,23 @@
+## v0.4.5 (2016-08-18)
+
+#### Enhancement
+* `react-server`
+  * [#587](https://github.com/redfin/react-server/pull/587) Fire a "pageview" event from the client controller. ([@gigabo](https://github.com/gigabo))
+* `react-server-cli`
+  * [#581](https://github.com/redfin/react-server/pull/581) Better module lookup during client compilation. ([@gigabo](https://github.com/gigabo))
+* `react-server-gulp-module-tagger`
+  * [#561](https://github.com/redfin/react-server/pull/561) Fixes [#12](https://github.com/redfin/react-server/issues/12) Support configurable tokens for the gulp module tagger. ([@doug-wade](https://github.com/doug-wade))
+
+#### Bug fix
+* `react-server-cli`
+  * [#583](https://github.com/redfin/react-server/pull/583) Fix react-server-cli module tags. ([@doug-wade](https://github.com/doug-wade))
+
+#### Commiters: 4
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- David Alber ([davidalber](https://github.com/davidalber))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+
 ## v0.4.4 (2016-08-17)
 
 #### Enhancement
