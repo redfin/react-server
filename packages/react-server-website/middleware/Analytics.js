@@ -8,19 +8,22 @@ ga('create', 'UA-81160060-1', 'auto');
 ga('send', 'pageview');
 `.replace(/\s*\n\s*/g, '');
 
+let alreadyListening = 0;
+
 export default class AnalyticsMiddleware {
 
-	// This only gets called after client transitions in the browser.  It's
-	// not called for the initial page view (since the title was set by the
-	// server).
-	getTitle(next) {
-		return next().then(title => {
-			if (typeof window !== "undefined") {
-				const page = location.pathname;
-				window.ga('send', 'pageview', { page, title });
-			}
-			return title;
-		});
+	handleRoute(next) {
+
+		if (typeof window !== "undefined" && !alreadyListening++) {
+
+			// Only need to do this once, since the client controller lives
+			// across page views.
+			window.__reactServerClientController.on("pageview", pageview => {
+				window.ga('send', 'pageview', pageview);
+			});
+		}
+
+		return next();
 	}
 	getScripts(next) {
 		return next().concat({text});

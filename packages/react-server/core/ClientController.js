@@ -439,6 +439,13 @@ class ClientController extends EventEmitter {
 			if (newTitle && newTitle !== document.title) {
 				document.title = newTitle;
 			}
+
+			// This is the earliest we have everything we need for
+			// an analytics pageview event.
+			this.emit("pageview", {
+				page  : getHistoryPathname(),
+				title : newTitle,
+			});
 		})
 		.catch(err => { logger.error("Error while setting the document title", err) })
 		.done();
