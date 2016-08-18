@@ -5,7 +5,7 @@ import logging from "react-server-gulp-module-tagger";
 
 gulp.task("default", () => {
 	return gulp.src("src/**/*.js")
-		.pipe(logging({trim: 'react-server/packages/'}))
+		.pipe(logging())
 		.pipe(babel())
 		.pipe(gulp.dest("target"));
 });
