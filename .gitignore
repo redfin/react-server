@@ -5,3 +5,4 @@ node_modules
 *.orig
 lerna-debug.log
 *npm-debug.log*
+.DS_Store
