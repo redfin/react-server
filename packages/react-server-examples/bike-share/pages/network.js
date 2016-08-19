@@ -4,7 +4,7 @@ import NetworkCard from '../components/network-card';
 import StationList from '../components/station-list';
 import Header from '../components/header';
 import Footer from '../components/footer';
-import '../build/styles/network.css';
+import '../styles/network.scss';
 
 const logger = logging.getLogger(__LOGGER__);
 
