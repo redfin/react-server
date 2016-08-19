@@ -1,4 +1,4 @@
-<img src="https://cdn.rawgit.com/redfin/react-server/master/images/svg/reactserver_logo.svg" height="145px"/>
+<img src="https://cdn.rawgit.com/redfin/react-server/master/images/svg/reactserver_logo.svg" height="120px"/>
 
 [![Build Status][build-badge-img]][build-url]
 [![NPM version][npm-version-img]][npm-url]
