@@ -1,4 +1,4 @@
-<img src="/images/svg/reactserver_logo.svg"/>
+<img src="/images/svg/reactserver_logo.svg" height="145px"/>
 
 [![Build Status][build-badge-img]][build-url]
 [![NPM version][npm-version-img]][npm-url]
