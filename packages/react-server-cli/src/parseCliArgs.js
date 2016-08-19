@@ -91,6 +91,10 @@ export default (args = process.argv) => {
 			default: false,
 			type: "boolean",
 		})
+		.version(function() {
+			return require('../package').version;
+		})
+		.alias('v', 'version')
 		.help('?')
 		.alias('?', 'help')
 		.demand(0)
