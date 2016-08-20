@@ -38,11 +38,11 @@ export default (opts = {}) => {
 		throw new Error("Hot reload cannot be used with long-term caching. Please disable either long-term caching or hot reload.");
 	}
 
-  var webpackConfigFunc = (data) => { return data }
+  const webpackConfigFunc = (data) => { return data }
 	if (opts['webpack-config']) {
 		const webpackDirAbsolute = path.resolve(process.cwd(), opts['webpack-config']);
-		var userWebpackConfigFunc = require(webpackDirAbsolute)
-        webpackConfigFunc = userWebpackConfigFunc.default
+		const userWebpackConfigFunc = require(webpackDirAbsolute)
+    webpackConfigFunc = userWebpackConfigFunc.default
 	}
 
 	const workingDirAbsolute = path.resolve(process.cwd(), workingDir);
