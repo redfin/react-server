@@ -76,7 +76,6 @@ export default (opts = {}) => {
 	// now rewrite the routes file out in a webpack-compatible way.
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
-
 	// finally, let's pack this up with webpack.
 	const compiler = webpack(webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats)));
 
