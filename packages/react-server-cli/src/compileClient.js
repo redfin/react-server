@@ -8,7 +8,6 @@ import crypto from "crypto"
 import StatsPlugin from "webpack-stats-plugin"
 import callerDependency from "./callerDependency"
 
-
 // commented out to please eslint, but re-add if logging is needed in this file.
 // import {logging} from "react-server"
 // const logger = logging.getLogger(__LOGGER__);
@@ -36,6 +35,13 @@ export default (opts = {}) => {
 		// chunk hashes can't be used in hot mode, so we can't use long-term caching
 		// and hot mode at the same time.
 		throw new Error("Hot reload cannot be used with long-term caching. Please disable either long-term caching or hot reload.");
+	}
+
+    var webpackConfigFunc = (data) => { return data }
+	if (opts['webpack-config']) {
+		const webpackDirAbsolute = path.resolve(process.cwd(), opts['webpack-config']);
+		var userWebpackConfigFunc = require(webpackDirAbsolute)
+        webpackConfigFunc = userWebpackConfigFunc.default
 	}
 
 	const workingDirAbsolute = path.resolve(process.cwd(), workingDir);
@@ -69,8 +75,9 @@ export default (opts = {}) => {
 	// now rewrite the routes file out in a webpack-compatible way.
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
+
 	// finally, let's pack this up with webpack.
-	const compiler = webpack(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats));
+	const compiler = webpack(webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats)));
 
 	const serverRoutes = new Promise((resolve) => {
 		compiler.plugin("done", (stats) => {
