@@ -10,7 +10,7 @@
 React framework with server render for blazing fast page load and seamless
 transitions between pages in the browser.
 
-** **  
+** **
 #### Just getting started with `react-server`?
 
 The _easiest_ way to get started is with our [yeoman
@@ -65,7 +65,7 @@ for your users.
 
 Once you're hungry for more, dig into [the React Server documentation](https://react-server.io/docs) and
 the [`react-server`](packages/react-server) code.
-** **  
+** **
 
 #### Want to help?
 
