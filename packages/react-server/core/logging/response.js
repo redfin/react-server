@@ -35,15 +35,6 @@ class ResponseLogger extends SuperLogger {
 		// Yield to the next log transport.
 		callback(null, true);
 	}
-
-	flushToResponse(res) {
-		if(queue().length > 0) {
-			res.write("<script>");
-			res.write("window.serverLogs = window.serverLogs || {};");
-			res.write(`window.serverLogs.${this.name}Logs = ${JSON.stringify(queue())};\n`);
-			res.write("</script>");
-		}
-	}
 }
 
 class TimeResponseLogger extends ResponseLogger {
@@ -76,4 +67,12 @@ var getTransportForGroup = function(group, opts) {
 	}
 }
 
-module.exports = {getTransportForGroup, TimeResponseLogger, TimeResponseLogger, ResponseLogger};
+var	flushLogsToResponse = function(res) {
+	if(queue().length > 0) {
+		res.write("<script>");
+		res.write("window.reactServerLogs = window.serverLogs || {};");
+		res.write(`window.reactServerLogs = ${JSON.stringify(queue())};\n`);
+		res.write("</script>");
+	}
+}
+module.exports = {flushLogsToResponse, getTransportForGroup, TimeResponseLogger, TimeResponseLogger, ResponseLogger};

@@ -16,7 +16,8 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
 	{getRootElementAttributes} = require('./components/RootElement'),
-	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
+	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants'),
+	{flushLogsToResponse} = require('./logging/response');
 
 var _ = {
 	map: require('lodash/map'),
@@ -751,15 +752,6 @@ function writeBody(req, res, context, start, page) {
 	// Don't leave dead timers hanging around.
 	retval.promise.then(() => clearTimeout(timeout));
 
-	// Flush timing/log data to the response document
-	retval.promise.then(() => {
-		if (req.query._debug_output_logs) {
-			logger.transports.ResponseLogger.flushToResponse(res);
-			logger.timeLogger.transports.TimeResponseLogger.flushToResponse(res);
-			logger.gaugeLogger.transports.GaugeResponseLogger.flushToResponse(res);
-		}
-	});
-
 	return retval.promise;
 }
 
@@ -973,6 +965,10 @@ function wrapUpLateArrivals(){
 }
 
 function closeBody(req, res) {
+	// Flush timing/log data to the response document
+	if (req.query._debug_output_logs) {
+		flushLogsToResponse(res);
+	}
 	res.write("</div></body></html>");
 	return Q();
 }
