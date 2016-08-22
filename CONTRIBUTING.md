@@ -87,6 +87,49 @@ npm test
 
 That will, among other things, run [`eslint`](/.eslintrc).
 
+If you would like to test your changes in [React Server
+core](/packages/react-server) in a project from outside of the monorepo, you'll
+need to use `npm install` with a local file path to do it.
+
+```bash
+cd /path/to/my/project
+npm install /path/to/react-server/packages/react-server
+```
+
+Make sure you install the path to [React Server core](/packages/react-server),
+instead of the monorepo root, or else you'll get the following error
+
+```
+npm ERR! addLocal Could not install /Users/vince.chang/code/react-server
+npm ERR! Darwin 15.2.0
+npm ERR! argv "/path/to/node/v4.3.1/bin/node" "/path/to/node/v4.3.1/bin/npm" "i" "/path/to/react-server"
+npm ERR! node v4.3.1
+npm ERR! npm  v2.14.12
+
+npm ERR! No name provided in package.json
+npm ERR!
+npm ERR! If you need help, you may report this error at:
+npm ERR!     <https://github.com/npm/npm/issues>
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /path/to/my/project/npm-debug.log
+```
+
+You can't use  `npm link`, since when you `npm link /path/to/react-server`,
+React Server and your instance will use separate versions of `react`,
+`request-local-storage`, `q`, `superagent` &c, which introduces bugs in React
+Server. Even if you were to remove all those singleton modules from your client,
+or from React Server code, then you’d still have problems, because
+`react-server` doesn’t have access to your instance's dependencies, and vice
+versa.
+
+Note that if you would like to test changes in a fork of React Server, you can't
+install from your github fork because it will attempt to install the monorepo
+instead of React Server core, and the monorepo is not a valid node module.
+Instead, we recommend you publish a test version into a npm private repository,
+like [npm Enterprise](https://docs.npmjs.com/enterprise/index) or
+[Sinopia](https://github.com/rlidwka/sinopia).
+
 If you add a new test that starts a server, make sure to update the
 testing port registry to make sure there aren't any conflicts.  Our
 CI test target runs many packages' tests simultaneously, so its
