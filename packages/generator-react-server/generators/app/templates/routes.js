@@ -1,10 +1,11 @@
+const path = require('path');
 
 module.exports = {
 	routes: {
 		HelloWorld: {
 			path: ['/'],
 			method: 'get',
-			page: './pages/hello-world',
+			page: path.join('.', 'pages', 'hello-world'),
 		},
 	},
 };
