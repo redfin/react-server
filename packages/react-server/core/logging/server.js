@@ -7,11 +7,11 @@ var winston = require('winston')
 	isEmpty       : require("lodash/isEmpty"),
 	trimStart     : require("lodash/trimStart"),
 	truncate      : require("lodash/truncate"),
-};
+}
+,   responseTransport = require('./response');
 
 var makeLogger = function(group, opts){
 	var config = common.config[group];
-
 	var fileTransport = new (winston.transports.File)({
 		name      : 'file',
 		level     : config.baseLevel,
@@ -23,6 +23,7 @@ var makeLogger = function(group, opts){
 	var logger = new (winston.Logger)({
 		transports: [
 			fileTransport,
+			responseTransport.getTransportForGroup(group, opts),
 		],
 	});
 

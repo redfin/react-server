@@ -751,6 +751,15 @@ function writeBody(req, res, context, start, page) {
 	// Don't leave dead timers hanging around.
 	retval.promise.then(() => clearTimeout(timeout));
 
+	// Flush timing/log data to the response document
+	retval.promise.then(() => {
+		if (req.query._debug_output_logs) {
+			logger.transports.ResponseLogger.flushToResponse(res);
+			logger.timeLogger.transports.TimeResponseLogger.flushToResponse(res);
+			logger.gaugeLogger.transports.GaugeResponseLogger.flushToResponse(res);
+		}
+	});
+
 	return retval.promise;
 }
 
