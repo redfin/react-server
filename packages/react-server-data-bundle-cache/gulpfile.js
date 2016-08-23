@@ -11,7 +11,7 @@ const SRC = "src/**/*.js";
 gulp.task('build', ['build-index', 'build-lib']);
 
 gulp.task('build-index', () => gulp.src('main.js')
-	.pipe(tagger({trim: 'react-server/packages/'}))
+	.pipe(tagger())
 	.pipe(rename('index.js'))
 	.pipe(gulp.dest("."))
 )
