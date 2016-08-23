@@ -764,6 +764,9 @@ class ClientController extends EventEmitter {
 	_createReactServerRootNode(mountNode, index) {
 		var root = document.createElement("div");
 		root.setAttribute(REACT_SERVER_DATA_ATTRIBUTE, index);
+		if (!root.getAttribute("key")) {
+			root.setAttribute("key", index);
+		}
 		mountNode.appendChild(root);
 		return root;
 	}

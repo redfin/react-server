@@ -20,14 +20,14 @@ export default class IndexPage {
 
 	getElements() {
 		return [
-			<RootElement key={0}>
+			<RootElement>
 				<Header/>
 			</RootElement>,
-			<RootElement when={this.data} key={1}>
+			<RootElement when={this.data}>
 				<NetworkList/>
 			</RootElement>,
-			<TheFold key={2}/>,
-			<RootElement key={3}>
+			<TheFold/>,
+			<RootElement>
 				<Footer/>
 			</RootElement>
 		];
