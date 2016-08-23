@@ -7,13 +7,10 @@
   "author": "Doug Wade <doug.wade@redfin.com>",
   "scripts": {
     "clean": "rm -rf build __clientTemp",
-    "start": "npm run clean && npm run styles && react-server start",
-    "styles": "node-sass styles/index.scss build/styles/index.css && node-sass styles/network.scss build/styles/network.css",
-    "test": "xo && nsp check"
+    "start": "npm run clean && react-server start --hot"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "babel-runtime": "^6.6.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
     "react-server": "^0.4.5",
@@ -21,21 +18,6 @@
     "superagent": "1.2.0"
   },
   "devDependencies": {
-    "babel-preset-react-server": "^0.4.4",
-    "eslint-config-xo-react": "^0.7.0",
-    "eslint-plugin-react": "^5.1.1",
-    "node-sass": "^3.7.0",
-    "nsp": "^2.3.3",
-    "xo": "^0.15.1"
-  },
-  "xo": {
-    "esnext": true,
-    "extends": "xo-react",
-    "globals": [
-      "__LOGGER__"
-    ],
-    "ignores": [
-      "__clientTemp/**/*"
-    ]
+    "babel-preset-react-server": "^0.4.4"
   }
 }

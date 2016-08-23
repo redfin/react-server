@@ -3,7 +3,7 @@ import {ReactServerAgent, RootElement, TheFold, logging} from 'react-server';
 import NetworkList from '../components/network-list';
 import Header from '../components/header';
 import Footer from '../components/footer';
-import '../build/styles/index.css';
+import '../styles/index.scss';
 
 const logger = logging.getLogger(__LOGGER__);
 
@@ -29,7 +29,7 @@ export default class IndexPage {
 			<TheFold key={2}/>,
 			<RootElement key={3}>
 				<Footer/>
-			</RootElement>
+			</RootElement>,
 		];
 	}
 
@@ -38,7 +38,7 @@ export default class IndexPage {
 			{charset: 'utf8'},
 			{name: 'description', content: 'Bike share availability by city, powered by React Server'},
 			{generator: 'React Server'},
-			{keywords: 'React Server bike share'}
+			{keywords: 'React Server bike share'},
 		];
 	}
 
