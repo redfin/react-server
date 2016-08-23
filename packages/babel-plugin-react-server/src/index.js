@@ -9,11 +9,12 @@ module.exports = function() {
 				const {name} = node;
 
 				const trim = state.opts.trim;
+				const prefix = state.opts.prefix;
 				const parent = path.resolve(path.join(process.cwd(), '..')) + path.sep;
 				const filePath = this.file.opts.filename.replace(parent, '');
 
 				//TODO: Support labels
-				const moduleTag = loggerSpec({ filePath, trim });
+				const moduleTag = loggerSpec({ filePath, trim, prefix });
 
 				let tokens;
 				if (state.opts.tokens) {
