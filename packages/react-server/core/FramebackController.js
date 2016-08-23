@@ -204,6 +204,7 @@ class FramebackController extends EventEmitter {
 		document.title = this.masterTitle;
 		document.activeElement.blur();
 		window.focus();
+		this.emit('showMaster');
 	}
 
 	navigateFrame(request){
