@@ -25,7 +25,9 @@ module.exports = function(config) {
 			return loggerSpec({
 				filePath: file.path,
 				basePath: config.basePath,
-				trim: config.trim, optString,
+				trim: config.trim,
+				prefix: config.prefix,
+				optString,
 			});
 		}));
 	});
