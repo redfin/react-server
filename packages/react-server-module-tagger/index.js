@@ -9,6 +9,7 @@ var isWindows = ('win32' === process.platform);
  * @param  {String} optString The label to add to the module tag, in the form '({label:"$label"})'
  * @param  {String} trim      The prefix to remove from the logger name
  * @param  {String} basePath  The path to the root of the project
+ * @param  {String} prefix    A prefix to prepend to the logger name
  * @return {String}           A json object containing a module identifier
  */
 module.exports = function(arg){
@@ -16,6 +17,7 @@ module.exports = function(arg){
 	,   fn   = arg.filePath
 	,   trim = arg.trim || ''
 	,   basePath = arg.basePath || ''
+	,   prefix = arg.prefix
 	,   opts = {}
 
 	if (fn.indexOf(basePath) !== 0) {
@@ -28,7 +30,7 @@ module.exports = function(arg){
 		opts = new Function("return "+optString.replace(/^\/\//mg,''))(); // eslint-disable-line no-new-func
 	}
 
-	opts.name  = getName  (fn, opts, trim, basePath);
+	opts.name  = getName  (fn, opts, trim, basePath, prefix);
 	opts.color = getColor (opts);
 
 	return JSON.stringify(opts);
@@ -45,11 +47,12 @@ module.exports = function(arg){
  *     ) // returns "components.my-component"
  * @param  {String}   fn       filename
  * @param  {Object}   opts     { label: 'Optional logger label' }
- * @param  {String}   trim     The leading portion of the name to remove.
+ * @param  {String}   trim     The leading portion of the name to remove
  * @param  {String}   basePath The path to the file
+ * @param  {String}   prefix   A prefix to prepend to the name
  * @return {String}            The logger name, e.g. my-project.components.my-component
  */
-var getName = function(fn, opts, trim, basePath){
+var getName = function(fn, opts, trim, basePath, prefix){
 	var slashPattern = isWindows
 		?/\\/g
 		:/\//g
@@ -58,6 +61,9 @@ var getName = function(fn, opts, trim, basePath){
 		.replace(slashPattern,'.')
 	if (opts.label) {
 		name += '.'+opts.label
+	}
+	if (prefix) {
+		name = prefix + name
 	}
 	return name;
 }
