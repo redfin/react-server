@@ -1,12 +1,11 @@
-var common      		= require('./common')
-,	SuperLogger 		= process.env.IS_SERVER ? require('winston').Transport : class {}
-,	RLS = require('../util/RequestLocalStorage').getNamespace();
+var SuperLogger = require('winston').Transport
+,	        RLS = require('../util/RequestLocalStorage').getNamespace();
 
 // A subset of stats that are logged are not associated with requests
 // or occur before the request context is initialized. Simply ignore
 // those logs here.
 var queue = () => {
-	if(RLS.isActive()) {
+	if (RLS.isActive()) {
 		return RLS().queue || (RLS().queue = []);
 	}
 	else {
@@ -56,10 +55,10 @@ class GaugeResponseLogger extends ResponseLogger {
 }
 
 var getTransportForGroup = function(group, opts) {
-	if(group == "time") {
+	if (group === "time") {
 		return new TimeResponseLogger(opts);
 	}
-	else if(group == "gauge") {
+	else if (group === "gauge") {
 		return new GaugeResponseLogger(opts);
 	}
 	else {
@@ -68,11 +67,11 @@ var getTransportForGroup = function(group, opts) {
 }
 
 var	flushLogsToResponse = function(res) {
-	if(queue().length > 0) {
+	if (queue().length > 0) {
 		res.write("<script>");
 		res.write("window.reactServerLogs = window.serverLogs || {};");
 		res.write(`window.reactServerLogs = ${JSON.stringify(queue())};\n`);
 		res.write("</script>");
 	}
 }
-module.exports = {flushLogsToResponse, getTransportForGroup, TimeResponseLogger, TimeResponseLogger, ResponseLogger};
+module.exports = {flushLogsToResponse, getTransportForGroup, TimeResponseLogger, ResponseLogger};
