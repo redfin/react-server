@@ -197,6 +197,7 @@ class FramebackController extends EventEmitter {
 
 	hideMaster(){
 		contentDiv().style.display = 'none';
+		this.emit('hideMaster');
 	}
 
 	showMaster(){
