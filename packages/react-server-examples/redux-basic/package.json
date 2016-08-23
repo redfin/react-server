@@ -1,0 +1,26 @@
+{
+  "name": "react-server-redux-basic",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Henry Zhu <hz@henryzhu.me>",
+  "description": "An example of a basic Redux app with react-server.",
+  "scripts": {
+    "start": "react-server start",
+    "open": "open http://localhost:3000",
+    "clean": "rm -rf __clientTemp"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "babel-runtime": "^6.6.1",
+    "react": "~0.14.2",
+    "react-dom": "~0.14.2",
+    "react-redux": "^4.4.5",
+    "react-server": "^0.4.5",
+    "react-server-cli": "^0.4.5",
+    "redux": "^3.5.2",
+    "superagent": "1.2.0"
+  },
+  "devDependencies": {
+    "babel-preset-react-server": "^0.4.4"
+  }
+}
