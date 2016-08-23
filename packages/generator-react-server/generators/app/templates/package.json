@@ -14,8 +14,8 @@
     "babel-runtime": "^6.6.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "^0.4.5",
-    "react-server-cli": "^0.4.5",
+    "react-server": "^0.4.6",
+    "react-server-cli": "^0.4.6",
     "superagent": "1.2.0"
   },
   "devDependencies": {

@@ -1,3 +1,19 @@
+## v0.4.6 (2016-08-23)
+
+#### Enhancement
+* `react-server-cli`
+  * [#592](https://github.com/redfin/react-server/pull/592) Add version flag to react-server-cli. ([@doug-wade](https://github.com/doug-wade))
+
+#### Bug fix
+* `react-server`
+  * [#602](https://github.com/redfin/react-server/pull/602) Fix module tagging for react server core. ([@doug-wade](https://github.com/doug-wade))
+* `generator-react-server`
+  * [#601](https://github.com/redfin/react-server/pull/601) Fix 599: use path.join instead of string concatenation. ([@doug-wade](https://github.com/doug-wade))
+
+#### Commiters: 2
+- Carey Spies ([careylin](https://github.com/careylin))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+
 ## v0.4.5 (2016-08-18)
 
 #### Enhancement
