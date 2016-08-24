@@ -97,6 +97,25 @@ files. If there's no config file (or package.json config) in the current
 working directory, then parent directories are searched up to the root of the
 filesystem.  Options passed to the CLI take final precedence.
 
+### Webpack custom options
+
+React Server will take care of the default Webpack options so you don't need to create a webpack.config.js but if you need to customize the built in defaults for example to set up custom loaders, you can do it with a user callback function.  
+
+```javascript
+export default (webpackConfig) => {
+
+	// Insert a new sass and css loader before the default.
+  webpackConfig.module.loaders.splice(0, {
+		test: /\.s(a|c)ss$/,
+		loaders: ["style", "css", "sass", "customloader"],
+	})
+
+  return webpackConfig
+}
+```
+
+In the `.reactserverrc` file add an option for `webpack-config` that points to your file that defines the webpack function and when React Server is constructing Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed.
+
 ### Development mode: making a great DX
 
 Development mode is the default, and its goals are rapid startup and code-test
