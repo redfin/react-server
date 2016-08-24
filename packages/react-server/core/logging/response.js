@@ -79,7 +79,7 @@ var	flushLogsToResponse = function(res) {
 }
 
 var setResponseLoggerPage = function(page) {
-	if (RLS.isActive()) {
+	if (RLS.isActive() || !!page) {
 		RLS().doLog = page.getRequest().getQuery()._debug_output_logs;
 	}
 }

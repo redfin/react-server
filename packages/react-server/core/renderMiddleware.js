@@ -102,9 +102,7 @@ module.exports = function(server, routes) {
 			// Success.
 			navigateDfd.resolve();
 
-			// Set the page context on the response logger so it can figure
-			// out whether to flush logs to the response document
-			setResponseLoggerPage(page);
+
 			if (err) {
 				// The page can elect to proceed to render
 				// even with a non-2xx response.  If it
@@ -134,7 +132,9 @@ module.exports = function(server, routes) {
 					return;
 				}
 			}
-
+			// Set the page context on the response logger so it can figure
+			// out whether to flush logs to the response document
+			setResponseLoggerPage(page);
 			renderPage(req, res, context, start, page);
 
 		});
