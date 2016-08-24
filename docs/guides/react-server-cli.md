@@ -72,7 +72,7 @@ It looks like this:
 	"port": "5000",
 	"env": {
 		"production": {
-			"port": "81"
+			"port": "80"
 		}
 	}
 }
