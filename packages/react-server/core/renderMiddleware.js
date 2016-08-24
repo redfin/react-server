@@ -17,7 +17,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
 	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants'),
-	{flushLogsToResponse} = require('./logging/response');
+	{setResponseLoggerPage, flushLogsToResponse} = require('./logging/response');
 
 var _ = {
 	map: require('lodash/map'),
@@ -102,6 +102,9 @@ module.exports = function(server, routes) {
 			// Success.
 			navigateDfd.resolve();
 
+			// Set the page context on the response logger so it can figure
+			// out whether to flush logs to the response document
+			setResponseLoggerPage(page);
 			if (err) {
 				// The page can elect to proceed to render
 				// even with a non-2xx response.  If it

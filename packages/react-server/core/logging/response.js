@@ -1,5 +1,5 @@
-var SuperLogger = require('winston').Transport
-,	        RLS = require('../util/RequestLocalStorage').getNamespace();
+var  SuperLogger = require('winston').Transport
+,	         RLS = require('../util/RequestLocalStorage').getNamespace();
 
 // A subset of stats that are logged are not associated with requests
 // or occur before the request context is initialized. Simply ignore
@@ -13,6 +13,11 @@ var queue = () => {
 	}
 }
 
+var pushToQueue = (tuple) => {
+	if (RLS.isActive() && !!RLS().doLog) {
+		queue().push(tuple);
+	}
+}
 class ResponseLogger extends SuperLogger {
 	constructor(options) {
 		super();
@@ -29,8 +34,7 @@ class ResponseLogger extends SuperLogger {
 			meta[this.key],
 			this.lastModuleToken,
 		];
-
-		queue().push(tuple);
+		pushToQueue(tuple);
 		// Yield to the next log transport.
 		callback(null, true);
 	}
@@ -69,9 +73,14 @@ var getTransportForGroup = function(group, opts) {
 var	flushLogsToResponse = function(res) {
 	if (queue().length > 0) {
 		res.write("<script>");
-		res.write("window.reactServerLogs = window.serverLogs || {};");
 		res.write(`window.reactServerLogs = ${JSON.stringify(queue())};\n`);
 		res.write("</script>");
 	}
 }
-module.exports = {flushLogsToResponse, getTransportForGroup, TimeResponseLogger, ResponseLogger};
+
+var setResponseLoggerPage = function(page) {
+	if (RLS.isActive()) {
+		RLS().doLog = page.getRequest().getQuery()._debug_output_logs;
+	}
+}
+module.exports = {setResponseLoggerPage, flushLogsToResponse, getTransportForGroup, TimeResponseLogger, ResponseLogger};
