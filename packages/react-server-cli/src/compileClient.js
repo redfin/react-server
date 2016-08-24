@@ -40,9 +40,9 @@ export default (opts = {}) => {
 
 	var webpackConfigFunc = (data) => { return data }
 	if (opts['webpack-config']) {
-    	const webpackDirAbsolute = path.resolve(process.cwd(), opts['webpack-config']);
-    	const userWebpackConfigFunc = require(webpackDirAbsolute)
-    	webpackConfigFunc = userWebpackConfigFunc.default
+		const webpackDirAbsolute = path.resolve(process.cwd(), opts['webpack-config']);
+		const userWebpackConfigFunc = require(webpackDirAbsolute)
+		webpackConfigFunc = userWebpackConfigFunc.default
 	}
 
 	const workingDirAbsolute = path.resolve(process.cwd(), workingDir);
