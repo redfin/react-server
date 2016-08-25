@@ -6,7 +6,7 @@ export default class ThemeMiddleware {
 			{charset: 'utf8'},
 			{'http-equiv': 'x-ua-compatible', 'content': 'ie=edge'},
 			{name: 'viewport', content: 'width=device-width, initial-scale=1'},
-			{name: 'description', content: 'Blazing fast page load and seamless transitions. Powered by React Server.'},
+			{name: 'description', content: 'Blazing fast page load and seamless navigation. Powered by React Server.'},
 			{name: 'generator', content: 'React Server'},
 		];
 	}
