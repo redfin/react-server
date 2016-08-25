@@ -2,13 +2,13 @@
   "routes": "./routes.js",
   "host": "localhost",
   "port": 3000,
-  "js-port": 3001,
+  "jsPort": 3001,
   "hot": false,
   "minify": false,
-  "long-term-caching": false,
-  "compile-only": false,
+  "longTermCaching": false,
+  "compileOnly": false,
   "https": false,
-  "log-level": "debug",
+  "logLevel": "debug",
   "env": {
     "staging": {
       "port": "4000"
