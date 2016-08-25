@@ -13,7 +13,7 @@ const HeroSection = () => (
 		<div className="banner-content">
 			<div className="banner-titles">
 				<h1 className="banner-title">React Server</h1>
-				<p className="banner-subtitle">Blazing fast page load and seamless transitions.</p>
+				<p className="banner-subtitle">Blazing fast page load and seamless navigation.</p>
 			</div>
 			<div className="banner-ctas">
 				<Link path="/docs" className="Button primary get-started-button">Get Started</Link>
