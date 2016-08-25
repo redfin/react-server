@@ -34,7 +34,7 @@ const ReceiveProps = OriginalComponent => class extends Component {
 
 const ComponentWillReceivePropsError = ReceiveProps(
 	class extends Component {
-		componentWillReceiveProps(nextProps) {
+		componentWillReceiveProps() {
 			throw Error('Error in componentWillReceiveProps');
 		}
 		render() {
@@ -45,7 +45,7 @@ const ComponentWillReceivePropsError = ReceiveProps(
 
 const ComponentDidReceivePropsError = ReceiveProps(
 	class extends Component {
-		componentDidReceiveProps(nextProps) {
+		componentDidReceiveProps() {
 			throw Error('Error in componentDidReceiveProps');
 		}
 		render() {
@@ -56,7 +56,7 @@ const ComponentDidReceivePropsError = ReceiveProps(
 
 const ComponentWillUpdateError = ReceiveProps(
 	class extends Component {
-		componentWillUpdate(nextProps, nextState) {
+		componentWillUpdate() {
 			throw Error('Error in componentWillUpdate');
 		}
 		render() {
@@ -67,7 +67,7 @@ const ComponentWillUpdateError = ReceiveProps(
 
 const ComponentDidUpdateError = ReceiveProps(
 	class extends Component {
-		componentDidUpdate(prevProps, prevState) {
+		componentDidUpdate() {
 			throw Error('Error in componentDidUpdate');
 		}
 		render() {
@@ -98,7 +98,7 @@ function fail() {
 	return Q().then(() => { throw new Error('Fail'); });
 }
 
-const RootElementWhenPromiseFailure = (props =>
+const RootElementWhenPromiseFailure = (() =>
 	<RootElement when={fail()}>
 		<h2>RootElement when=failed promise</h2>
 	</RootElement>
