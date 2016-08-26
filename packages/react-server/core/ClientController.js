@@ -587,10 +587,10 @@ class ClientController extends EventEmitter {
 				//
 				if (this._reuseDom) {
 					oldRootElement = document.querySelector(
-						`div[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
+						`*[${REACT_SERVER_DATA_ATTRIBUTE}="${index}"]`
 					);
 					oldRootContainer = document.querySelector(
-						`div[${PAGE_CONTAINER_NODE_ID}="${index}"]`
+						`*[${PAGE_CONTAINER_NODE_ID}="${index}"]`
 					);
 				}
 
@@ -606,7 +606,7 @@ class ClientController extends EventEmitter {
 					mountNode = oldRootContainer;
 					this._updateContainerNodeAttributes(
 						mountNode,
-						element.containerOpen
+						element.attrs
 					);
 				} else if (this._reuseDom && element.containerClose && !oldRootContainer && !oldRootElement) {
 					mountNode = mountNode.parentNode;
@@ -620,7 +620,8 @@ class ClientController extends EventEmitter {
 						// our new mountNode.
 						mountNode = this._createContainerNode(
 							mountNode,
-							element.containerOpen,
+							element.tagName,
+							element.attrs,
 							index
 						);
 					} else if (element.containerClose) {
@@ -632,7 +633,11 @@ class ClientController extends EventEmitter {
 
 						// Need a new root element in our
 						// current mountNode.
-						root = this._createReactServerRootNode(mountNode, index)
+						root = this._createReactServerRootNode(
+							mountNode,
+							element.tagName,
+							index
+						);
 					}
 				}
 
@@ -657,7 +662,7 @@ class ClientController extends EventEmitter {
 
 			_.forEach(
 				getRootElementAttributes(element),
-				(v, k) => root.setAttribute(k, v)
+				(v, k) => {root.setAttribute(k, v)}
 			);
 
 			totalRenderTime += timer.stop();
@@ -731,7 +736,7 @@ class ClientController extends EventEmitter {
 			logger.debug("Removing previous page's React components");
 
 			[].slice.call(
-				document.querySelectorAll(`div[${REACT_SERVER_DATA_ATTRIBUTE}]`)
+				document.querySelectorAll(`*[${REACT_SERVER_DATA_ATTRIBUTE}]`)
 			).forEach((root, i) => {
 				if (i >= index) {
 					// Since this node has a "data-react-server-root-id"
@@ -745,7 +750,7 @@ class ClientController extends EventEmitter {
 			});
 
 			[].slice.call(
-				document.querySelectorAll(`div[${PAGE_CONTAINER_NODE_ID}]`)
+				document.querySelectorAll(`*[${PAGE_CONTAINER_NODE_ID}]`)
 			).forEach((root, i) => {
 				if (i >= index) {
 					// Gotta get rid of our containers,
@@ -761,15 +766,15 @@ class ClientController extends EventEmitter {
 	/**
 	 * This method creates a new div to render a ReactElement in to at the end of the mount node.
 	 */
-	_createReactServerRootNode(mountNode, index) {
-		var root = document.createElement("div");
+	_createReactServerRootNode(mountNode, tagName, index) {
+		var root = document.createElement(tagName || 'div');
 		root.setAttribute(REACT_SERVER_DATA_ATTRIBUTE, index);
 		mountNode.appendChild(root);
 		return root;
 	}
 
-	_createContainerNode(mountNode, attrs, i) {
-		var node = document.createElement("div");
+	_createContainerNode(mountNode, tagName, attrs, i) {
+		var node = document.createElement(tagName || 'div');
 		node.setAttribute(PAGE_CONTAINER_NODE_ID, i);
 		_.forEach(attrs, (v, k) => node.setAttribute(k, v));
 		mountNode.appendChild(node);
@@ -867,7 +872,7 @@ class ClientController extends EventEmitter {
 		for (var i = startIndex; i <= endIndex; i++) {
 			this._ensureRootNodeDfd(i).resolve(
 				this.mountNode.querySelector(
-					`div[${REACT_SERVER_DATA_ATTRIBUTE}="${i}"]`
+					`*[${REACT_SERVER_DATA_ATTRIBUTE}="${i}"]`
 				)
 			);
 		}

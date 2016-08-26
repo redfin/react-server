@@ -1,0 +1,26 @@
+body {
+	font-family: Helvetica, sans-serif;
+}
+
+h2 {
+	border-bottom: 1px solid #ccc;
+	padding-bottom: .2rem;
+}
+
+*[data-react-server-container],
+*[data-react-server-root-id] {
+		max-width: 600px;
+}
+
+.example {
+	padding: .3rem;
+	margin-top: .5rem;
+}
+
+.example-class {
+	background-color: salmon;
+}
+
+section {
+	background-color: turquoise;
+}

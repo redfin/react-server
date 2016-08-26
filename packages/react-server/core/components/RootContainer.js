@@ -23,9 +23,15 @@ RootContainer.defaultProps = {
 }
 
 RootContainer.flattenForRender = function(element) {
-	return [{containerOpen: getRootElementAttributes(element)}]
+	let tagName = element.props.tagName || 'div';
+	return [{containerOpen: true,
+			attrs: getRootElementAttributes(element),
+			tagName: tagName,
+		}]
 		.concat(prepChildren(element))
-		.concat([{containerClose: true}])
+		.concat([{containerClose: true,
+				tagName: tagName,
+		}])
 		.reduce((m,v) => m.concat(Array.isArray(v)?v:[v]), [])
 }
 
