@@ -1,6 +1,7 @@
 const fs = require('fs');
 const run = require("./run").default;
 const parseCliArgs = require("./parseCliArgs").default;
+const defaultOptions = require("./defaultOptions").default;
 
 require.extensions['.css'] =
 require.extensions['.less'] =
@@ -20,4 +21,5 @@ require.extensions['.md'] =
 module.exports = {
 	parseCliArgs,
 	run,
+	defaultOptions,
 };
