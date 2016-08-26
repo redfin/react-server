@@ -14,7 +14,7 @@
     "react-server": "^0.4.6",
     "react-server-cli": "^0.4.6",
     "rimraf": "^2.5.2",
-    "superagent": "1.2.0"
+    "superagent": "1.8.4"
   },
   "version": "0.4.6"
 }
