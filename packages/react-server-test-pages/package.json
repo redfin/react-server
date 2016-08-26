@@ -24,6 +24,7 @@
     "superagent": "1.8.4"
   },
   "devDependencies": {
+    "gulp": "^3.9.1",
     "node-inspector": "^0.12.8",
     "rimraf": "^2.5.2"
   }
