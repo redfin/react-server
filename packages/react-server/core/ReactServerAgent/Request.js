@@ -101,6 +101,20 @@ Request.prototype.type = function (type) {
 	return this;
 }
 
+Request.prototype.toJSON = function(){
+	return {
+		aborted: this.aborted,
+		cacheWhitelist: this._cacheWhitelist,
+		headers: this._headers,
+		method: this._method,
+		postParams: this._postParams,
+		queryParams: this._queryParams,
+		timeout: this._timeout,
+		type: this._type,
+		urlPath: this._urlPath,
+	};
+}
+
 /**
  * Wrap superagent's end() method to create an entry in a request-local
  * data cache that will be serialized to the client and replayed in the
