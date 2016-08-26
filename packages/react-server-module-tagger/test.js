@@ -20,6 +20,16 @@ test('trims prefix from module tag name', t => {
 	t.is(expected, actual);
 });
 
+test('adds prefix to module tag name', t => {
+	const expected = '{\"name\":\"foo.bar.baz\",\"color\":{\"server\":131,\"client\":\"rgb(127,42,42)\"}}';
+
+	const filePath = 'bar/baz';
+	const prefix = 'foo.';
+	const actual = loggerSpec({filePath, prefix});
+
+	t.is(expected, actual);
+});
+
 test('adds labels', t => {
 	const expected = '{\"label\":\"foo\",\"name\":\"has.label.foo\",\"color\":{\"server\":131,\"client\":\"rgb(127,42,42)\"}}';
 

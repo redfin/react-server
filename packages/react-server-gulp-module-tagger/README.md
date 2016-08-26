@@ -42,7 +42,7 @@ Given a [`getLogger`](http://redfin.github.io/react-server/annotated-src/logging
 adds the correct arguments to keep the server and the browser in sync.
 
 For example, given a module in `src/components/my-feature/foo.js`, and using the options
-`{ trim: 'src.' }`
+`{ trim: 'src.', prefix: 'react-server.' }`
 
 ```javascript
 let logger = require("react-server").logging.getLogger(__LOGGER__);
@@ -50,7 +50,7 @@ let logger = require("react-server").logging.getLogger(__LOGGER__);
 
 returns a logger instance that will have consistent coloring on the server and
 the client, and that has a human-friendly, readable name that easily maps to
-the file tree (in this example `components.my-feature.foo`).
+the file tree (in this example `react-server.components.my-feature.foo`).
 
 If you need more than one logger in your module, you can distinguish them
 with labels
