@@ -48,6 +48,9 @@
   },
   "devDependencies": {
     "babel-preset-react-server": "^0.4.4",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
     "nsp": "^2.4.0",
     "react-server-gulp-module-tagger": "^0.4.5",
     "rimraf": "^2.5.2"

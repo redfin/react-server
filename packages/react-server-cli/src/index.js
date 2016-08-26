@@ -20,4 +20,5 @@ require.extensions['.md'] =
 module.exports = {
 	parseCliArgs,
 	run,
+	defaultOptions,
 };
