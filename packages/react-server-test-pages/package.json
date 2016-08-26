@@ -20,8 +20,7 @@
     "react-dom": "^0.14.2",
     "react-server": "^0.4.6",
     "react-server-cli": "^0.4.6",
-    "react-server-data-bundle-cache": "^0.4.6",
-    "superagent": "1.8.4"
+    "react-server-data-bundle-cache": "^0.4.6"
   },
   "devDependencies": {
     "node-inspector": "^0.12.8",

@@ -17,8 +17,7 @@
     "react-redux": "^4.4.5",
     "react-server": "^0.4.5",
     "react-server-cli": "^0.4.5",
-    "redux": "^3.5.2",
-    "superagent": "1.8.4"
+    "redux": "^3.5.2"
   },
   "devDependencies": {
     "babel-preset-react-server": "^0.4.4"
