@@ -97,6 +97,32 @@ files. If there's no config file (or package.json config) in the current
 working directory, then parent directories are searched up to the root of the
 filesystem.  Options passed to the CLI take final precedence.
 
+### Webpack options
+
+React Server will take care of the default Webpack options but if you need to set up custom loaders for example you can do it with a user callback function.  
+
+```javascript
+export default (webpackConfig) => {
+	// Insert a new sass and css loader before the default.
+	webpackConfig.module.loaders.splice(0, {
+		test: /\.s(a|c)ss$/,
+		loaders: ["style", "css", "sass", "customloader"],
+	})
+	return webpackConfig
+}
+```
+
+In the `.reactserverrc` file add an option for `webpack-config` that points to that function file and when React Server is setting up Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed.
+
+
+
+There are three ways to pass options to the CLI, through the command line,
+`.reactserverrc` JSON files, or as a `reactServer` entry in `package.json`
+files. If there's no config file (or package.json config) in the current
+working directory, then parent directories are searched up to the root of the
+filesystem.  Options passed to the CLI take final precedence.
+
+
 ### Development mode: making a great DX
 
 Development mode is the default, and its goals are rapid startup and code-test
