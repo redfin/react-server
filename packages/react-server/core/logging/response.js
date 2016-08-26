@@ -13,8 +13,14 @@ var queue = () => {
 	}
 }
 
-var pushToQueue = (tuple) => {
+var pushToQueue = (module, lastModuleToken, key, level, msg, meta) => {
 	if (RLS.isActive() && !!RLS().doLog) {
+		var tuple = [
+			module,
+			msg,
+			meta[key],
+			lastModuleToken,
+		];
 		queue().push(tuple);
 	}
 }
@@ -28,13 +34,7 @@ class ResponseLogger extends SuperLogger {
 	}
 
 	log(level, msg, meta, callback) {
-		var tuple = [
-			this.module,
-			msg,
-			meta[this.key],
-			this.lastModuleToken,
-		];
-		pushToQueue(tuple);
+		pushToQueue(this.module, this.lastModuleToken, this.key, level, msg, meta);
 		// Yield to the next log transport.
 		callback(null, true);
 	}
@@ -70,7 +70,7 @@ var getTransportForGroup = function(group, opts) {
 	}
 }
 
-var	flushLogsToResponse = function(res) {
+var flushLogsToResponse = function(res) {
 	if (queue().length > 0) {
 		res.write("<script>");
 		res.write(`window.reactServerLogs = ${JSON.stringify(queue())};\n`);
@@ -79,7 +79,7 @@ var	flushLogsToResponse = function(res) {
 }
 
 var setResponseLoggerPage = function(page) {
-	if (RLS.isActive() || !!page) {
+	if (RLS.isActive() && !!page) {
 		RLS().doLog = page.getRequest().getQuery()._debug_output_logs;
 	}
 }
