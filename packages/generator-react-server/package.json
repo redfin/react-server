@@ -31,6 +31,7 @@
   "devDependencies": {
     "ava": "^0.14.0",
     "nsp": "^2.3.3",
+    "react-server-cli": "^0.4.6",
     "rimraf": "^2.5.2",
     "yeoman-assert": "^2.0.0",
     "yeoman-test": "^1.0.0"
