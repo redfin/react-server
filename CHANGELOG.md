@@ -1,3 +1,38 @@
+## v0.4.7 (2016-08-27)
+
+#### Enhancement
+* `react-server-cli`
+  * [#598](https://github.com/redfin/react-server/pull/598) Webpack config. ([@hbussell](https://github.com/hbussell))
+  * [#631](https://github.com/redfin/react-server/pull/631) Export default options so other dependent packages can test against changing properties. ([@jbenesch](https://github.com/jbenesch))
+  * [#592](https://github.com/redfin/react-server/pull/592) Add version flag to react-server-cli. ([@doug-wade](https://github.com/doug-wade))
+  * [#630](https://github.com/redfin/react-server/pull/630) Make superagent a regular dependency and upgrade to 2.2.0. ([@doug-wade](https://github.com/doug-wade))
+* `react-server`
+  * [#610](https://github.com/redfin/react-server/pull/610) Implement toJson on ReactServerAgent request for logging/debugging. ([@doug-wade](https://github.com/doug-wade))
+  * [#606](https://github.com/redfin/react-server/pull/606) Update react-server to write server side timings/logs to the response document. ([@vinsewah](https://github.com/vinsewah))
+  * [#617](https://github.com/redfin/react-server/pull/617) Updating the dependency on request-local-storage from 1.0.0 to 1.1.0. ([@vinsewah](https://github.com/vinsewah))
+  * [#616](https://github.com/redfin/react-server/pull/616) Emit showMaster event when the back navigation is triggered in Frameback. ([@vinsewah](https://github.com/vinsewah))
+* `babel-plugin-react-server`, `react-server-gulp-module-tagger`, `react-server-module-tagger`
+  * [#611](https://github.com/redfin/react-server/pull/611) Prepend configurable prefix to module tag. ([@doug-wade](https://github.com/doug-wade))
+
+#### Bug fix
+* `generator-react-server`
+  * [#625](https://github.com/redfin/react-server/pull/625) Ensure generated .reactserverrc option keys match cli option keys. ([@jbenesch](https://github.com/jbenesch))
+  * [#601](https://github.com/redfin/react-server/pull/601) Fix 599: use path.join instead of string concatenation. ([@doug-wade](https://github.com/doug-wade))
+* `react-server-data-bundle-cache`
+  * [#603](https://github.com/redfin/react-server/pull/603) Fix react-server-data-bundle-cache logging. ([@doug-wade](https://github.com/doug-wade))
+* `react-server`
+  * [#602](https://github.com/redfin/react-server/pull/602) Fix module tagging for react server core. ([@doug-wade](https://github.com/doug-wade))
+
+#### Commiters: 8
+- Carey Spies ([careylin](https://github.com/careylin))
+- David Alber ([davidalber](https://github.com/davidalber))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Harley Bussell ([hbussell](https://github.com/hbussell))
+- Henry Zhu ([hzhu](https://github.com/hzhu))
+- Jason Benesch ([jbenesch](https://github.com/jbenesch))
+- Vince Chang ([vinsewah](https://github.com/vinsewah))
+
 ## v0.4.6 (2016-08-23)
 
 #### Enhancement
@@ -255,4 +290,3 @@
 - Bo Borgerson ([gigabo](https://github.com/gigabo))
 - Douglas Wade ([doug-wade](https://github.com/doug-wade))
 - Rob Landers ([withinboredom](https://github.com/withinboredom))
-

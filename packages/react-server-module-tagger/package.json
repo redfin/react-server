@@ -1,6 +1,6 @@
 {
   "name": "react-server-module-tagger",
-  "version": "0.4.4",
+  "version": "0.4.7",
   "description": "calculates module level config",
   "main": "index.js",
   "scripts": {
