@@ -276,6 +276,7 @@ function dataBundleLifecycle () {
 function pageLifecycle() {
 	return [
 		Q(), // This is just a NOOP lead-in to prime the reduction.
+		setHeaders,
 		setContentType,
 		writeHeader,
 		startBody,
@@ -293,6 +294,13 @@ function setContentType(req, res, context, start, pageObject) {
 
 function setDataBundleContentType(req, res) {
 	res.set('Content-Type', 'application/json');
+}
+
+function setHeaders(req, res, context, start, pageObject) {
+	// Write out custom page-defined http headers. Not to be confused with writeHeader(), which is responsible for
+	// the html header. Headers may be overwritten later on in the render chain (e.g. transfer encoding, content type)
+	const handler = header => res.set(header[0], header[1]);
+	return Q(pageObject.getHeaders()).then(headers => headers.forEach(handler));
 }
 
 function writeHeader(req, res, context, start, pageObject) {
