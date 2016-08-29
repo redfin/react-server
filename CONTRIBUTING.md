@@ -48,7 +48,7 @@ npm run clean
 
 Most commands have a corresponding `lerna` command; if you want to find out more,
 you can look at the `scripts` hash in the root `package.json`, check out the
-[lerna docs](lernajs.io), and run the lerna commands yourself
+[lerna docs](https://lernajs.io/), and run the lerna commands yourself
 
 ```
 npm i -g lerna david
