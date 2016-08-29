@@ -9,7 +9,7 @@ describe('A page with custom http headers', () => {
 
 	helper.stopServerAfterAll();
 
-	fdescribe('has sync rendered headers', () => {
+	describe('has sync rendered headers', () => {
 		helper.testWithBrowser('/httpHeaders', (browser, isTransition) => {
 			expectSecurityPolicyHeaderExists(browser, isTransition);
 		});
