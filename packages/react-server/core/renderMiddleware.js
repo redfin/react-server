@@ -800,7 +800,7 @@ function renderElement(res, element, context) {
 		// the `data-react-server-root-id` div for this component.  We need
 		// to close it out and move on.  This is a bummer, and we'll
 		// log it, but it's too late to totally bail out.
-		logger.error(`Error rendering element ${name}`, err);
+		logger.error(`Error with element ${name}'s lifecycle methods`, err);
 	}
 
 	// We time how long _this_ element's render took, and also how long

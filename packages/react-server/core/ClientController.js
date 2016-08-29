@@ -685,7 +685,7 @@ class ClientController extends EventEmitter {
 						const componentType = typeof element.type === 'function'
 							? element.props.children.type.name
 							: 'element';
-						logger.error(`Error with ${componentType} render ${index}`, e);
+						logger.error(`Error with element ${componentType}'s lifecycle methods at index ${index}`, e);
 					})
 				).catch(e => logger.error(`Error with element promise ${index}`, e))
 			),
