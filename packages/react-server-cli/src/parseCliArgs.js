@@ -153,11 +153,11 @@ const sslize = async argv => {
 			};
 		} else {
 			argv.httpsOptions = await new Promise((resolve, reject) => {
-				pem.createCertificate({ days:1, selfSigned:true }, (err, keys) => {
+				pem.createCertificate({ days: 1, selfSigned: true }, (err, keys) => {
 					if (err) {
 						reject(err);
 					}
-					resolve({key: keys.serviceKey, cert:keys.certificate});
+					resolve({ key: keys.serviceKey, cert: keys.certificate });
 				});
 			});
 		}

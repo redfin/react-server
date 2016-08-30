@@ -2,4 +2,6 @@ require("babel-core/register");
 
 const cli = require(".");
 
-cli.run(cli.parseCliArgs());
+cli.parseCliArgs().then(args => {
+	cli.run(args);
+});
