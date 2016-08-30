@@ -22,14 +22,15 @@ describe('A page with custom http headers', () => {
 	});
 
 	const expectSecurityPolicyHeaderExists = (browser, isTransition) => {
-		// Client transition execute their renders on the client. That means we don't have an opportunity to send over
+		// Client transition renders execute on the client. That means we don't have an opportunity to send over
 		// headers
 		if(isTransition) return;
 
-		const numCspHeaders = browser.resources[isTransition ? '4' : '0'].response.headers
-			._headers
-			.filter(header => header[0] === 'content-security-policy')
-			.length;
-		expect(numCspHeaders).toBe(1);
+		const headers = browser.resources['0'].response.headers._headers;
+		const csp = headers.find(header => header[0] === 'content-security-policy');
+		const contentType = headers.find(header => header[0] === 'content-type');
+
+		expect(csp[1]).toBe("example.com");
+		expect(contentType[1]).toBe("application/example");
 	}
 });
