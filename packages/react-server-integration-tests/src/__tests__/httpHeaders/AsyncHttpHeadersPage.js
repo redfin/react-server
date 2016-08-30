@@ -9,7 +9,7 @@ class AsyncHttpHeadersPage {
 	}
 
 	getContentType() {
-		return Q("application/example");
+		return "application/example";
 	}
 }
 

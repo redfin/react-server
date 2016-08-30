@@ -295,9 +295,11 @@ function setHttpHeaders(req, res, context, start, pageObject) {
 	// Write out custom page-defined http headers. Headers may be overwritten later on in the render chain
 	// (e.g. transfer encoding, content type)
 	const handler = header => res.set(header[0], header[1]);
-	return Q(pageObject.getHeaders()).then(headers => headers
-		.concat(['Content-Type', pageObject.getContentType()])
-		.forEach(handler));
+
+	return Q(pageObject.getHeaders()).then(headers => {
+		headers.push(['Content-Type', pageObject.getContentType()]);
+		headers.forEach(handler);
+	});
 }
 
 function writeHeader(req, res, context, start, pageObject) {
