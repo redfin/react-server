@@ -5,7 +5,8 @@
   "main": "target/index.js",
   "scripts": {
     "prepublish": "gulp",
-    "test": "gulp test && nsp check",
+    "test": "npm run ava && gulp test && nsp check",
+    "ava": "ava test --tap --require babel-register",
     "clean": "rimraf target npm-debug.log*"
   },
   "author": "Sasha Aickin",
@@ -47,6 +48,8 @@
     "yargs": "~3.15.0"
   },
   "devDependencies": {
+    "ava": "^0.16.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-react-server": "^0.4.7",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",

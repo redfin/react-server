@@ -33,7 +33,7 @@ export default function run(options = {}) {
 	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
 
 	try {
-		return require("./" + path.join("commands", options.command)).default(options);
+		return require("./" + path.join("commands", options.command))(options);
 	} catch (e) {
 		if (e instanceof ConfigurationError) {
 			console.error(chalk.red(e.message));

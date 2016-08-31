@@ -1,10 +1,13 @@
 import yargs from "yargs"
 import fs from "fs"
+import pem from "pem"
 
 export default (args = process.argv) => {
 	var argsDefinition = yargs(args)
 		.usage('Usage: $0 <command> [options]')
 		.option("routes-file", {
+			default: "routes.js",
+			type: "string",
 			describe: "The routes file to load. Default is 'routes.js'.",
 		})
 		.option("p", {
@@ -124,27 +127,45 @@ export default (args = process.argv) => {
 	// we remove all the options that have undefined as their value; those are the
 	// ones that weren't on the command line, and we don't want them to override
 	// defaults or config files.
-	return sslize(camelize(removeUndefinedValues(parsedArgs)));
+	return sslize(removeUndefinedValues(parsedArgs));
 
 }
 
-const sslize = argv => {
+const sslize = async argv => {
 
-	if (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase) {
-		argv.httpsOptions = {
-			key: argv.httpsKey ? fs.readFileSync(argv.httpsKey) : undefined,
-			cert: argv.httpsCert ? fs.readFileSync(argv.httpsCert) : undefined,
-			ca: argv.httpsCa ? fs.readFileSync(argv.httpsCa) : undefined,
-			pfx: argv.httpsPfx ? fs.readFileSync(argv.httpsPfx) : undefined,
-			passphrase: argv.httpsPassphrase,
+	const {
+		https,
+		httpsKey,
+		httpsCert,
+		httpsCa,
+		httpsPfx,
+		httpsPassphrase,
+	} = argv;
+
+	if (https || (httpsKey && httpsCert) || httpsPfx) {
+		if ((httpsKey && httpsCert) || httpsPfx) {
+			argv.httpsOptions = {
+				key: httpsKey ? fs.readFileSync(httpsKey) : undefined,
+				cert: httpsCert ? fs.readFileSync(httpsCert) : undefined,
+				ca: httpsCa ? fs.readFileSync(httpsCa) : undefined,
+				pfx: httpsPfx ? fs.readFileSync(httpsPfx) : undefined,
+				passphrase: httpsPassphrase,
+			};
+		} else {
+			argv.httpsOptions = await new Promise((resolve, reject) => {
+				pem.createCertificate({ days: 1, selfSigned: true }, (err, keys) => {
+					if (err) {
+						reject(err);
+					}
+					resolve({ key: keys.serviceKey, cert: keys.certificate });
+				});
+			});
 		}
+	} else {
+		argv.httpsOptions = false;
 	}
 
-	if (argv.https && (argv.httpsKey || argv.httpsCert || argv.httpsCa || argv.httpsPfx || argv.httpsPassphrase)) {
-		throw new Error("If you set https to true, you must not set https-key, https-cert, https-ca, https-pfx, or https-passphrase.");
-	}
-
-	if ((argv.key || argv.cert || argv.ca) && argv.pfx) {
+	if ((httpsKey || httpsCert || httpsCa) && httpsPfx) {
 		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
 	}
 
@@ -161,19 +182,4 @@ const removeUndefinedValues = (input) => {
 	}
 
 	return result;
-}
-
-const camelize = (input) => {
-	const inputCopy = Object.assign({}, input)
-
-	const replaceFn = (match, character) => { return character.toUpperCase() }
-	for (let key in Object.keys(inputCopy)) {
-		if (key.indexOf("-") !== -1) {
-			const newKey = key.replace(/-(.)/g, replaceFn);
-			inputCopy[newKey] = inputCopy[key];
-			delete inputCopy[key];
-		}
-	}
-
-	return inputCopy;
 }

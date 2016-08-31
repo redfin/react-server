@@ -1,7 +1,6 @@
 import http from "http"
 import https from "https"
 import express from "express"
-import pem from "pem"
 import compression from "compression"
 import bodyParser from "body-parser"
 import WebpackDevServer from "webpack-dev-server"
@@ -32,7 +31,7 @@ export default function start(options){
 
 	const {serverRoutes, compiler} = compileClient(options);
 
-	const startServers = (keys) => {
+	const startServers = () => {
 		// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
 		// server.
 		let startJsServer = startDummyJsServer;
@@ -45,8 +44,8 @@ export default function start(options){
 
 		logger.notice("Starting servers...")
 
-		const jsServer = startJsServer(compiler, jsPort, longTermCaching, keys);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, keys));
+		const jsServer = startJsServer(compiler, jsPort, longTermCaching, httpsOptions);
+		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, httpsOptions));
 
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
@@ -56,20 +55,7 @@ export default function start(options){
 		};
 	}
 
-	if (httpsOptions === true) {
-		// if httpsOptions was true (and so didn't send in keys), generate keys.
-		pem.createCertificate({days:1, selfSigned:true}, (err, keys) => {
-			if (err) throw err;
-			return startServers({key: keys.serviceKey, cert:keys.certificate});
-		});
-	} else if (httpsOptions) {
-		// in this case, we assume that httpOptions is an object that can be passed
-		// in to https.createServer as options.
-		return startServers(httpsOptions);
-	} else {
-		// Default.  Use http.
-		return startServers();
-	}
+	return startServers();
 }
 
 // given the server routes file and a port, start a react-server HTML server at
