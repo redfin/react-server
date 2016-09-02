@@ -246,6 +246,7 @@ function rawResponseLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
 		setHttpHeaders,
+		setContentType,
 		writeResponseData,
 		handleResponseComplete,
 		endResponse,
@@ -296,10 +297,11 @@ function setHttpHeaders(req, res, context, start, pageObject) {
 	// (e.g. transfer encoding, content type)
 	const handler = header => res.set(header[0], header[1]);
 
-	return Q(pageObject.getHeaders()).then(headers => {
-		headers.push(['Content-Type', pageObject.getContentType()]);
-		headers.forEach(handler);
-	});
+	return Q(pageObject.getHeaders()).then(headers => headers.forEach(handler));
+}
+
+function setContentType(req, res, context, start, pageObject) {
+	res.set('Content-Type', pageObject.getContentType());
 }
 
 function writeHeader(req, res, context, start, pageObject) {

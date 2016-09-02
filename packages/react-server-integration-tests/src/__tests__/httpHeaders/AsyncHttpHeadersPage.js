@@ -7,10 +7,6 @@ class AsyncHttpHeadersPage {
 			["Content-Security-Policy", "example.com"],
 		]);
 	}
-
-	getContentType() {
-		return "application/example";
-	}
 }
 
 module.exports = AsyncHttpHeadersPage;

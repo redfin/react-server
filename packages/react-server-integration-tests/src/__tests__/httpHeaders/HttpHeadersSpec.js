@@ -28,9 +28,7 @@ describe('A page with custom http headers', () => {
 
 		const headers = browser.resources['0'].response.headers._headers;
 		const csp = headers.find(header => header[0] === 'content-security-policy');
-		const contentType = headers.find(header => header[0] === 'content-type');
 
 		expect(csp[1]).toBe("example.com");
-		expect(contentType[1]).toBe("application/example");
 	}
 });
