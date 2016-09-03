@@ -1,3 +1,4 @@
+
 /* eslint-disable no-process-env */
 var	fs = require("fs"),
 	mkdirp = require("mkdirp"),
@@ -239,7 +240,34 @@ var testWithDocument = function (url, testFn) {
 			callback(document, done);
 		});
 	});
+}
 
+// Used to test test browser state on server, client and on page-to-page transitions
+var testWithBrowser = function (url, testFn) {
+	var callback = (browser, done, isTransition=false) => {
+		if (testFn.length >= 3) {
+			testFn(browser, isTransition, done);
+		} else {
+			// the client doesn't want the done function, so we should call it.
+			testFn(browser, isTransition);
+			done();
+		}
+	}
+	it ("on server", function(done) {
+		getServerBrowser(url, (browser) => {
+			callback(browser, done);
+		});
+	});
+	it ("on client", function(done) {
+		getClientBrowser(url, (browser) => {
+			callback(browser, done);
+		});
+	});
+	it ("on client transition", function(done) {
+		getTransitionBrowser(url, (browser) => {
+			callback(browser, done, true);
+		});
+	});
 }
 
 // Factor out some boilerplate if when just looking for an element.
@@ -308,6 +336,7 @@ module.exports = {
 	getTransitionDocument,
 	testWithDocument,
 	testWithElement,
+	testWithBrowser,
 	getServerBrowser,
 	getClientBrowser,
 	getTransitionBrowser,

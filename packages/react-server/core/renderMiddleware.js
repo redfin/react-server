@@ -245,6 +245,7 @@ function renderPage(req, res, context, start, page) {
 function rawResponseLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
+		setHttpHeaders,
 		setContentType,
 		writeResponseData,
 		handleResponseComplete,
@@ -255,7 +256,7 @@ function rawResponseLifecycle () {
 function fragmentLifecycle () {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
-		setContentType,
+		setHttpHeaders,
 		writeDebugComments,
 		writeBody,
 		handleResponseComplete,
@@ -276,7 +277,7 @@ function dataBundleLifecycle () {
 function pageLifecycle() {
 	return [
 		Q(), // This is just a NOOP lead-in to prime the reduction.
-		setContentType,
+		setHttpHeaders,
 		writeHeader,
 		startBody,
 		writeBody,
@@ -287,12 +288,20 @@ function pageLifecycle() {
 	];
 }
 
-function setContentType(req, res, context, start, pageObject) {
-	res.set('Content-Type', pageObject.getContentType());
-}
-
 function setDataBundleContentType(req, res) {
 	res.set('Content-Type', 'application/json');
+}
+
+function setHttpHeaders(req, res, context, start, pageObject) {
+	// Write out custom page-defined http headers. Headers may be overwritten later on in the render chain
+	// (e.g. transfer encoding, content type)
+	const handler = header => res.set(header[0], header[1]);
+
+	return Q(pageObject.getHeaders()).then(headers => headers.forEach(handler));
+}
+
+function setContentType(req, res, context, start, pageObject) {
+	res.set('Content-Type', pageObject.getContentType());
 }
 
 function writeHeader(req, res, context, start, pageObject) {
