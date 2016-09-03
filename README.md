@@ -63,7 +63,7 @@ of clever optimizations, many borrowed from the ideas behind [Facebook's Big Pip
 to make sure that your site shows up as quickly as humanly possible
 for your users.
 
-Once you're hungry for more, dig into [the React Server documentation](https://react-server.io) and
+Once you're hungry for more, dig into [the React Server documentation](https://react-server.io/docs) and
 the [`react-server`](packages/react-server) code.
 ** **  
 
