@@ -39,7 +39,7 @@
     "gulp-substituter": "0.3.0",
     "handlebars": "1.3.0",
     "handlebars-loader": "1.4.0",
-    "jasmine": "2.5.0",
+    "jasmine": "2.5.1",
     "jsdom": "9.4.5",
     "jsx-loader": "0.12.2",
     "lerna": "2.0.0-beta.26",
