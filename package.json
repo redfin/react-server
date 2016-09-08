@@ -42,7 +42,7 @@
     "jasmine": "2.5.1",
     "jsdom": "9.4.5",
     "jsx-loader": "0.12.2",
-    "lerna": "2.0.0-beta.26",
+    "lerna": "2.0.0-beta.28",
     "lerna-changelog": "^0.2.0",
     "minimist": "1.1.0",
     "mkdirp": "^0.5.1",
