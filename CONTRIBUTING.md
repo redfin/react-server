@@ -16,7 +16,7 @@ Not sure where to start? Join us [on slack](https://slack.react-server.io/) and 
 
 ## Getting started
 
-React Server uses a tool called [lerna](https://www.npmjs.com/package/lerna) to
+React Server uses a tool called [asini](https://www.npmjs.com/package/asini) to
 manage the entire React Server ecosystem in a single repository.  This allows
 maintainers to know that everything works together well, without having to know
 all of the inner workings of each package in the monorepo.  It does present some
@@ -46,16 +46,16 @@ lot of debug files lying around, you can clean them up
 npm run clean
 ```
 
-Most commands have a corresponding `lerna` command; if you want to find out more,
+Most commands have a corresponding `asini` command; if you want to find out more,
 you can look at the `scripts` hash in the root `package.json`, check out the
-[lerna docs](https://lernajs.io/), and run the lerna commands yourself
+[asini docs](https://github.com/asini/asini), and run the asini commands yourself
 
 ```
-npm i -g lerna david
-lerna clean
-lerna bootstrap
-lerna run lint
-lerna exec -- david u
+npm i -g asini david
+asini clean
+asini bootstrap
+asini run lint
+asini exec -- david u
 ```
 
 You can also work on a single package by `cd`-ing into that module, and using

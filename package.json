@@ -3,13 +3,13 @@
   "scripts": {
     "bootstrap": "npm i && npm run bootstrap-no-i",
     "//": "TODO: Drop `kill-singletons`... eventually",
-    "bootstrap-no-i": "npm run kill-singletons && lerna bootstrap",
-    "kill-singletons": "lerna exec -- rm -rf node_modules/react",
-    "test": "lerna run test",
-    "clean": "rimraf lerna-debug.log && lerna run clean",
-    "nuke": "lerna clean && rm -r node_modules",
-    "changelog": "lerna-changelog",
-    "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done"
+    "bootstrap-no-i": "npm run kill-singletons && asini bootstrap",
+    "kill-singletons": "asini exec -- rm -rf node_modules/react",
+    "test": "asini run test",
+    "clean": "rimraf asini-debug.log && asini run clean",
+    "nuke": "asini clean && rm -r node_modules",
+    "changelog": "asini-changelog",
+    "debug": "cat asini-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done"
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",
@@ -42,8 +42,8 @@
     "jasmine": "2.5.1",
     "jsdom": "9.5.0",
     "jsx-loader": "0.12.2",
-    "lerna": "2.0.0-beta.26",
-    "lerna-changelog": "^0.2.0",
+    "asini": "0.0.1",
+    "asini-changelog": "0.0.1",
     "minimist": "1.1.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
