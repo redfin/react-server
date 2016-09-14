@@ -21,7 +21,7 @@
     "babel-register": "^6.7.2",
     "cheerio": "0.22.0",
     "eslint": "3.5.0",
-    "eslint-plugin-react": "6.2.0",
+    "eslint-plugin-react": "6.2.2",
     "express": "4.11.2",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
