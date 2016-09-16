@@ -5,7 +5,8 @@ var EventEmitter = require('events').EventEmitter,
 	Q = require('q'),
 	History = require("../components/History"),
 	ReactServerAgent = require("../ReactServerAgent"),
-	PageUtil = require("../util/PageUtil");
+	PageUtil = require("../util/PageUtil"),
+	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
 
 var _ = {
 	isFunction: require('lodash/isFunction'),
@@ -183,6 +184,10 @@ class Navigator extends EventEmitter {
 			isFragment    : false,
 			isRawResponse : false,
 		});
+
+		// Set the page context on the response logger so it can figure
+		// out whether to flush logs to the response document
+		setResponseLoggerPage(page);
 
 		// call page.handleRoute(), and use the resulting code to decide how to
 		// respond.
