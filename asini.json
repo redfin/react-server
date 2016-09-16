@@ -1,5 +1,5 @@
 {
-  "lerna": "2.0.0-beta.26",
+  "asini": "0.0.1",
   "version": "0.4.7",
   "changelog": {
     "repo": "redfin/react-server",
