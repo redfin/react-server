@@ -48,7 +48,7 @@
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.0.1",
     "rimraf": "^2.5.3",
-    "superagent": "2.2.0",
+    "superagent": "2.3.0",
     "webpack": "1.13.2",
     "zombie": "4.1.0"
   },
