@@ -13,7 +13,7 @@ var LOG_LEVELS = {
 	debug     : 7,
 }
 
-// Need these to be shared across react-server and corvair (can actually be modified
+// Need these to be shared across react-server (can actually be modified
 // by the logging modules).
 var config = (global._REACT_SERVER_CONFIG || (global._REACT_SERVER_CONFIG = {
 	main: {
@@ -68,7 +68,7 @@ var config = (global._REACT_SERVER_CONFIG || (global._REACT_SERVER_CONFIG = {
 	},
 }));
 
-// These need to be shared across react-server and corvair, too.
+// These need to be shared across react-server.
 var loggers = (global._REACT_SERVER_LOGGERS || (global._REACT_SERVER_LOGGERS = {}));
 
 // We may have loggers with the same name in different groups, so we'll give
