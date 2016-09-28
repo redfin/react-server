@@ -175,7 +175,9 @@ RootElement.scheduleRender = function(element) {
 		.then(el => el && (rendered = el))
 		.then(() => when)
 		.then(childProps => childProps
-			?React.cloneElement(rendered, {childProps})
+			// merge "when" childProps and "listen" childProps preemptively
+			// to prevent cloneElement shallow merge from clobbering "listen" childProps
+			?React.cloneElement(rendered, {childProps: _.assign({}, rendered.props.childProps || {}, childProps)})
 			:rendered
 		)
 }
