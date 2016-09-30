@@ -159,7 +159,7 @@ export default class ExampleFragmentPage {
 	}
 
 	getTitle () {
-		return "Corvair School Fragment";
+		return "School Fragment";
 	}
 
 	getElements() {

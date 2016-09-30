@@ -83,7 +83,7 @@ module.exports = function(server, routes) {
 					// TODO: context opts?
 				});
 
-		// Need this stuff in corvair for logging.
+		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
 
 		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
