@@ -3,6 +3,6 @@ node_modules
 .changelog
 *.swp
 *.orig
-lerna-debug.log
+asini-debug.log
 *npm-debug.log*
 .DS_Store
