@@ -3,7 +3,7 @@
  * Thin wrapper around the environment-specific configuration file
  */
 
- var config = null;
+var config = null;
 
 if (SERVER_SIDE) {
 
