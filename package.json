@@ -30,7 +30,7 @@
     "gulp-filter": "2.0.0",
     "gulp-if": "1.2.5",
     "gulp-istanbul": "1.1.1",
-    "gulp-jasmine": "2.4.1",
+    "gulp-jasmine": "2.4.2",
     "gulp-jshint": "1.9.0",
     "gulp-nsp": "^2.4.2",
     "gulp-rename": "1.2.0",
