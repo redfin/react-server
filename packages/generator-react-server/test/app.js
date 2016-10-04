@@ -20,7 +20,7 @@ test('generator-react-server:app creates default files', async t => {
 	t.true(await exists('pages/hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
-	t.true(await exists('routes.js', testDir));
+	t.true(await exists('routes.json', testDir));
 	t.false(await exists('Dockerfile', testDir));
 	t.false(await exists('docker-compose.yml', testDir));
 });
@@ -68,7 +68,7 @@ test('generator-react-server:app creates docker files', async t => {
 	t.true(await exists('pages/hello-world.js', testDir));
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
-	t.true(await exists('routes.js', testDir));
+	t.true(await exists('routes.json', testDir));
 	t.true(await exists('Dockerfile', testDir));
 	t.true(await exists('docker-compose.yml', testDir));
 });

@@ -207,7 +207,7 @@ camel-cased (e.g. `jsPort`). (TODO: Support dash-separated options in config)
 #### --routes
 The routes file to load.
 
-Defaults to **"./routes.js"**.
+Defaults to **"./routes.json"**.
 
 #### --host
 The hostname to use when starting up the server. If `jsUrl` is set, then this

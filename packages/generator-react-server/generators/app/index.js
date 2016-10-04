@@ -60,7 +60,7 @@ module.exports = yeoman.Base.extend({
 			'components/hello-world.js',
 			'package.json',
 			'README.md',
-			'routes.js',
+			'routes.json',
 			'test.js',
 		];
 
