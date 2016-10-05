@@ -10,7 +10,7 @@ need on the production machine.
 
 def encrypt(args):
     data = {
-        'slack.api.token': args.slack_key,
+        'react-server-slack.api.token': args.react_server_slack_key,
     }
 
     kms = boto3.client('kms', 'us-west-2')
@@ -24,8 +24,9 @@ def encrypt(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Encrypt credentials.')
-    parser.add_argument('--slack-api-key', dest='slack_key',
-                        help='Slack API key', required=True)
+    parser.add_argument('--react-server-slack-api-key',
+                        dest='react_server_slack_key',
+                        help='React Server Slack API key', required=True)
 
     args = parser.parse_args()
     encrypt(args)

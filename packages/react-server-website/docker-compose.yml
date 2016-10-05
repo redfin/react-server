@@ -10,7 +10,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-  slackin:
+  react-server-slackin:
     image: reactserver/react-server-website-slackin
     environment:
      - SLACK_COC=https://github.com/redfin/react-server/blob/master/CODE_OF_CONDUCT.md
@@ -22,10 +22,10 @@ services:
     image: nginx:1.10.1
     depends_on:
      - docs
-     - slackin
+     - react-server-slackin
     links:
      - docs:react-server-docs
-     - slackin:slackin
+     - react-server-slackin:react-server-slackin
     ports:
      - "8080:80"
      - "8443:443"
