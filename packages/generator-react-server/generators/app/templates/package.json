@@ -5,7 +5,7 @@
   "main": "HelloWorld.js",
   "scripts": {
     "start": "react-server start",
-    "lint": "eslint routes.js test.js pages",
+    "lint": "eslint test.js pages",
     "test": "npm run lint && nsp check && ava test.js"
   },
   "license": "Apache-2.0",

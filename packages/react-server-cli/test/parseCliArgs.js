@@ -6,13 +6,13 @@ const defaultArgs = ['/usr/local/bin/node', '/usr/local/bin/react-server'];
 
 // **** routesFile ****
 // routesFile path always exists in parsed cli arguments and is the same key as we expect in defaultOptions.
-test('react-server-cli:parseCliArgs::routesFile defaults to routes.js', async t => {
+test('react-server-cli:parseCliArgs::routesFile defaults to routes.json', async t => {
 	const args = [
 		...defaultArgs,
   		'compile'
   	];
   	const parsedArgs = await parseCliArgs(args);
-  	t.is(parsedArgs.routesFile, 'routes.js', 'Default routesFile is routes.js');
+  	t.is(parsedArgs.routesFile, 'routes.json', 'Default routesFile is routes.json');
   	t.true(Object.keys(defaultOptions).indexOf('routesFile') > -1, 'routesFile key exists in defaultOptions');
 });
 

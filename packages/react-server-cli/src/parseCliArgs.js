@@ -6,9 +6,9 @@ export default (args = process.argv) => {
 	var argsDefinition = yargs(args)
 		.usage('Usage: $0 <command> [options]')
 		.option("routes-file", {
-			default: "routes.js",
+			default: "routes.json",
 			type: "string",
-			describe: "The routes file to load. Default is 'routes.js'.",
+			describe: "The routes file to load. Default is 'routes.json'.",
 		})
 		.option("p", {
 			alias: "port",
