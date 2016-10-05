@@ -1,6 +1,6 @@
 {
   "name": "react-server-core-middleware",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Core page middleware for React Server",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
     "babel-cli": "^6.11.4",
-    "babel-preset-react-server": "^0.4.7",
+    "babel-preset-react-server": "^0.4.8",
     "rimraf": "^2.5.4"
   }
 }

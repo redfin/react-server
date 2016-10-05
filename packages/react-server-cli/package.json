@@ -1,6 +1,6 @@
 {
   "name": "react-server-cli",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
@@ -39,7 +39,7 @@
     "q": "~1.4.1",
     "raw-loader": "^0.5.1",
     "react-hot-loader": "~1.3.0",
-    "react-server-core-middleware": "^0.4.7",
+    "react-server-core-middleware": "^0.4.8",
     "sass-loader": "^4.0.0",
     "style-loader": "~0.12.3",
     "webpack": "^1.13.1",
@@ -50,7 +50,7 @@
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-react-server": "^0.4.7",
+    "babel-preset-react-server": "^0.4.8",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^3.0.1",

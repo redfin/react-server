@@ -1,3 +1,46 @@
+## v0.4.8 (2016-10-05)
+
+#### Enhancement
+* `react-server`
+  * [#659](https://github.com/redfin/react-server/pull/659) Moved call to set the page on the response logger from. ([@vinsewah](https://github.com/vinsewah))
+  * [#642](https://github.com/redfin/react-server/pull/642) Adding http response header hook to page lifecyle. ([@nampas](https://github.com/nampas))
+  * [#626](https://github.com/redfin/react-server/pull/626) Rebased sjv improve error logging. ([@lidawang](https://github.com/lidawang))
+
+#### Bug fix
+* `generator-react-server`, `react-server-cli`
+  * [#691](https://github.com/redfin/react-server/pull/691) Fix inconsistent usage of routes.js vs. routes.json. ([@sresant](https://github.com/sresant))
+* `react-server-cli`
+  * [#665](https://github.com/redfin/react-server/pull/665) resolves #664. ([@SeverS](https://github.com/SeverS))
+  * [#644](https://github.com/redfin/react-server/pull/644) Normalize httpsOptions from parseCli. ([@jbenesch](https://github.com/jbenesch))
+* `react-server`
+  * [#677](https://github.com/redfin/react-server/pull/677) Prevent "when" childProps from clobbering "listen" chlidProps in RootElement. ([@TonyHYK](https://github.com/TonyHYK))
+* `babel-preset-react-server`
+  * [#637](https://github.com/redfin/react-server/pull/637) Add babel-runtime to babel-preset-react-server. ([@doug-wade](https://github.com/doug-wade))
+* Other
+  * [#668](https://github.com/redfin/react-server/pull/668) Fix react-server issue with npm2. ([@sresant](https://github.com/sresant))
+
+#### Security
+* `react-server-cli`
+  * [#684](https://github.com/redfin/react-server/pull/684) Remove outdated nsp exemption. ([@doug-wade](https://github.com/doug-wade))
+* `generator-react-server`
+  * [#685](https://github.com/redfin/react-server/pull/685) Remove outdated nsp exemptions. ([@doug-wade](https://github.com/doug-wade))
+* `generator-react-server`, `react-server`
+  * [#682](https://github.com/redfin/react-server/pull/682) Fix the build. ([@doug-wade](https://github.com/doug-wade))
+
+#### Commiters: 12
+- Alan Bares ([alanbares](https://github.com/alanbares))
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Henry Zhu ([hzhu](https://github.com/hzhu))
+- Jason Benesch ([jbenesch](https://github.com/jbenesch))
+- Lida Wang ([lidawang](https://github.com/lidawang))
+- Nathan Pastor ([nampas](https://github.com/nampas))
+- Sever Abibula ([SeverS](https://github.com/SeverS))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+- Tony Hung ([TonyHYK](https://github.com/TonyHYK))
+- Vince Chang ([vinsewah](https://github.com/vinsewah))
+
 ## v0.4.7 (2016-08-27)
 
 #### Enhancement

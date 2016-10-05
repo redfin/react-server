@@ -1,6 +1,6 @@
 {
   "name": "react-server-test-pages",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
@@ -18,9 +18,9 @@
     "q": "1.4.1",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
-    "react-server": "^0.4.7",
-    "react-server-cli": "^0.4.7",
-    "react-server-data-bundle-cache": "^0.4.7"
+    "react-server": "^0.4.8",
+    "react-server-cli": "^0.4.8",
+    "react-server-data-bundle-cache": "^0.4.8"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

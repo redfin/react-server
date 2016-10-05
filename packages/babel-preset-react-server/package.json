@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-react-server",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A recommended Babel config for working with react-server",
   "main": "index.js",
   "scripts": {
