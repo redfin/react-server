@@ -51,7 +51,7 @@
       script: instance-setup.sh
 
     - name: Install Slack API token
-      script: decrypt_credentials.py -k slack.api.token > slack-api-token
+      script: decrypt_credentials.py -k react-server-slack.api.token > react-server-slack-api-token
 
     - name: Copy Docker Compose configuration
       copy: src=docker-compose.yml dest=/home/ubuntu/docker-compose.yml mode=0644
@@ -60,7 +60,7 @@
       copy: src=../nginx.conf dest=/home/ubuntu/nginx.conf mode=0644
 
     - name: Deploy services
-      shell: SLACK_API_TOKEN=`cat slack-api-token | tr -d '\n'` docker-compose up -d
+      shell: SLACK_API_TOKEN=`cat react-server-slack-api-token | tr -d '\n'` docker-compose up -d
       become: true
 
     - name: Wait for the service to become available
