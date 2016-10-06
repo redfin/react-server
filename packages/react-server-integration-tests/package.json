@@ -12,8 +12,8 @@
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
     "react-server": "^0.4.8",
-    "react-server-cli": "^0.4.8",
+    "react-server-cli": "^0.4.9",
     "rimraf": "^2.5.2"
   },
-  "version": "0.4.8"
+  "version": "0.4.9"
 }

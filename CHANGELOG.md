@@ -1,3 +1,14 @@
+## v0.4.9 (2016-10-06)
+
+#### Bug fix
+* `react-server-examples`
+  * [#697](https://github.com/redfin/react-server/pull/697) Update or add .reactserverrc files. ([@sresant](https://github.com/sresant))
+* `react-server-cli`
+  * [#695](https://github.com/redfin/react-server/pull/695) Remove default routes file. ([@sresant](https://github.com/sresant))
+
+#### Commiters: 1
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+
 ## v0.4.8 (2016-10-05)
 
 #### Enhancement
