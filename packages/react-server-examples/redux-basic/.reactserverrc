@@ -1,5 +1,5 @@
 {
-  "routes": "./routes.js",
+  "routesFile": "./routes.js",
   "host": "localhost",
   "port": 3000,
   "js-port": 3001,
