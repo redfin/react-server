@@ -2,21 +2,29 @@ version: '2'
 services:
   docs:
     image: reactserver/react-server-website
+  asini-slackin:
+    image: reactserver/react-server-website-slackin
+    environment:
+     - SLACK_INTERVAL=30000
+     - SLACK_API_TOKEN
+    command: ./bin/slackin --coc "https://github.com/asini/asini/blob/master/CODE_OF_CONDUCT.md" --port 3000 asini $ASINI_SLACK_API_TOKEN
+    restart: unless-stopped
   react-server-slackin:
     image: reactserver/react-server-website-slackin
     environment:
-     - SLACK_COC=https://github.com/redfin/react-server/blob/master/CODE_OF_CONDUCT.md
-     - SLACK_SUBDOMAIN=react-server
      - SLACK_INTERVAL=30000
      - SLACK_API_TOKEN
+    command: ./bin/slackin --coc "https://github.com/redfin/react-server/blob/master/CODE_OF_CONDUCT.md" --port 3000 react-server $REACT_SERVER_SLACK_API_TOKEN
     restart: unless-stopped
   nginx:
     image: nginx:1.10.1
     depends_on:
      - docs
+     - asini-slackin
      - react-server-slackin
     links:
      - docs:react-server-docs
+     - asini-slackin:asini-slackin
      - react-server-slackin:react-server-slackin
     ports:
      - "80:80"
