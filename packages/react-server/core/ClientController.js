@@ -55,9 +55,7 @@ class ClientController extends EventEmitter {
 	constructor ({routes}) {
 		super();
 
-		window.__reactServerTimingStart = window.performance ? window.performance.timing.navigationStart : new Date;
-		var wakeTime = new Date - window.__reactServerTimingStart;
-		var aboveTheFold = window.performance ? (window.__displayAboveTheFold - window.__reactServerTimingStart) : 0;
+		window.__reactServerTimingStart = window.performance ? window.performance.timing.navigationStart : undefined;
 
 		var dehydratedState = window.__reactServerState;
 
@@ -84,9 +82,9 @@ class ClientController extends EventEmitter {
 		this._failDfd = Q.defer();
 
 		// Log this after loglevel is set.
-		logger.time('wakeFromStart', wakeTime);
+		logTimingData('wakeFromStart', window._reactServerTimingStart);
 		// this is a proxy for when above the fold content gets painted (displayed) on the browser
-		logger.time('displayAboveTheFold.fromStart', aboveTheFold);
+		logTimingData('displayAboveTheFold.fromStart', window._reactServerTimingStart, window.__displayAboveTheFold);
 	}
 
 	terminate() {
@@ -294,16 +292,15 @@ class ClientController extends EventEmitter {
 		// - Request options (reuseDom, bundleData, etc)
 		if (!window.__reactServerIsFrame) {
 			navigationTimingAuthority.once('loadComplete', () => {
-				const tim = new Date - t0;
 				const bas = `handleRequest`;
 				const typ = `type.${type||'PAGELOAD'}`;
-				logger.time(`${bas}.all`, tim);
-				logger.time(`${bas}.${typ}.all`, tim);
+				logTimingData(`${bas}.all`, t0);
+				logTimingData(`${bas}.${typ}.all`, t0);
 				_.forEach(request.getOpts(), (val, key) => {
 					if (val) {
 						const opt = `opt.${key}`;
-						logger.time(`${bas}.${opt}`, tim);
-						logger.time(`${bas}.${typ}.${opt}`, tim);
+						logTimingData(`${bas}.${opt}`, t0);
+						logTimingData(`${bas}.${typ}.${opt}`, t0);
 					}
 				});
 			});
@@ -642,9 +639,9 @@ class ClientController extends EventEmitter {
 				return; // Nothing left to do.
 			} else if (element.isTheFold) {
 				if (!this._previouslyRendered){
-					logger.time(`renderAboveTheFold.fromStart`, new Date - tStart);
-					logger.time(`renderAboveTheFold.individual`, totalRenderTime);
-					logger.time(`renderAboveTheFold.elementCount`, index + 1);
+					logTimingData(`renderAboveTheFold.fromStart`, tStart);
+					logTimingData(`renderAboveTheFold.individual`, 0, totalRenderTime);
+					logTimingData(`renderAboveTheFold.elementCount`, 0, index + 1);
 				}
 				return; // Again, this isn't a real root element.
 			}
@@ -664,8 +661,8 @@ class ClientController extends EventEmitter {
 
 			if (!this._previouslyRendered){
 				var tDisplay = root.getAttribute('data-react-server-timing-offset');
-				logger.time(`displayElement.fromStart.${name}`, +tDisplay);
-				logger.time(`renderElement.fromStart.${name}`, new Date - tStart);
+				logTimingData(`displayElement.fromStart.${name}`, 0, +tDisplay);
+				logTimingData(`renderElement.fromStart.${name}`, tStart);
 			}
 		};
 
@@ -707,14 +704,14 @@ class ClientController extends EventEmitter {
 			}
 
 			// This first one is just for historical continuity.
-			logger.time('render', new Date - t0);
+			logTimingData('render', t0);
 
 			// These are more interesting.
-			logger.time('renderCPUTime', totalRenderTime);
+			logTimingData('renderCPUTime', 0, totalRenderTime);
 
 			// Don't track this on client transitions.
 			if (!this._previouslyRendered){
-				logger.time('renderFromStart', new Date - tStart);
+				logTimingData('renderFromStart', tStart);
 			}
 
 			// Some things are just different on our first pass.
@@ -913,6 +910,15 @@ function buildContext(routes) {
 	context.setFramebackController(new FramebackController());
 
 	return context;
+}
+
+function logTimingData(bucket, start, end = new Date) {
+	if (start === undefined) {
+		//don't send timing data if start timing is undefined
+		return;
+	}
+
+	logger.time(bucket, end - start);
 }
 
 module.exports = ClientController;
