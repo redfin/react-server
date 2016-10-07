@@ -44,7 +44,7 @@
     "jsdom": "9.6.0",
     "jsx-loader": "0.12.2",
     "asini": "0.0.1",
-    "asini-changelog": "0.0.1",
+    "asini-changelog": "1.0.0",
     "minimist": "1.1.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "1.6.0",
