@@ -1,5 +1,5 @@
 {
-  "asini": "0.0.1",
+  "asini": "1.0.0",
   "version": "0.4.9",
   "changelog": {
     "repo": "redfin/react-server",
@@ -11,5 +11,10 @@
       "security": "Security"
     },
     "cacheDir": ".changelog"
-  }
+  },
+  "packages": [
+    {
+      "glob": "packages/*/package.json"
+    }
+  ]
 }
