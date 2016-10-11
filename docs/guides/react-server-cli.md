@@ -283,6 +283,11 @@ Path to the custom middleware function file. If it is not defined the default se
 
 Defaults to **undefined**.
 
+#### --webpack-config
+Path to your webpack options callback function file.
+
+Defaults to **undefined**.
+
 #### --long-term-caching
 Adds hashes to all JavaScript and CSS file names output by the build, allowing
 for the static files to be served with far-future expires headers. This option
