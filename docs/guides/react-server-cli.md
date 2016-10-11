@@ -250,6 +250,11 @@ Minify client JavaScript and CSS.
 
 Defaults to **false** in development mode and **true** in production.
 
+#### --custom-middleware-path
+Path to the custom middleware function file. If it is not defined the default setup will be applied which include body-parser, compression and cookie-parser.
+
+Defaults to **undefined**.
+
 #### --long-term-caching
 Adds hashes to all JavaScript and CSS file names output by the build, allowing
 for the static files to be served with far-future expires headers. This option
