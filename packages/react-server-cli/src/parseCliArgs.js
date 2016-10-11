@@ -63,7 +63,7 @@ export default (args = process.argv) => {
 			type: "boolean",
 		})
 		.option("custom-middleware-path", {
-			describe: "Path to custom middleware function file. If it is not defined default setup will be applied",
+			describe: "Path to custom middleware function file. If it is not defined default setup will be applied.",
 			default: undefined,
 			type: "string",
 		})
