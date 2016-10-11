@@ -62,6 +62,11 @@ export default (args = process.argv) => {
 			default: undefined,
 			type: "boolean",
 		})
+		.option("custom-middleware-path", {
+			describe: "Use custom middleware to be used with react-server",
+			default: undefined,
+			type: "string",
+		})
 		.option("long-term-caching", {
 			describe: "Use long-term cache headers for the static JS & CSS files. Default is true in production mode, false otherwise.",
 			default: undefined,
