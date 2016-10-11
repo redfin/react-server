@@ -63,7 +63,7 @@ export default (args = process.argv) => {
 			type: "boolean",
 		})
 		.option("custom-middleware-path", {
-			describe: "Use custom middleware to be used with react-server",
+			describe: "Path to custom middleware function file. If it is not defined default setup will be applied",
 			default: undefined,
 			type: "string",
 		})
