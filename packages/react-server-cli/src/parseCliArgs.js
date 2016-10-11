@@ -72,7 +72,7 @@ export default (args = process.argv) => {
 			type: "string",
 		})
 		.option("webpack-config", {
-			describe: "Path to Webpack options callback function.",
+			describe: "Path to Webpack options callback function file.",
 			default: undefined,
 			type: "string",
 		})
