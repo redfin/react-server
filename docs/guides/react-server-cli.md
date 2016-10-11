@@ -123,12 +123,12 @@ export default (server, reactServerMiddleware) => {
 	server.use(bodyParser.urlencoded({ extended: false }));
 	server.use(bodyParser.json());
 	server.use(session(options));
-	rsMiddleware(); // Must be called once or server will not start
+	reactServerMiddleware(); // Must be called once or server will not start
 }
 ```
 
 
-In the `.reactserverrc` file add an option for `custom-middleware-path` that points to that function file and when React Server is setting up the server it will call your function for setup rather then the default middlewares mentioned above. On the command line the option is `--custom-middleware-path`.
+In the `.reactserverrc` file add an option for `customMiddlewarePath` that points to that function file and when React Server is setting up the server it will call your function for setup rather then the default middlewares mentioned above. This may also be specified on the command line with the `--custom-middleware-path=<FILE>` option.
 
 ### Development mode: making a great DX
 
