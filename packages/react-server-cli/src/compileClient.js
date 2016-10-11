@@ -23,6 +23,7 @@ import callerDependency from "./callerDependency"
 export default (opts = {}) => {
 	const {
 		routes,
+		webpackConfig,
 		workingDir = "./__clientTemp",
 		routesDir = ".",
 		outputDir = workingDir + "/build",
@@ -39,8 +40,8 @@ export default (opts = {}) => {
 	}
 
 	var webpackConfigFunc = (data) => { return data }
-	if (opts['webpack-config']) {
-		const webpackDirAbsolute = path.resolve(process.cwd(), opts['webpack-config']);
+	if (webpackConfig) {
+		const webpackDirAbsolute = path.resolve(process.cwd(), webpackConfig);
 		const userWebpackConfigFunc = require(webpackDirAbsolute)
 		webpackConfigFunc = userWebpackConfigFunc.default
 	}
