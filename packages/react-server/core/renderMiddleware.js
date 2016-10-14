@@ -736,6 +736,8 @@ function writeBody(req, res, context, start, page) {
 
 		// Let the client know it's not getting any more data.
 		renderScriptsAsync([{ text: `__reactServerClientController.failArrival()` }], res)
+		// Close off the body since the page life cycle will not complete
+		res.write("</div></body></html>");
 	});
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
