@@ -4,9 +4,9 @@ module.exports = {
 	RootContainer: require("./components/RootContainer"),
 	RootElement: require("./components/RootElement"),
 	Link: require('./components/Link'),
-	TheFold: require('./components/TheFold').default,
+	TheFold: require('./components/TheFold'),
 	History: require('./components/History'),
-	navigateTo: require('./util/navigateTo').default,
+	navigateTo: require('./util/navigateTo'),
 	ClientRequest: require('./ClientRequest'),
 	FramebackController: require('./FramebackController'),
 	components: {
