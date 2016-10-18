@@ -1,6 +1,6 @@
 
 var React = require('react'),
-	navigateTo = require("../util/navigateTo").default;
+	navigateTo = require("../util/navigateTo");
 
 module.exports = React.createClass({
 	displayName: 'Link',

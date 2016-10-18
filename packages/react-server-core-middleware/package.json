@@ -26,6 +26,7 @@
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
     "babel-cli": "^6.11.4",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-react-server": "^0.4.8",
     "rimraf": "^2.5.4"
   }
