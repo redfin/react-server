@@ -740,7 +740,7 @@ function writeBody(req, res, context, start, page) {
 
 		//Log timeout error but still resolve so we continue in the lifecycle process
 		logger.error("Error in writeBody", err);
-		retval.promise.resolve();
+		retval.resolve();
 	});
 
 	Q.all(dfds.map(dfd => dfd.promise)).then(writeBodyDfd.resolve);
@@ -767,7 +767,7 @@ function writeBody(req, res, context, start, page) {
 	writeBodyDfd.promise.then(() => {
 		clearTimeout(timeout);
 		//writeBody ran successfully, sweet
-		retval.promise.resolve();
+		retval.resolve();
 	});
 
 	return retval.promise;
