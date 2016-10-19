@@ -533,7 +533,9 @@ class ClientController extends EventEmitter {
 		var elementPromisesOr = elementPromises.map((promise, index) => {
 			var orPromise = Q.defer();
 			timeoutDfd[index] = Q.defer();
-			promise.then(orPromise.resolve)
+
+			promise.then(orPromise.resolve);
+			promise.catch(orPromise.reject);
 			timeoutDfd[index].promise.catch(orPromise.reject);
 
 			return orPromise.promise;
