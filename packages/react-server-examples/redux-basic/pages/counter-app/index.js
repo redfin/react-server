@@ -8,8 +8,15 @@ import store from '../store'
 
 export default class CounterPage {
   getElements() {
+
+    const counterPromise = Counter.init();
+
+    counterPromise.then( (count) => {
+      store.dispatch({type: 'INIT', val: count})
+    });
+
     return [
-      <RootElement key={0}>
+      <RootElement key={0} when={counterPromise}>
         <Provider store={store}>
           <Counter
             value={store.getState()}

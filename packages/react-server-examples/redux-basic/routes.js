@@ -5,5 +5,11 @@ module.exports = {
 			method: 'get',
 			page: './pages/counter-app/index',
 		},
+		CounterAPI: {
+			path: ['/count'],
+			method: 'get',
+			page: './pages/counter-app/api',
+		},
+
 	},
 }
