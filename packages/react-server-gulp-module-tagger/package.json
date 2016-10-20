@@ -16,13 +16,17 @@
   "dependencies": {
     "gulp-foreach": "0.1.0",
     "gulp-plumber": "^1.1.0",
-    "gulp-replace": "0.5.2",
+    "gulp-replace": "^0.5.4",
     "react-server-module-tagger": "^0.4.7"
   },
   "devDependencies": {
-    "ava": "^0.15.2",
+    "ava": "^0.16.0",
     "del": "^2.2.1",
-    "nsp": "^2.4.0",
-    "rimraf": "^2.5.2"
+    "nsp": "^2.6.2",
+    "rimraf": "^2.5.4",
+    "gulp": "^3.9.1",
+    "eslint-plugin-react": "^6.4.1",
+    "babel-eslint": "^7.0.0",
+    "eslint": "^3.8.1"
   }
 }

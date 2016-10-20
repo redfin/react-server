@@ -12,7 +12,7 @@
     "clean": "rimraf lib npm-debug.log* index.js"
   },
   "dependencies": {
-    "lodash": "^4.11.1",
+    "lodash": "^4.16.4",
     "stratocacher": "0.0.12",
     "stratocacher-layer-lru": "0.0.12"
   },
@@ -20,7 +20,16 @@
     "react-server": "^0.4.8"
   },
   "devDependencies": {
+    "gulp-nsp": "^2.4.2",
     "react-server-gulp-module-tagger": "^0.4.7",
-    "rimraf": "^2.5.2"
+    "rimraf": "^2.5.4",
+    "gulp-cli": "^1.2.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-rename": "^1.2.2",
+    "babel-preset-es2015": "^6.18.0",
+    "eslint-plugin-react": "^6.4.1",
+    "babel-eslint": "^7.0.0"
   }
 }
