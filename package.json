@@ -52,7 +52,7 @@
     "rimraf": "^2.5.3",
     "superagent": "2.3.0",
     "webpack": "1.13.2",
-    "zombie": "4.1.0"
+    "zombie": "4.3.0"
   },
   "engine": {
     "node": ">4.2.1"
