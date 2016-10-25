@@ -42,7 +42,7 @@
     "handlebars": "1.3.0",
     "handlebars-loader": "1.4.0",
     "jasmine": "2.5.1",
-    "jsdom": "9.8.0",
+    "jsdom": "9.8.1",
     "jsx-loader": "0.12.2",
     "asini": "0.0.1",
     "asini-changelog": "0.0.1",
