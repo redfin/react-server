@@ -11,12 +11,13 @@ export default class CounterPage {
 
     const counterPromise = Counter.init();
 
-    counterPromise.then( (count) => {
+    const storeUpdatedPromise = counterPromise.then( (count) => {
       store.dispatch({type: 'INIT', val: count})
+      return count;
     });
 
     return [
-      <RootElement key={0} when={counterPromise}>
+      <RootElement key={0} when={storeUpdatedPromise}>
         <Provider store={store}>
           <Counter
             value={store.getState()}
@@ -24,7 +25,7 @@ export default class CounterPage {
             onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
           />
         </Provider>
-      </RootElement>,
+      </RootElement>
     ]
   }
 
