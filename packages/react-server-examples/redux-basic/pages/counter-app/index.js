@@ -8,7 +8,6 @@ import store from '../store'
 
 export default class CounterPage {
   getElements() {
-
     const counterPromise = Counter.init();
 
     const storeUpdatedPromise = counterPromise.then( (count) => {
