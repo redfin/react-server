@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
-    "ava": "^0.15.2",
-    "babel-cli": "^6.9.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
+    "ava": "^0.16.0",
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-0": "^6.16.0",
     "del-cli": "^0.2.0"
   }
 }
