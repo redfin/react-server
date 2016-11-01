@@ -15,6 +15,6 @@ export default class HelloWorld extends React.Component {
 				<h2>Hello, World{"!".repeat(this.state.exclamationCount)}</h2>
 				<button onClick={this.increment}>Get More Excited!</button>
 			</div>
-			);
+		);
 	}
 }
