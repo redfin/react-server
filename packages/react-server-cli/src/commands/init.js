@@ -12,6 +12,7 @@ const DEPENDENCIES = [
 	// TODO: Modernize our peer deps and remove versions here.
 	"react@~0.14.2",
 	"react-dom@~0.14.2",
+	"superagent@1.8.4",
 ]
 
 const CONFIG = {

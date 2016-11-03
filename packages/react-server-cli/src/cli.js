@@ -1,4 +1,4 @@
 require("babel-core/register");
 
 const cli = require(".");
-cli.parseCliArgs().then(cli.run);
+cli.parseCliArgs().then(cli.run).catch(console.error);
