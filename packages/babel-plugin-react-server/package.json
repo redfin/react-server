@@ -21,7 +21,7 @@
   "scripts": {
     "clean": "rm -rf lib npm-debug.log*",
     "build": "babel src -d lib",
-    "test": "mocha --compilers js:babel-register && eslint src/",
+    "test": "mocha --compilers js:babel-register && eslint src/ test/index.js",
     "test:watch": "npm run test -- --watch",
     "prepublish": "npm run clean && npm run build"
   },
