@@ -8,6 +8,12 @@ export default class IndexPage {
 			<ul>{_.map(entrypoints, (val, key) => <li>
 				<a href={val.entry}>{val.description||key}</a>
 			</li>)}</ul>
+			<h2>Homepage Aliases:</h2>
+			<p>This tests routes with arrays of paths</p>
+			<ul>
+				<li><a href="/foo">foo</a></li>
+				<li><a href="/bar">bar</a></li>
+			</ul>
 		</div>
 	}
 }

@@ -9,7 +9,7 @@ module.exports = {
 	// this maps URLs to modules that export a Page class.
 	routes: _.assign({
 		Index: {
-			path: ["/"],
+			path: ["/", "/foo", "/bar"], // Test for array support.
 			page: "./pages/index",
 		},
 		DataDelay: {
