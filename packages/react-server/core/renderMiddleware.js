@@ -206,6 +206,10 @@ function renderPage(req, res, context, start, page) {
 
 	res.status(page.getStatus()||200);
 
+	// Handy to have random access to this rather than needing to thread it
+	// through everywhere.
+	RLS().page = page;
+
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
 	var lifecycleMethods;
@@ -322,7 +326,9 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderTitle(pageObject, res),
 		// PLAT-602: inline scripts come before stylesheets because
 		// stylesheet downloads block inline script execution.
-		renderScripts(pageObject, res),
+		pageObject.getJsBelowTheFold()
+			? Q()
+			: renderScripts(pageObject, res),
 		renderStylesheets(pageObject, res)
 			.then(() => Q.all([
 				renderMetaTags(pageObject, res),
@@ -909,6 +915,12 @@ function logAboveTheFoldTime(res) {
 function bootstrapClient(res, lastElementSent) {
 
 	logAboveTheFoldTime(res);
+
+	// If we've deferred _all_ JS below the fold then we need to kick off our
+	// fetch/load of the page JS now.
+	if (RLS().page.getJsBelowTheFold()) {
+		renderScripts(RLS().page, res);
+	}
 
 	var initialContext = {
 		'ReactServerAgent.cache': ReactServerAgent.cache().dehydrate(),
