@@ -278,7 +278,7 @@ module.exports = {
 		routesOutput.push(`
 		${routeName}: {`);
 		routesOutput.push(`
-			path: "${route.path}",`);
+			path: ${JSON.stringify(route.path)},`);
 		// if the route doesn't have a method, we'll assume it's "get". routr doesn't
 		// have a default (method is required), so we set it here.
 		routesOutput.push(`
