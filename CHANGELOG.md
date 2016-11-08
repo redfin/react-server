@@ -1,3 +1,23 @@
+## v0.4.10 (2016-11-08)
+
+#### Enhancement
+* `react-server-core-middleware`, `react-server`
+  * [#719](https://github.com/redfin/react-server/pull/719) Use add-module-exports to reduce .default in require.. ([@karanjthakkar](https://github.com/karanjthakkar))
+
+#### Performance
+* `react-server`
+  * [#741](https://github.com/redfin/react-server/pull/741) Add an option to move all JS below the fold. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-cli`
+  * [#742](https://github.com/redfin/react-server/pull/742) Support arrays of paths in routes files. ([@gigabo](https://github.com/gigabo))
+  * [#740](https://github.com/redfin/react-server/pull/740) Add superagent to example package.json and print errors in cli.js. ([@emecell](https://github.com/emecell))
+
+#### Commiters: 3
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Karan Thakkar ([karanjthakkar](https://github.com/karanjthakkar))
+- Robert Law ([emecell](https://github.com/emecell))
+
 ## v0.4.9 (2016-10-06)
 
 #### Bug fix

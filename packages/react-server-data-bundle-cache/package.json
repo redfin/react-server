@@ -1,6 +1,6 @@
 {
   "name": "react-server-data-bundle-cache",
-  "version": "0.4.8",
+  "version": "0.4.10",
   "description": "React Server Data Bundle Cache",
   "main": "index.js",
   "repository": "redfin/react-server",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "gulp-nsp": "^2.4.2",
-    "react-server-gulp-module-tagger": "^0.4.7",
+    "react-server-gulp-module-tagger": "^0.4.10",
     "rimraf": "^2.5.4",
     "gulp-cli": "^1.2.2",
     "gulp": "^3.9.1",

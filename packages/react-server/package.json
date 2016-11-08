@@ -1,6 +1,6 @@
 {
   "name": "react-server",
-  "version": "0.4.8",
+  "version": "0.4.10",
   "description": "React framework with server render for blazing fast page load and seamless transitions between pages in the browser.",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "babel-plugin-add-module-exports": "^0.2.1",
-    "react-server-gulp-module-tagger": "^0.4.7",
+    "react-server-gulp-module-tagger": "^0.4.10",
     "rimraf": "^2.5.4",
     "gulp-filter": "2.0.0",
     "gulp-cli": "^1.2.2",
