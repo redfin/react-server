@@ -3,13 +3,15 @@ import {
 	RootContainer,
 	RootElement,
 	TheFold,
+	Link,
 } from "react-server";
 
 export default class RootWhenPage {
-	handleRoute(next) {
+	handleRoute() {
 		this.data = ReactServerAgent.get('/data/delay?ms=200&big=10000')
 			.then(res => res.body);
-		return next();
+		const {jsBelowTheFold} = this.getRequest().getQuery();
+		return {code: 200, jsBelowTheFold};
 	}
 	getElements() {
 		return [
@@ -23,6 +25,10 @@ export default class RootWhenPage {
 				<RootElement when={this.data}><div>Four</div></RootElement>
 			</RootContainer>,
 			<div>Five</div>,
+			<div>
+				<Link path={"/root/aboveTheFold"}>JS in HEAD</Link> |
+				<Link path={"/root/aboveThefold?jsBelowTheFold=1"}>JS below the fold</Link>
+			</div>,
 		]
 	}
 }

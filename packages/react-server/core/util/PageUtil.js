@@ -110,6 +110,8 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setStatus          : makeSetter('status'),
 	getHasDocument     : makeGetter('hasDocument'),
 	setHasDocument     : makeSetter('hasDocument'),
+	getJsBelowTheFold  : makeGetter('jsBelowTheFold'),
+	setJsBelowTheFold  : makeSetter('jsBelowTheFold'),
 };
 
 // We log all method calls on the page chain for debugging purposes.
