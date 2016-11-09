@@ -1,3 +1,12 @@
+## v0.4.11 (2016-11-09)
+
+#### Bug fix
+* `react-server`
+  * [#743](https://github.com/redfin/react-server/pull/743) Re-add the `.default` to require of TheFold in common.js. ([@gigabo](https://github.com/gigabo))
+
+#### Commiters: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
 ## v0.4.10 (2016-11-08)
 
 #### Enhancement
