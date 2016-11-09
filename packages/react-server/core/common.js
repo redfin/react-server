@@ -4,7 +4,7 @@ module.exports = {
 	RootContainer: require("./components/RootContainer"),
 	RootElement: require("./components/RootElement"),
 	Link: require('./components/Link'),
-	TheFold: require('./components/TheFold'),
+	TheFold: require('./components/TheFold').default,
 	History: require('./components/History'),
 	navigateTo: require('./util/navigateTo'),
 	ClientRequest: require('./ClientRequest'),
