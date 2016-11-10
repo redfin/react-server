@@ -4,8 +4,8 @@ export default class JsonResponseMiddleware {
 		return { isRawResponse: true };
 	}
 
-	getContentType(next) {
-		return next() || 'application/json';
+	getContentType() {
+		return 'application/json';
 	}
 
 	getResponseData(next) {
