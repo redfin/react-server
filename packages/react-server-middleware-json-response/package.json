@@ -1,0 +1,36 @@
+{
+  "name": "react-server-middleware-json-response",
+  "version": "0.4.10",
+  "description": "JSON response middleware for React Server",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "babel index.src.js --out-file index.js",
+    "clean": "rm index.js",
+    "test": "eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redfin/react-server.git"
+  },
+  "keywords": [
+    "react",
+    "server",
+    "json",
+    "middleware"
+  ],
+  "author": "Bo Borgerson",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/redfin/react-server/issues"
+  },
+  "homepage": "https://github.com/redfin/react-server#readme",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-react-server": "^0.4.10",
+    "eslint": "^3.8.1",
+    "eslint-plugin-react": "^6.4.1",
+    "babel-eslint": "^7.0.0"
+  }
+}
