@@ -2,10 +2,9 @@
 
 #### Bug fix
 * `react-server`
-  * [#716](https://github.com/redfin/react-server/pull/716) Fix timeout error
-  * handling. ([@sresant](https://github.com/sresant))
+  * [#716](https://github.com/redfin/react-server/pull/716) Fix timeout error handling. ([@sresant](https://github.com/sresant))
 
-  #### Commiters: 1
+#### Commiters: 1
   - Sresan Thevarajah ([sresant](https://github.com/sresant))
 
 ## v0.4.11 (2016-11-09)
