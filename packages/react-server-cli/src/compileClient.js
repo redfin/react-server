@@ -222,7 +222,7 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 			new webpack.optimize.UglifyJsPlugin(),
 		];
 	} else {
-		webpackConfig.plugins.push(new _webpack2.default.SourceMapDevToolPlugin());
+		webpackConfig.plugins.push(new webpack.SourceMapDevToolPlugin());
 	}
 
 	if (hot) {
