@@ -21,6 +21,7 @@
     "react-server": "^0.4.12",
     "react-server-cli": "^0.4.10",
     "react-server-data-bundle-cache": "^0.4.10",
+    "react-server-middleware-json-response": "^0.4.10",
     "eslint-plugin-react": "^6.4.1"
   },
   "devDependencies": {

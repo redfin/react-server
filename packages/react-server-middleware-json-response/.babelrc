@@ -1,0 +1,4 @@
+{
+	"presets": ["react-server"],
+	"plugins": ["add-module-exports"]
+}
