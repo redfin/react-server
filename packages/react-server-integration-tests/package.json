@@ -11,7 +11,7 @@
     "q": "1.4.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
-    "react-server": "^0.4.11",
+    "react-server": "^0.4.12",
     "react-server-cli": "^0.4.10",
     "rimraf": "^2.5.4",
     "gulp": "^3.9.1",
@@ -23,5 +23,5 @@
     "gulp-jasmine": "^2.4.2",
     "zombie": "^4.3.0"
   },
-  "version": "0.4.11"
+  "version": "0.4.12"
 }
