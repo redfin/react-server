@@ -529,6 +529,17 @@ class ClientController extends EventEmitter {
 		// These resolve with React elements when their data
 		// dependencies are fulfilled.
 		var elementPromises = PageUtil.standardizeElements(page.getElements());
+		var timeoutDfd = [];
+		var elementPromisesOr = elementPromises.map((promise, index) => {
+			var orPromise = Q.defer();
+			timeoutDfd[index] = Q.defer();
+
+			promise.then(orPromise.resolve);
+			promise.catch(orPromise.reject);
+			timeoutDfd[index].promise.catch(orPromise.reject);
+
+			return orPromise.promise;
+		});
 
 		// These resolve with DOM mount points for the elements.
 		//
@@ -672,7 +683,7 @@ class ClientController extends EventEmitter {
 		// Always render in order to proritize content higher in the
 		// page.
 		//
-		elementPromises.reduce((chain, promise, index) => chain
+		elementPromisesOr.reduce((chain, promise, index) => chain
 			.then(() => promise
 				.then(element => rootNodePromises[index]
 					.then(root => renderElement(element, root, index))
@@ -691,7 +702,14 @@ class ClientController extends EventEmitter {
 		// Look out for a failsafe timeout from the server on our
 		// first render.
 		if (!this._previouslyRendered){
-			this._failDfd.promise.then(retval.resolve);
+			this._failDfd.promise.then(() => {
+				elementPromises.forEach((promise, index) => {
+					//Reject any elements that have failed to render
+					if (promise.isPending()) {
+						timeoutDfd[index].reject(`Error with element ${index}, it failed to render within timeout time`);
+					}
+				});
+			});
 		}
 
 		return retval.promise.then(() => {

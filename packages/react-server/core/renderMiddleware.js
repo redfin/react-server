@@ -727,10 +727,11 @@ function writeBody(req, res, context, start, page) {
 	,   timeRemaining = totalWait - (new Date - start)
 
 	var retval = Q.defer();
+	var writeBodyDfd = Q.defer();
 
 	// If we exceed the timeout then we'll just send empty elements for
 	// anything that hadn't rendered yet.
-	retval.promise.catch(() => {
+	writeBodyDfd.promise.catch((err) => {
 
 		// Write out what we've got.
 		writeElements(res, rendered.map(
@@ -742,13 +743,17 @@ function writeBody(req, res, context, start, page) {
 
 		// Let the client know it's not getting any more data.
 		renderScriptsAsync([{ text: `__reactServerClientController.failArrival()` }], res)
+
+		//Log timeout error but still resolve so we continue in the lifecycle process
+		logger.error("Error in writeBody", err);
+		retval.resolve();
 	});
 
-	Q.all(dfds.map(dfd => dfd.promise)).then(retval.resolve);
+	Q.all(dfds.map(dfd => dfd.promise)).then(writeBodyDfd.resolve);
 
 	const timeout = setTimeout(() => {
 		// give some additional information when we time out
-		retval.reject({
+		writeBodyDfd.reject({
 			message: "Timed out rendering.",
 			// `timeRemaining` is how long we waited before timing out
 			timeWaited: timeRemaining,
@@ -765,7 +770,11 @@ function writeBody(req, res, context, start, page) {
 	}, timeRemaining);
 
 	// Don't leave dead timers hanging around.
-	retval.promise.then(() => clearTimeout(timeout));
+	writeBodyDfd.promise.then(() => {
+		clearTimeout(timeout);
+		//writeBody ran successfully, sweet
+		retval.resolve();
+	});
 
 	return retval.promise;
 }
