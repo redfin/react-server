@@ -10,7 +10,7 @@
     "debug": "cat asini-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done"
   },
   "devDependencies": {
-    "asini": "1.1.0",
+    "asini": "1.2.0",
     "asini-changelog": "^1.1.0"
   },
   "engine": {
