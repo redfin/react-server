@@ -83,6 +83,9 @@ class ClientController extends EventEmitter {
 
 		// Log this after loglevel is set.
 		logTimingData('wakeFromStart', window._reactServerTimingStart);
+
+		performanceMark('wake');
+
 		// this is a proxy for when above the fold content gets painted (displayed) on the browser
 		logTimingData('displayAboveTheFold.fromStart', window._reactServerTimingStart, window.__displayAboveTheFold);
 	}
@@ -653,6 +656,8 @@ class ClientController extends EventEmitter {
 					logTimingData(`renderAboveTheFold.fromStart`, tStart);
 					logTimingData(`renderAboveTheFold.individual`, 0, totalRenderTime);
 					logTimingData(`renderAboveTheFold.elementCount`, 0, index + 1);
+
+					performanceMark('renderAboveTheFold');
 				}
 				return; // Again, this isn't a real root element.
 			}
@@ -730,6 +735,8 @@ class ClientController extends EventEmitter {
 			// Don't track this on client transitions.
 			if (!this._previouslyRendered){
 				logTimingData('renderFromStart', tStart);
+
+				performanceMark('renderComplete');
 			}
 
 			// Some things are just different on our first pass.
@@ -928,6 +935,13 @@ function buildContext(routes) {
 	context.setFramebackController(new FramebackController());
 
 	return context;
+}
+
+// Create a "user timing" in WebPageTest.
+function performanceMark(name) {
+	if (window.performance && performance.mark) {
+		performance.mark(`react-server.${name}`);
+	}
 }
 
 function logTimingData(bucket, start, end = new Date) {
