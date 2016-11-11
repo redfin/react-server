@@ -1,6 +1,6 @@
 {
   "name": "react-server-middleware-json-response",
-  "version": "0.4.10",
+  "version": "0.4.13",
   "description": "JSON response middleware for React Server",
   "main": "index.js",
   "scripts": {

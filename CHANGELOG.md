@@ -1,3 +1,23 @@
+## v0.4.13 (2016-11-11)
+
+#### Enhancement
+* `react-server-middleware-json-response`, `react-server-test-pages`
+  * [#745](https://github.com/redfin/react-server/pull/745) Add a package with JSON response middleware. ([@gigabo](https://github.com/gigabo))
+
+#### Performance
+* `react-server`
+  * [#748](https://github.com/redfin/react-server/pull/748) Add user timings for WebPageTest. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-middleware-json-response`
+  * [#747](https://github.com/redfin/react-server/pull/747) Override default Content-Type in JSON response middleware. ([@gigabo](https://github.com/gigabo))
+* `react-server-cli`
+  * [#746](https://github.com/redfin/react-server/pull/746) Possible fix for source-maps issues. ([@erdillon](https://github.com/erdillon))
+
+#### Commiters: 2
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Eric Dillon ([erdillon](https://github.com/erdillon))
+
 ## v0.4.12 (2016-11-10)
 
 #### Bug fix
