@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "lodash": "^4.16.4",
+    "mkdirp": "^0.5.1",
     "q": "1.4.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
