@@ -57,6 +57,34 @@ By default this is created at the site's root directory as `routes.json`.
 }
 ```
 
+You can also provide routes as a `routes.js` file.  The following routes.js
+file loads all middleware and pages from a `pages` and `middleware` folder
+and registers them.
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+
+const routes = fs.readdirSync('./pages').reduce((acc, curr) => {
+	  const baseName = path.basename(curr, 'js');
+	  return {
+		    ...acc,
+		    [`${baseName}Page`]: {
+			      path: [`/{baseName}`],
+						page: `pages/${baseName}`
+		    }
+		};
+}, {})
+module.exports = {
+	middleware: fs.readdirSync('./middleware'),
+	routes
+}
+```
+
+In general, you should prefer a routes.json file over a routes.js file, unless
+you need the full expressiveness of javascript for your routes, for instance, if
+you're dynamically generating routes at runtime.
+
 ## Server config
 
 You can define JSON options either in a `.reactserverrc` or in a
