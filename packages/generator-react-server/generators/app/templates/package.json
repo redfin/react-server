@@ -10,7 +10,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "babel-preset-react-server": "^0.3.3",
+    "babel-preset-react-server": "^0.4.10",
     "babel-runtime": "^6.6.1",
     "react": "~0.14.2",
     "react-dom": "~0.14.2",
@@ -19,10 +19,10 @@
     "superagent": "1.8.4"
   },
   "devDependencies": {
-    "ava": "^0.15.1",
-    "babel-eslint": "^6.1.2",
-    "eslint": "3.2.2",
-    "eslint-plugin-react": "6.0.0",
+    "ava": "^0.16.0",
+    "babel-eslint": "^7.1.0",
+    "eslint": "3.10.1",
+    "eslint-plugin-react": "6.7.1",
     "nsp": "^2.3.3"
   }
 }
