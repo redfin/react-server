@@ -419,6 +419,8 @@ class ClientController extends EventEmitter {
 	}
 
 	_handleDebugParams(page) {
+		if (!page) return;
+
 		const params = page.getRequest().getQuery();
 
 		// Allow adjustment of log levels.
