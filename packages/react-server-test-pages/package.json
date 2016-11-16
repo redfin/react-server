@@ -8,7 +8,6 @@
     "prepublish": "gulp build",
     "start": "react-server start",
     "test": "gulp test",
-    "debug": "node-debug --debug-brk=0 -p 9000 react-server start",
     "clean": "rimraf npm-debug.log* __clientTemp target"
   },
   "author": "Bo Borgerson",
@@ -30,7 +29,6 @@
     "eslint": "^3.8.1",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
-    "node-inspector": "^0.12.8",
     "rimraf": "^2.5.4",
     "gulp-nsp": "^2.4.2"
   }
