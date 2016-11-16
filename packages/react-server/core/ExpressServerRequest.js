@@ -20,6 +20,18 @@ class ExpressServerRequest {
 		return this._wrappedRequest.query;
 	}
 
+	getHostname() {
+		return this._wrappedRequest.hostname;
+	}
+
+	getProtocol() {
+		return this._wrappedRequest.protocol;
+	}
+
+	getSecure() {
+		return this._wrappedRequest.secure;
+	}
+
 	getRouteParams() {
 		return this._route.params;
 	}
