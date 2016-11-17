@@ -1,0 +1,9 @@
+{
+  "routesFile": "routes.json",
+  "port": 3000,
+  "env": {
+    "production": {
+      "port": 80
+    }
+  }
+}

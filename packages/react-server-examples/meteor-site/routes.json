@@ -1,0 +1,11 @@
+{
+  "middleware": [
+    "middleware/Bootstrap.js"
+  ],
+  "routes": {
+    "Homepage": {
+      "path": ["/", "/sort/:sort"],
+      "page": "pages/Homepage.js"
+    }
+  }
+}
