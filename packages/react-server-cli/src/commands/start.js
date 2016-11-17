@@ -1,5 +1,6 @@
 import http from "http"
 import https from "https"
+import path from "path"
 import express from "express"
 import compression from "compression"
 import bodyParser from "body-parser"
@@ -28,6 +29,7 @@ export default function start(options){
 		jsUrl,
 		httpsOptions,
 		longTermCaching,
+		customMiddlewarePath,
 	} = options;
 
 	const {serverRoutes, compiler} = compileClient(options);
@@ -46,7 +48,7 @@ export default function start(options){
 		logger.notice("Starting servers...")
 
 		const jsServer = startJsServer(compiler, jsPort, host, longTermCaching, httpsOptions);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, host, httpsOptions));
+		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, host, httpsOptions, customMiddlewarePath));
 
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
@@ -59,21 +61,43 @@ export default function start(options){
 	return startServers();
 }
 
+
 // given the server routes file and a port, start a react-server HTML server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startHtmlServer = (serverRoutes, port, host, httpsOptions) => {
+const startHtmlServer = (serverRoutes, port, host, httpsOptions, customMiddlewarePath) => {
 	const server = express();
 	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
+	let middlewareSetup = (server, rsMiddleware) => {
+		server.use(compression());
+		server.use(bodyParser.urlencoded({ extended: false }));
+		server.use(bodyParser.json());
+		rsMiddleware();
+	}
+
 	return {
 		stop: serverToStopPromise(httpServer),
 		started: new Promise((resolve, reject) => {
 			logger.info("Starting HTML server...");
 
-			server.use(compression());
-			server.use(bodyParser.urlencoded({ extended: false }))
-			server.use(bodyParser.json())
-			reactServer.middleware(server, require(serverRoutes));
+			let rsMiddlewareCalled = false;
+			const rsMiddleware = () =>  {
+				rsMiddlewareCalled = true;
+				reactServer.middleware(server, require(serverRoutes));
+			}
+
+			if (customMiddlewarePath) {
+				const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
+				middlewareSetup = require(customMiddlewareDirAb).default;
+			}
+
+			middlewareSetup(server, rsMiddleware);
+
+			if (!rsMiddlewareCalled) {
+				console.error("Error react-server middleware was never setup in custom middleware function");
+				reject("Custom middleware did not setup react-server middleware");
+				return;
+			}
 
 			httpServer.on('error', (e) => {
 				console.error("Error starting up HTML server");
