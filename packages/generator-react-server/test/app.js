@@ -4,6 +4,7 @@ import path from 'path';
 import test from 'ava';
 import helpers from 'yeoman-test';
 import { defaultOptions } from 'react-server-cli';
+import shellescape from 'shell-escape';
 
 test('generator-react-server:app creates default files', async t => {
 	let testDir;
@@ -129,7 +130,7 @@ function installDeps() {
 			} else {
 				const localDeps = ['react-server-cli', 'react-server']
 					.map(dep => path.resolve(path.join(__dirname, '../..', dep)));
-				cp.exec('npm install ' + localDeps.join(' '), (error) => {
+				cp.exec(shellescape(['npm', 'install'].concat(localDeps)), (error) => {
 					if (error) {
 						reject(error);
 					} else {
