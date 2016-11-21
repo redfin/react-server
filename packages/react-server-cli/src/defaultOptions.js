@@ -15,6 +15,7 @@ export default {
 	host: "localhost",
 	port:3000,
 	jsPort: 3001,
+	bindIp: "0.0.0.0",
 	hot: true,
 	minify: false,
 	compileOnly: false,

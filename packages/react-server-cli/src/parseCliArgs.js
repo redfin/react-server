@@ -22,6 +22,10 @@ export default (args = process.argv) => {
 			describe: "Port to start listening for react-server's JavaScript. Default is 3001.",
 			type: "number",
 		})
+		.option("bind-ip", {
+			describe: "IP address to bind to. Default: 0.0.0.0 (any)",
+			type: "string",
+		})
 		.option("https", {
 			describe: "If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed. Default is false.",
 			default: undefined,

@@ -23,7 +23,7 @@ export default function start(options){
 
 	const {
 		port,
-		host,
+		bindIp,
 		jsPort,
 		hot,
 		jsUrl,
@@ -47,14 +47,14 @@ export default function start(options){
 
 		logger.notice("Starting servers...")
 
-		const jsServer = startJsServer(compiler, jsPort, host, longTermCaching, httpsOptions);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, host, httpsOptions, customMiddlewarePath));
+		const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
+		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
 
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
 			started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
 				.catch(e => {logger.error(e); throw e})
-				.then(() => logger.notice(`Ready for requests on host ${host}:${port}.`)),
+				.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
 		};
 	}
 
@@ -65,7 +65,7 @@ export default function start(options){
 // given the server routes file and a port, start a react-server HTML server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startHtmlServer = (serverRoutes, port, host, httpsOptions, customMiddlewarePath) => {
+const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath) => {
 	const server = express();
 	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 	let middlewareSetup = (server, rsMiddleware) => {
@@ -104,12 +104,12 @@ const startHtmlServer = (serverRoutes, port, host, httpsOptions, customMiddlewar
 				console.error(e);
 				reject(e);
 			});
-			httpServer.listen(port, host, (e) => {
+			httpServer.listen(port, bindIp, (e) => {
 				if (e) {
 					reject(e);
 					return;
 				}
-				logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on host ${host}:${port}`);
+				logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
 				resolve();
 			});
 		}),
@@ -120,7 +120,7 @@ const startHtmlServer = (serverRoutes, port, host, httpsOptions, customMiddlewar
 // files and start up a web server at http://host:port/ that serves the
 // static compiled JavaScript. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startStaticJsServer = (compiler, port, host, longTermCaching, httpsOptions) => {
+const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptions) => {
 	const server = express();
 	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 	return {
@@ -145,13 +145,13 @@ const startStaticJsServer = (compiler, port, host, longTermCaching, httpsOptions
 					console.error(e);
 					reject(e)
 				});
-				httpServer.listen(port, host, (e) => {
+				httpServer.listen(port, bindIp, (e) => {
 					if (e) {
 						reject(e);
 						return;
 					}
 
-					logger.info(`Started static JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on host ${host}:${port}`);
+					logger.info(`Started static JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
 					resolve();
 				});
 			});
@@ -163,7 +163,7 @@ const startStaticJsServer = (compiler, port, host, longTermCaching, httpsOptions
 // for hot reloading at http://localhost:port/. note that the webpack compiler
 // must have been configured correctly for hot reloading. returns an object with
 // two properties, started and stop; see the default function doc for explanation.
-const startHotLoadJsServer = (compiler, port, host, longTermCaching, httpsOptions) => {
+const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOptions) => {
 	logger.info("Starting hot reload JavaScript server...");
 	const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));
 	const jsServer = new WebpackDevServer(compiler, {
@@ -176,7 +176,7 @@ const startHotLoadJsServer = (compiler, port, host, longTermCaching, httpsOption
 		ca: httpsOptions ? httpsOptions.ca : undefined,
 	});
 	const serverStartedPromise = new Promise((resolve, reject) => {
-		jsServer.listen(port, host, (e) => {
+		jsServer.listen(port, bindIp, (e) => {
 			if (e) {
 				reject(e);
 				return;
@@ -187,7 +187,7 @@ const startHotLoadJsServer = (compiler, port, host, longTermCaching, httpsOption
 	return {
 		stop: serverToStopPromise(jsServer),
 		started: Promise.all([compiledPromise, serverStartedPromise])
-			.then(() => logger.info(`Started hot reload JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on host ${host}:${port}`)),
+			.then(() => logger.info(`Started hot reload JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`)),
 	};
 };
 
