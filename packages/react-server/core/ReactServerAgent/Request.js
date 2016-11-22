@@ -2,7 +2,7 @@ var superagent = require('superagent')
 ,	logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	Plugins = require("./Plugins")
-,	{ mixin } = require("./util")
+,	merge = require("lodash/merge")
 ;
 
 /**
@@ -71,17 +71,17 @@ Request.prototype.query = function (queryParams) {
 
 Request.prototype.send = function (postParams) {
 	if (typeof postParams === 'undefined') {
-		return mixin({}, this._postParams);
+		return merge({}, this._postParams);
 	}
-	mixin(this._postParams, postParams);
+	merge(this._postParams, postParams);
 	return this;
 }
 
 Request.prototype.set = function (headers) {
 	if (typeof headers === 'undefined') {
-		return mixin({}, this._headers);
+		return merge({}, this._headers);
 	}
-	mixin(this._headers, headers);
+	merge(this._headers, headers);
 	return this;
 }
 
