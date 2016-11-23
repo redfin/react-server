@@ -88,6 +88,8 @@ module.exports = function(server, routes) {
 
 		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
 
+		var navigateDfd = Q.defer();
+
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
@@ -136,8 +138,6 @@ module.exports = function(server, routes) {
 
 		});
 
-
-		var navigateDfd = Q.defer();
 
 		const timeout = setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
 

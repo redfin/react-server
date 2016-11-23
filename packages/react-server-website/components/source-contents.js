@@ -10,22 +10,22 @@ import SvgDropdown from './assets/SvgDropdown';
 
 import './doc-contents.less'
 
-const SourceContentsSection = ({name, pages}) => <div className='contentsSection'>
-	<h3>{name}</h3>
-	<ul>{pages.map(ContentsLink)}</ul>
-</div>
-
 const currentPath = () => getCurrentRequestContext().getCurrentPath();
 
 const classIfActive = path => (path === currentPath())?{className:"active"}:{}
+
+const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
+	<Link reuseDom bundleData path={path}>{name}</Link>
+</li>
 
 const ContentsLink = ({name, path}) => ContentsLinkWithMungedPath(
 	name, join("/source", path)
 )
 
-const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
-	<Link reuseDom bundleData path={path}>{name}</Link>
-</li>
+const SourceContentsSection = ({name, pages}) => <div className='contentsSection'>
+	<h3>{name}</h3>
+	<ul>{pages.map(ContentsLink)}</ul>
+</div>
 
 export default class SourceContents extends React.Component {
 	constructor(props) {

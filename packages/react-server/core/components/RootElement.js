@@ -134,6 +134,7 @@ RootElement.ensureRootElement = function(element){
 RootElement.installListener = function(element, listen) {
 	var dfd = Q.defer();
 	var updater;
+	var subscribe = callback => {updater = callback};
 	var unsubscribe = listen(childProps => {
 
 		// Once the component has mounted it will provide an updater.
@@ -153,7 +154,6 @@ RootElement.installListener = function(element, listen) {
 			}));
 		}
 	});
-	var subscribe = callback => {updater = callback};
 	return dfd.promise
 }
 

@@ -5,11 +5,6 @@ var RLS = require('./util/RequestLocalStorage').getNamespace()
 ;
 
 
-// wrapper for superagent
-function makeRequest (method, url) {
-	return new Request(method, url, API.cache());
-}
-
 const DATA_BUNDLE_PARAMETER = '_react_server_data_bundle';
 const DATA_BUNDLE_OPTS      = {[DATA_BUNDLE_PARAMETER]: 1};
 
@@ -18,35 +13,35 @@ var API = {
 	DATA_BUNDLE_PARAMETER,
 
 	get (url, data) {
-		var req = makeRequest('GET', url);
+		var req = new Request('GET', url, API.cache());
 		if (data) req.query(data);
 		return req;
 	},
 
 	head (url, data) {
-		var req = makeRequest('HEAD', url);
+		var req = new Request('HEAD', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},
 
 	del (url) {
-		return makeRequest('DELETE', url);
+		return new Request('DELETE', url, API.cache());
 	},
 
 	patch (url, data) {
-		var req = makeRequest('PATCH', url);
+		var req = new Request('PATCH', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},
 
 	post (url, data) {
-		var req = makeRequest('POST', url);
+		var req = new Request('POST', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},
 
 	put (url, data) {
-		var req = makeRequest('PUT', url);
+		var req = new Request('PUT', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},

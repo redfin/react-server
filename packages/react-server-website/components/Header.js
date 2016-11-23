@@ -30,6 +30,9 @@ const links = [
 	},
 ]
 
+const currentPath = () => getCurrentRequestContext().getCurrentPath();
+const classIfActive = (path, internal) => (path.split("/")[1] === currentPath().split("/")[1]) && internal ? {className:"active"}:{}
+
 const HeaderLink = ({label, path, internal}) => {
 	// Internal links use Client Transitions for faster load times.
 	if (internal) {
@@ -50,9 +53,6 @@ class MenuControl extends React.Component {
 		return controlContent;
 	}
 }
-
-const currentPath = () => getCurrentRequestContext().getCurrentPath();
-const classIfActive = (path, internal) => (path.split("/")[1] === currentPath().split("/")[1]) && internal ? {className:"active"}:{}
 
 
 export default class Header extends React.Component {

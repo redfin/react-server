@@ -10,6 +10,14 @@ var winston = require('winston')
 }
 ,   responseTransport = require('./response');
 
+var colorizeName = function(opts){
+
+	// Only colorize if we're attached to a terminal.
+	if (!global.COLORIZE_REACT_SERVER_LOG_OUTPUT) return opts.name;
+
+	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
+}
+
 var makeLogger = function(group, opts){
 	var config = common.config[group];
 	var fileTransport = new (winston.transports.File)({
@@ -91,14 +99,6 @@ function normalizeError (err) {
 
 
 var getLogger = common.makeGetLogger(makeLogger);
-
-var colorizeName = function(opts){
-
-	// Only colorize if we're attached to a terminal.
-	if (!global.COLORIZE_REACT_SERVER_LOG_OUTPUT) return opts.name;
-
-	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
-}
 
 var setLevel = function(group, level){
 
