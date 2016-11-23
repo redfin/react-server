@@ -7,15 +7,6 @@ var {isRootContainer, flattenForRender} = require('../components/RootContainer')
 var {ensureRootElement, scheduleRender} = require('../components/RootElement');
 var {isTheFold, markTheFold} = require('../components/TheFold');
 
-// There are three data structures defined here that are relevant for page and
-// middleware authors:
-//
-//   - PAGE_MIXIN   : Methods that will be automatically defined on your class.
-//   - PAGE_METHODS : Chained methods that may be overridden in your class.
-//   - PAGE_HOOKS   : Non-chained methods that may be defined in your class.
-//
-// These three data structure define the page interface.
-
 
 var PageConfig = (function(){
 	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
@@ -96,6 +87,15 @@ var PageConfig = (function(){
 	return PageConfig;
 })();
 
+
+// There are three data structures defined here that are relevant for page and
+// middleware authors:
+//
+//   - PAGE_MIXIN   : Methods that will be automatically defined on your class.
+//   - PAGE_METHODS : Chained methods that may be overridden in your class.
+//   - PAGE_HOOKS   : Non-chained methods that may be defined in your class.
+//
+// These three data structure define the page interface.
 
 // These methods will be available on your page/middleware object.
 //
