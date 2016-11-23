@@ -10,14 +10,6 @@ var winston = require('winston')
 }
 ,   responseTransport = require('./response');
 
-var colorizeName = function(opts){
-
-	// Only colorize if we're attached to a terminal.
-	if (!global.COLORIZE_REACT_SERVER_LOG_OUTPUT) return opts.name;
-
-	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
-}
-
 var makeLogger = function(group, opts){
 	var config = common.config[group];
 	var fileTransport = new (winston.transports.File)({
@@ -100,7 +92,15 @@ function normalizeError (err) {
 
 var getLogger = common.makeGetLogger(makeLogger);
 
-var setLevel = function(group, level){
+function colorizeName(opts) {
+
+	// Only colorize if we're attached to a terminal.
+	if (!global.COLORIZE_REACT_SERVER_LOG_OUTPUT) return opts.name;
+
+	return `\x1B[38;5;${opts.color.server}m${opts.name}\x1B[0m`;
+}
+
+function setLevel(group, level) {
 
 	// Update level for any future loggers.
 	common.config[group].baseLevel = level;
@@ -110,7 +110,7 @@ var setLevel = function(group, level){
 	});
 }
 
-var addTransport = function(group, transport){
+function addTransport(group, transport) {
 
 	if (!common.config[group].extraTransports){
 		common.config[group].extraTransports = [];
@@ -123,11 +123,11 @@ var addTransport = function(group, transport){
 	});
 }
 
-var addRewriter = function(rewriter){
+function addRewriter(rewriter) {
 	common.forEachLogger(logger => logger.rewriters.push(rewriter));
 }
 
-var setTimestamp = function(bool){
+function setTimestamp(bool) {
 
 	global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT = bool;
 
@@ -139,7 +139,7 @@ var setTimestamp = function(bool){
 	});
 }
 
-var setColorize = function(bool){
+function setColorize(bool) {
 
 	global.COLORIZE_REACT_SERVER_LOG_OUTPUT = bool;
 

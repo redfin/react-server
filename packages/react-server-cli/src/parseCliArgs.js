@@ -2,59 +2,6 @@ import yargs from "yargs"
 import fs from "fs"
 import pem from "pem"
 
-const sslize = async argv => {
-
-	const {
-		https,
-		httpsKey,
-		httpsCert,
-		httpsCa,
-		httpsPfx,
-		httpsPassphrase,
-	} = argv;
-
-	if (https || (httpsKey && httpsCert) || httpsPfx) {
-		if ((httpsKey && httpsCert) || httpsPfx) {
-			argv.httpsOptions = {
-				key: httpsKey ? fs.readFileSync(httpsKey) : undefined,
-				cert: httpsCert ? fs.readFileSync(httpsCert) : undefined,
-				ca: httpsCa ? fs.readFileSync(httpsCa) : undefined,
-				pfx: httpsPfx ? fs.readFileSync(httpsPfx) : undefined,
-				passphrase: httpsPassphrase,
-			};
-		} else {
-			argv.httpsOptions = await new Promise((resolve, reject) => {
-				pem.createCertificate({ days: 1, selfSigned: true }, (err, keys) => {
-					if (err) {
-						reject(err);
-					}
-					resolve({ key: keys.serviceKey, cert: keys.certificate });
-				});
-			});
-		}
-	} else {
-		argv.httpsOptions = false;
-	}
-
-	if ((httpsKey || httpsCert || httpsCa) && httpsPfx) {
-		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
-	}
-
-	return argv;
-}
-
-const removeUndefinedValues = (input) => {
-	const result = Object.assign({}, input);
-
-	for (let key of Object.keys(input)) {
-		if (result[key] === undefined) {
-			delete result[key];
-		}
-	}
-
-	return result;
-}
-
 export default (args = process.argv) => {
 	var argsDefinition = yargs(args)
 		.usage('Usage: $0 <command> [options]')
@@ -186,4 +133,57 @@ export default (args = process.argv) => {
 	// defaults or config files.
 	return sslize(removeUndefinedValues(parsedArgs));
 
+}
+
+async function sslize(argv) {
+
+	const {
+		https,
+		httpsKey,
+		httpsCert,
+		httpsCa,
+		httpsPfx,
+		httpsPassphrase,
+	} = argv;
+
+	if (https || (httpsKey && httpsCert) || httpsPfx) {
+		if ((httpsKey && httpsCert) || httpsPfx) {
+			argv.httpsOptions = {
+				key: httpsKey ? fs.readFileSync(httpsKey) : undefined,
+				cert: httpsCert ? fs.readFileSync(httpsCert) : undefined,
+				ca: httpsCa ? fs.readFileSync(httpsCa) : undefined,
+				pfx: httpsPfx ? fs.readFileSync(httpsPfx) : undefined,
+				passphrase: httpsPassphrase,
+			};
+		} else {
+			argv.httpsOptions = await new Promise((resolve, reject) => {
+				pem.createCertificate({ days: 1, selfSigned: true }, (err, keys) => {
+					if (err) {
+						reject(err);
+					}
+					resolve({ key: keys.serviceKey, cert: keys.certificate });
+				});
+			});
+		}
+	} else {
+		argv.httpsOptions = false;
+	}
+
+	if ((httpsKey || httpsCert || httpsCa) && httpsPfx) {
+		throw new Error("If you set https.pfx, you can't set https.key, https.cert, or https.ca.");
+	}
+
+	return argv;
+}
+
+function removeUndefinedValues(input) {
+	const result = Object.assign({}, input);
+
+	for (let key of Object.keys(input)) {
+		if (result[key] === undefined) {
+			delete result[key];
+		}
+	}
+
+	return result;
 }

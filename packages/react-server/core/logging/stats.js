@@ -42,38 +42,9 @@ var DEFAULT_GAUGE_THRESHOLDS = {
 
 var loggers = {};
 
-// This is used for classifying `time` and `gauge` values.
-var makeThresholdsSieve = (options, defaults) => {
-	return (key, overrides) => {
-		// Sure would be nice to have Array.prototype.find here.
-		if ((overrides||{})[key] !== void 0) return overrides[key];
-		if ((options  ||{})[key] !== void 0) return options  [key];
-		return defaults[key];
-	}
-}
-
-var makeTimeClassifier = opts => {
-	var thresholds = makeThresholdsSieve(opts.timing, DEFAULT_TIME_THRESHOLDS);
-	return (ms, o) => {
-		if (ms <= thresholds('fast', o)) return 'fast';
-		else if (ms <= thresholds('fine', o)) return 'fine';
-		else                                  return 'slow';
-	}
-}
-
-var makeGaugeClassifier = opts => {
-	var thresholds = makeThresholdsSieve(opts.gauge, DEFAULT_GAUGE_THRESHOLDS);
-	return (val, o) => {
-		if (val <= thresholds('lo', o)) return 'lo';
-		else if (val >= thresholds('hi', o)) return 'hi';
-		else                                 return 'ok';
-	}
-
-}
-
 // Each logger actually has some secondary loggers attached to it for stats.
 // This helper wires them up.
-var wrapLogger = function(getLoggerForConfig, opts){
+function wrapLogger(getLoggerForConfig, opts) {
 
 	var mainLogger    = getLoggerForConfig('main',  opts)
 	,   timeLogger    = getLoggerForConfig('time',  opts)
@@ -127,7 +98,36 @@ var wrapLogger = function(getLoggerForConfig, opts){
 	return mainLogger;
 }
 
-var getCombinedLogger = function(getLoggerForConfig, opts){
+// This is used for classifying `time` and `gauge` values.
+function makeThresholdsSieve(options, defaults) {
+	return (key, overrides) => {
+		// Sure would be nice to have Array.prototype.find here.
+		if ((overrides||{})[key] !== void 0) return overrides[key];
+		if ((options  ||{})[key] !== void 0) return options  [key];
+		return defaults[key];
+	}
+}
+
+function makeTimeClassifier(opts) {
+	var thresholds = makeThresholdsSieve(opts.timing, DEFAULT_TIME_THRESHOLDS);
+	return (ms, o) => {
+		if (ms <= thresholds('fast', o)) return 'fast';
+		else if (ms <= thresholds('fine', o)) return 'fine';
+		else                                  return 'slow';
+	}
+}
+
+function makeGaugeClassifier(opts) {
+	var thresholds = makeThresholdsSieve(opts.gauge, DEFAULT_GAUGE_THRESHOLDS);
+	return (val, o) => {
+		if (val <= thresholds('lo', o)) return 'lo';
+		else if (val >= thresholds('hi', o)) return 'hi';
+		else                                 return 'ok';
+	}
+
+}
+
+function getCombinedLogger(getLoggerForConfig, opts) {
 	return loggers[opts.name] || (loggers[opts.name] = wrapLogger(getLoggerForConfig, opts));
 }
 
