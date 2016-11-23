@@ -15,7 +15,7 @@ export default (args = process.argv) => {
 			type: "number",
 		})
 		.option("host", {
-			describe: "Hostname to start listening for react-server",
+			describe: "The public host name combined with js-port used to construct URLs for static content. Ignored when js-url is set.",
 			type: "string",
 		})
 		.option("js-port", {
