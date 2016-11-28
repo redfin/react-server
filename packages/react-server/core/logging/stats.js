@@ -44,7 +44,7 @@ var loggers = {};
 
 // Each logger actually has some secondary loggers attached to it for stats.
 // This helper wires them up.
-var wrapLogger = function(getLoggerForConfig, opts){
+function wrapLogger(getLoggerForConfig, opts) {
 
 	var mainLogger    = getLoggerForConfig('main',  opts)
 	,   timeLogger    = getLoggerForConfig('time',  opts)
@@ -99,7 +99,7 @@ var wrapLogger = function(getLoggerForConfig, opts){
 }
 
 // This is used for classifying `time` and `gauge` values.
-var makeThresholdsSieve = (options, defaults) => {
+function makeThresholdsSieve(options, defaults) {
 	return (key, overrides) => {
 		// Sure would be nice to have Array.prototype.find here.
 		if ((overrides||{})[key] !== void 0) return overrides[key];
@@ -108,7 +108,7 @@ var makeThresholdsSieve = (options, defaults) => {
 	}
 }
 
-var makeTimeClassifier = opts => {
+function makeTimeClassifier(opts) {
 	var thresholds = makeThresholdsSieve(opts.timing, DEFAULT_TIME_THRESHOLDS);
 	return (ms, o) => {
 		if (ms <= thresholds('fast', o)) return 'fast';
@@ -117,7 +117,7 @@ var makeTimeClassifier = opts => {
 	}
 }
 
-var makeGaugeClassifier = opts => {
+function makeGaugeClassifier(opts) {
 	var thresholds = makeThresholdsSieve(opts.gauge, DEFAULT_GAUGE_THRESHOLDS);
 	return (val, o) => {
 		if (val <= thresholds('lo', o)) return 'lo';
@@ -127,7 +127,7 @@ var makeGaugeClassifier = opts => {
 
 }
 
-var getCombinedLogger = function(getLoggerForConfig, opts){
+function getCombinedLogger(getLoggerForConfig, opts) {
 	return loggers[opts.name] || (loggers[opts.name] = wrapLogger(getLoggerForConfig, opts));
 }
 

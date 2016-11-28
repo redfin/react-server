@@ -7,6 +7,87 @@ var {isRootContainer, flattenForRender} = require('../components/RootContainer')
 var {ensureRootElement, scheduleRender} = require('../components/RootElement');
 var {isTheFold, markTheFold} = require('../components/TheFold');
 
+
+var PageConfig = (function(){
+	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
+
+  // Below here are helpers. They are hidden from outside callers.
+	var _getCurrentConfigObject = function(){
+
+		// Return the current mutable config.
+		return RLS().pageConfig || (RLS().pageConfig = {});
+	}
+
+	var _set = function(isDefault, obj) {
+		var config = _getCurrentConfigObject();
+
+		// Copy input values into it.
+		Object.keys(obj||{}).forEach(key => {
+			var keyExists = config.hasOwnProperty(key);
+			if (isDefault && keyExists){
+				// Can't make this fatal, because request
+				// forwarding uses a dirty RLS() context.
+				logger.warning(`Duplicate PageConfig default: "${key}"`);
+			} else if (!isDefault && !keyExists) {
+				throw new Error(`Missing PageConfig default: "${key}"`);
+			}
+
+			logger.debug(`${isDefault?"Default":"Set"} "${key}" => "${obj[key]}"`);
+
+			config[key] = obj[key];
+		});
+	};
+
+	var _setDefaults = _set.bind({}, true);
+	var _setValues   = _set.bind({}, false);
+
+	// This gets bound to the outer `PageConfig`.
+	//
+	// Only `PageConfig.get(key)` is generally useful.
+	//
+	var PageConfig = {
+
+		get(key) {
+
+			// No access until all `Page.addConfigValues()` and
+			// `Page.setConfigValues()` methods are complete.
+			if (!RLS().pageConfigFinalized){
+				throw new Error(`Premature access: "${key}"`);
+			}
+
+			// The key _must_ exist.
+			if (!_getCurrentConfigObject().hasOwnProperty(key)){
+				throw new Error(`Invalid key: "${key}"`);
+			}
+
+			return _getCurrentConfigObject()[key];
+		},
+
+
+		// Don't call this.  It's called for you.
+		// The `page` here is a page chain.
+		// It's called `page` in `Navigator` and `renderMiddleware`.
+		initFromPageWithDefaults(page, defaults) {
+
+			// First set the framework level defaults.
+			_setDefaults(defaults);
+
+			// Then let page/middleware define new config defaults,
+			// and finally let page/middleware alter existing
+			// config values.
+			page.addConfigValues().forEach(_setDefaults);
+			page.setConfigValues().forEach(_setValues);
+
+			logger.debug('Final', _getCurrentConfigObject());
+
+			RLS().pageConfigFinalized = true;
+		},
+	}
+
+	return PageConfig;
+})();
+
+
 // There are three data structures defined here that are relevant for page and
 // middleware authors:
 //
@@ -15,8 +96,6 @@ var {isTheFold, markTheFold} = require('../components/TheFold');
 //   - PAGE_HOOKS   : Non-chained methods that may be defined in your class.
 //
 // These three data structure define the page interface.
-
-
 
 // These methods will be available on your page/middleware object.
 //
@@ -173,8 +252,7 @@ function standardizeElements(elements) {
 	// The return value could be a single element or an array.
 	// First, let's make sure that it's an array.
 	// Then, ensure that all elements are wrapped in promises.
-	return PageUtil
-		.makeArray(elements)
+	return makeArray(elements)
 		.map(e => isRootContainer(e)?flattenForRender(e):e)
 		.reduce((m, e) => m.concat(Array.isArray(e)?e:[e]), [])
 		.map(e => isTheFold(e)?markTheFold():e)
@@ -183,19 +261,19 @@ function standardizeElements(elements) {
 }
 
 function standardizeDebugComments(debugComments) {
-	return PageUtil.makeArray(debugComments);
+	return makeArray(debugComments);
 }
 
 function standardizeMetaTags(metaTags) {
-	return PageUtil.makeArray(metaTags).map(metaTag => Q(metaTag));
+	return makeArray(metaTags).map(metaTag => Q(metaTag));
 }
 
 function standardizeLinkTags(linkTags) {
-	return PageUtil.makeArray(linkTags).map(linkTag => Q(linkTag));
+	return makeArray(linkTags).map(linkTag => Q(linkTag));
 }
 
 function standardizeScripts(scripts) {
-	return PageUtil.makeArray(scripts).map((script) => {
+	return makeArray(scripts).map((script) => {
 		if (!(script.href || script.text)) {
 			script = { href:script }
 		}
@@ -211,7 +289,7 @@ function standardizeScripts(scripts) {
 }
 
 function standardizeStyles(styles) {
-	return PageUtil.makeArray(styles).map(styleOrP => {
+	return makeArray(styles).map(styleOrP => {
 		return Q(styleOrP).then(style => {
 			if (!style) {
 				return null;
@@ -228,86 +306,6 @@ function standardizeStyles(styles) {
 		});
 	})
 }
-
-var PageConfig = (function(){
-	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
-
-	// This gets bound to the outer `PageConfig`.
-	//
-	// Only `PageConfig.get(key)` is generally useful.
-	//
-	var PageConfig = {
-
-		get(key) {
-
-			// No access until all `Page.addConfigValues()` and
-			// `Page.setConfigValues()` methods are complete.
-			if (!RLS().pageConfigFinalized){
-				throw new Error(`Premature access: "${key}"`);
-			}
-
-			// The key _must_ exist.
-			if (!_getCurrentConfigObject().hasOwnProperty(key)){
-				throw new Error(`Invalid key: "${key}"`);
-			}
-
-			return _getCurrentConfigObject()[key];
-		},
-
-
-		// Don't call this.  It's called for you.
-		// The `page` here is a page chain.
-		// It's called `page` in `Navigator` and `renderMiddleware`.
-		initFromPageWithDefaults(page, defaults) {
-
-			// First set the framework level defaults.
-			_setDefaults(defaults);
-
-			// Then let page/middleware define new config defaults,
-			// and finally let page/middleware alter existing
-			// config values.
-			page.addConfigValues().forEach(_setDefaults);
-			page.setConfigValues().forEach(_setValues);
-
-			logger.debug('Final', _getCurrentConfigObject());
-
-			RLS().pageConfigFinalized = true;
-		},
-	}
-
-	// Below here are helpers. They are hidden from outside callers.
-
-	var _set = function(isDefault, obj) {
-		var config = _getCurrentConfigObject();
-
-		// Copy input values into it.
-		Object.keys(obj||{}).forEach(key => {
-			var keyExists = config.hasOwnProperty(key);
-			if (isDefault && keyExists){
-				// Can't make this fatal, because request
-				// forwarding uses a dirty RLS() context.
-				logger.warning(`Duplicate PageConfig default: "${key}"`);
-			} else if (!isDefault && !keyExists) {
-				throw new Error(`Missing PageConfig default: "${key}"`);
-			}
-
-			logger.debug(`${isDefault?"Default":"Set"} "${key}" => "${obj[key]}"`);
-
-			config[key] = obj[key];
-		});
-	};
-
-	var _setDefaults = _set.bind({}, true);
-	var _setValues   = _set.bind({}, false);
-
-	var _getCurrentConfigObject = function(){
-
-		// Return the current mutable config.
-		return RLS().pageConfig || (RLS().pageConfig = {});
-	}
-
-	return PageConfig;
-})();
 
 // This is used to log method calls on the page _chain_.  Method calls on
 // individual page/middleware objects are not automatically logged.
@@ -326,7 +324,14 @@ function makeStandard(standardize, fn){
 	}
 }
 
-var PageUtil = module.exports = {
+function makeArray(valueOrArray) {
+	if (!Array.isArray(valueOrArray)) {
+		return [valueOrArray];
+	}
+	return valueOrArray;
+}
+
+var PageUtil = {
 	PAGE_METHODS,
 
 	standardizeElements,
@@ -414,12 +419,7 @@ var PageUtil = module.exports = {
 		/* eslint-enable no-loop-func */
 	},
 
-	makeArray(valueOrArray) {
-		if (!Array.isArray(valueOrArray)) {
-			return [valueOrArray];
-		}
-		return valueOrArray;
-	},
+	makeArray,
 
 	getElementDisplayName(element){
 
@@ -459,3 +459,5 @@ var PageUtil = module.exports = {
 	},
 
 }
+
+module.exports = PageUtil

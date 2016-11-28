@@ -139,7 +139,7 @@ export default (args = process.argv) => {
 
 }
 
-const sslize = async argv => {
+async function sslize(argv) {
 
 	const {
 		https,
@@ -180,7 +180,7 @@ const sslize = async argv => {
 	return argv;
 }
 
-const removeUndefinedValues = (input) => {
+function removeUndefinedValues(input) {
 	const result = Object.assign({}, input);
 
 	for (let key of Object.keys(input)) {
