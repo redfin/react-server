@@ -132,28 +132,27 @@ RootElement.ensureRootElement = function(element){
 }
 
 RootElement.installListener = function(element, listen) {
-	var dfd = Q.defer();
-	var updater;
-	var unsubscribe = listen(childProps => {
+	var dfd = Q.defer(),
+		updater,
+		subscribe = callback => {updater = callback},
+		unsubscribe = listen(childProps => {
+			// Once the component has mounted it will provide an updater.
+			// After that we can just short-circuit here and let it handle
+			// updating itself.
+			if (updater) {
+				updater(childProps);
+			}
 
-		// Once the component has mounted it will provide an updater.
-		// After that we can just short-circuit here and let it handle
-		// updating itself.
-		if (updater) {
-			updater(childProps);
-		}
-
-		// The promise itself will only resolve once, but we don't
-		// want to _clone_ multiple times.
-		else if (dfd.promise.isPending()) {
-			dfd.resolve(React.cloneElement(element, {
-				childProps,
-				subscribe,
-				unsubscribe,
-			}));
-		}
-	});
-	var subscribe = callback => {updater = callback};
+			// The promise itself will only resolve once, but we don't
+			// want to _clone_ multiple times.
+			else if (dfd.promise.isPending()) {
+				dfd.resolve(React.cloneElement(element, {
+					childProps,
+					subscribe,
+					unsubscribe,
+				}));
+			}
+		});
 	return dfd.promise
 }
 
