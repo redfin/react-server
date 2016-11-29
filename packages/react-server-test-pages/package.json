@@ -15,8 +15,8 @@
   "dependencies": {
     "lodash": "^4.16.4",
     "q": "1.4.1",
-    "react": "~0.14.2",
-    "react-dom": "~0.14.2",
+    "react": "~0.14.2 || ^15.1.0",
+    "react-dom": "~0.14.2 || ^15.1.0",
     "react-server": "^0.4.13",
     "react-server-cli": "^0.4.13",
     "react-server-data-bundle-cache": "^0.4.13",
