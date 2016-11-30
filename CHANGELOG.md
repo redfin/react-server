@@ -1,3 +1,17 @@
+## v0.5.1 (2016-11-30)
+
+#### Enhancement
+* `react-server-cli`
+  * [#709](https://github.com/redfin/react-server/pull/709) Add cli option  for webpack-config. ([@sresant](https://github.com/sresant))
+
+#### Bug fix
+* `react-server`
+  * [#771](https://github.com/redfin/react-server/pull/771) Fix bug with displayAboveTheFold logging. ([@bharath-rengarajan](https://github.com/bharath-rengarajan))
+
+#### Commiters: 2
+- Bharath Rengarajan ([bharath-rengarajan](https://github.com/bharath-rengarajan))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+
 ## v0.5.0 (2016-11-29)
 
 #### Enhancement
