@@ -248,3 +248,6 @@ file scripts section to look like this:
 }
 ```
 
+After all of that, you can run `npm start`, `npm start-beta`, or `npm start-prod` and npm will run `react-server` inside
+of `recluster`.
+
