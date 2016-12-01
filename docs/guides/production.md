@@ -1,6 +1,6 @@
 *Work In Progress*
 
-There are a million ways to run a node.js service in production.  This document is broken into multiple sections to
+There are a million ways to run the `react-server` service in production.  This document is broken into multiple sections to
 describe the elements that go into running your react-server application in production.
 
 # Per-Environment Settings
@@ -19,7 +19,6 @@ It helps to setup your project with per-environment settings that are appropriat
   "hot": false,
   "minify": false,
   "longTermCaching": true,
-  "https": false,
   "logLevel": "debug",
   "env": {
     "development": {
@@ -101,9 +100,30 @@ const isDevEnvironment = globalConfig.APP_ENV !== "production";
 ```
 
 # HTTP Server
+Once you move past development, running `react-server` becomes more of a question of how to best serve HTTP/HTTPS requests
+[ExpressJS](http://expressjs.com) is the application server of choice in this case.  Based on the `.reactserverrc` settings
+defined previously in this guide, the ExpressJS server is running on the default port 3000.  We likely want to move this
+to either 80 or 443 (HTTP or HTTPS) in production to actually serve clients.  
+
+## ExpressJS
+Read the ExpressJS guides on running production webservers to gain a better understanding of how all of this works.
+Below are some links to get you started:
+
+- [Security Best Practices](http://expressjs.com/en/advanced/best-practice-security.html)
+- [Performance Best Practices](http://expressjs.com/en/advanced/best-practice-performance.html)
+
+All done?  Great.  `react-server` should have many of these concepts already in place for your application so you don't
+have to think about it.  However, since it's your server, you *do* have to think about it!  Check out the below links
+to see how `react-server` uses/integrates with ExpressJS.
+
+- [react-server-cli/src/commands/start.js](https://github.com/redfin/react-server/blob/master/packages/react-server-cli/src/commands/start.js)
+- [react-server/core/renderMiddleware.js](https://github.com/redfin/react-server/blob/master/packages/react-server/core/renderMiddleware.js)
+
+
 ## `nginx` Fronting Server
 
 # Static Assets
 
 # Process Managers/Clustering
 
+[http://expressjs.com/en/advanced/pm.html](http://expressjs.com/en/advanced/pm.html)
