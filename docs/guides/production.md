@@ -93,7 +93,7 @@ To use these config variables inside your application, just use the `config()` f
 you're all set!  This works reliably on both server and client sides of the application--fully isomorphic! 
 Here's an example:
 
-```javascript1.6
+```javascript es6
 import { config } from 'react-server';
 const globalConfig = config();
 const isDevEnvironment = globalConfig.APP_ENV !== "production";
@@ -206,6 +206,45 @@ Similar to a fronting server, the key here is to move all of the generated and r
 is done, you need to modify `.reactserverrc` to set `jsUrl: http://mycdn.com/assets/`.  Note that in this case, the URL
 is absolute instead of relative.
 
-# Process Managers/Clustering
+# Process & Cluster Managers
+Big Flashing Sign: Unhandled Javascript exceptions cause the node.js process to fail!  *Do not run `react-server` in production
+without some sort of process/cluster manager if your application may throw an unhandled exception or the world will end!*
 
-[http://expressjs.com/en/advanced/pm.html](http://expressjs.com/en/advanced/pm.html)
+Read this first: [http://expressjs.com/en/advanced/pm.html](http://expressjs.com/en/advanced/pm.html)
+
+## `recluster`
+If using [recluster](https://github.com/doxout/recluster) to start `react-server`, add a file called `cluster.js` to the
+top level directory of your application and make sure the contents look something like this:
+
+```javascript es6
+/* eslint-disable no-var */
+let recluster = require('recluster');
+let path = require('path');
+let cluster = recluster(path.join(__dirname, 'node_modules', 'react-server-cli', 'target', 'cli.js'),
+    {readyWhen: 'ready', workers: 1, args: ['start']});
+
+/* eslint-enable no-var */
+cluster.run();
+
+process.on('SIGUSR2', function() {
+    console.log('Got SIGUSR2, reloading cluster...');
+    cluster.reload();
+});
+console.log('spawned cluster, kill -s SIGUSR2', process.pid, 'to reload');
+```
+
+Add any additional command-line arguments to go to `react-server-cli` in the array of arguments with `args: ['start']`.
+
+After adding `cluster.js` and ensuring you have `recluster` installed in your `node_modules` directory, edit your `package.json`
+file scripts section to look like this:
+
+```json
+{
+  "scripts": {
+    "start": "NODE_ENV=development REACT_SERVER_CONFIGS=_configs/development/ node cluster.js",
+    "start-beta": "NODE_ENV=beta REACT_SERVER_CONFIGS=_configs/beta/ node cluster.js",
+    "start-prod": "NODE_ENV=production REACT_SERVER_CONFIGS=_configs/production/ node cluster.js"
+  }
+}
+```
+
