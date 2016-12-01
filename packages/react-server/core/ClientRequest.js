@@ -63,6 +63,28 @@ class ClientRequest {
 		return decode(this._url.substring(indexOfQuestion + 1));
 	}
 
+	getHostname() {
+		var hostname = null;
+		if (typeof window.location.hostname === "string") {
+			hostname = window.location.hostname;
+		}
+
+		return hostname;
+	}
+
+	getProtocol() {
+		var proto = null;
+		if (typeof window.location.protocol === "string") {
+			proto = window.location.protocol.replace(/:/g,'');
+		}
+
+		return proto;
+	}
+
+	getSecure() {
+		return ('https' === this.getProtocol());
+	}
+
 	getRouteParams() {
 		return this._route.params;
 	}

@@ -1,7 +1,7 @@
 
 var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
-,	{ mixin } = require("./util")
+,	merge = require("lodash/merge")
 ,	isEqual = require("lodash/isEqual")
 ,	isArray = require("lodash/isArray")
 ;
@@ -54,7 +54,7 @@ class CacheEntry {
 		var err = this.err;
 		if (err) {
 			// create a shallow copy of the error object
-			var errCopy = mixin({}, err);
+			var errCopy = merge({}, err);
 			if (errCopy.response) {
 				errCopy.response = this._copyResponseForDehydrate(errCopy.response, { responseBodyOnly });
 			}

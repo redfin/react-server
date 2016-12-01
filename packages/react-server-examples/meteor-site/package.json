@@ -1,0 +1,30 @@
+{
+  "name": "meteor-site",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Robert Law <rcl@emecell.com>",
+  "description": "An example react-server site using redux, google-map-react, and NASA meteorite data.",
+  "scripts": {
+    "start": "react-server start",
+    "open": "open http://localhost:3000",
+    "clean": "rm -rf __clientTemp"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "google-map-react": "^0.21.0",
+    "lodash": "4.16.6",
+    "q": "1.4.1",
+    "react": "0.14.8",
+    "react-dom": "0.14.8",
+    "react-redux": "4.4.5",
+    "react-server": "^0.4.8",
+    "redux": "3.6.0",
+    "redux-thunk": "2.1.0",
+    "superagent": "1.8.4"
+  },
+  "devDependencies": {
+    "babel-preset-react-server": "0.4.4",
+    "react-server-cli": "^0.4.13"
+  }
+}

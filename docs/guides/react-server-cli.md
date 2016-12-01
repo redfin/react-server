@@ -57,6 +57,34 @@ By default this is created at the site's root directory as `routes.json`.
 }
 ```
 
+You can also provide routes as a `routes.js` file.  The following routes.js
+file loads all middleware and pages from a `pages` and `middleware` folder
+and registers them.
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+
+const routes = fs.readdirSync('./pages').reduce((acc, curr) => {
+	  const baseName = path.basename(curr, 'js');
+	  return {
+		    ...acc,
+		    [`${baseName}Page`]: {
+			      path: [`/{baseName}`],
+						page: `pages/${baseName}`
+		    }
+		};
+}, {})
+module.exports = {
+	middleware: fs.readdirSync('./middleware'),
+	routes
+}
+```
+
+In general, you should prefer a routes.json file over a routes.js file, unless
+you need the full expressiveness of javascript for your routes, for instance, if
+you're dynamically generating routes at runtime.
+
 ## Server config
 
 You can define JSON options either in a `.reactserverrc` or in a
@@ -112,10 +140,23 @@ export default (webpackConfig) => {
 }
 ```
 
-In the `.reactserverrc` file add an option for `webpack-config` that points to that function file and when React Server is setting up Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed.
+In the `.reactserverrc` file add an option for `webpackConfig` that points to that function file and when React Server is setting up Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed. This may also be specified on the command line with the `--webpack-config=<FILE>` option.
+
+### Use Custom Express Middleware
+Currently the default Express Middlewares used are compression, body-parser, cookie-parser. If you need to setup custom express middleware you can do it with a setup function.
+
+```javascript
+export default (server, reactServerMiddleware) => {
+	server.use(compression());
+	server.use(bodyParser.urlencoded({ extended: false }));
+	server.use(bodyParser.json());
+	server.use(session(options));
+	reactServerMiddleware(); // Must be called once or server will not start
+}
+```
 
 
-
+In the `.reactserverrc` file add an option for `customMiddlewarePath` that points to that function file and when React Server is setting up the server it will call your function for setup rather then the default middlewares mentioned above. This may also be specified on the command line with the `--custom-middleware-path=<FILE>` option.
 
 ### Development mode: making a great DX
 
@@ -236,6 +277,16 @@ Defaults to **true** in development mode and **false** in production mode.
 Minify client JavaScript and CSS.
 
 Defaults to **false** in development mode and **true** in production.
+
+#### --custom-middleware-path
+Path to the custom middleware function file. If it is not defined the default setup will be applied which include body-parser, compression and cookie-parser.
+
+Defaults to **undefined**.
+
+#### --webpack-config
+Path to your webpack options callback function file.
+
+Defaults to **undefined**.
 
 #### --long-term-caching
 Adds hashes to all JavaScript and CSS file names output by the build, allowing

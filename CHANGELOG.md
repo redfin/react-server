@@ -1,3 +1,49 @@
+## v0.5.1 (2016-11-30)
+
+#### Enhancement
+* `react-server-cli`
+  * [#709](https://github.com/redfin/react-server/pull/709) Add cli option  for webpack-config. ([@sresant](https://github.com/sresant))
+
+#### Bug fix
+* `react-server`
+  * [#771](https://github.com/redfin/react-server/pull/771) Fix bug with displayAboveTheFold logging. ([@bharath-rengarajan](https://github.com/bharath-rengarajan))
+
+#### Commiters: 2
+- Bharath Rengarajan ([bharath-rengarajan](https://github.com/bharath-rengarajan))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+
+## v0.5.0 (2016-11-29)
+
+#### Enhancement
+* `react-server`
+  * [#279](https://github.com/redfin/react-server/pull/279) Add support for React 15. ([@gigabo](https://github.com/gigabo))
+  * [#764](https://github.com/redfin/react-server/pull/764) Add additional fields to the Request objects. ([@drewpc](https://github.com/drewpc))
+* `react-server-cli`
+  * [#768](https://github.com/redfin/react-server/pull/768) Allows separating public host name from server IP address binding. ([@roblg](https://github.com/roblg))
+  * [#708](https://github.com/redfin/react-server/pull/708) Hook for custom middleware. ([@sresant](https://github.com/sresant))
+* `generator-react-server`
+  * [#762](https://github.com/redfin/react-server/pull/762) Support node 7 and directories with spaces. ([@drewpc](https://github.com/drewpc))
+
+#### Performance
+* `react-server`
+  * [#767](https://github.com/redfin/react-server/pull/767) Removed react server agent util. ([@rodrijuarez](https://github.com/rodrijuarez))
+  * [#753](https://github.com/redfin/react-server/pull/753) Removing unused regular deps: mkdirp, bundle-loader. ([@roblg](https://github.com/roblg))
+
+#### Bug fix
+* `react-server-cli`, `react-server`
+  * [#770](https://github.com/redfin/react-server/pull/770) Implement the no-use-before-define ESLint rule. ([@aickin](https://github.com/aickin))
+
+#### Commiters: 9
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- PC Drew ([drewpc](https://github.com/drewpc))
+- Robert Gay ([roblg](https://github.com/roblg))
+- Robert Law ([emecell](https://github.com/emecell))
+- Rodrigo Juarez ([rodrijuarez](https://github.com/rodrijuarez))
+- Sasha Aickin ([aickin](https://github.com/aickin))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+
 ## v0.4.13 (2016-11-11)
 
 #### Enhancement

@@ -15,12 +15,16 @@ export default (args = process.argv) => {
 			type: "number",
 		})
 		.option("host", {
-			describe: "Hostname to start listening for react-server",
+			describe: "The public host name combined with js-port used to construct URLs for static content. Ignored when js-url is set.",
 			type: "string",
 		})
 		.option("js-port", {
 			describe: "Port to start listening for react-server's JavaScript. Default is 3001.",
 			type: "number",
+		})
+		.option("bind-ip", {
+			describe: "IP address to bind to. Default: 0.0.0.0 (any)",
+			type: "string",
 		})
 		.option("https", {
 			describe: "If true, the server will start up using https with a self-signed certificate. Note that browsers do not trust self-signed certificates by default, so you will have to click through some warning screens. This is a quick and dirty way to test HTTPS, but it has some limitations and should never be used in production. Requires OpenSSL to be installed. Default is false.",
@@ -61,6 +65,16 @@ export default (args = process.argv) => {
 			describe: "Optimize client JS when option is present. Takes a bit longer to compile. Default is true in production mode, false otherwise.",
 			default: undefined,
 			type: "boolean",
+		})
+		.option("custom-middleware-path", {
+			describe: "Path to custom middleware function file. If it is not defined default setup will be applied.",
+			default: undefined,
+			type: "string",
+		})
+		.option("webpack-config", {
+			describe: "Path to Webpack options callback function file.",
+			default: undefined,
+			type: "string",
 		})
 		.option("long-term-caching", {
 			describe: "Use long-term cache headers for the static JS & CSS files. Default is true in production mode, false otherwise.",
@@ -130,7 +144,7 @@ export default (args = process.argv) => {
 
 }
 
-const sslize = async argv => {
+async function sslize(argv) {
 
 	const {
 		https,
@@ -171,7 +185,7 @@ const sslize = async argv => {
 	return argv;
 }
 
-const removeUndefinedValues = (input) => {
+function removeUndefinedValues(input) {
 	const result = Object.assign({}, input);
 
 	for (let key of Object.keys(input)) {

@@ -1,6 +1,6 @@
 {
   "name": "react-server-test-pages",
-  "version": "0.4.13",
+  "version": "0.5.1",
   "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
@@ -8,7 +8,6 @@
     "prepublish": "gulp build",
     "start": "react-server start",
     "test": "gulp test",
-    "debug": "node-debug --debug-brk=0 -p 9000 react-server start",
     "clean": "rimraf npm-debug.log* __clientTemp target"
   },
   "author": "Bo Borgerson",
@@ -16,11 +15,11 @@
   "dependencies": {
     "lodash": "^4.16.4",
     "q": "1.4.1",
-    "react": "~0.14.2",
-    "react-dom": "~0.14.2",
-    "react-server": "^0.4.13",
-    "react-server-cli": "^0.4.13",
-    "react-server-data-bundle-cache": "^0.4.13",
+    "react": "~0.14.2 || ^15.1.0",
+    "react-dom": "~0.14.2 || ^15.1.0",
+    "react-server": "^0.5.1",
+    "react-server-cli": "^0.5.1",
+    "react-server-data-bundle-cache": "^0.5.1",
     "react-server-middleware-json-response": "^0.4.13",
     "eslint-plugin-react": "^6.4.1"
   },
@@ -30,7 +29,6 @@
     "eslint": "^3.8.1",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
-    "node-inspector": "^0.12.8",
     "rimraf": "^2.5.4",
     "gulp-nsp": "^2.4.2"
   }

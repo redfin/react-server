@@ -23,6 +23,7 @@ import callerDependency from "./callerDependency"
 export default (opts = {}) => {
 	const {
 		routes,
+		webpackConfig,
 		workingDir = "./__clientTemp",
 		routesDir = ".",
 		outputDir = workingDir + "/build",
@@ -39,8 +40,8 @@ export default (opts = {}) => {
 	}
 
 	var webpackConfigFunc = (data) => { return data }
-	if (opts['webpack-config']) {
-		const webpackDirAbsolute = path.resolve(process.cwd(), opts['webpack-config']);
+	if (webpackConfig) {
+		const webpackDirAbsolute = path.resolve(process.cwd(), webpackConfig);
 		const userWebpackConfigFunc = require(webpackDirAbsolute)
 		webpackConfigFunc = userWebpackConfigFunc.default
 	}
@@ -110,7 +111,7 @@ export default (opts = {}) => {
 //   jsChunksById: an object that maps chunk ids to their JS entrypoint file.
 //   hash: the overall hash of the build, which can be used to check integrity
 //     with prebuilt sources.
-const statsToManifest = (stats) => {
+function statsToManifest(stats) {
 	const jsChunksByName = {};
 	const cssChunksByName = {};
 	const jsChunksById = {};
@@ -131,7 +132,7 @@ const statsToManifest = (stats) => {
 	};
 }
 
-const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats) => {
+function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats) {
 	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
 	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
 	let webpackConfig = {
@@ -249,10 +250,10 @@ const packageCodeForBrowser = (entrypoints, outputDir, outputUrl, hot, minify, l
 	}
 
 	return webpackConfig;
-};
+}
 
 // writes out a routes file that can be used at runtime.
-const writeWebpackCompatibleRoutesFile = (routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) => {
+function writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) {
 	let routesOutput = [];
 
 	const coreMiddleware = require.resolve("react-server-core-middleware");
@@ -328,13 +329,13 @@ module.exports = {
 	fs.writeFileSync(routesFilePath, routesContent);
 
 	return routesFilePath;
-};
+}
 
 
 // the page value for routes.routes["SomeRoute"] can either be a string for the default
 // module name or an object mapping format names to module names. This method normalizes
 // the value to an object.
-const normalizeRoutesPage = (page) => {
+function normalizeRoutesPage(page) {
 	if (typeof page === "string") {
 		return {default: page};
 	}
@@ -344,7 +345,7 @@ const normalizeRoutesPage = (page) => {
 // writes out a bootstrap file for the client which in turn includes the client
 // routes file. note that outputDir must be the same directory as the client routes
 // file, which must be named "routes_client".
-const writeClientBootstrapFile = (outputDir, opts) => {
+function writeClientBootstrapFile(outputDir, opts) {
 	var outputFile = outputDir + "/entry.js";
 	fs.writeFileSync(outputFile, `
 		if (typeof window !== "undefined") {
@@ -366,4 +367,4 @@ const writeClientBootstrapFile = (outputDir, opts) => {
 		}`
 	);
 	return outputFile;
-};
+}

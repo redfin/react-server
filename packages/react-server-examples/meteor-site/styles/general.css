@@ -1,0 +1,18 @@
+.pointer {
+	cursor: pointer;
+}
+
+.meteor-icon {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: -15px;
+    top: -30px;
+
+    background-image: url("./meteor.svg");
+	transform-origin: 15px 30px;
+	transform: rotate(120deg);
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+}
