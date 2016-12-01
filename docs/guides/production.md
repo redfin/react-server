@@ -223,7 +223,8 @@ apps:
   - script : node_modules/react-server-cli/target/cli.js
     args   : 'start'
     name   : 'react-server'
-    watch  : false
+    watch  : true
+    ignore_watch: '__clientTemp'
     env    :
       NODE_ENV: development
       REACT_SERVER_CONFIGS: _configs/development/
