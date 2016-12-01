@@ -212,6 +212,48 @@ without some sort of process/cluster manager if your application may throw an un
 
 Read this first: [http://expressjs.com/en/advanced/pm.html](http://expressjs.com/en/advanced/pm.html)
 
+## `pm2`
+If using [pm2](http://pm2.keymetrics.io) to start `react-server`, add a file called `pm2.yml` to the top level directory
+of your application.  Also, you might want to have the `pm2` module installed globally by running the command `npm install -g pm2`.
+
+A sample `pm2.yaml` file is included below:
+
+```yaml
+apps:
+  - script : node_modules/react-server-cli/target/cli.js
+    args   : 'start'
+    name   : 'react-server'
+    watch  : false
+    env    :
+      NODE_ENV: development
+      REACT_SERVER_CONFIGS: _configs/development/
+    env_beta:
+      NODE_ENV: beta
+      REACT_SERVER_CONFIGS: _configs/beta/
+    env_production:
+      NODE_ENV: production
+      REACT_SERVER_CONFIGS: _configs/production/
+```
+
+This example follows the same setup as other parts of this guide by setting and passing the appropriate `NODE_ENV` and
+`REACT_SERVER_CONFIGS` variables to `react-server`.  Once the module is installed and the `pm2.yml` is in place, you can
+start the process using pm2 by running `pm2 start pm2.yml`.
+
+If you want, you can update the scripts section of `package.json` to interact with pm2 as well:
+
+```json
+{
+  "scripts": {
+    "start": "pm2 start pm2.yml --env development",
+    "start-beta": "pm2 start pm2.yml --env beta",
+    "start-prod": "pm2 start pm2.yml --env production"
+  }
+}
+```
+
+Now you can interact directly with the process using `pm2` commands or use `npm start`, `npm run start-beta`, or
+`npm run start-prod` to start the processes.
+
 ## `recluster`
 If using [recluster](https://github.com/doxout/recluster) to start `react-server`, add a file called `cluster.js` to the
 top level directory of your application and make sure the contents look something like this:
@@ -248,6 +290,6 @@ file scripts section to look like this:
 }
 ```
 
-After all of that, you can run `npm start`, `npm start-beta`, or `npm start-prod` and npm will run `react-server` inside
+After all of that, you can run `npm start`, `npm run start-beta`, or `npm run start-prod` and npm will run `react-server` inside
 of `recluster`.
 
