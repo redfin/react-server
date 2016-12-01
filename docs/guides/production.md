@@ -119,8 +119,60 @@ to see how `react-server` uses/integrates with ExpressJS.
 - [react-server-cli/src/commands/start.js](https://github.com/redfin/react-server/blob/master/packages/react-server-cli/src/commands/start.js)
 - [react-server/core/renderMiddleware.js](https://github.com/redfin/react-server/blob/master/packages/react-server/core/renderMiddleware.js)
 
+If you have everything you want in ExpressJS and you don't need an HTTP/HTTPS server for other things (like PHP, static assets, etc),
+then you're finished with this section!  If you're wondering how to integrate `react-server` + ExpressJS with an existing
+webserver like `nginx`, read on.
 
-## `nginx` Fronting Server
+## HTTP/HTTPS Fronting Server
+In many cases, you want another web server involved to do other things: serve static assets, render pages in another
+language, handle virtual sites, SSL certificates, etc.  In that case, you can make your existing server play nice with
+`react-server` by using it as a simple [reverse proxy](https://expressjs.com/en/advanced/best-practice-performance.html#proxy).
+
+### `nginx`
+Setting up an `nginx` server from scratch is outside the scope of this document.  Please go [here](http://nginx.org/en/docs/)
+to get up and running with `nginx` in general.  From this point forward, the instructions assume you have `nginx` installed
+and properly serving documents on HTTP and/or HTTPS.
+
+The below example is a complete `server {}` block with everything you need to make a reverse proxy to ExpressJS and serve
+static assets from `nginx` for HTTP only.  Details are provided after the example
+
+```
+server {
+    listen 80;
+    server_name www.myhostname.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+
+        proxy_http_version 1.1;
+        proxy_set_header   X-Forwarded-For $remote_addr;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /assets/ {
+        alias /path/to/application/__clientTemp/build/;
+        gzip on;
+        gzip_types application/javascript text/css;
+
+        expires 30d;
+    }
+}
+```
+
+- `server_name` defines what hostname to respond to.
+- `proxy_pass` tells `nginx` to proxy all HTTP calls to the ExpressJS instance of `react-server`.  This setting assumes
+that `nginx` and `react-server` are running on the same machine.
+- `location /assets/ {}` tells `nginx` to server all assets directly from the `__clientTemp/build` directory that
+`react-server` creates when it compiles the application.  It also does some compression as well.
+
+Further enhancements can/should be made on the `nginx` side to account for other needs, but this is a basic working
+example.  At this point, `nginx` handles all requests on port 80 and proxies it to `react-server` running inside `ExpressJS`
+on port 3000.
+
+### `Apache`
 
 # Static Assets
 
