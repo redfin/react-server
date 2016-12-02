@@ -1,5 +1,6 @@
 import loggerSpec from 'react-server-module-tagger';
 import path from 'path';
+import * as t from "babel-types";
 
 module.exports = function() {
 	return {
@@ -24,12 +25,31 @@ module.exports = function() {
 				}
 
 				if (tokens.has(name)) {
-					// this strikes me as a dirty, nasty hack.  I think it would be better
-					// to parse the object as json and coerce it to an array of
-					// ObjectProperties to construct an ObjectExpression
-					p.node.name = moduleTag;
+					p.replaceWith(convertObjectToObjectExpression(JSON.parse(moduleTag)));
 				}
 			},
 		},
 	};
+}
+
+function convertObjectToObjectExpression(obj) {
+	const properties = [];
+	Object.keys(obj).forEach((key) => {
+		let literal;
+		switch (typeof obj[key]){
+			case 'string':
+				literal = t.stringLiteral(obj[key]);
+				break;
+			case 'number':
+				literal = t.numericLiteral(obj[key]);
+				break;
+			case 'object':
+				literal = convertObjectToObjectExpression(obj[key]);
+				break;
+			default:
+				throw new Error(`got unexpected objecy property type of ${typeof obj[key]}`);
+		}
+		properties.push(t.objectProperty(t.identifier(key), literal));
+	});
+	return t.objectExpression(properties);
 }
