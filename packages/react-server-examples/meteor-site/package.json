@@ -12,19 +12,19 @@
   "license": "Apache-2.0",
   "dependencies": {
     "bootstrap": "3.3.7",
-    "google-map-react": "^0.21.0",
-    "lodash": "4.16.6",
+    "google-map-react": "^0.22.0",
+    "lodash": "^4.17.2",
     "q": "1.4.1",
-    "react": "0.14.8",
-    "react-dom": "0.14.8",
-    "react-redux": "4.4.5",
-    "react-server": "^0.4.8",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-redux": "^4.4.6",
+    "react-server": "^0.5.1",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
     "superagent": "1.8.4"
   },
   "devDependencies": {
-    "babel-preset-react-server": "0.4.4",
-    "react-server-cli": "^0.4.13"
+    "babel-preset-react-server": "^0.4.10",
+    "react-server-cli": "^0.5.1"
   }
 }
