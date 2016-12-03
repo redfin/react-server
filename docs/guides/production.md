@@ -32,7 +32,7 @@ It helps to setup your project with per-environment settings that are appropriat
        "minify": true
     }
   },
-  "webpack-config" : "./webpack.config.js"
+  "webpackConfig" : "./webpack.config.js"
 }
 ```
 
