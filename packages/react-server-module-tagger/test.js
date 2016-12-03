@@ -34,8 +34,8 @@ test('adds labels', t => {
 	const expected = '{\"label\":\"foo\",\"name\":\"has.label.foo\",\"color\":{\"server\":131,\"client\":\"rgb(127,42,42)\"}}';
 
 	const filePath = 'has/label';
-	const optString = '({label: "foo"})';
-	const actual = loggerSpec({filePath, optString});
+	const opts = {label: "foo"};
+	const actual = loggerSpec({filePath, opts});
 
 	t.is(expected, actual);
 });
