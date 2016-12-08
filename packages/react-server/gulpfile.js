@@ -50,7 +50,7 @@ function getSpecGlob (prefix) {
 var src = ["core/**/*.js", "core/**/*.jsx", "core/**/*.json"];
 
 function compile(serverSide) {
-	var codeFilter = filter(["**/*.js", "**/*.jsx"]);
+	var codeFilter = filter(["**/*.js", "**/*.jsx"], {restore: true});
 	var dest = 'target/' + (serverSide ? "server" : "client");
 	return gulp.src(src)
 		.pipe(codeFilter)
@@ -63,7 +63,7 @@ function compile(serverSide) {
 			.pipe(rename(function (path) {
 				path.extname = ".js";
 			}))
-		.pipe(codeFilter.restore())
+		.pipe(codeFilter.restore)
 		.pipe(gulp.dest(dest));
 }
 
