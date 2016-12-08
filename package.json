@@ -9,7 +9,7 @@
     "changelog": "asini-changelog",
     "debug": "cat asini-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done",
     "postinstall": "npm run bootstrap-no-i",
-    "update-dependencies": "asini exec david u"
+    "update-dependencies": "david u && asini exec david u"
   },
   "devDependencies": {
     "asini": "1.3.0",
