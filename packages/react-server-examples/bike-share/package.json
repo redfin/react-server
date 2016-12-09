@@ -11,10 +11,10 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "react": "~0.14.2",
-    "react-dom": "~0.14.2",
-    "react-server": "^0.4.5",
-    "react-server-cli": "^0.4.5",
+    "react": "^15.4.1",
+    "react-dom": "15.4.1",
+    "react-server": "^0.5.1",
+    "react-server-cli": "^0.5.1",
     "superagent": "1.8.4"
   },
   "devDependencies": {

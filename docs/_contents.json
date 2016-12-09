@@ -16,7 +16,8 @@
 				{ "name": "Understanding Rendering",       "path": "guides/understanding-rendering" },
 				{ "name": "Using ReactServerAgent",        "path": "guides/using-react-server-agent"},
 				{ "name": "Using the React Server CLI",    "path": "guides/react-server-cli"},
-				{ "name": "Performing Client Transitions", "path": "guides/client-transitions"}
+				{ "name": "Performing Client Transitions", "path": "guides/client-transitions"},
+				{ "name": "Running a Production Server",   "path": "guides/production"}
 			]
 		}
 	]
