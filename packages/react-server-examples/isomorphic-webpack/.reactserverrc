@@ -1,0 +1,11 @@
+{
+  "routesFile": "./routes.js",
+  "host": "localhost",
+  "port": 4000,
+  "jsPort": 4001,
+  "hot": true,
+  "minify": false,
+  "longTermCaching": false,
+  "https": false,
+  "logLevel": "debug"
+}
