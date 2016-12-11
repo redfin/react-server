@@ -32,7 +32,7 @@ export default function start(options){
 		customMiddlewarePath,
 	} = options;
 
-	const {serverRoutes, compiler} = compileClient(options);
+	const {serverRoutes, compiler, serverCompiler} = compileClient(options);
 
 	const startServers = () => {
 		// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
@@ -45,10 +45,11 @@ export default function start(options){
 			startJsServer = hot ? startHotLoadJsServer : startStaticJsServer;
 		}
 
-		logger.notice("Starting servers...")
+		logger.notice("Starting servers...");
 
 		const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
+		const htmlServerPromise = serverRoutes
+			.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler));
 
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
@@ -65,7 +66,7 @@ export default function start(options){
 // given the server routes file and a port, start a react-server HTML server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath) => {
+const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler) => {
 	const server = express();
 	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 	let middlewareSetup = (server, rsMiddleware) => {
@@ -73,44 +74,56 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 		server.use(bodyParser.urlencoded({ extended: false }));
 		server.use(bodyParser.json());
 		rsMiddleware();
-	}
+	};
 
 	return {
 		stop: serverToStopPromise(httpServer),
 		started: new Promise((resolve, reject) => {
-			logger.info("Starting HTML server...");
-
-			let rsMiddlewareCalled = false;
-			const rsMiddleware = () =>  {
-				rsMiddlewareCalled = true;
-				reactServer.middleware(server, require(serverRoutes));
-			}
-
-			if (customMiddlewarePath) {
-				const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
-				middlewareSetup = require(customMiddlewareDirAb).default;
-			}
-
-			middlewareSetup(server, rsMiddleware);
-
-			if (!rsMiddlewareCalled) {
-				console.error("Error react-server middleware was never setup in custom middleware function");
-				reject("Custom middleware did not setup react-server middleware");
-				return;
-			}
-
-			httpServer.on('error', (e) => {
-				console.error("Error starting up HTML server");
-				console.error(e);
-				reject(e);
-			});
-			httpServer.listen(port, bindIp, (e) => {
-				if (e) {
-					reject(e);
+			serverCompiler.run((err, stats) => {
+				const error = handleCompilationErrors(err, stats);
+				if (error) {
+					reject(error);
 					return;
 				}
-				logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
-				resolve();
+
+				logger.debug("Successfully compiled server side static JavaScript.");
+
+				const serverBuildLocation = path.resolve(process.cwd(), '__serverTemp/build/server.bundle.js');
+
+				logger.info("Starting HTML server...");
+
+				let rsMiddlewareCalled = false;
+				const rsMiddleware = () =>  {
+					rsMiddlewareCalled = true;
+					reactServer.middleware(server, require(serverBuildLocation));
+				};
+
+				if (customMiddlewarePath) {
+					const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
+					middlewareSetup = require(customMiddlewareDirAb).default;
+				}
+
+				middlewareSetup(server, rsMiddleware);
+
+				if (!rsMiddlewareCalled) {
+					console.error("Error react-server middleware was never setup in custom middleware function");
+					reject("Custom middleware did not setup react-server middleware");
+					return;
+				}
+
+				httpServer.on('error', (e) => {
+					console.error("Error starting up HTML server");
+					console.error(e);
+					reject(e);
+				});
+				httpServer.listen(port, bindIp, (e) => {
+					if (e) {
+						reject(e);
+						return;
+					}
+					logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
+					resolve();
+				});
 			});
 		}),
 	};
