@@ -1,6 +1,6 @@
 {
   "routesFile": "./routes.js",
-  "host": "localhost",
+  "host": "0.0.0.0",
   "port": 4000,
   "jsPort": 4001,
   "hot": true,

@@ -433,11 +433,7 @@ function writeClientBootstrapFile(outputDir, opts) {
 	fs.writeFileSync(outputFile, `
 		if (typeof window !== "undefined") {
 			window.__setReactServerBase = function(path) {
-				// according to http://webpack.github.io/docs/configuration.html#output-publicpath
-				// we should never set __webpack_public_path__ when hot module replacement is on.
-				if (!module.hot) {
-					__webpack_public_path__ = path;
-				}
+				__webpack_public_path__ = path;
 				window.__reactServerBase = path;
 			}
 		}
