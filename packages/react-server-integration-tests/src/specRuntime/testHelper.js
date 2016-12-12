@@ -107,7 +107,6 @@ var startServer = function (specFile, routes) {
 		routesFile: routesFile,
 		hot: false,
 		port: PORT,
-		jsPort: +PORT+1,
 		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",

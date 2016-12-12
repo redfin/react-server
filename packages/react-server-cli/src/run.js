@@ -16,7 +16,6 @@ export default function run(options = {}) {
 	const {
 		routesFile,
 		jsUrl,
-		jsPort,
 		host,
 		httpsOptions,
 	} = options;
@@ -30,7 +29,7 @@ export default function run(options = {}) {
 		// Pass. Commands need to check for routes themselves.
 	}
 
-	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
+	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${port}/`;
 
 	try {
 		return require("./" + path.join("commands", options.command))(options);

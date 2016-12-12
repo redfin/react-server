@@ -93,14 +93,16 @@ export default (opts = {}) => {
 	// finally, let's pack this up with webpack.
 	const clientWebpackConfig = webpackConfigFunc(packageCodeForBrowser(clientEntrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats));
 	const serverWebpackConfig = webpackConfigFunc(packageCodeForNode(serverEntrypoints, serverOutputDirAbsolute, outputUrl, false, false, false, false));
+	const serverBuildLocation = serverWebpackConfig.output.path + '/' + serverWebpackConfig.output.filename;
 
-	// TODO: It seems that WebpackDevServer doesn't work properly with multiple compiler configs at this time.
+	// It seems that WebpackDevServer doesn't work properly with multiple compiler configs at this time.  We'll have to
+	// manually trigger the serverCompiler to run after the clientCompiler finishes then.
 	// https://github.com/webpack/webpack/issues/1849
-	const compiler = webpack(clientWebpackConfig);
+	const clientCompiler = webpack(clientWebpackConfig);
 	const serverCompiler = webpack(serverWebpackConfig);
 
 	const serverRoutes = new Promise((resolve, reject) => {
-		compiler.plugin("done", (stats) => {
+		clientCompiler.plugin("done", (stats) => {
 			const manifest = statsToManifest(stats);
 			fs.writeFileSync(path.join(outputDir, "manifest.json"), JSON.stringify(manifest));
 
@@ -115,9 +117,6 @@ export default (opts = {}) => {
 				if (err) {
 					reject(err);
 				}
-				console.log("Successfully compiled server side static JavaScript.");
-				const serverBuildLocation = path.resolve(process.cwd(), '__serverTemp/build/server.bundle.js');
-				//require(serverBuildLocation);
 				if (require.cache[serverBuildLocation]) {
 					console.log('deleting require cache');
 					delete require.cache[serverBuildLocation];
@@ -130,7 +129,7 @@ export default (opts = {}) => {
 
 	return {
 		serverRoutes,
-		compiler,
+		clientCompiler,
 		serverCompiler,
 	};
 }

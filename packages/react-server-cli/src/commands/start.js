@@ -26,7 +26,6 @@ export default function start(options){
 	const {
 		port,
 		bindIp,
-		jsPort,
 		hot,
 		jsUrl,
 		httpsOptions,
@@ -34,15 +33,15 @@ export default function start(options){
 		customMiddlewarePath,
 	} = options;
 
-	const {serverRoutes, compiler, serverCompiler} = compileClient(options);
+	const {serverRoutes, clientCompiler, serverCompiler} = compileClient(options);
 
 	const startServers = () => {
 		logger.notice("Starting servers...");
 
-		const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));
+		const compiledPromise = new Promise((resolve) => clientCompiler.plugin("done", () => resolve()));
 
 		const htmlServerPromise =
-			startHtmlServer(serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, compiler, hot, longTermCaching);
+			startHtmlServer(serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, clientCompiler, hot, longTermCaching);
 
 		return {
 			stop: () => Promise.all([htmlServerPromise.stop]),
@@ -59,15 +58,14 @@ export default function start(options){
 // given the server routes file and a port, start a react-server HTML server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, compiler, hot, longTermCaching) => {
+const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, clientCompiler, hot, longTermCaching) => {
 	const serverBuildLocation = path.resolve(process.cwd(), '__serverTemp/build/server.bundle.js');
 
 	let webServer,
 		server;
 
 	if (hot) {
-		logger.info("using webpack dev server");
-		webServer = new WebpackDevServer(compiler, {
+		webServer = new WebpackDevServer(clientCompiler, {
 			noInfo: true,
 			hot: true,
 			headers: {'Access-Control-Allow-Origin': '*'},
@@ -87,7 +85,6 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 					target: '/index.html',  //default target
 					secure: false,
 					bypass: function (req, res, next) {
-						logger.info("looking for a file: ", req.url);
 			 			reactServer.middleware(req, res, next, require(serverBuildLocation));
 					}
 				}
@@ -104,7 +101,7 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 		server.use((req, res, next) => {
 			reactServer.middleware(req, res, next, require(serverBuildLocation));
 		});
-		compiler.run((err, stats) => {
+		clientCompiler.run((err, stats) => {
 			const error = handleCompilationErrors(err, stats);
 		});
 	}
@@ -130,42 +127,42 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 		stop: serverToStopPromise(webServer),
 		started: new Promise((resolve, reject) => {
 			serverRoutes.then(() => {
-					logger.info("Starting HTML server...");
+				logger.info("Starting react-server...");
 
-					let rsMiddlewareCalled = false;
-					const rsMiddleware = () => {
-						rsMiddlewareCalled = true;
-						//reactServer.middleware(server, require(serverBuildLocation));
-					};
+				let rsMiddlewareCalled = false;
+				const rsMiddleware = () => {
+					rsMiddlewareCalled = true;
+					//reactServer.middleware(server, require(serverBuildLocation));
+				};
 
-					if (customMiddlewarePath) {
-						const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
-						middlewareSetup = require(customMiddlewareDirAb).default;
-					}
+				if (customMiddlewarePath) {
+					const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
+					middlewareSetup = require(customMiddlewareDirAb).default;
+				}
 
-					middlewareSetup(server, rsMiddleware);
+				middlewareSetup(server, rsMiddleware);
 
-					if (!rsMiddlewareCalled) {
-						logger.error("Error react-server middleware was never setup in custom middleware function");
-						reject("Custom middleware did not setup react-server middleware");
+				if (!rsMiddlewareCalled) {
+					logger.error("Error react-server middleware was never setup in custom middleware function");
+					reject("Custom middleware did not setup react-server middleware");
+					return;
+				}
+
+				if (typeof webServer.on === "function") {
+					webServer.on('error', (e) => {
+						logger.error("Error starting up react-server");
+						logger.error(e);
+						reject(e);
+					});
+				}
+				webServer.listen(port, bindIp, (e) => {
+					if (e) {
+						reject(e);
 						return;
 					}
-
-					if (typeof webServer.on === "function") {
-						webServer.on('error', (e) => {
-							logger.error("Error starting up HTML server");
-							logger.error(e);
-							reject(e);
-						});
-					}
-					webServer.listen(port, bindIp, (e) => {
-						if (e) {
-							reject(e);
-							return;
-						}
-						logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
-						resolve();
-					});
+					logger.info(`Started react-server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
+					resolve();
+				});
 			});
 		}),
 	};

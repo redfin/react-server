@@ -1,7 +1,6 @@
 // these are the default options for startServer.
 // host: the hostname for the server.
 // port: the port number for the server.
-// jsPort: the port number for JavaScript and CSS on the server.
 // hot: enable hot reloading. do not use in production.
 // minify: minify the client-side JavaScript.
 // compileOnly: just compile the client-side JavaScript; don't start up a server.
@@ -14,7 +13,6 @@
 export default {
 	host: "localhost",
 	port:3000,
-	jsPort: 3001,
 	bindIp: "0.0.0.0",
 	hot: true,
 	minify: false,
