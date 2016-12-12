@@ -65,8 +65,7 @@ export default (opts = {}) => {
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
 	let serverBootstrapFile = workingDirAbsolute + "/routes_server.js";
 	const entrypointBase = hot ? [
-		require.resolve("webpack-dev-server/client") + "?" + outputUrl,
-		require.resolve("webpack/hot/only-dev-server"),
+		'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
 	] : [];
 	let clientEntrypoints = {};
 	let serverEntrypoints = {};
@@ -131,6 +130,8 @@ export default (opts = {}) => {
 		serverRoutes,
 		clientCompiler,
 		serverCompiler,
+		clientWebpackConfig,
+		serverWebpackConfig,
 	};
 }
 
@@ -221,7 +222,9 @@ function getCommonWebpackConfig(hot, minify, longTermCaching, stats) {
 				path.resolve(path.join(path.dirname(require.resolve("webpack")), "../..")),
 			],
 		},
-		plugins: [],
+		plugins: [
+			new webpack.optimize.OccurenceOrderPlugin(),
+		],
 	};
 
 	if (stats) {
@@ -259,13 +262,6 @@ function getCommonWebpackConfig(hot, minify, longTermCaching, stats) {
 		];
 	}
 
-	if (longTermCaching) {
-		commonWebpackConfig.plugins = [
-			new webpack.optimize.OccurenceOrderPlugin(),
-			...commonWebpackConfig.plugins,
-		];
-	}
-
 	return commonWebpackConfig;
 }
 
@@ -293,12 +289,10 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 				name:"common",
 			}),
 			new webpack.DefinePlugin({
-				WEBPACK_COMPILER: '"client"',
+				REACT_SERVER_CLIENT_SIDE: 'true',
 			}),
 		]
 	});
-
-	console.log("clientConfig: ", clientWebpackConfig);
 
 	return clientWebpackConfig;
 }
@@ -336,13 +330,11 @@ function packageCodeForNode(entrypoints, outputDir, outputUrl, hot, minify, long
 			new webpack.BannerPlugin('require("source-map-support").install();',
 				{ raw: true, entryOnly: false }),
 			new webpack.DefinePlugin({
-				WEBPACK_COMPILER: '"server"',
+				REACT_SERVER_CLIENT_SIDE: 'false',
 			}),
 			new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
 		],
 	});
-
-	console.log("serverConfig: ", serverWebpackConfig);
 
 	return serverWebpackConfig;
 }

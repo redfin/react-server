@@ -4,7 +4,8 @@ import path from "path"
 import express from "express"
 import compression from "compression"
 import bodyParser from "body-parser"
-import WebpackDevServer from "webpack-dev-server"
+import WebpackMiddleware from "webpack-middleware"
+import WebpackHotMiddleware from "webpack-hot-middleware"
 import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
 import reactServer from "../react-server";
@@ -33,7 +34,7 @@ export default function start(options){
 		customMiddlewarePath,
 	} = options;
 
-	const {serverRoutes, clientCompiler, serverCompiler} = compileClient(options);
+	const {serverRoutes, clientCompiler, serverCompiler, clientWebpackConfig} = compileClient(options);
 
 	const startServers = () => {
 		logger.notice("Starting servers...");
@@ -41,7 +42,7 @@ export default function start(options){
 		const compiledPromise = new Promise((resolve) => clientCompiler.plugin("done", () => resolve()));
 
 		const htmlServerPromise =
-			startHtmlServer(serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, clientCompiler, hot, longTermCaching);
+			startHtmlServer(serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, clientCompiler, hot, longTermCaching, clientWebpackConfig);
 
 		return {
 			stop: () => Promise.all([htmlServerPromise.stop]),
@@ -58,49 +59,25 @@ export default function start(options){
 // given the server routes file and a port, start a react-server HTML server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, clientCompiler, hot, longTermCaching) => {
+const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath, serverCompiler, clientCompiler, hot, longTermCaching, clientWebpackConfig) => {
 	const serverBuildLocation = path.resolve(process.cwd(), '__serverTemp/build/server.bundle.js');
 
-	let webServer,
-		server;
+	const server = express();
+	const webServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 
 	if (hot) {
-		webServer = new WebpackDevServer(clientCompiler, {
+		server.use(WebpackMiddleware(clientCompiler, {
 			noInfo: true,
-			hot: true,
-			headers: {'Access-Control-Allow-Origin': '*'},
-			https: !!httpsOptions,
-			key: httpsOptions ? httpsOptions.key : undefined,
-			cert: httpsOptions ? httpsOptions.cert : undefined,
-			ca: httpsOptions ? httpsOptions.ca : undefined,
-			proxy: [
-				{
-					path: [
-						'!/__webpack_dev_server__/**',
-						'!/webpack-dev-server/**',
-						'!/webpack-dev-server.js',
-						'!/webpack-dev-server',
-						'/**',
-					],  //catch all requests except WebpackDevServer
-					target: '/index.html',  //default target
-					secure: false,
-					bypass: function (req, res, next) {
-			 			reactServer.middleware(req, res, next, require(serverBuildLocation));
-					}
-				}
-			]
-		});
-		server = webServer.app;
+			lazy: false,
+		}));
+		server.use(WebpackHotMiddleware(clientCompiler, {
+			log: logger.info,
+			path: '/__webpack_hmr',
+		}));
 	} else {
-		logger.info("using plain express server");
-		server = express();
-		webServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 		server.use('/', compression(), express.static(`__clientTemp/build`, {
 			maxage: longTermCaching ? '365d' : '0s',
 		}));
-		server.use((req, res, next) => {
-			reactServer.middleware(req, res, next, require(serverBuildLocation));
-		});
 		clientCompiler.run((err, stats) => {
 			const error = handleCompilationErrors(err, stats);
 		});
@@ -132,7 +109,9 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 				let rsMiddlewareCalled = false;
 				const rsMiddleware = () => {
 					rsMiddlewareCalled = true;
-					//reactServer.middleware(server, require(serverBuildLocation));
+					server.use((req, res, next) => {
+						reactServer.middleware(req, res, next, require(serverBuildLocation));
+					});
 				};
 
 				if (customMiddlewarePath) {
