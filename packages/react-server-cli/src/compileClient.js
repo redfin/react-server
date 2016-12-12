@@ -99,7 +99,7 @@ export default (opts = {}) => {
 	const compiler = webpack(clientWebpackConfig);
 	const serverCompiler = webpack(serverWebpackConfig);
 
-	const serverRoutes = new Promise((resolve) => {
+	const serverRoutes = new Promise((resolve, reject) => {
 		compiler.plugin("done", (stats) => {
 			const manifest = statsToManifest(stats);
 			fs.writeFileSync(path.join(outputDir, "manifest.json"), JSON.stringify(manifest));
@@ -110,7 +110,20 @@ export default (opts = {}) => {
 				fs.unlinkSync(path.join(outputDir, "chunk-manifest.json"));
 			}
 
-			resolve(writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, manifest));
+			const routesFile = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, manifest);
+			serverCompiler.run((err) => {
+				if (err) {
+					reject(err);
+				}
+				console.log("Successfully compiled server side static JavaScript.");
+				const serverBuildLocation = path.resolve(process.cwd(), '__serverTemp/build/server.bundle.js');
+				//require(serverBuildLocation);
+				if (require.cache[serverBuildLocation]) {
+					console.log('deleting require cache');
+					delete require.cache[serverBuildLocation];
+				}
+				resolve(routesFile);
+			});
 		});
 	});
 

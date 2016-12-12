@@ -130,16 +130,6 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 		stop: serverToStopPromise(webServer),
 		started: new Promise((resolve, reject) => {
 			serverRoutes.then(() => {
-				serverCompiler.run((err, stats) => {
-					const error = handleCompilationErrors(err, stats);
-					if (error) {
-						reject(error);
-						return;
-					}
-
-					logger.debug("Successfully compiled server side static JavaScript.");
-
-
 					logger.info("Starting HTML server...");
 
 					let rsMiddlewareCalled = false;
@@ -176,7 +166,6 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 						logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
 						resolve();
 					});
-				});
 			});
 		}),
 	};
