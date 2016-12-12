@@ -17,6 +17,7 @@ export default function run(options = {}) {
 		routesFile,
 		jsUrl,
 		host,
+		port,
 		httpsOptions,
 	} = options;
 
