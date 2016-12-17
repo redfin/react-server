@@ -24,6 +24,7 @@ export default (opts = {}) => {
 	const {
 		routes,
 		webpackConfig,
+		configPath,
 		workingDir = "./__clientTemp",
 		routesDir = ".",
 		outputDir = workingDir + "/build",
@@ -93,7 +94,7 @@ export default (opts = {}) => {
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
 	// finally, let's pack this up with webpack.
-	const compiler = webpack(webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats)));
+	const compiler = webpack(webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats, configPath)));
 
 	const serverRoutes = new Promise((resolve) => {
 		compiler.plugin("done", (stats) => {
@@ -159,9 +160,10 @@ function statsToManifest(stats) {
 	};
 }
 
-function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats) {
+function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats, configPath) {
 	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
 	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
+	const babelConfig = configPath ? JSON.parse(fs.readFileSync(path.join(configPath, ".babelrc"))) : {};
 	let webpackConfig = {
 		entry: entrypoints,
 		output: {
@@ -177,6 +179,7 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 					test: /\.jsx?$/,
 					loader: "babel",
 					exclude: /node_modules/,
+					query: babelConfig,
 				},
 				{
 					test: /\.css$/,

@@ -11,7 +11,7 @@ export default function run(options = {}) {
 	// for the option properties that weren't sent in, look for a config file
 	// (either .reactserverrc or a reactServer section in a package.json). for
 	// options neither passed in nor in a config file, use the defaults.
-	options = mergeOptions(defaultOptions, findOptionsInFiles() || {}, options);
+	options = mergeOptions(defaultOptions, findOptionsInFiles(options) || {}, options);
 
 	const {
 		routesFile,
