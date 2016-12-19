@@ -51,7 +51,7 @@ export default (dir = process.cwd()) => {
 			// Pass. Commands need to check for routes themselves.
 		}
 
-		options.outputUrl = options.jsUrl || `${options.httpsOptions ? "https" : "http"}://${options.host}:${options.port}/`;
+		options.outputUrl = options.jsUrl || '/';
 	}
 
 	return options;
