@@ -11,21 +11,19 @@ export default function compile(options){
 	setupLogging(options);
 	logProductionWarnings(options);
 
+	let webpackInfo = buildWebpackConfigs(options);
+	webpackInfo = buildWebpackCompilers(options, webpackInfo);
+	webpackInfo.client.compiledPromise = new Promise((resolve) => webpackInfo.client.compiler.plugin("done", () => resolve()));
+	webpackInfo.server.compiledPromise = new Promise((resolve) => webpackInfo.server.compiler.plugin("done", () => resolve()));
 
-	const {finalClientWebpackConfig, finalServerWebpackConfig, pathInfo} = buildWebpackConfigs(options);
-	const {serverRoutes, clientCompiler, serverCompiler} = buildWebpackCompilers(options, finalClientWebpackConfig, finalServerWebpackConfig, pathInfo);
-
-	const compiledClientPromise = new Promise((resolve) => clientCompiler.plugin("done", () => resolve()));
-	const compiledServerPromise = new Promise((resolve) => serverCompiler.plugin("done", () => resolve()));
-
-	logger.notice("Starting compilation of client JavaScript...");
-	clientCompiler.run((err, stats) => {
+	logger.notice("Starting compilation of client and server JavaScript...");
+	webpackInfo.client.compiler.run((err, stats) => {
 		const error = handleCompilationErrors(err, stats);
 		if (!error) {
-			logger.notice("Successfully compiled client JavaScript.");
+			logger.notice("Successfully compiled client and server JavaScript.");
 		} else {
 			logger.error(error);
 		}
 	});
-	Promise.all([compiledClientPromise, compiledServerPromise]);
+	Promise.all([webpackInfo.client.compiledPromise, webpackInfo.server.compiledPromise]);
 }

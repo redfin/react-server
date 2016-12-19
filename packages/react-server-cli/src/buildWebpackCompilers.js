@@ -73,7 +73,6 @@ export default (opts = {}, webpackInfo) => {
 	// https://github.com/webpack/webpack/issues/1849
 	webpackInfo.client.compiler = webpack(webpackInfo.client.config);
 	webpackInfo.server.compiler = webpack(webpackInfo.server.config);
-	console.log(webpackInfo.server.config);
 
 	webpackInfo.server.routesFile = new Promise((resolve, reject) => {
 		webpackInfo.client.compiler.plugin("done", (stats) => {
