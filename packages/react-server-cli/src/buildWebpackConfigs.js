@@ -23,13 +23,12 @@ export default (opts = {}) => {
 	const {
 		routes,
 		webpackConfig,
-		clientWebpackConfig,
-		serverWebpackConfig,
+		webpackClientConfig,
+		webpackServerConfig,
 		workingDir = "./__clientTemp",
 		outputDir = workingDir + "/build",
 		serverOutputDir = workingDir + "/serverBuild",
 		routesDir = ".",
-		outputUrl = "/static/",
 		hot,
 		stats,
 		longTermCaching,
@@ -76,24 +75,33 @@ export default (opts = {}) => {
 	const webpackConfigFunc = makeCustomWebpackConfigFunc(webpackConfig);
 	const commonWebpackConfig = webpackConfigFunc(getCommonWebpackConfig(opts, stats));
 
-	const clientWebpackConfigFunc = makeCustomWebpackConfigFunc(clientWebpackConfig);
-	const finalClientWebpackConfig = clientWebpackConfigFunc(packageCodeForBrowser(commonWebpackConfig, clientEntryPoints, outputDirAbsolute, outputUrl, opts));
+	const webpackClientConfigFunc = makeCustomWebpackConfigFunc(webpackClientConfig);
+	const finalWebpackClientConfig = webpackClientConfigFunc(packageCodeForBrowser(commonWebpackConfig, clientEntryPoints, outputDirAbsolute, opts));
 
-	const serverWebpackConfigFunc = makeCustomWebpackConfigFunc(serverWebpackConfig);
-	const finalServerWebpackConfig = serverWebpackConfigFunc(packageCodeForNode(commonWebpackConfig, serverEntryPoints, serverOutputDirAbsolute));
-	const serverEntryPoint = path.resolve(finalServerWebpackConfig.output.path, finalServerWebpackConfig.output.filename);
+	const webpackServerConfigFunc = makeCustomWebpackConfigFunc(webpackServerConfig);
+	const finalWebpackServerConfig = webpackServerConfigFunc(packageCodeForNode(commonWebpackConfig, serverEntryPoints, serverOutputDirAbsolute));
+	const serverEntryPoint = path.resolve(finalWebpackServerConfig.output.path, finalWebpackServerConfig.output.filename);
 
 	return {
-		finalClientWebpackConfig,
-		finalServerWebpackConfig,
-		pathInfo: {
+		paths: {
 			workingDirAbsolute,
 			outputDirAbsolute,
 			serverOutputDirAbsolute,
 			clientBootstrapFile,
 			serverBootstrapFile,
 			serverEntryPoint,
-		}
+		},
+		client: {
+			config: finalWebpackClientConfig,
+			compiler: null,
+			compiledPromise: null,
+		},
+		server: {
+			config: finalWebpackServerConfig,
+			compiler: null,
+			compiledPromise: null,
+			routesFile: null,
+		},
 	};
 }
 
@@ -190,10 +198,11 @@ function getCommonWebpackConfig(options, stats) {
 	return commonWebpackConfig;
 }
 
-function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, outputUrl, options) {
+function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, options) {
 	const {
 		hot,
 		longTermCaching,
+		outputUrl,
 		minify,
 	} = options;
 
@@ -267,8 +276,10 @@ function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
 			...commonWebpackConfig.plugins,
 			new webpack.SourceMapDevToolPlugin(),
 			new webpack.IgnorePlugin(/\.(css|less|sass|scss)$/),
-			new webpack.BannerPlugin('require("source-map-support").install();',
-				{ raw: true, entryOnly: false }),
+			new webpack.BannerPlugin('require("source-map-support").install();', {
+				raw: true,
+				entryOnly: false,
+			}),
 			new webpack.DefinePlugin({
 				REACT_SERVER_CLIENT_SIDE: 'false',
 			}),

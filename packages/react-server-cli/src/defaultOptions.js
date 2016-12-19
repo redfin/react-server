@@ -24,6 +24,9 @@ export default {
 	https: false,
 	longTermCaching: false,
 	routesFile: "./routes.json",
+	webpackConfig: null,
+	webpackClientConfig: null,
+	webpackServerConfig: null,
 	env: {
 		production: {
 			hot: false,

@@ -219,33 +219,15 @@ const serverToStopPromise = (server, webpackDevMiddlewareInstance) => {
 };
 
 function buildWebpack(options) {
-	const {finalClientWebpackConfig, finalServerWebpackConfig, pathInfo} = buildWebpackConfigs(options);
-	const webpackInfo = {
-		paths: pathInfo,
-		client: {
-			config: finalClientWebpackConfig,
-			compiler: null,
-			compiledPromise: null,
-		},
-		server: {
-			config: finalServerWebpackConfig,
-			compiler: null,
-			compiledPromise: null,
-			routesFile: null,
-		},
-	};
+	let webpackInfo = buildWebpackConfigs(options);
 
 	if (options.hot || options.compileOnStartup) {
-		const obj = buildWebpackCompilers(options, webpackInfo.client.config, webpackInfo.server.config, pathInfo);
-		webpackInfo.server.routesFile = obj.serverRoutes;
-		webpackInfo.client.compiler = obj.clientCompiler;
-		webpackInfo.server.compiler = obj.serverCompiler;
-
+		webpackInfo = buildWebpackCompilers(options, webpackInfo);
 		webpackInfo.client.compiledPromise = new Promise((resolve) => webpackInfo.client.compiler.plugin("done", () => resolve()));
 		webpackInfo.server.compiledPromise = new Promise((resolve) => webpackInfo.server.compiler.plugin("done", () => {
-			if (options.hot && require.cache[pathInfo.serverEntryPoint]) {
-				logger.notice('Hot reloading the webpack-compiled server code found at ', pathInfo.serverEntryPoint);
-				delete require.cache[pathInfo.serverEntryPoint];
+			if (options.hot && require.cache[webpackInfo.paths.serverEntryPoint]) {
+				logger.notice('Hot reloading the webpack-compiled server code found at ', webpackInfo.paths.serverEntryPoint);
+				delete require.cache[webpackInfo.paths.serverEntryPoint];
 			}
 			resolve();
 		}));
@@ -264,11 +246,11 @@ function watchConfigurationFiles(serverObj, options) {
 	if (options.webpackConfig) {
 		staticConfigFiles.push(path.resolve(cwd, options.webpackConfig));
 	}
-	if (options.clientWebpackConfig) {
-		staticConfigFiles.push(path.resolve(cwd, options.clientWebpackConfig));
+	if (options.webpackClientConfig) {
+		staticConfigFiles.push(path.resolve(cwd, options.webpackClientConfig));
 	}
-	if (options.serverWebpackConfig) {
-		staticConfigFiles.push(path.resolve(cwd, options.serverWebpackConfig));
+	if (options.webpackServerConfig) {
+		staticConfigFiles.push(path.resolve(cwd, options.webpackServerConfig));
 	}
 
 	staticConfigFiles.forEach((path) => delete require.cache[path]);

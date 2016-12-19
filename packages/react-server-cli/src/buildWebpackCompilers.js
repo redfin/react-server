@@ -18,7 +18,7 @@ import normalizeRoutesPage from "./normalizeRoutesPage";
 // once the compiler has been run. The file path returned from the promise
 // can be required and passed in to reactServer.middleware().
 // TODO: add options for sourcemaps.
-export default (opts = {}, clientWebpackConfig, serverWebpackConfig, pathInfo) => {
+export default (opts = {}, webpackInfo) => {
 	const {
 		routes,
 		routesDir = ".",
@@ -31,7 +31,7 @@ export default (opts = {}, clientWebpackConfig, serverWebpackConfig, pathInfo) =
 		serverOutputDirAbsolute,
 		clientBootstrapFile,
 		serverBootstrapFile,
-	} = pathInfo;
+	} = webpackInfo.paths;
 
 	mkdirp.sync(workingDirAbsolute);
 	mkdirp.sync(outputDirAbsolute);
@@ -71,11 +71,12 @@ export default (opts = {}, clientWebpackConfig, serverWebpackConfig, pathInfo) =
 	// It seems that WebpackDevServer doesn't work properly with multiple compiler configs at this time.  We'll have to
 	// manually trigger the serverCompiler to run after the clientCompiler finishes then.
 	// https://github.com/webpack/webpack/issues/1849
-	const clientCompiler = webpack(clientWebpackConfig);
-	const serverCompiler = webpack(serverWebpackConfig);
+	webpackInfo.client.compiler = webpack(webpackInfo.client.config);
+	webpackInfo.server.compiler = webpack(webpackInfo.server.config);
+	console.log(webpackInfo.server.config);
 
-	const serverRoutes = new Promise((resolve, reject) => {
-		clientCompiler.plugin("done", (stats) => {
+	webpackInfo.server.routesFile = new Promise((resolve, reject) => {
+		webpackInfo.client.compiler.plugin("done", (stats) => {
 			const manifest = statsToManifest(stats);
 			fs.writeFileSync(path.join(outputDirAbsolute, "manifest.json"), JSON.stringify(manifest));
 
@@ -85,21 +86,17 @@ export default (opts = {}, clientWebpackConfig, serverWebpackConfig, pathInfo) =
 				fs.unlinkSync(path.join(outputDirAbsolute, "chunk-manifest.json"));
 			}
 
-			const routesFile = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, clientWebpackConfig.output.publicPath, false, manifest);
-			serverCompiler.run((err) => {
+			const routesFilePath = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, webpackInfo.client.config.output.publicPath, false, manifest);
+			webpackInfo.server.compiler.run((err) => {
 				if (err) {
 					reject(err);
 				}
-				resolve(routesFile);
+				resolve(routesFilePath);
 			});
 		});
 	});
 
-	return {
-		serverRoutes,
-		clientCompiler,
-		serverCompiler,
-	};
+	return webpackInfo;
 }
 
 // takes in the stats object from a successful compilation and returns a manifest
