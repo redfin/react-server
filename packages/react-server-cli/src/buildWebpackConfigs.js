@@ -2,7 +2,7 @@ import webpack from "webpack";
 import path from "path";
 import fs from "fs";
 import ExtractTextPlugin from "extract-text-webpack-plugin";
-import ChunkManifestPlugin from "chunk-manifest-webpack-plugin";
+//import ChunkManifestPlugin from "chunk-manifest-webpack-plugin";
 import callerDependency from "./callerDependency";
 import normalizeRoutesPage from "./normalizeRoutesPage";
 
@@ -106,7 +106,6 @@ export default (opts = {}) => {
 function getCommonWebpackConfig(options) {
 	const {
 		hot,
-		minify,
 	} = options;
 	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
 	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
@@ -166,7 +165,7 @@ function getCommonWebpackConfig(options) {
 		plugins: [
 			new webpack.optimize.OccurenceOrderPlugin(),
 			new webpack.DefinePlugin({
-				'process.env': {NODE_ENV: `${JSON.stringify(process.env)}`},
+				'process.env': {NODE_ENV: `${JSON.stringify(process.env)}`}, // eslint-disable-line no-process-env
 			}),
 		],
 	};
@@ -222,7 +221,7 @@ function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, opti
 			new webpack.DefinePlugin({
 				REACT_SERVER_CLIENT_SIDE: 'true',
 			}),
-		]
+		],
 	});
 
 	if (minify) {
@@ -252,7 +251,7 @@ function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
 		target: "node",
 		node: {
 			__dirname  : false,
-			__filename : false
+			__filename : false,
 		},
 		entry: entryPoints,
 		externals: nodeModules,

@@ -2,7 +2,7 @@ import webpack from "webpack"
 import path from "path"
 import mkdirp from "mkdirp"
 import fs from "fs"
-import crypto from "crypto"
+//import crypto from "crypto"
 
 import normalizeRoutesPage from "./normalizeRoutesPage";
 
@@ -203,7 +203,7 @@ module.exports = {
 	const routesContent = routesOutput.join("");
 	// make a unique file name so that when it is required, there are no collisions
 	// in the module loader between different invocations.
-	const routesMD5 = crypto.createHash('md5').update(routesContent).digest("hex");
+	//const routesMD5 = crypto.createHash('md5').update(routesContent).digest("hex");
 	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server"}.js`;
 	fs.writeFileSync(routesFilePath, routesContent);
 

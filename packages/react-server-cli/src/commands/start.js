@@ -15,8 +15,7 @@ import cookieParser from 'cookie-parser';
 import chokidar from 'chokidar';
 import buildWebpackConfigs from "../buildWebpackConfigs";
 import buildWebpackCompilers from "../buildWebpackCompilers";
-import mergeOptions from "../mergeOptions";
-import findOptionsInFiles from "../findOptionsInFiles";
+import reactServerCliRun from "../run";
 
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
@@ -261,8 +260,10 @@ function watchConfigurationFiles(serverObj, options) {
 	watcher.on('change', (path) => {
 		logger.info(`File ${path} has been changed, restarting server`);
 		watcher.close();
-		const newOptions = mergeOptions(options, findOptionsInFiles() || {});
-		serverObj.stop().then(start(newOptions));
+		//const newOptions = mergeOptions(options, findOptionsInFiles() || {});
+		serverObj.stop().then(() => {
+			reactServerCliRun({ command: "start" });
+		});
 	});
 
 	return watcher;

@@ -41,18 +41,7 @@ export default (dir = process.cwd()) => {
 		}
 	} while (dir !== (dir = path.dirname(dir)));
 
-	if (options) {
-		options.routesPath = path.resolve(process.cwd(), options.routesFile);
-		options.routesDir = path.dirname(options.routesPath);
 
-		try {
-			options.routes = require(options.routesPath);
-		} catch (e) {
-			// Pass. Commands need to check for routes themselves.
-		}
-
-		options.outputUrl = options.jsUrl || '/';
-	}
 
 	return options;
 }
