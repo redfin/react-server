@@ -91,6 +91,7 @@ export default (opts = {}, webpackInfo) => {
 			webpackInfo.server.compiler.run((err) => {
 				if (err) {
 					reject(err);
+					return;
 				}
 				resolve(routesFilePath);
 			});
