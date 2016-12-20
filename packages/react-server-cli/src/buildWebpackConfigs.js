@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs";
 import ExtractTextPlugin from "extract-text-webpack-plugin";
 import ChunkManifestPlugin from "chunk-manifest-webpack-plugin";
-import StatsPlugin from "webpack-stats-plugin";
 import callerDependency from "./callerDependency";
 import normalizeRoutesPage from "./normalizeRoutesPage";
 
@@ -30,7 +29,6 @@ export default (opts = {}) => {
 		serverOutputDir = workingDir + "/serverBuild",
 		routesDir = ".",
 		hot,
-		stats,
 		longTermCaching,
 	} = opts;
 
@@ -73,7 +71,7 @@ export default (opts = {}) => {
 
 	// finally, let's pack this up with webpack.
 	const webpackConfigFunc = makeCustomWebpackConfigFunc(webpackConfig);
-	const commonWebpackConfig = webpackConfigFunc(getCommonWebpackConfig(opts, stats));
+	const commonWebpackConfig = webpackConfigFunc(getCommonWebpackConfig(opts));
 
 	const webpackClientConfigFunc = makeCustomWebpackConfigFunc(webpackClientConfig);
 	const finalWebpackClientConfig = webpackClientConfigFunc(packageCodeForBrowser(commonWebpackConfig, clientEntryPoints, outputDirAbsolute, opts));
@@ -105,7 +103,7 @@ export default (opts = {}) => {
 	};
 }
 
-function getCommonWebpackConfig(options, stats) {
+function getCommonWebpackConfig(options) {
 	const {
 		hot,
 		minify,
@@ -173,12 +171,6 @@ function getCommonWebpackConfig(options, stats) {
 		],
 	};
 
-	if (stats) {
-		commonWebpackConfig.plugins.push(new StatsPlugin.StatsWriterPlugin({
-			fields: ["assets", "assetsByChunkName", "chunks", "errors", "warnings", "version", "hash", "time", "filteredModules", "children", "modules"],
-		}));
-	}
-
 	if (hot) {
 		commonWebpackConfig.module.loaders = [
 			{
@@ -188,11 +180,8 @@ function getCommonWebpackConfig(options, stats) {
 			},
 			...commonWebpackConfig.module.loaders,
 		];
-		commonWebpackConfig.plugins = [
-			...commonWebpackConfig.plugins,
-			new webpack.HotModuleReplacementPlugin(),
-			new webpack.NoErrorsPlugin(),
-		];
+		commonWebpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+		commonWebpackConfig.plugins.push(new webpack.NoErrorsPlugin());
 	}
 
 	return commonWebpackConfig;
@@ -218,10 +207,14 @@ function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, opti
 		},
 		plugins: [
 			...commonWebpackConfig.plugins,
+			/*
+			TODO: need to figure out why this isn't working properly.  This file is only generated when
+	    		compiling using "hot" setting and isn't used anywhere.
 			new ChunkManifestPlugin({
 				filename: "chunk-manifest.json",
 				manifestVariable: "webpackManifest",
 			}),
+			*/
 			new ExtractTextPlugin(`[name]${longTermCaching ? ".[chunkhash]" : ""}.css`),
 			new webpack.optimize.CommonsChunkPlugin({
 				name:"common",
@@ -233,12 +226,10 @@ function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, opti
 	});
 
 	if (minify) {
-		clientWebpackConfig.plugins = [
-			...commonWebpackConfig.plugins,
-
+		clientWebpackConfig.plugins.push(
 			// TODO: should this be done as babel plugin?
 			new webpack.optimize.UglifyJsPlugin(),
-		];
+		);
 	} else {
 		clientWebpackConfig.plugins.push(new webpack.SourceMapDevToolPlugin());
 	}
