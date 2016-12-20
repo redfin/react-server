@@ -6,5 +6,6 @@
   "minify": false,
   "longTermCaching": false,
   "https": false,
-  "logLevel": "debug"
+  "logLevel": "debug",
+  "webpackClientConfig" : "./webpack.config.client.js"
 }
