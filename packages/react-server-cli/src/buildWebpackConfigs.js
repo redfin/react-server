@@ -165,7 +165,9 @@ function getCommonWebpackConfig(options) {
 		plugins: [
 			new webpack.optimize.OccurenceOrderPlugin(),
 			new webpack.DefinePlugin({
-				'process.env': {NODE_ENV: `${JSON.stringify(process.env)}`}, // eslint-disable-line no-process-env
+				'process.env': {
+					'NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'), // eslint-disable-line no-process-env
+				},
 			}),
 		],
 	};
