@@ -54,7 +54,7 @@ export default function start(options){
 	}
 
 	return {
-		stop: () => Promise.all([htmlServerPromise.stop]),
+		stop: () => Promise.all([htmlServerPromise.stop()]),
 		started: Promise.all(allStartingPromises)
 			.catch(e => {
 				logger.error(e);
