@@ -154,6 +154,7 @@ function getCommonWebpackConfig(options) {
 			alias: {
 				// These need to be singletons.
 				"react"        : callerDependency("react"),
+				"react-dom"    : callerDependency("react-dom"),
 				"react-server" : callerDependency("react-server"),
 			},
 		},
