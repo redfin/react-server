@@ -3,8 +3,21 @@ import path from "path";
 import fs from "fs";
 import ExtractTextPlugin from "extract-text-webpack-plugin";
 //import ChunkManifestPlugin from "chunk-manifest-webpack-plugin";
+import { StatsWriterPlugin } from "webpack-stats-plugin"
 import callerDependency from "./callerDependency";
 import normalizeRoutesPage from "./normalizeRoutesPage";
+
+// Used with packing modules for Node
+let nodeModules = {};
+
+// Identify all node_modules for later
+fs.readdirSync('node_modules')
+	.filter(function(x) {
+		return ['.bin'].indexOf(x) === -1;
+	})
+	.forEach(function(mod) {
+		nodeModules[mod] = true;
+	});
 
 
 // commented out to please eslint, but re-add if logging is needed in this file.
@@ -111,6 +124,7 @@ function getCommonWebpackConfig(options) {
 	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
 
 	let commonWebpackConfig = {
+		profile: true,
 		module: {
 			loaders: [
 				{
@@ -156,6 +170,7 @@ function getCommonWebpackConfig(options) {
 				"react"        : callerDependency("react"),
 				"react-dom"    : callerDependency("react-dom"),
 				"react-server" : callerDependency("react-server"),
+				"webpack"      : callerDependency("webpack"),
 			},
 		},
 		resolveLoader: {
@@ -164,11 +179,28 @@ function getCommonWebpackConfig(options) {
 			],
 		},
 		plugins: [
-			new webpack.optimize.OccurenceOrderPlugin(),
+			new webpack.optimize.OccurrenceOrderPlugin(true),
 			new webpack.DefinePlugin({
 				'process.env': {
 					'NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'), // eslint-disable-line no-process-env
 				},
+			}),
+			new StatsWriterPlugin({
+				fields: [
+					"assets",
+					"assetsByChunkName",
+					"children",
+					"chunks",
+					"chunkModules",
+					"filteredModules",
+					"errors",
+					"hash",
+					"modules",
+					"profile",
+					"reasons",
+					"version",
+					"warnings",
+				],
 			}),
 		],
 	};
@@ -240,24 +272,49 @@ function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, opti
 }
 
 function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
+	// This function is required because sometimes modules are loaded like 'require("react-dom/server/index.js");' and
+	// it forces Webpack to load the whole react-dom module.
+	// https://github.com/webpack/webpack/issues/839#issuecomment-177219660
+	const nodeModulesTransform = function(context, request, callback) {
+		let absoluteRequest;
+		if (/^\./.test(request)) {
+			// this is a relative pathname
+			absoluteRequest = path.join(context, request);
+		} else {
+			absoluteRequest = request;
+		}
+		// Make all of the requests relative to node_modules for determining nested modules
+		const relativeRequest = path.normalize(absoluteRequest).replace(/^.*?\/node_modules\//, '');
 
-	let nodeModules = {};
-	fs.readdirSync('node_modules')
-		.filter(function(x) {
-			return ['.bin'].indexOf(x) === -1;
-		})
-		.forEach(function(mod) {
-			nodeModules[mod] = 'commonjs ' + mod;
-		});
+		// search for a '/' indicating a nested module
+		const slashIndex = relativeRequest.indexOf("/");
+		let rootModuleName;
+		if (slashIndex === -1) {
+			rootModuleName = relativeRequest;
+		} else {
+			rootModuleName = relativeRequest.substr(0, slashIndex);
+		}
+
+		// Match for root modules that are in our node_modules except Webpack.
+		// Because Webpack uses relative pathnames for itself, let's just bundle Webpack
+		if (rootModuleName !== "webpack" && nodeModules.hasOwnProperty(rootModuleName)) {
+			// This is in our node_modules, so we can safely list it as external
+			callback(null, "commonjs " + request);
+		} else {
+			// This is NOT in our node_modules, so we must bundle it.
+			callback();
+		}
+	};
 
 	let serverWebpackConfig = Object.assign({}, commonWebpackConfig, {
+		debug: true,
 		target: "node",
 		node: {
 			__dirname  : false,
 			__filename : false,
 		},
 		entry: entryPoints,
-		externals: nodeModules,
+		externals: nodeModulesTransform,
 		output: {
 			path: outputDir,
 			filename: 'server.bundle.js',

@@ -46,7 +46,8 @@
     "style-loader": "~0.12.3",
     "webpack": "^1.13.1",
     "webpack-dev-middleware": "^1.9.0",
-	"webpack-hot-middleware": "^2.13.2",
+    "webpack-hot-middleware": "^2.13.2",
+    "webpack-stats-plugin": "^0.1.4",
     "yargs": "~3.15.0"
   },
   "devDependencies": {
