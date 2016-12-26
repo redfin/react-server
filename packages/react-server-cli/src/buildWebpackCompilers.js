@@ -30,7 +30,6 @@ export default (opts = {}, webpackInfo) => {
 		outputDirAbsolute,
 		serverOutputDirAbsolute,
 		clientBootstrapFile,
-		serverBootstrapFile,
 	} = webpackInfo.paths;
 
 	mkdirp.sync(workingDirAbsolute);
@@ -40,30 +39,6 @@ export default (opts = {}, webpackInfo) => {
 	const routesDirAbsolute = path.resolve(process.cwd(), routesDir);
 
 	writeClientBootstrapFile(clientBootstrapFile, opts);
-
-	const entrypointBase = hot ? [
-		'webpack-hot-middleware/client?path=/__react_server_hmr__&timeout=20000&reload=true',
-	] : [];
-	let clientEntrypoints = {};
-	let serverEntrypoints = {};
-
-	// for each route, let's create an entryPoint that includes the page file and the routes file
-	for (let routeName of Object.keys(routes.routes)) {
-		let route = routes.routes[routeName];
-		let formats = normalizeRoutesPage(route.page);
-		for (let format of Object.keys(formats)) {
-			const absolutePathToPage = require.resolve(path.resolve(routesDirAbsolute, formats[format]));
-
-			clientEntrypoints[`${routeName}${format !== "default" ? "-" + format : ""}`] = [
-				...entrypointBase,
-				clientBootstrapFile,
-				absolutePathToPage,
-			];
-			serverEntrypoints[`${routeName}${format !== "default" ? "-" + format : ""}`] = [
-				serverBootstrapFile,
-			];
-		}
-	}
 
 	// now rewrite the routes file out in a webpack-compatible way.
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);

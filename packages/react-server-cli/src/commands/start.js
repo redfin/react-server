@@ -20,6 +20,8 @@ import reactServerCliRun from "../run";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
+const CHUNK_HASHES = {};
+
 // if used to start a server, returns an object with two properties, started and
 // stop. started is a promise that resolves when all necessary servers have been
 // started. stop is a method to stop all servers. It takes no arguments and
@@ -136,11 +138,16 @@ const startHtmlServer = (options, webpackInfo) => {
 			webpackInfo.server.routesFile.then(() => {
 				logger.info("Starting react-server...");
 
+				// Currently this refers to the first route in the webpack server config.  This will need to be changed
+				// when server-side chunking is enabled.
+				const serverEntryPoint = path.join(webpackInfo.paths.serverOutputDirAbsolute,
+					Object.keys(webpackInfo.paths.serverEntryPoints)[0] + ".bundle.js");
+
 				let rsMiddlewareCalled = false;
 				const rsMiddleware = () => {
 					rsMiddlewareCalled = true;
 					server.use((req, res, next) => {
-						reactServer.middleware(req, res, next, require(webpackInfo.paths.serverEntryPoint));
+						reactServer.middleware(req, res, next, require(serverEntryPoint));
 					});
 				};
 
@@ -181,10 +188,11 @@ const serverToStopPromise = (server, webpackDevMiddlewareInstance) => {
 
 	const sockets = [];
 
-	// If we're testing then we want to be able to bail out quickly.  Zombie
+	// If we're hot reloading then we want to be able to bail out quickly.  Zombie
 	// (the test browser) makes keepalive connections to our static asset
 	// server, and we don't need to be polite to it when we're tearing down.
-	if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
+	// The Client-side HMR is also a ServerSentEvent with a long-running socket connection
+	if (process.env.NODE_ENV !== "production") { // eslint-disable-line no-process-env
 		server.on('connection', socket => sockets.push(socket));
 	}
 
@@ -223,10 +231,26 @@ function buildWebpack(options) {
 	if (options.hot || options.compileOnStartup) {
 		webpackInfo = buildWebpackCompilers(options, webpackInfo);
 		webpackInfo.client.compiledPromise = new Promise((resolve) => webpackInfo.client.compiler.plugin("done", () => resolve()));
-		webpackInfo.server.compiledPromise = new Promise((resolve) => webpackInfo.server.compiler.plugin("done", () => {
-			if (options.hot && require.cache[webpackInfo.paths.serverEntryPoint]) {
-				logger.notice('Hot reloading the webpack-compiled server code found at ', webpackInfo.paths.serverEntryPoint);
-				delete require.cache[webpackInfo.paths.serverEntryPoint];
+		webpackInfo.server.compiledPromise = new Promise((resolve) => webpackInfo.server.compiler.plugin("done", (stats) => {
+			if (options.hot && stats.compilation.errors.length === 0) {
+				// This is the meat of the server side "hot reloading" code.  Essentially, we look iterate over the named
+				// chunks and, if their hashes are different from what we last saw, we delete the "require.cache" entry.
+				// The next time that file is "require()'d", NodeJS will read it from disk.
+				let chunk,
+					absoluteFilename;
+				for (let chunkName in stats.compilation.namedChunks) {
+					if (stats.compilation.namedChunks.hasOwnProperty(chunkName)) {
+						chunk = stats.compilation.namedChunks[chunkName];
+						if (typeof CHUNK_HASHES[chunkName] !== "undefined" && CHUNK_HASHES[chunkName] !== chunk.hash) {
+							for (let i in chunk.files) {
+								absoluteFilename = path.join(webpackInfo.paths.serverOutputDirAbsolute, chunk.files[i]);
+								logger.notice(`chunk ${chunkName} changed, hot reloading: ${absoluteFilename}`);
+								delete require.cache[absoluteFilename];
+							}
+						}
+						CHUNK_HASHES[chunkName] = chunk.hash;
+					}
+				}
 			}
 			resolve();
 		}));
@@ -260,7 +284,6 @@ function watchConfigurationFiles(serverObj, options) {
 	watcher.on('change', (path) => {
 		logger.info(`File ${path} has been changed, restarting server`);
 		watcher.close();
-		//const newOptions = mergeOptions(options, findOptionsInFiles() || {});
 		serverObj.stop().then(() => {
 			reactServerCliRun({ command: "start" });
 		});

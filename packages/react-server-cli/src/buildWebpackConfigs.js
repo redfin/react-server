@@ -53,12 +53,10 @@ export default (opts = {}) => {
 
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let clientBootstrapFile = path.resolve(workingDirAbsolute, "clientEntry.js");
-	let serverBootstrapFile = path.resolve(workingDirAbsolute, "routes_server.js");
 	const entrypointBase = hot ? [
 		'webpack-hot-middleware/client?path=/__react_server_hmr__&timeout=20000&reload=true',
 	] : [];
-	let clientEntryPoints = {};
-	let serverEntryPoints = {};
+	const clientEntryPoints = {};
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
 		let formats = normalizeRoutesPage(route.page);
@@ -70,11 +68,13 @@ export default (opts = {}) => {
 				clientBootstrapFile,
 				absolutePathToPage,
 			];
-			serverEntryPoints[`${routeName}${format !== "default" ? "-" + format : ""}`] = [
-				serverBootstrapFile,
-			];
 		}
 	}
+
+	const serverBootstrapFile = path.resolve(workingDirAbsolute, "routes_server.js");
+	const serverEntryPoints = {
+		'Routes': serverBootstrapFile,
+	};
 
 	if (longTermCaching && hot) {
 		// chunk hashes can't be used in hot mode, so we can't use long-term caching
@@ -91,7 +91,6 @@ export default (opts = {}) => {
 
 	const webpackServerConfigFunc = makeCustomWebpackConfigFunc(webpackServerConfig);
 	const finalWebpackServerConfig = webpackServerConfigFunc(packageCodeForNode(commonWebpackConfig, serverEntryPoints, serverOutputDirAbsolute));
-	const serverEntryPoint = path.resolve(finalWebpackServerConfig.output.path, finalWebpackServerConfig.output.filename);
 
 	return {
 		paths: {
@@ -99,8 +98,7 @@ export default (opts = {}) => {
 			outputDirAbsolute,
 			serverOutputDirAbsolute,
 			clientBootstrapFile,
-			serverBootstrapFile,
-			serverEntryPoint,
+			serverEntryPoints,
 		},
 		client: {
 			config: finalWebpackClientConfig,
@@ -170,7 +168,6 @@ function getCommonWebpackConfig(options) {
 				"react"        : callerDependency("react"),
 				"react-dom"    : callerDependency("react-dom"),
 				"react-server" : callerDependency("react-server"),
-				"webpack"      : callerDependency("webpack"),
 			},
 		},
 		resolveLoader: {
@@ -185,13 +182,13 @@ function getCommonWebpackConfig(options) {
 					'NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'), // eslint-disable-line no-process-env
 				},
 			}),
+			new webpack.optimize.DedupePlugin(),
 			new StatsWriterPlugin({
 				fields: [
 					"assets",
 					"assetsByChunkName",
 					"children",
 					"chunks",
-					"chunkModules",
 					"filteredModules",
 					"errors",
 					"hash",
@@ -307,7 +304,6 @@ function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
 	};
 
 	let serverWebpackConfig = Object.assign({}, commonWebpackConfig, {
-		debug: true,
 		target: "node",
 		node: {
 			__dirname  : false,
@@ -317,7 +313,8 @@ function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
 		externals: nodeModulesTransform,
 		output: {
 			path: outputDir,
-			filename: 'server.bundle.js',
+			filename: '[name].bundle.js',
+			chunkFilename: '[id].bundle.js',
 			libraryTarget: 'commonjs2',
 			pathinfo: true,
 		},
@@ -328,11 +325,18 @@ function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
 			new webpack.IgnorePlugin(/\.(css|less|sass|scss)$/),
 			new webpack.BannerPlugin('require("source-map-support").install();', {
 				raw: true,
-				entryOnly: false,
+				entryOnly: true,
 			}),
 			new webpack.DefinePlugin({
 				REACT_SERVER_CLIENT_SIDE: 'false',
 			}),
+			/*
+			// Don't enable this until we figure out how to import a webpack bundle from node without module.exports
+			// being set properly by Webpack.
+			new webpack.optimize.CommonsChunkPlugin({
+				name:"common",
+			}),
+			 */
 			new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
 		],
 	});
