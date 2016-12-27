@@ -3,6 +3,7 @@ import path from "path"
 import mkdirp from "mkdirp"
 import fs from "fs"
 //import crypto from "crypto"
+import handleCompilationErrors from "./handleCompilationErrors";
 
 import normalizeRoutesPage from "./normalizeRoutesPage";
 
@@ -61,9 +62,10 @@ export default (opts = {}, webpackInfo) => {
 			}
 
 			const routesFilePath = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, webpackInfo.client.config.output.publicPath, false, manifest);
-			webpackInfo.server.compiler.run((err) => {
-				if (err) {
-					reject(err);
+			webpackInfo.server.compiler.run((err, serverStats) => {
+				const error = handleCompilationErrors(err, serverStats);
+				if (error) {
+					reject(error);
 					return;
 				}
 				resolve(routesFilePath);

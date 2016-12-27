@@ -20,7 +20,7 @@ import reactServerCliRun from "../run";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
-const CHUNK_HASHES = {};
+let CHUNK_HASHES = {};
 
 // if used to start a server, returns an object with two properties, started and
 // stop. started is a promise that resolves when all necessary servers have been
@@ -229,6 +229,8 @@ function buildWebpack(options) {
 	let webpackInfo = buildWebpackConfigs(options);
 
 	if (options.hot || options.compileOnStartup) {
+		CHUNK_HASHES = {};
+
 		webpackInfo = buildWebpackCompilers(options, webpackInfo);
 		webpackInfo.client.compiledPromise = new Promise((resolve) => webpackInfo.client.compiler.plugin("done", () => resolve()));
 		webpackInfo.server.compiledPromise = new Promise((resolve) => webpackInfo.server.compiler.plugin("done", (stats) => {

@@ -3,14 +3,6 @@ const run = require("./run");
 const parseCliArgs = require("./parseCliArgs");
 const defaultOptions = require("./defaultOptions");
 
-require.extensions['.css'] =
-require.extensions['.less'] =
-require.extensions['.scss'] =
-require.extensions['.sass'] =
-function(module, filename) {
-	return module._compile("", filename);
-};
-
 require.extensions['.html'] =
 require.extensions['.md'] =
 	function(module, filename) {

@@ -34,6 +34,7 @@
     "lodash": "^4.16.4",
     "look-up": "^0.8.3",
     "mkdirp": "^0.5.1",
+    "node-noop": "~1.0.0",
     "node-libs-browser": "~0.5.2",
     "node-sass": "^3.8.0",
     "null-loader": "~0.1.1",

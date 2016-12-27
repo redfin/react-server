@@ -84,13 +84,12 @@ export default (opts = {}) => {
 
 	// finally, let's pack this up with webpack.
 	const webpackConfigFunc = makeCustomWebpackConfigFunc(webpackConfig);
-	const commonWebpackConfig = webpackConfigFunc(getCommonWebpackConfig(opts));
 
 	const webpackClientConfigFunc = makeCustomWebpackConfigFunc(webpackClientConfig);
-	const finalWebpackClientConfig = webpackClientConfigFunc(packageCodeForBrowser(commonWebpackConfig, clientEntryPoints, outputDirAbsolute, opts));
+	const finalWebpackClientConfig = webpackClientConfigFunc(packageCodeForBrowser(webpackConfigFunc(getCommonWebpackConfig(opts)), clientEntryPoints, outputDirAbsolute, opts));
 
 	const webpackServerConfigFunc = makeCustomWebpackConfigFunc(webpackServerConfig);
-	const finalWebpackServerConfig = webpackServerConfigFunc(packageCodeForNode(commonWebpackConfig, serverEntryPoints, serverOutputDirAbsolute));
+	const finalWebpackServerConfig = webpackServerConfigFunc(packageCodeForNode(webpackConfigFunc(getCommonWebpackConfig(opts)), serverEntryPoints, serverOutputDirAbsolute));
 
 	return {
 		paths: {
@@ -117,6 +116,7 @@ export default (opts = {}) => {
 function getCommonWebpackConfig(options) {
 	const {
 		hot,
+		longTermCaching,
 	} = options;
 	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
 	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
@@ -183,6 +183,7 @@ function getCommonWebpackConfig(options) {
 				},
 			}),
 			new webpack.optimize.DedupePlugin(),
+			new ExtractTextPlugin(`[name]${longTermCaching ? ".[chunkhash]" : ""}.css`),
 			new StatsWriterPlugin({
 				fields: [
 					"assets",
@@ -246,7 +247,6 @@ function packageCodeForBrowser(commonWebpackConfig, entryPoints, outputDir, opti
 				manifestVariable: "webpackManifest",
 			}),
 			*/
-			new ExtractTextPlugin(`[name]${longTermCaching ? ".[chunkhash]" : ""}.css`),
 			new webpack.optimize.CommonsChunkPlugin({
 				name:"common",
 			}),
@@ -322,7 +322,7 @@ function packageCodeForNode(commonWebpackConfig, entryPoints, outputDir) {
 		plugins: [
 			...commonWebpackConfig.plugins,
 			new webpack.SourceMapDevToolPlugin(),
-			new webpack.IgnorePlugin(/\.(css|less|sass|scss)$/),
+			new webpack.NormalModuleReplacementPlugin(/\.(css|less|sass|scss)$/, 'node-noop'),
 			new webpack.BannerPlugin('require("source-map-support").install();', {
 				raw: true,
 				entryOnly: true,
