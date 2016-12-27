@@ -105,7 +105,7 @@ var startServer = function (specFile, routes) {
 	return CLI.run({
 		command: "start",
 		routesFile: routesFile,
-		compileOnStart: true,
+		compileOnStartup: true,
 		hot: false,
 		port: PORT,
 		logLevel: "emergency",
