@@ -36,8 +36,6 @@ export default (opts = {}, webpackInfo) => {
 	mkdirp.sync(outputDirAbsolute);
 	mkdirp.sync(serverOutputDirAbsolute);
 
-	const routesDirAbsolute = path.resolve(process.cwd(), routesDir);
-
 	writeClientBootstrapFile(clientBootstrapFile, opts);
 
 	// now rewrite the routes file out in a webpack-compatible way.
