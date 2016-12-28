@@ -29,6 +29,10 @@ module.exports = {
 		entry: "/navigation/playground",
 		description: "Navigation playground",
 	},
+	Forwarding: {
+		entry: "/navigation/forward",
+		description: "Test how page forwarding works with passing data down",
+	},
 	StylePromises: {
 		entry: "/styles/promises",
 		description: "Stylesheets returned from promises",
