@@ -283,9 +283,10 @@ var testSetupFn = function (specFile, routes) {
 		try {
 			// Since we're not using hot-reloading, we need to explicitly delete all of the require.cache to ensure
 			// that the latest Webpack compiled server code is being used.
-			for (let key in require.cache) {
-				delete require.cache[key];
-			}
+			Object.keys(require.cache)
+				.filter((key) => /(__clientTemp|test-temp)/.test(key))
+				.forEach((key) => delete require.cache[key]);
+
 			const {stop, started} = startServer(specFile, routes);
 			started.then(done, (e) => {
 				console.error("There was an error while starting the server.");
