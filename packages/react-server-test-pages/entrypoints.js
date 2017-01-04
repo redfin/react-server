@@ -49,4 +49,16 @@ module.exports = {
 		entry: "/error/logs",
 		description: "Generate errors in the logs",
 	},
+	BottleneckElements: {
+		entry: "/bottleneck/elements",
+		description: "Test if number of elements on a page is a bottleneck",
+	},
+	BottleneckDataRequests: {
+		entry: "/bottleneck/dataRequests",
+		description: "Test if number of data requests on a page is a bottleneck",
+	},
+	BottleneckMiddleware: {
+		entry: "/bottleneck/middleware",
+		description: "Test if amount of middleware on a page is a bottleneck",
+	},
 }
