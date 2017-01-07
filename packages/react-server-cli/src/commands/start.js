@@ -14,35 +14,46 @@ import logProductionWarnings from "../logProductionWarnings";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
-// if used to start a server, returns an object with two properties, started and
-// stop. started is a promise that resolves when the server has been
-// started. stop is a method to stop the server. It takes no arguments and
-// returns a promise that resolves when the server has stopped.
-export default function start(options){
-	setupLogging(options);
-	logProductionWarnings(options);
+// returns a method that can be used to stop the server. the returned method
+// returns a promise to indicate when the server is actually stopped.
+const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
 
-	const {
-		port,
-		bindIp,
-	} = options;
+	const sockets = [];
 
-	const {serverRoutes, compiler, config} = compileClient(options);
+	// If we're testing then we want to be able to bail out quickly.  Zombie
+	// (the test browser) makes keepalive connections to our static asset
+	// server, and we don't need to be polite to it when we're tearing down.
+	if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
+		httpServer.on('connection', socket => sockets.push(socket));
+	}
 
-	logger.notice("Starting server...");
+	return () => {
+		return new Promise((resolve, reject) => {
 
-	const serverPromises = startServer(serverRoutes, options, compiler, config);
+			// This will only have anything if we're testing.  See above.
+			sockets.forEach(socket => socket.destroy());
 
-	return {
-		stop: () => Promise.all([serverPromises.stop()]),
-		started: Promise.all([serverPromises.started])
-			.catch(e => {
+			if (webpackDevMiddlewareInstance) {
+				webpackDevMiddlewareInstance.close();
+			}
+
+			httpServer.on('error', (e) => {
+				logger.error('An error was emitted while shutting down the server');
 				logger.error(e);
-				throw e
-			})
-			.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
+				reject(e);
+			});
+			httpServer.close((e) => {
+				if (e) {
+					logger.error('The server was not started, so it cannot be stopped.');
+					logger.error(e);
+					reject(e);
+					return;
+				}
+				resolve();
+			});
+		});
 	};
-}
+};
 
 
 // given the server routes file and a port, start a react-server server at
@@ -81,7 +92,7 @@ const startServer = (serverRoutes, options, compiler, config) => {
 		// Only compile the webpack configs manually if we're not in hot mode
 		logger.notice("Compiling Webpack bundle prior to starting server");
 		compiler.run((err, stats) => {
-			const error = handleCompilationErrors(err, stats);
+			handleCompilationErrors(err, stats);
 		});
 
 		server.use('/', compression(), express.static(`__clientTemp/build`, {
@@ -140,43 +151,33 @@ const startServer = (serverRoutes, options, compiler, config) => {
 	};
 };
 
-// returns a method that can be used to stop the server. the returned method
-// returns a promise to indicate when the server is actually stopped.
-const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
 
-	const sockets = [];
+// if used to start a server, returns an object with two properties, started and
+// stop. started is a promise that resolves when the server has been
+// started. stop is a method to stop the server. It takes no arguments and
+// returns a promise that resolves when the server has stopped.
+export default function start(options) {
+	setupLogging(options);
+	logProductionWarnings(options);
 
-	// If we're testing then we want to be able to bail out quickly.  Zombie
-	// (the test browser) makes keepalive connections to our static asset
-	// server, and we don't need to be polite to it when we're tearing down.
-	if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
-		httpServer.on('connection', socket => sockets.push(socket));
-	}
+	const {
+		port,
+		bindIp,
+	} = options;
 
-	return () => {
-		return new Promise((resolve, reject) => {
+	const {serverRoutes, compiler, config} = compileClient(options);
 
-			// This will only have anything if we're testing.  See above.
-			sockets.forEach(socket => socket.destroy());
+	logger.notice("Starting server...");
 
-			if (webpackDevMiddlewareInstance) {
-				webpackDevMiddlewareInstance.close();
-			}
+	const serverPromises = startServer(serverRoutes, options, compiler, config);
 
-			httpServer.on('error', (e) => {
-				logger.error('An error was emitted while shutting down the server');
+	return {
+		stop: () => Promise.all([serverPromises.stop()]),
+		started: Promise.all([serverPromises.started])
+			.catch(e => {
 				logger.error(e);
-				reject(e);
-			});
-			httpServer.close((e) => {
-				if (e) {
-					logger.error('The server was not started, so it cannot be stopped.');
-					logger.error(e);
-					reject(e);
-					return;
-				}
-				resolve();
-			});
-		});
+				throw e
+			})
+			.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
 	};
 }

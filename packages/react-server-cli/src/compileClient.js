@@ -39,10 +39,10 @@ export default (opts = {}) => {
 		throw new Error("Hot reload cannot be used with long-term caching. Please disable either long-term caching or hot reload.");
 	}
 
-	var webpackConfigFunc = (data) => { return data }
+	let webpackConfigFunc = (data) => { return data };
 	if (webpackConfig) {
 		const webpackDirAbsolute = path.resolve(process.cwd(), webpackConfig);
-		const userWebpackConfigFunc = require(webpackDirAbsolute)
+		const userWebpackConfigFunc = require(webpackDirAbsolute);
 		webpackConfigFunc = userWebpackConfigFunc.default
 	}
 
@@ -291,7 +291,7 @@ module.exports = {
 			page: {`);
 		for (let format of Object.keys(formats)) {
 			const formatModule = formats[format];
-			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule));
+			const relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule));
 			routesOutput.push(`
 				${format}: function() {
 					return {
@@ -347,7 +347,7 @@ function normalizeRoutesPage(page) {
 // routes file. note that outputDir must be the same directory as the client routes
 // file, which must be named "routes_client".
 function writeClientBootstrapFile(outputDir, opts) {
-	var outputFile = outputDir + "/entry.js";
+	const outputFile = outputDir + "/entry.js";
 	fs.writeFileSync(outputFile, `
 		if (typeof window !== "undefined") {
 			window.__setReactServerBase = function(path) {
