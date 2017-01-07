@@ -10,8 +10,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
-	expressState = require('express-state'),
-	cookieParser = require('cookie-parser'),
+
 	PageUtil = require('./util/PageUtil'),
 	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
@@ -43,18 +42,8 @@ var ELEMENT_ALREADY_WRITTEN = -2;
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(server, routes) {
-
-	expressState.extend(server);
-
-	// parse cookies into req.cookies property
-	server.use(cookieParser());
-
-	// sets the namespace that data will be exposed into client-side
-	// TODO: express-state doesn't do much for us until we're using a templating library
-	server.set('state namespace', '__reactServerState');
-
-	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
+module.exports = function(req, res, next, routes) {
+	RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
 
 		var start = RLS().startTime = new Date();
@@ -156,8 +145,8 @@ module.exports = function(server, routes) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	})});
-}
+	});
+};
 
 module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
