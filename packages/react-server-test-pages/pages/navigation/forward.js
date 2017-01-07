@@ -17,7 +17,7 @@ export default class ForwardPage {
 			//then depending on said data, forward to one of two pages, and pass along the data we pre-fetched
 			if (res.body % 2 === 0) {
 				if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
-					require.ensure(["./forwardEven"], () => {
+					return require.ensure(["./forwardEven"], () => {
 						return {
 							page: require("./forwardEven").default,
 						};
@@ -29,7 +29,7 @@ export default class ForwardPage {
 				}
 			} else {
 				if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
-					require.ensure(["./forwardOdd"], () => {
+					return require.ensure(["./forwardOdd"], () => {
 						return {
 							page: require("./forwardOdd").default,
 						};
