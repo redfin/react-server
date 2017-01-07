@@ -56,7 +56,8 @@ export default (opts = {}) => {
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
 	const entrypointBase = hot ? [
-		require.resolve("webpack-hot-middleware/client") + '?path=/__react_server_hmr__&timeout=20000&reload=true',
+		require.resolve("webpack-dev-server/client"),
+		require.resolve("webpack/hot/only-dev-server"),
 	] : [];
 	let entrypoints = {};
 	for (let routeName of Object.keys(routes.routes)) {

@@ -4,8 +4,7 @@ import path from "path"
 import express from "express"
 import compression from "compression"
 import bodyParser from "body-parser"
-import WebpackDevMiddleware from "webpack-dev-middleware"
-import WebpackHotMiddleware from "webpack-hot-middleware"
+import WebpackDevServer from "webpack-dev-server"
 import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
 import reactServer from "../react-server";
@@ -16,7 +15,7 @@ const logger = reactServer.logging.getLogger(__LOGGER__);
 
 // returns a method that can be used to stop the server. the returned method
 // returns a promise to indicate when the server is actually stopped.
-const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
+const serverToStopPromise = (httpServer) => {
 
 	const sockets = [];
 
@@ -32,10 +31,6 @@ const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
 
 			// This will only have anything if we're testing.  See above.
 			sockets.forEach(socket => socket.destroy());
-
-			if (webpackDevMiddlewareInstance) {
-				webpackDevMiddlewareInstance.close();
-			}
 
 			httpServer.on('error', (e) => {
 				logger.error('An error was emitted while shutting down the server');
@@ -59,7 +54,7 @@ const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
 // given the server routes file and a port, start a react-server server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startServer = (serverRoutes, options, compiler, config) => {
+const startServer = (serverRoutes, options, compiler) => {
 	const {
 		port,
 		bindIp,
@@ -69,25 +64,30 @@ const startServer = (serverRoutes, options, compiler, config) => {
 		longTermCaching,
 	} = options;
 
-	let webpackDevMiddlewareInstance;
-	const server = express();
+	let expressServer,
+		httpServer;
 
 	if (hot) {
-		logger.notice("Enabling hot module reload with webpack-dev-middleware");
-		webpackDevMiddlewareInstance = WebpackDevMiddleware(compiler, {
+		logger.notice("Enabling hot module reload with webpack-dev-server");
+		const webpackDevServer = new WebpackDevServer(compiler, {
 			noInfo: true,
-			lazy: false,
-			publicPath: config.output.publicPath,
-			log: logger.debug,
-			warn: logger.warn,
-			error: logger.error,
+			hot: true,
+			headers: { 'Access-Control-Allow-Origin': '*' },
+			https: !!httpsOptions,
+			key: httpsOptions ? httpsOptions.key : undefined,
+			cert: httpsOptions ? httpsOptions.cert : undefined,
+			ca: httpsOptions ? httpsOptions.ca : undefined,
+
+			// contentBase: false is required in order to prevent WebpackDevServer from trying to serve static directory
+			// entries for the URL path '/'.  When WebpackDevServer does this, Express never calls react-server to attempt
+			// to handle the request.
+			contentBase: false,
 		});
-		server.use(webpackDevMiddlewareInstance);
-		server.use(WebpackHotMiddleware(compiler, {
-			log: logger.debug,
-			overlay: false,
-			path: '/__react_server_hmr__',
-		}));
+		expressServer = webpackDevServer.app;
+		httpServer = webpackDevServer;
+		// This allows us to attach our own bindings to the .on() events from http/https server and still use the
+		// WebpackDevServer .listen() and .close(), which is required for the HMR websocket to be opened.
+		httpServer.on = webpackDevServer.listeningApp.on;
 	} else {
 		// Only compile the webpack configs manually if we're not in hot mode
 		logger.notice("Compiling Webpack bundle prior to starting server");
@@ -95,9 +95,11 @@ const startServer = (serverRoutes, options, compiler, config) => {
 			handleCompilationErrors(err, stats);
 		});
 
-		server.use('/', compression(), express.static(`__clientTemp/build`, {
+		expressServer = express();
+		expressServer.use('/', compression(), express.static(`__clientTemp/build`, {
 			maxage: longTermCaching ? '365d' : '0s',
 		}));
+		httpServer = httpsOptions ? https.createServer(httpsOptions, expressServer) : http.createServer(expressServer);
 	}
 
 	let middlewareSetup = (server, rsMiddleware) => {
@@ -107,9 +109,8 @@ const startServer = (serverRoutes, options, compiler, config) => {
 		rsMiddleware();
 	};
 
-	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 	return {
-		stop: serverToStopPromise(httpServer, webpackDevMiddlewareInstance),
+		stop: serverToStopPromise(httpServer),
 		started: new Promise((resolve, reject) => {
 			serverRoutes.then((serverRoutesFile) => {
 				logger.info("Starting react-server...");
@@ -117,7 +118,7 @@ const startServer = (serverRoutes, options, compiler, config) => {
 				let rsMiddlewareCalled = false;
 				const rsMiddleware = () => {
 					rsMiddlewareCalled = true;
-					reactServer.middleware(server, require(serverRoutesFile));
+					reactServer.middleware(expressServer, require(serverRoutesFile));
 				};
 
 				if (customMiddlewarePath) {
@@ -125,7 +126,7 @@ const startServer = (serverRoutes, options, compiler, config) => {
 					middlewareSetup = require(customMiddlewareDirAb).default;
 				}
 
-				middlewareSetup(server, rsMiddleware);
+				middlewareSetup(expressServer, rsMiddleware);
 
 				if (!rsMiddlewareCalled) {
 					logger.error("Error react-server middleware was never setup in custom middleware function");
