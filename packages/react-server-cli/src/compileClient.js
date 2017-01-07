@@ -129,7 +129,7 @@ function statsToManifest(stats) {
 				if (/\.css$/.test(chunk.files[i])) {
 					// the CSS file is probably last file in the array, unless there have been hot updates for the JS
 					// which show up in the array prior to the CSS file.
-					cssChunksByName[chunk.name] = chunk.files[chunk.files.length - 1];
+					cssChunksByName[chunk.name] = chunk.files[i];
 					break;
 				}
 			}
