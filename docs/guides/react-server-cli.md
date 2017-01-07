@@ -242,8 +242,8 @@ a good idea to only do this in production mode.
 ### Options
 
 The following options are available.  Note that options on the command-line
-are dash-separated (e.g. `--js-port`), but options in config files are
-camel-cased (e.g. `jsPort`). (TODO: Support dash-separated options in config)
+are dash-separated (e.g. `--webpack-config`), but options in config files are
+camel-cased (e.g. `webpackConfig`). (TODO: Support dash-separated options in config)
 
 #### --routes
 The routes file to load.
@@ -260,11 +260,6 @@ Defaults to **localhost**.
 The port to start up the main server, which will serve the pre-rendered HTML files.
 
 Defaults to **3000**.
-
-#### --js-port
-The port to use when `react-server-cli` is serving up the client JavaScript.
-
-Defaults to **3001**.
 
 #### --hot, -h
 Use hot reloading of client JavaScript. Modules that export React components
@@ -373,7 +368,6 @@ run({
     command         : "start",
     routes          : "./routes.json",
     port            : 3000,
-    jsPort          : 3001,
     hot             : true,
     minify          : false,
     compileOnly     : false,

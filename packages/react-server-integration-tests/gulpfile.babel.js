@@ -11,7 +11,7 @@ var availableOptions = {
 	'boolean': [ 'verbose', 'skipSourcemaps' ],
 	'string' : [ 'specs' ],
 	'default': {
-		'verbose': false,
+		'verbose': process.env.DEBUG || false,
 		'skipSourcemaps': false,
 	},
 }
