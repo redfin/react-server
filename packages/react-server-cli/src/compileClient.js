@@ -56,8 +56,7 @@ export default (opts = {}) => {
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
 	const entrypointBase = hot ? [
-		require.resolve("webpack-dev-server/client") + "?" + outputUrl,
-		require.resolve("webpack/hot/only-dev-server"),
+		require.resolve("webpack-hot-middleware/client") + '?path=/__react_server_hmr__&timeout=20000&reload=true',
 	] : [];
 	let entrypoints = {};
 	for (let routeName of Object.keys(routes.routes)) {
@@ -78,7 +77,8 @@ export default (opts = {}) => {
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
 	// finally, let's pack this up with webpack.
-	const compiler = webpack(webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats)));
+	const config = webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats));
+	const compiler = webpack(config);
 
 	const serverRoutes = new Promise((resolve) => {
 		compiler.plugin("done", (stats) => {
@@ -98,6 +98,7 @@ export default (opts = {}) => {
 	return {
 		serverRoutes,
 		compiler,
+		config,
 	};
 }
 
