@@ -10,8 +10,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
-	expressState = require('express-state'),
-	cookieParser = require('cookie-parser'),
+
 	PageUtil = require('./util/PageUtil'),
 	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
@@ -43,18 +42,8 @@ var ELEMENT_ALREADY_WRITTEN = -2;
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(server, routes) {
-
-	expressState.extend(server);
-
-	// parse cookies into req.cookies property
-	server.use(cookieParser());
-
-	// sets the namespace that data will be exposed into client-side
-	// TODO: express-state doesn't do much for us until we're using a templating library
-	server.set('state namespace', '__reactServerState');
-
-	server.use((req, res, next) => { RequestLocalStorage.startRequest(() => {
+module.exports = function(req, res, next, routes) {
+	RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
 
 		var start = RLS().startTime = new Date();
@@ -156,7 +145,7 @@ module.exports = function(server, routes) {
 
 		context.navigate(new ExpressServerRequest(req));
 
-	})});
+	});
 }
 
 module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
@@ -494,8 +483,18 @@ function renderScriptsAsync(scripts, res) {
 		// This is the full implementation of LABjs.
 		res.write(LABString);
 
-		// We always want scripts to be executed in order.
-		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
+		if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
+			// ZombieJS does not handle loading async scripts in the proper order and ensuring that .wait() waits for
+			// execution.  Thus, we need to force LABjs to not use local XHRs in order for all tests to work properly.
+			// This used to work prior to combining the HTML and JS servers into a single server because the JS files
+			// were considered part of a different domain when running tests, so it never used XHR preloading, it used
+			// "cache preloading".
+			// https://github.com/getify/LABjs/blob/master/LAB.src.js#L152-L175
+			res.write("$LAB.setGlobalDefaults({UseLocalXHR:false,AlwaysPreserveOrder:true});");
+		} else {
+			// We always want scripts to be executed in order.
+			res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
+		}
 
 		// We'll use this to store state between calls (see below).
 		res.write("window._tLAB=$LAB")

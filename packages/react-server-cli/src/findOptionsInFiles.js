@@ -14,6 +14,8 @@ const PACKAGE_JSON = "package.json";
 // it returns the contents of the first config file found; it never merges multiple
 // configurations.
 export default (dir = process.cwd()) => {
+	let options = null;
+
 	do {
 		let reactServerRc = null;
 		try {
@@ -21,7 +23,8 @@ export default (dir = process.cwd()) => {
 			reactServerRc = fs.readFileSync(path.join(dir, REACT_SERVER_RC));
 		} catch (e) {} //eslint-disable-line no-empty
 		if (reactServerRc) {
-			return JSON.parse(reactServerRc);
+			options = JSON.parse(reactServerRc);
+			break;
 		}
 
 		let packageJson = null;
@@ -32,10 +35,13 @@ export default (dir = process.cwd()) => {
 		if (packageJson) {
 			const parsedPackageJson = JSON.parse(packageJson);
 			if (parsedPackageJson.reactServer) {
-				return parsedPackageJson.reactServer;
+				options = parsedPackageJson.reactServer;
+				break;
 			}
 		}
-	} while (dir !== (dir = path.dirname(dir)))
+	} while (dir !== (dir = path.dirname(dir)));
 
-	return null;
+
+
+	return options;
 }

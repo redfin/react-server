@@ -4,7 +4,8 @@
   "description": "Integration tests for react-server",
   "scripts": {
     "test": "PORT=8771 gulp test",
-    "clean": "rimraf target __clientTemp npm-debug.log*"
+    "test-debug": "DEBUG=true npm test",
+    "clean": "rimraf target __clientTemp test-temp npm-debug.log*"
   },
   "devDependencies": {
     "lodash": "^4.16.4",

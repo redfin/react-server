@@ -1,0 +1,11 @@
+{
+  "routesFile": "./routes.js",
+  "host": "0.0.0.0",
+  "port": 4000,
+  "hot": true,
+  "minify": false,
+  "longTermCaching": false,
+  "https": false,
+  "logLevel": "debug",
+  "webpackClientConfig" : "./webpack.config.client.js"
+}

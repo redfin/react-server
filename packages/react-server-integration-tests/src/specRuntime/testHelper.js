@@ -20,6 +20,9 @@ var stopFns = [];
 
 function getBrowser(opts) {
 	var browser = new Browser(opts);
+	if (process.env.DEBUG) {
+		browser.debug();
+	}
 	browser.silent = (!process.env.DEBUG);
 	browser.on('error', function (e) {
 		console.error("An error occurred running zombie tests", e);
@@ -105,9 +108,9 @@ var startServer = function (specFile, routes) {
 	return CLI.run({
 		command: "start",
 		routesFile: routesFile,
+		compileOnStartup: true,
 		hot: false,
 		port: PORT,
-		jsPort: +PORT+1,
 		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",
@@ -278,6 +281,12 @@ var testWithElement = (url, query, testFn) => testWithDocument(
 var testSetupFn = function (specFile, routes) {
 	return (done) => {
 		try {
+			// Since we're not using hot-reloading, we need to explicitly delete all of the require.cache to ensure
+			// that the latest Webpack compiled server code is being used.
+			Object.keys(require.cache)
+				.filter((key) => /(__clientTemp|test-temp)/.test(key))
+				.forEach((key) => delete require.cache[key]);
+
 			const {stop, started} = startServer(specFile, routes);
 			started.then(done, (e) => {
 				console.error("There was an error while starting the server.");

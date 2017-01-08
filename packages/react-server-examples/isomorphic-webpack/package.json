@@ -1,0 +1,24 @@
+{
+  "name": "react-server-examples-isomorphicwebpack",
+  "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "main": "IsomorphicWebpack.js",
+  "scripts": {
+    "start": "react-server start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "PC Drew",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-runtime": "^6.18.0",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-server": "^0.5.1",
+    "react-server-cli": "^0.5.1",
+    "superagent": "1.8.4"
+  }
+}

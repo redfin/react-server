@@ -1,4 +1,4 @@
-// takes in an arrray of options objects for `startServer.js`, and returns a merged
+// takes in an array of options objects for `startServer.js`, and returns a merged
 // version of them. it essentially acts like Object.assign(), so options objects
 // later in the argument list override the properties of ones earlier in the list.
 // like Object.assign, the merging is done on a property-by-property basis;

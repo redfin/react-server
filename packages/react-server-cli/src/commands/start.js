@@ -4,14 +4,23 @@ import path from "path"
 import express from "express"
 import compression from "compression"
 import bodyParser from "body-parser"
-import WebpackDevServer from "webpack-dev-server"
-import compileClient from "../compileClient"
+import WebpackDevMiddleware from "webpack-dev-middleware"
+import WebpackHotMiddleware from "webpack-hot-middleware"
 import handleCompilationErrors from "../handleCompilationErrors";
 import reactServer from "../react-server";
 import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
+import expressState from 'express-state';
+import cookieParser from 'cookie-parser';
+import chokidar from 'chokidar';
+import buildWebpackConfigs from "../buildWebpackConfigs";
+import buildWebpackCompilers from "../buildWebpackCompilers";
+import reactServerCliRun from "../run";
+
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
+
+let CHUNK_HASHES = {};
 
 // if used to start a server, returns an object with two properties, started and
 // stop. started is a promise that resolves when all necessary servers have been
@@ -24,134 +33,148 @@ export default function start(options){
 	const {
 		port,
 		bindIp,
-		jsPort,
 		hot,
-		jsUrl,
-		httpsOptions,
-		longTermCaching,
-		customMiddlewarePath,
+		compileOnStartup,
 	} = options;
 
-	const {serverRoutes, compiler} = compileClient(options);
+	const webpackInfo = buildWebpack(options);
 
-	const startServers = () => {
-		// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
-		// server.
-		let startJsServer = startDummyJsServer;
+	const allStartingPromises = [];
 
-		if (!jsUrl) {
-			// if jsUrl is not set, we need to start up a JS server, either hot load
-			// or static.
-			startJsServer = hot ? startHotLoadJsServer : startStaticJsServer;
-		}
-
-		logger.notice("Starting servers...")
-
-		const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
-
-		return {
-			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
-			started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
-				.catch(e => {logger.error(e); throw e})
-				.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
-		};
+	if (hot || compileOnStartup) {
+		allStartingPromises.push(webpackInfo.client.compiledPromise);
+		allStartingPromises.push(webpackInfo.server.compiledPromise);
 	}
 
-	return startServers();
+	logger.notice("Starting server...");
+
+	const htmlServerPromise = startHtmlServer(options, webpackInfo);
+	allStartingPromises.push(htmlServerPromise.started);
+
+	if (hot) {
+		const configWatcher = watchConfigurationFiles(htmlServerPromise, options);
+	}
+
+	return {
+		stop: () => Promise.all([htmlServerPromise.stop()]),
+		started: Promise.all(allStartingPromises)
+			.catch(e => {
+				logger.error(e);
+				throw e
+			})
+			.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
+	};
 }
 
 
 // given the server routes file and a port, start a react-server HTML server at
 // http://host:port/. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlewarePath) => {
+const startHtmlServer = (options, webpackInfo) => {
+	const {
+		port,
+		bindIp,
+		httpsOptions,
+		customMiddlewarePath,
+		hot,
+		longTermCaching,
+		compileOnStartup,
+	} = options;
+
+	let webpackDevMiddlewareInstance;
 	const server = express();
-	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
+
+	if (hot) {
+		// We don't need to add the server compiler to anything because the clientCompiler runs the serverCompiler
+		webpackDevMiddlewareInstance = WebpackDevMiddleware(webpackInfo.client.compiler, {
+			//noInfo: (options.logLevel !== "debug"),
+			noInfo: true,
+			lazy: false,
+			publicPath: webpackInfo.client.config.output.publicPath,
+			log: logger.debug,
+			warn: logger.warn,
+			error: logger.error,
+		});
+		server.use(webpackDevMiddlewareInstance);
+		server.use(WebpackHotMiddleware(webpackInfo.client.compiler, {
+			log: logger.info,
+			path: '/__react_server_hmr__',
+		}));
+	} else {
+		if (compileOnStartup) {
+			// Only compile the webpack configs manually if we're not in hot mode and compileOnStartup is true
+			logger.notice("Compiling Webpack bundle prior to starting server...");
+			webpackInfo.client.compiler.run((err, stats) => {
+				const error = handleCompilationErrors(err, stats);
+			});
+		}
+
+		server.use('/', compression(), express.static(`__clientTemp/build`, {
+			maxage: longTermCaching ? '365d' : '0s',
+		}));
+	}
+
 	let middlewareSetup = (server, rsMiddleware) => {
 		server.use(compression());
 		server.use(bodyParser.urlencoded({ extended: false }));
 		server.use(bodyParser.json());
+
+		expressState.extend(server);
+
+		// parse cookies into req.cookies property
+		server.use(cookieParser());
+
+		// sets the namespace that data will be exposed into client-side
+		// TODO: express-state doesn't do much for us until we're using a templating library
+		server.set('state namespace', '__reactServerState');
+
 		rsMiddleware();
-	}
-
-	return {
-		stop: serverToStopPromise(httpServer),
-		started: new Promise((resolve, reject) => {
-			logger.info("Starting HTML server...");
-
-			let rsMiddlewareCalled = false;
-			const rsMiddleware = () =>  {
-				rsMiddlewareCalled = true;
-				reactServer.middleware(server, require(serverRoutes));
-			}
-
-			if (customMiddlewarePath) {
-				const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
-				middlewareSetup = require(customMiddlewareDirAb).default;
-			}
-
-			middlewareSetup(server, rsMiddleware);
-
-			if (!rsMiddlewareCalled) {
-				console.error("Error react-server middleware was never setup in custom middleware function");
-				reject("Custom middleware did not setup react-server middleware");
-				return;
-			}
-
-			httpServer.on('error', (e) => {
-				console.error("Error starting up HTML server");
-				console.error(e);
-				reject(e);
-			});
-			httpServer.listen(port, bindIp, (e) => {
-				if (e) {
-					reject(e);
-					return;
-				}
-				logger.info(`Started HTML server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
-				resolve();
-			});
-		}),
 	};
-};
 
-// given a webpack compiler and a port, compile the JavaScript code to static
-// files and start up a web server at http://host:port/ that serves the
-// static compiled JavaScript. returns an object with two properties, started and stop;
-// see the default function doc for explanation.
-const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptions) => {
-	const server = express();
-	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
+	const webServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 	return {
-		stop: serverToStopPromise(httpServer),
+		stop: serverToStopPromise(webServer, webpackDevMiddlewareInstance),
 		started: new Promise((resolve, reject) => {
-			compiler.run((err, stats) => {
-				const error = handleCompilationErrors(err, stats);
-				if (error) {
-					reject(error);
+			webpackInfo.server.routesFile.then(() => {
+				logger.info("Starting react-server...");
+
+				// Currently this refers to the first route in the webpack server config.  This will need to be changed
+				// when server-side chunking is enabled.
+				const serverEntryPoint = path.join(webpackInfo.paths.serverOutputDirAbsolute,
+					Object.keys(webpackInfo.paths.serverEntryPoints)[0] + ".bundle.js");
+
+				let rsMiddlewareCalled = false;
+				const rsMiddleware = () => {
+					rsMiddlewareCalled = true;
+					server.use((req, res, next) => {
+						reactServer.middleware(req, res, next, require(serverEntryPoint));
+					});
+				};
+
+				if (customMiddlewarePath) {
+					const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
+					middlewareSetup = require(customMiddlewareDirAb).default;
+				}
+
+				middlewareSetup(server, rsMiddleware);
+
+				if (!rsMiddlewareCalled) {
+					logger.error("Error react-server middleware was never setup in custom middleware function");
+					reject("Custom middleware did not setup react-server middleware");
 					return;
 				}
 
-				logger.debug("Successfully compiled static JavaScript.");
-				// TODO: make this parameterized based on what is returned from compileClient
-				server.use('/', compression(), express.static(`__clientTemp/build`, {
-					maxage: longTermCaching ? '365d' : '0s',
-				}));
-				logger.info("Starting static JavaScript server...");
-
-				httpServer.on('error', (e) => {
-					console.error("Error starting up JS server");
-					console.error(e);
-					reject(e)
+				webServer.on('error', (e) => {
+					logger.error("Error starting up react-server");
+					logger.error(e);
+					reject(e);
 				});
-				httpServer.listen(port, bindIp, (e) => {
+				webServer.listen(port, bindIp, (e) => {
 					if (e) {
 						reject(e);
 						return;
 					}
-
-					logger.info(`Started static JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
+					logger.info(`Started react-server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
 					resolve();
 				});
 			});
@@ -159,70 +182,17 @@ const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptio
 	};
 };
 
-// given a webpack compiler and a port, start a webpack dev server that is ready
-// for hot reloading at http://localhost:port/. note that the webpack compiler
-// must have been configured correctly for hot reloading. returns an object with
-// two properties, started and stop; see the default function doc for explanation.
-const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOptions) => {
-	logger.info("Starting hot reload JavaScript server...");
-	const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));
-	const jsServer = new WebpackDevServer(compiler, {
-		noInfo: true,
-		hot: true,
-		headers: { 'Access-Control-Allow-Origin': '*' },
-		https: !!httpsOptions,
-		key: httpsOptions ? httpsOptions.key : undefined,
-		cert: httpsOptions ? httpsOptions.cert : undefined,
-		ca: httpsOptions ? httpsOptions.ca : undefined,
-	});
-	const serverStartedPromise = new Promise((resolve, reject) => {
-		jsServer.listen(port, bindIp, (e) => {
-			if (e) {
-				reject(e);
-				return;
-			}
-			resolve();
-		});
-	});
-	return {
-		stop: serverToStopPromise(jsServer),
-		started: Promise.all([compiledPromise, serverStartedPromise])
-			.then(() => logger.info(`Started hot reload JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`)),
-	};
-};
-
-// for when you need to run the JavaScript compiler (in order to get the chunk file
-// names for the server routes file) but don't really want to actually up a JavaScript
-// server. Supports the same signature as startStaticJsServer and startHotLoadJsServer,
-// returning the same {stop, started} object.
-const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) => {
-	return {
-		stop: () => Promise.resolve(),
-		started: new Promise((resolve, reject) => compiler.run((err, stats)=> {
-		// even though we aren't using the compiled code (we're pointing at jsUrl),
-		// we still need to run the compilation to get the chunk file names.
-			try {
-				handleCompilationErrors(err, stats);
-			} catch (e) {
-				logger.emergency("Failed to compile the local code.", e.stack);
-				reject(e);
-				return;
-			}
-			resolve();
-		})),
-	};
-};
-
 // returns a method that can be used to stop the server. the returned method
 // returns a promise to indicate when the server is actually stopped.
-const serverToStopPromise = (server) => {
+const serverToStopPromise = (server, webpackDevMiddlewareInstance) => {
 
 	const sockets = [];
 
-	// If we're testing then we want to be able to bail out quickly.  Zombie
+	// If we're hot reloading then we want to be able to bail out quickly.  Zombie
 	// (the test browser) makes keepalive connections to our static asset
 	// server, and we don't need to be polite to it when we're tearing down.
-	if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
+	// The Client-side HMR is also a ServerSentEvent with a long-running socket connection
+	if (process.env.NODE_ENV !== "production") { // eslint-disable-line no-process-env
 		server.on('connection', socket => sockets.push(socket));
 	}
 
@@ -232,11 +202,15 @@ const serverToStopPromise = (server) => {
 			// This will only have anything if we're testing.  See above.
 			sockets.forEach(socket => socket.destroy());
 
+			if (webpackDevMiddlewareInstance) {
+				webpackDevMiddlewareInstance.close();
+			}
+
 			server.on('error', (e) => {
 				logger.error('An error was emitted while shutting down the server');
 				logger.error(e);
 				reject(e);
-			})
+			});
 			server.close((e) => {
 				if (e) {
 					logger.error('The server was not started, so it cannot be stopped.');
@@ -244,8 +218,78 @@ const serverToStopPromise = (server) => {
 					reject(e);
 					return;
 				}
+				logger.notice('The server stopped.');
 				resolve();
 			});
 		});
 	};
+};
+
+function buildWebpack(options) {
+	let webpackInfo = buildWebpackConfigs(options);
+
+	if (options.hot || options.compileOnStartup) {
+		CHUNK_HASHES = {};
+
+		webpackInfo = buildWebpackCompilers(options, webpackInfo);
+		webpackInfo.client.compiledPromise = new Promise((resolve) => webpackInfo.client.compiler.plugin("done", () => resolve()));
+		webpackInfo.server.compiledPromise = new Promise((resolve) => webpackInfo.server.compiler.plugin("done", (stats) => {
+			if (options.hot && stats.compilation.errors.length === 0) {
+				// This is the meat of the server side "hot reloading" code.  Essentially, we look iterate over the named
+				// chunks and, if their hashes are different from what we last saw, we delete the "require.cache" entry.
+				// The next time that file is "require()'d", NodeJS will read it from disk.
+				let chunk,
+					absoluteFilename;
+				for (let chunkName in stats.compilation.namedChunks) {
+					if (stats.compilation.namedChunks.hasOwnProperty(chunkName)) {
+						chunk = stats.compilation.namedChunks[chunkName];
+						if (typeof CHUNK_HASHES[chunkName] !== "undefined" && CHUNK_HASHES[chunkName] !== chunk.hash) {
+							for (let i in chunk.files) {
+								absoluteFilename = path.join(webpackInfo.paths.serverOutputDirAbsolute, chunk.files[i]);
+								logger.notice(`chunk ${chunkName} changed, hot reloading: ${absoluteFilename}`);
+								delete require.cache[absoluteFilename];
+							}
+						}
+						CHUNK_HASHES[chunkName] = chunk.hash;
+					}
+				}
+			}
+			resolve();
+		}));
+	}
+
+	return webpackInfo;
+}
+
+function watchConfigurationFiles(serverObj, options) {
+	const cwd = process.cwd();
+	const staticConfigFiles = [
+		path.resolve(cwd, ".reactserverrc"),
+		options.routesPath,
+	];
+
+	if (options.webpackConfig) {
+		staticConfigFiles.push(path.resolve(cwd, options.webpackConfig));
+	}
+	if (options.webpackClientConfig) {
+		staticConfigFiles.push(path.resolve(cwd, options.webpackClientConfig));
+	}
+	if (options.webpackServerConfig) {
+		staticConfigFiles.push(path.resolve(cwd, options.webpackServerConfig));
+	}
+
+	staticConfigFiles.forEach((path) => delete require.cache[path]);
+
+	logger.info("Watching react-server configuration files for changes: ", staticConfigFiles);
+	const watcher = chokidar.watch(staticConfigFiles);
+
+	watcher.on('change', (path) => {
+		logger.info(`File ${path} has been changed, restarting server`);
+		watcher.close();
+		serverObj.stop().then(() => {
+			reactServerCliRun({ command: "start" });
+		});
+	});
+
+	return watcher;
 }
