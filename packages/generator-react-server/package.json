@@ -29,16 +29,16 @@
     "yosay": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
-    "nsp": "^2.6.2",
-    "react-server-cli": "^0.5.1",
-    "rimraf": "^2.5.4",
-    "yeoman-assert": "^2.0.0",
-    "yeoman-test": "^1.0.0",
+    "ava": "^0.17.0",
     "babel-eslint": "^7.0.0",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
-    "shell-escape": "^0.2.0"
+    "nsp": "^2.6.2",
+    "react-server-cli": "^0.5.1",
+    "rimraf": "^2.5.4",
+    "shell-escape": "^0.2.0",
+    "yeoman-assert": "^2.0.0",
+    "yeoman-test": "^1.0.0"
   },
   "repository": "redfin/react-server",
   "scripts": {
