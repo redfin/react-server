@@ -138,13 +138,13 @@ test('react-server-cli:parseCliArgs::httpsOptions will be an object containing k
 		...defaultArgs,
   		'compile',
   		'--https-key',
-  		'../.babelrc',
+  		'.babelrc',
   		'--https-cert',
-  		'../.babelrc'
+  		'.babelrc'
   	];
   	const parsedArgs = await parseCliArgs(args);
-  	t.is(parsedArgs.httpsKey, '../.babelrc', 'httpsKey is ../.babelrc');
-  	t.is(parsedArgs.httpsCert, '../.babelrc', 'httpsCert is ../.babelrc');
+  	t.is(parsedArgs.httpsKey, '.babelrc', 'httpsKey is .babelrc');
+  	t.is(parsedArgs.httpsCert, '.babelrc', 'httpsCert is .babelrc');
 
   	t.is(typeof parsedArgs.httpsOptions, 'object', 'httpsOptions is an object');
   	t.true(Buffer.isBuffer(parsedArgs.httpsOptions.key), 'httpsOptions property key is a buffer from reading a file');
@@ -267,7 +267,3 @@ test('react-server-cli:parseCliArgs::longTermCaching option can be turned on usi
   	t.is(parsedArgs.longTermCaching, true, 'longTermCaching is true');
   	t.true(Object.keys(defaultOptions).indexOf('longTermCaching') > -1, 'longTermCaching key exists in defaultOptions');
 });
-
-
-
-

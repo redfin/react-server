@@ -61,10 +61,10 @@ A `react-server` page that serves a full webpage.
 
 ```js
 import HttpStatus from 'http-status-codes';
-import MobileEnabled from ('./middleware/MobileEnabled');
-const ExampleComponent = require("./components/example-component");
-const ExampleStore = require("./stores/example-store");
-const exampleAction = require("./actions/example-action");
+import MobileEnabled from './middleware/MobileEnabled';
+import ExampleComponent from './components/example-component';
+import ExampleStore from './stores/example-store';
+import exampleAction from './actions/example-action';
 
 class ExamplePage {
 	// See [writing middleware](/docs/writing-middleware) for how to write middleware
@@ -122,9 +122,9 @@ class ExamplePage {
 
 ```js
 // returns a promise for example data
-const getExampleData = require("./helpers/get-example-data");
+import getExampleData from './helpers/get-example-data';
 
-module.exports = class ExampleJsonPage {
+export default class ExampleJsonPage {
 
 	// see the example in [writing middleware](/docs/writing-middleware)
 	static middleware() { return [JsonEndpoint] }
@@ -147,8 +147,8 @@ For instance, to make a page into a fragment by setting the `isFragment` config
 value
 
 ```js
-const exampleComponent = require("./components/example-component");
-const exampleStore = require("./stores/example-store");
+import exampleComponent from './components/example-component';
+import exampleStore from './stores/example-store';
 
 export default class ExampleFragmentPage {
 	setConfigValues() { return { isFragment: true }; }
@@ -172,7 +172,7 @@ export default class ExampleFragmentPage {
 	}
 }
 
-module.exports = ExamplePage;
+export default ExamplePage;
 ```
 
 

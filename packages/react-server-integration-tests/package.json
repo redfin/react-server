@@ -8,6 +8,13 @@
     "clean": "rimraf target __clientTemp test-temp npm-debug.log*"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-register": "^6.18.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-filter": "^4.0.0",
+    "gulp-jasmine": "^2.4.2",
     "lodash": "^4.16.4",
     "mkdirp": "^0.5.1",
     "q": "1.4.1",
@@ -16,14 +23,7 @@
     "react-server": "^0.5.1",
     "react-server-cli": "^0.5.1",
     "rimraf": "^2.5.4",
-    "gulp": "^3.9.1",
-    "babel-register": "^6.18.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
-    "gulp-babel": "^6.1.2",
-    "gulp-filter": "2.0.0",
-    "gulp-jasmine": "^2.4.2",
-    "zombie": "^4.3.0"
+    "zombie": "^5.0.5"
   },
   "version": "0.5.1"
 }
