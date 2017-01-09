@@ -4,7 +4,7 @@ const tagger = require('../../..');
 gulp.task('default', () => {
 	gulp.src('actual.js')
 		.pipe(tagger({
-			token: "__OZZIE_ALONSO__",
+			token: "__JOEVIN_JONES__",
 		}))
 		.pipe(gulp.dest('build'));
 });

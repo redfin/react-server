@@ -31,7 +31,11 @@ module.exports = function() {
 					const prefix = state.opts.prefix;
 					const parent = path.resolve(path.join(process.cwd(), '..')) + path.sep;
 					const filePath = this.file.opts.filename.replace(parent, '');
-					const options = JSON.parse(loggerSpec({ filePath, trim, prefix, opts: {label: node.arguments[0].properties[0].value.value} }));
+					const opts = {};
+					node.arguments[0].properties.forEach(prop => {
+						opts[prop.key.name] = prop.value.value;
+					});
+					const options = JSON.parse(loggerSpec({ filePath, trim, prefix, opts }));
 
 					p.replaceWith(convertObjectToObjectExpression(options));
 				}
