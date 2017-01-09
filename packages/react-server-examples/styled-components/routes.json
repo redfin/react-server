@@ -1,0 +1,9 @@
+{
+  "middleware": [],
+  "routes": {
+    "Homepage": {
+      "path": "/",
+      "page": "pages/hello-world.js"
+    }
+  }
+}
