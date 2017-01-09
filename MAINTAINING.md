@@ -35,3 +35,9 @@ Asini do most of the setup work for us, though:
 - `git add annotated-src`
 - `git commit --amend`
 - `git push -f upstream gh-pages`
+
+### Merging pull requests
+
+As React Server is growing the number of contributers and maintainers, our policy around
+merging pull requests needs to grow to accomodate.  Feel confident merging any pull
+request that has at least one approval from another maintainer (one that is not yourself).
