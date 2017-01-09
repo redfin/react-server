@@ -8,11 +8,13 @@
     "nuke": "asini clean && rm -r node_modules",
     "changelog": "asini-changelog",
     "debug": "cat asini-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done",
-    "postinstall": "npm run bootstrap-no-i"
+    "postinstall": "npm run bootstrap-no-i",
+    "update-dependencies": "david u && asini exec david u"
   },
   "devDependencies": {
     "asini": "1.3.0",
-    "asini-changelog": "^1.1.0"
+    "asini-changelog": "^1.1.0",
+    "david": "^9.0.0"
   },
   "engine": {
     "node": ">4.2.1"

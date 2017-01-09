@@ -34,12 +34,12 @@ function getSpecGlob (prefix) {
 	return specs;
 }
 gulp.task("compile", () => {
-	const jsFilter = filter("**/*.js");
+	const jsFilter = filter("**/*.js", {restore:true});
 
 	return gulp.src("src/**")
 		.pipe(jsFilter)
 			.pipe(babel())
-		.pipe(jsFilter.restore())
+		.pipe(jsFilter.restore)
 		.pipe(gulp.dest("target"));
 });
 
