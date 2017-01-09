@@ -7,8 +7,8 @@ import del from 'del';
 getTestCases().forEach((dir) => {
   test(`testing fixture in ${dir}`, async t => {
     await runGulp(dir);
-    const expected = await readFile(path.join('fixtures', dir, 'expected.js'));
-    const actual = await readFile(path.join('fixtures', dir, 'build', 'actual.js'));
+    const expected = await readFile(path.join('test', 'fixtures', dir, 'expected.js'));
+    const actual = await readFile(path.join('test', 'fixtures', dir, 'build', 'actual.js'));
     t.is(actual.toString(), expected.toString());
   });
 });
@@ -26,13 +26,13 @@ test.after.always('cleanup', async t => {
   const promises = [];
   const fixtures = getTestCases();
   fixtures.forEach(fixture => {
-    promises.push(del(path.join('fixtures', fixture, 'build')));
+    promises.push(del(path.join('test', 'fixtures', fixture, 'build')));
   })
   await Promise.all(promises);
 });
 
 function getTestCases() {
-  return fs.readdirSync('fixtures');
+  return fs.readdirSync(path.join('test', 'fixtures'));
 }
 
 function readFile(filename) {
