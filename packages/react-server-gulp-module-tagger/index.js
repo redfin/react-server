@@ -22,7 +22,7 @@ module.exports = function(config) {
 	config.basePath = module.filename.replace(THIS_MODULE,'');
 	return forEach(function(stream, file){
 		return stream.pipe(replace(REPLACE_TOKEN, (match, optString) => {
-			const opts = optString ? {label: optString.replace(/.+label:\s?"(\w+)".+/, "$1")} : undefined;
+			const opts = optString ? {label: optString.replace(/.+label:\s?["|'](\w+)["|'].+/, "$1")} : undefined;
 			return loggerSpec({
 				filePath: file.path,
 				basePath: config.basePath,
