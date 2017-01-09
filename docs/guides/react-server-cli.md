@@ -143,7 +143,7 @@ export default (webpackConfig) => {
 In the `.reactserverrc` file add an option for `webpackConfig` that points to that function file and when React Server is setting up Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed. This may also be specified on the command line with the `--webpack-config=<FILE>` option.
 
 ### Use Custom Express Middleware
-Currently the default Express Middlewares used are compression, body-parser, cookie-parser. If you need to setup custom express middleware you can do it with a setup function.
+Currently the default Express Middlewares used are compression, body-parser, cookie-parser, helmet with default configuration. If you need to setup custom express middleware you can do it with a setup function.
 
 ```javascript
 export default (server, reactServerMiddleware) => {
