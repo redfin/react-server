@@ -13,10 +13,5 @@ module.exports = {
 			method: 'get',
 			page: './pages/network',
 		},
-		NetworkApi: {
-			path: ['/api/networks'],
-			method: 'get',
-			page: './api/network',
-		},
 	},
 };
