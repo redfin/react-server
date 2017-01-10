@@ -1,11 +1,20 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { ReactServerAgent } from 'react-server'
 
 class Counter extends Component {
   constructor(props) {
     super(props)
     this.incrementAsync = this.incrementAsync.bind(this)
     this.incrementIfOdd = this.incrementIfOdd.bind(this)
+  }
+
+  static init() {
+    return ReactServerAgent.get('http://localhost:3000/count').then( (res) => {
+      return JSON.parse(res.text).payload;
+    }).catch( (error) => {
+      console.log(error);
+    });
   }
 
   incrementIfOdd() {

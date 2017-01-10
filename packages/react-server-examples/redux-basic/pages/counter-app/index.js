@@ -8,8 +8,15 @@ import store from '../store'
 
 export default class CounterPage {
   getElements() {
+    const counterPromise = Counter.init();
+
+    const storeUpdatedPromise = counterPromise.then( (count) => {
+      store.dispatch({type: 'INIT', val: count})
+      return count;
+    });
+
     return [
-      <RootElement key={0}>
+      <RootElement key={0} when={storeUpdatedPromise}>
         <Provider store={store}>
           <Counter
             value={store.getState()}
@@ -17,7 +24,7 @@ export default class CounterPage {
             onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
           />
         </Provider>
-      </RootElement>,
+      </RootElement>
     ]
   }
 
