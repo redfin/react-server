@@ -13,7 +13,7 @@ const NetworkList = ({networks}) => {
 };
 
 NetworkList.propTypes = {
-	networks: React.PropTypes.array
+	networks: React.PropTypes.array,
 };
 
 NetworkList.displayName = 'NetworkList';

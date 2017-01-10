@@ -9,6 +9,7 @@
   "license": "Apache License 2.0",
   "scripts": {
     "prepublish": "gulp build",
+    "lint": "gulp eslint",
     "test": "gulp test",
     "clean": "rimraf target npm-debug.log*"
   },

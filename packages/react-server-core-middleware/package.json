@@ -7,7 +7,8 @@
     "prepublish": "npm run build",
     "build": "babel src -d lib",
     "clean": "rimraf lib",
-    "test": "eslint src"
+    "lint": "eslint src",
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
