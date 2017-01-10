@@ -295,6 +295,11 @@ Path to your webpack options callback function file.
 
 Defaults to **undefined**.
 
+#### --config-path
+Path to configuration files such as .reactserverrc, .eslintrc and .babelrc.
+
+Defaults to **undefined**.
+
 #### --long-term-caching
 Adds hashes to all JavaScript and CSS file names output by the build, allowing
 for the static files to be served with far-future expires headers. This option
