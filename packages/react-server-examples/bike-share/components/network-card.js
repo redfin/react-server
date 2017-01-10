@@ -18,10 +18,10 @@ NetworkCard.propTypes = {
 		city: React.PropTypes.string,
 		country: React.PropTypes.string,
 		latitude: React.PropTypes.number,
-		longitude: React.PropTypes.number
+		longitude: React.PropTypes.number,
 	}),
 	name: React.PropTypes.string,
-	stations: React.PropTypes.array
+	stations: React.PropTypes.array,
 };
 
 NetworkCard.displayName = 'NetworkCard';
