@@ -5,6 +5,7 @@
   "main": "target/index.js",
   "scripts": {
     "prepublish": "gulp",
+    "lint": "gulp eslint",
     "test": "npm run ava && gulp test && nsp check",
     "ava": "ava test",
     "clean": "rimraf target npm-debug.log*"

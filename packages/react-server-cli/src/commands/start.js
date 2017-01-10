@@ -91,7 +91,7 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 				middlewareSetup = require(customMiddlewareDirAb).default;
 			}
 
-			middlewareSetup(server, rsMiddleware);
+				middlewareSetup(server, rsMiddleware);
 
 			if (!rsMiddlewareCalled) {
 				console.error("Error react-server middleware was never setup in custom middleware function");

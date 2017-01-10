@@ -7,6 +7,7 @@
   "scripts": {
     "prepublish": "gulp build",
     "start": "react-server start",
+    "lint": "gulp eslint",
     "test": "gulp test",
     "clean": "rimraf npm-debug.log* __clientTemp target"
   },
