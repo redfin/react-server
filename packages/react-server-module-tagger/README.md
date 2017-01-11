@@ -15,8 +15,8 @@ Then require and call the function.
 ```javascript
 const tagger = require('react-server-module-tagger');
 const filePath = 'path/to/my/output.js';
-const optString = '({label:"foo"})'
-const moduleTag = tagger({ filePath, trim: 'path/to', optString });
+const opts = {label:"foo"};
+const moduleTag = tagger({ filePath, trim: 'path/to', opts });
 ```
 
 returns a logger instance that will have consistent coloring on the server and

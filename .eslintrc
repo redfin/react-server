@@ -44,7 +44,7 @@
     "indent": [
       2,
       "tab",
-      { SwitchCase: 1 }
+      { "SwitchCase": 1 }
     ],
     "key-spacing": 0,
     "keyword-spacing": 2,

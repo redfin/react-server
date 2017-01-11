@@ -1,6 +1,6 @@
 import React from 'react';
 import {logging} from 'react-server';
-import styled, {ThemeProvider} from 'styled-components';
+import {ThemeProvider} from 'styled-components';
 
 import Banner from './banner';
 import CenteredDiv from './centered-div';
@@ -16,14 +16,14 @@ export default class HelloWorld extends React.Component {
 
 		this.state = {
 			exclamationCount: 0,
-			theme: oddButTrendy
+			theme: oddButTrendy,
 		};
 
 		this.handlePrimaryClick = () => {
 			logger.info(`Getting more excited! previously ${this.state.exclamationCount} excitements.`);
 			this.setState({
 				exclamationCount: this.state.exclamationCount + 1,
-				theme: this.state.theme
+				theme: this.state.theme,
 			});
 		};
 
@@ -31,7 +31,7 @@ export default class HelloWorld extends React.Component {
 			logger.info(`Changing theme.  Previously ${this.state.theme.name}.`)
 			this.setState({
 				theme: this.state.theme.name === oddButTrendy.name ? ladbrokes : oddButTrendy,
-				exclamationCount: this.state.exclamationCount
+				exclamationCount: this.state.exclamationCount,
 			});
 		}
 	}

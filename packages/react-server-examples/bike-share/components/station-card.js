@@ -26,8 +26,8 @@ StationCard.propTypes = {
 		latitude: React.PropTypes.number,
 		longitude: React.PropTypes.number,
 		name: React.PropTypes.string,
-		timestamp: React.PropTypes.string
-	})
+		timestamp: React.PropTypes.string,
+	}),
 };
 
 StationCard.displayName = 'StationCard';

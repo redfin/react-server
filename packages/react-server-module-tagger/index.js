@@ -3,31 +3,24 @@ var isWindows = ('win32' === process.platform);
 /**
  * A util function for tagging modules.
  * @example
- *     tagger({filePath: '/path/to/my/file.js', trim: 'path.to.', optString: '({label: "foo"})')
+ *     tagger({filePath: '/path/to/my/file.js', trim: 'path.to.', opts: {label: "foo"})
  *     // returns '{\"label\":\"foo\",\"name\":\"my.file\",\"color\":{\"server\":87,\"client\":\"rgb(42,212,212)\"}}'
  * @param  {String} filePath  The path to the file
- * @param  {String} optString The label to add to the module tag, in the form '({label:"$label"})'
+ * @param  {String} opts      The options, including a label, to add to the module tag
  * @param  {String} trim      The prefix to remove from the logger name
  * @param  {String} basePath  The path to the root of the project
  * @param  {String} prefix    A prefix to prepend to the logger name
  * @return {String}           A json object containing a module identifier
  */
 module.exports = function(arg){
-	var optString = arg.optString
+	var opts = arg.opts || {}
 	,   fn   = arg.filePath
 	,   trim = arg.trim || ''
 	,   basePath = arg.basePath || ''
 	,   prefix = arg.prefix
-	,   opts = {}
 
 	if (fn.indexOf(basePath) !== 0) {
 		throw new Error("Unable to handle " + basePath + " for " + fn);
-	}
-
-	if (optString) {
-		// The slash replacement here is so we don't choke on example
-		// loggers in comments.
-		opts = new Function("return "+optString.replace(/^\/\//mg,''))(); // eslint-disable-line no-new-func
 	}
 
 	opts.name  = getName  (fn, opts, trim, basePath, prefix);
@@ -109,7 +102,7 @@ var getColor = (function(){
 	// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
 	var hash = function(str){
 		var hash = 0, i, chr, len;
-		if (str.length === 0) return hash;
+		if (!str || str.length === 0) return hash;
 		for (i = 0, len = str.length; i < len; i++) {
 			chr   = str.charCodeAt(i);
 			hash  = ((hash << 5) - hash) + chr;

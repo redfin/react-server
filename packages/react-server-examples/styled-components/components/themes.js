@@ -10,9 +10,9 @@ export const oddButTrendy = {
 		primaryButtonLightColor: oddButTrendyPrimaryButtonColor.lighten(0.2).hexString(),
 		secondaryButtonColor: oddButTrendySecondaryButtonColor.hexString(),
 		secondaryButtonLightColor: oddButTrendySecondaryButtonColor.lighten(0.2).hexString(),
-		bannerTextColor: '#680148'
+		bannerTextColor: '#680148',
 	},
-	name: 'oddButTrendy'
+	name: 'oddButTrendy',
 }
 
 // from http://www.colourlovers.com/palette/154405/Ladbrokes
@@ -24,7 +24,7 @@ export const ladbrokes = {
 		primaryButtonLightColor: ladbrokesPrimaryButtonColor.lighten(0.2).hexString(),
 		secondaryButtonColor: ladbrokesSecondaryButtonColor.hexString(),
 		secondaryButtonLightColor: ladbrokesSecondaryButtonColor.lighten(0.2).hexString(),
-		bannerTextColor: '#F00000'
+		bannerTextColor: '#F00000',
 	},
-	name: 'ladbrokes'
+	name: 'ladbrokes',
 }
