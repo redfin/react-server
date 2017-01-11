@@ -31,18 +31,11 @@ module.exports = function() {
 					const prefix = state.opts.prefix;
 					const parent = path.resolve(path.join(process.cwd(), '..')) + path.sep;
 					const filePath = this.file.opts.filename.replace(parent, '');
-					const options = JSON.parse(loggerSpec({ filePath, trim, prefix }));
-
-					// We're assuming that the options string will only ever contain a
-					// single option, `label`, and that users won't call a tag as a
-					// function without providing a label.  It's the only key we support
-					// (at least, its the only one documented in the gulp module tagger),
-					// but if we ever support more, we'll need to pass the arguments as a
-					// string to loggerSpec (probably by using babel-generator to generate
-					// the code again from the ast) or change the module tagger to take an
-					// options object, rather than a string.
-					const arg = node.arguments[0];
-					options.label = arg.properties[0].value.value;
+					const opts = {};
+					node.arguments[0].properties.forEach(prop => {
+						opts[prop.key.name] = prop.value.value;
+					});
+					const options = JSON.parse(loggerSpec({ filePath, trim, prefix, opts }));
 
 					p.replaceWith(convertObjectToObjectExpression(options));
 				}
