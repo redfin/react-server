@@ -27,7 +27,7 @@ export default function run(options = {}) {
 	try {
 		options.routes = require(options.routesPath);
 	} catch (e) {
-		// Pass. Commands need to check for routes themselves.
+		console.error(e);
 	}
 
 	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
