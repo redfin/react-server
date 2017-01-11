@@ -4,8 +4,7 @@
 - `npm config get registry`
     - Make sure it's `https://registry.npmjs.org/`
 - `npm run clean`
-- optionally: `npm run nuke && npm run bootstrap`
-- `asini run prepublish`
+- `npm run nuke && npm run bootstrap`
 - `npm test`
 - `export GITHUB_AUTH="..."`
 - `npm run changelog >> CHANGELOG.md`
