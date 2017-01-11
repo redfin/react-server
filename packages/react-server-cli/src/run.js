@@ -23,12 +23,7 @@ export default function run(options = {}) {
 
 	options.routesPath = path.resolve(process.cwd(), routesFile);
 	options.routesDir = path.dirname(options.routesPath);
-
-	try {
-		options.routes = require(options.routesPath);
-	} catch (e) {
-		console.error(e);
-	}
+	options.routes = require(options.routesPath);
 
 	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
 
