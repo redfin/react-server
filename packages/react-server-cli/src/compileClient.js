@@ -33,6 +33,9 @@ export default (opts = {}) => {
 		stats = false,
 		longTermCaching = false,
 	} = opts;
+
+	// support legacy webpack configuration name
+	const webpackConfiguration = webpackConfig || opts['webpack-config'];
 	if (longTermCaching && hot) {
 		// chunk hashes can't be used in hot mode, so we can't use long-term caching
 		// and hot mode at the same time.
@@ -40,8 +43,8 @@ export default (opts = {}) => {
 	}
 
 	let webpackConfigFunc = (data) => { return data };
-	if (webpackConfig) {
-		const webpackDirAbsolute = path.resolve(process.cwd(), webpackConfig);
+	if (webpackConfiguration) {
+		const webpackDirAbsolute = path.resolve(process.cwd(), webpackConfiguration);
 		const userWebpackConfigFunc = require(webpackDirAbsolute);
 		webpackConfigFunc = userWebpackConfigFunc.default
 	}

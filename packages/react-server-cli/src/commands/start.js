@@ -4,6 +4,7 @@ import path from "path"
 import express from "express"
 import compression from "compression"
 import bodyParser from "body-parser"
+import helmet from "helmet"
 import WebpackDevServer from "webpack-dev-server"
 import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
@@ -106,6 +107,7 @@ const startServer = (serverRoutes, options, compiler) => {
 		server.use(compression());
 		server.use(bodyParser.urlencoded({ extended: false }));
 		server.use(bodyParser.json());
+		server.use(helmet());
 		rsMiddleware();
 	};
 
@@ -181,4 +183,6 @@ export default function start(options) {
 			})
 			.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
 	};
+
+	return startServers();
 }

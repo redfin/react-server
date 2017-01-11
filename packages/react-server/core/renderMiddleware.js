@@ -391,26 +391,28 @@ function renderMetaTags (pageObject, res) {
 
 	var metaTagsRendered = metaTags.map(metaTagPromise => {
 		return metaTagPromise.then(PageUtil.makeArray).then(metaTags => metaTags.forEach(metaTag => {
-			// TODO: escaping
-			if ((metaTag.name && metaTag.httpEquiv) || (metaTag.name && metaTag.charset) || (metaTag.charset && metaTag.httpEquiv)) {
-				throw new Error("Meta tag cannot have more than one of name, httpEquiv, and charset", metaTag);
+			if (metaTag) {
+				// TODO: escaping
+				if ((metaTag.name && metaTag.httpEquiv) || (metaTag.name && metaTag.charset) || (metaTag.charset && metaTag.httpEquiv)) {
+					throw new Error("Meta tag cannot have more than one of name, httpEquiv, and charset", metaTag);
+				}
+
+				if ((metaTag.name && !metaTag.content) || (metaTag.httpEquiv && !metaTag.content)) {
+					throw new Error("Meta tag has name or httpEquiv but does not have content", metaTag);
+				}
+
+				if (metaTag.noscript) res.write(`<noscript>`);
+				res.write(`<meta`);
+
+				if (metaTag.name) res.write(` name="${attrfy(metaTag.name)}"`);
+				if (metaTag.httpEquiv) res.write(` http-equiv="${attrfy(metaTag.httpEquiv)}"`);
+				if (metaTag.charset) res.write(` charset="${attrfy(metaTag.charset)}"`);
+				if (metaTag.property) res.write(` property="${attrfy(metaTag.property)}"`);
+				if (metaTag.content) res.write(` content="${attrfy(metaTag.content)}"`);
+
+				res.write(`>`)
+				if (metaTag.noscript) res.write(`</noscript>`);
 			}
-
-			if ((metaTag.name && !metaTag.content) || (metaTag.httpEquiv && !metaTag.content)) {
-				throw new Error("Meta tag has name or httpEquiv but does not have content", metaTag);
-			}
-
-			if (metaTag.noscript) res.write(`<noscript>`);
-			res.write(`<meta`);
-
-			if (metaTag.name)      res.write(` name="${attrfy(metaTag.name)}"`);
-			if (metaTag.httpEquiv) res.write(` http-equiv="${attrfy(metaTag.httpEquiv)}"`);
-			if (metaTag.charset)   res.write(` charset="${attrfy(metaTag.charset)}"`);
-			if (metaTag.property)  res.write(` property="${attrfy(metaTag.property)}"`);
-			if (metaTag.content)   res.write(` content="${attrfy(metaTag.content)}"`);
-
-			res.write(`>`)
-			if (metaTag.noscript) res.write(`</noscript>`);
 		}));
 	});
 
@@ -422,16 +424,17 @@ function renderLinkTags (pageObject, res) {
 
 	var linkTagsRendered = linkTags.map(linkTagPromise => {
 		return linkTagPromise.then(PageUtil.makeArray).then(linkTags => linkTags.forEach(linkTag => {
+			if (linkTag) {
+				if (!linkTag.rel) {
+					throw new Error(`<link> tag specified without 'rel' attr`);
+				}
 
-			if (!linkTag.rel) {
-				throw new Error(`<link> tag specified without 'rel' attr`);
+				res.write(`<link ${PAGE_LINK_NODE_ID} ${
+					Object.keys(linkTag)
+						.map(attr => `${attr}="${attrfy(linkTag[attr])}"`)
+						.join(' ')
+					}>`);
 			}
-
-			res.write(`<link ${PAGE_LINK_NODE_ID} ${
-				Object.keys(linkTag)
-					.map(attr => `${attr}="${attrfy(linkTag[attr])}"`)
-					.join(' ')
-			}>`);
 		}));
 	});
 
@@ -1067,3 +1070,9 @@ function getNonInternalConfigs() {
 	});
 	return nonInternal;
 }
+
+module.exports._testFunctions = {
+	renderMetaTags,
+	renderLinkTags,
+	renderBaseTag,
+};

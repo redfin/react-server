@@ -4,7 +4,8 @@
   "description": "A gulp plugin to replace tags with module information",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/test.js && eslint index.js && nsp check",
+    "lint": "eslint index.js",
+    "test": "ava test/test.js && npm run lint && nsp check",
     "clean": "rimraf target npm-debug.log*"
   },
   "repository": "redfin/react-server",

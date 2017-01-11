@@ -8,7 +8,8 @@
     "build-assets": "npm run docs && NODE_ENV=production react-server compile",
     "start-prod": "NODE_ENV=production react-server start",
     "start": "react-server start",
-    "test": "eslint routes.js gulpfile.js pages/ components/ && nsp check",
+    "lint": "eslint routes.js gulpfile.js pages/ components/ middleware/ lib/",
+    "test": "npm run lint && nsp check",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },
   "license": "Apache-2.0",
