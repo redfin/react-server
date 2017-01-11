@@ -17,6 +17,14 @@ module.exports = {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
 	},
+	RootProvider: {
+		entry: "/root/rootProvider",
+		description: "<RootProvider store={...}>",
+	},
+	ReduxAdapter: {
+		entry: "/root/reduxAdapter",
+		description: "Redux Adapter basics",
+	},
 	RootError: {
 		entry: "/root/error",
 		description: "A data error for a root element",
