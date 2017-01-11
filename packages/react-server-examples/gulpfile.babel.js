@@ -2,7 +2,7 @@ import eslint from "gulp-eslint";
 import gulp from "gulp";
 
 gulp.task("eslint", [], () => {
-	return gulp.src(["./hello-world/*.js"])
+	return gulp.src(["./**/*.js", '!node_modules/**'])
         // eslint() attaches the lint output to the eslint property
         // of the file object so it can be used by other modules.
         .pipe(eslint())

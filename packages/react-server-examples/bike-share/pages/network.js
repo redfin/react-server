@@ -38,7 +38,7 @@ export default class NetworkPage {
 			</RootElement>,
 			<RootElement key={4}>
 				<Footer/>
-			</RootElement>
+			</RootElement>,
 		];
 	}
 
@@ -47,7 +47,7 @@ export default class NetworkPage {
 			{charset: 'utf8'},
 			{name: 'description', content: `Bike share availability in ${this.network}, powered by React Server`},
 			{generator: 'React Server'},
-			{keywords: 'React Server bike share'}
+			{keywords: 'React Server bike share'},
 		];
 	}
 

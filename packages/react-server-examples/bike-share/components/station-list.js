@@ -11,7 +11,7 @@ const StationList = ({stations}) => {
 };
 
 StationList.propTypes = {
-	stations: React.PropTypes.array
+	stations: React.PropTypes.array,
 };
 
 StationList.displayName = 'StationList';

@@ -9,6 +9,7 @@
   "license": "Apache License 2.0",
   "scripts": {
     "prepublish": "gulp build",
+    "lint": "gulp eslint",
     "test": "gulp test",
     "clean": "rimraf target npm-debug.log*"
   },
@@ -64,6 +65,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-sourcemaps": "^2.2.0",
+    "memory-stream": "0.0.3",
     "react": "~0.14.2 || ^15.1.0",
     "react-dom": "~0.14.2 || ^15.1.0",
     "react-server-gulp-module-tagger": "^0.4.10",
