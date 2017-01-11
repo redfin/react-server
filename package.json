@@ -5,7 +5,7 @@
     "bootstrap-no-i": "asini bootstrap",
     "test": "asini run test",
     "clean": "rimraf asini-debug.log && asini run clean",
-    "nuke": "asini clean && rm -r node_modules",
+    "nuke": "npm run clean && asini clean",
     "changelog": "asini-changelog",
     "debug": "cat asini-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done",
     "postinstall": "npm run bootstrap-no-i",
