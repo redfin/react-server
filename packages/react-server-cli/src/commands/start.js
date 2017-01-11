@@ -97,7 +97,7 @@ const startServer = (serverRoutes, options, compiler) => {
 		});
 
 		expressServer = express();
-		expressServer.use('/', compression(), express.static(`__clientTemp/build`, {
+		expressServer.use('/', express.static(`__clientTemp/build`, {
 			maxage: longTermCaching ? '365d' : '0s',
 		}));
 		httpServer = httpsOptions ? https.createServer(httpsOptions, expressServer) : http.createServer(expressServer);
@@ -183,6 +183,4 @@ export default function start(options) {
 			})
 			.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
 	};
-
-	return startServers();
 }
