@@ -3,6 +3,8 @@ var { Provider } = require('react-redux');
 
 class RootProvider extends React.Component {
 	render() {
+		if (!this.props.store) throw("Error Root Provider expects a store passed in as a prop");
+
 		let wrappedElements = []
 		if (Array.isArray(this.props.children)) {
 			this.props.children.forEach((element) => {

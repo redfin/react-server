@@ -7,8 +7,8 @@ module.exports = class ReduxAdapter {
 	}
 
 	//Search the state for the values we are waiting on
-	//State Values are either undefined or need to be null
-	//TODO: Create a special enum for this
+	//State is considered ready when the waiting value is neither
+	//undefined or null
 	checkStateStatus() {
 		const state = this.store.getState();
 		const stateKeys = Object.keys(this.stateWaitMap);
@@ -22,7 +22,7 @@ module.exports = class ReduxAdapter {
 				for (let y = 0; y < keys.length; y++) {
 					const key = keys[y];
 					if (!searchState.hasOwnProperty(key) || searchState[key] == null) {
-						//exit we arent there yet :(
+						//exit we arent ready yet :(
 						isSatisfied = false;
 						break;
 					}
@@ -40,7 +40,7 @@ module.exports = class ReduxAdapter {
 	//This implementation will watch for state changes and resolve once the state values
 	//are available
 	when(stateProps) {
-		let promises = stateProps.map((stateProp) => {
+		const promises = stateProps.map((stateProp) => {
 			if (!this.stateWaitMap.hasOwnProperty(stateProp)) {
 				this.stateWaitMap[stateProp] = Q.defer();
 			}
@@ -48,7 +48,7 @@ module.exports = class ReduxAdapter {
 			return this.stateWaitMap[stateProp].promise;
 		});
 
-		//Check it immediately once
+		//Check for state immediately once
 		this.checkStateStatus();
 		const unsub = this.store.subscribe(this.checkStateStatus.bind(this));
 
