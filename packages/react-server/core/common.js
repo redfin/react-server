@@ -19,4 +19,8 @@ module.exports = {
 	logging: require("./logging"),
 	config: require("./config"),
 	ReactServerAgent: require('./ReactServerAgent'),
-}
+
+	// This variable is defined as part of the gulp build process.  The "client" package will set isBrowser === true.
+	// The "server" package will set isBrowser === false.
+	isBrowser: !SERVER_SIDE,
+};
