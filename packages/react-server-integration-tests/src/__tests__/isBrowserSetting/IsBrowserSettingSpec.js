@@ -9,7 +9,7 @@ describe("isBrowser setting", () => {
 
 	describe("is accurate", () => {
 		it ("on server", (done) => {
-			helper.getServerDocument("/isBrowserSetting", (document) =>{
+			helper.getServerDocument("/isBrowserSetting", (document) => {
 				expect(document.querySelector("span#answer").innerHTML).toBe("false");
 				done();
 			});
