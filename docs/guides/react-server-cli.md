@@ -96,7 +96,7 @@ It looks like this:
 
 ```json
 {
-	"routes": "routes.json",
+	"routesFile": "routes.json",
 	"port": "5000",
 	"env": {
 		"production": {
