@@ -73,3 +73,18 @@ In the example above:
 - Elements are always rendered in-order.
 - The initial render is always the _same_ as the server render.
 - Elements may re-render if `listen` emitters fire after the initial render.
+
+## Render Context
+Even in isomorphic applications, it is sometimes important for a component to execute some action only on the server or
+in the browser.  There is a variable available at load time that time you can test to determine if the component is
+running in the browser or not:
+
+```javascript
+import { isBrowser } from "react-server";
+
+if (isBrowser) {
+    // do something when in the browser
+} else {
+    // do something different when on the server
+}
+```
