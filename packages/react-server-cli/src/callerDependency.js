@@ -13,7 +13,5 @@ export default function callerDependency(dep) {
 	} else {
 		lookupResult = lookup("node_modules/" + dep, {cwd: cwd});
 	}
-	console.log('cwd: ', cwd);
-	console.log(lookupResult);
 	return lookupResult;
 }

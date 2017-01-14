@@ -55,6 +55,10 @@ describe("compileClient", () => {
 
 				const coreMiddlewareStringified = JSON.stringify(require.resolve("react-server-core-middleware"));
 				const filePathStringified = JSON.stringify(filePath);
+
+				// These four strings are important when using multiple platforms or strings with weird characters in them.
+				// If we're going to output something to a file and then import that file later, we'd better be darn sure
+				// it's all correctly formatted!  Apostrophes, quotes, and windows-style file path characters \ vs / are the worst!
 				const filePathRegexStrings = [
 					"var coreJsMiddleware = require(" + coreMiddlewareStringified + ").coreJsMiddleware;",
 					"var coreCssMiddleware = require(" + coreMiddlewareStringified + ").coreCssMiddleware;",
