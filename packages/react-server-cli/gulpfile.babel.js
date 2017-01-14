@@ -1,7 +1,20 @@
 import eslint from "gulp-eslint";
 import gulp from "gulp";
 import babel from "gulp-babel";
+import jasmine from "gulp-jasmine";
 import logging from "react-server-gulp-module-tagger";
+
+function getSpecGlob (prefix) {
+	// add a wildcard onto the end if no file extension or wildcard
+	// currently present
+	let specGlob = "*[Ss]pec.js";
+	if (!specGlob.endsWith(".js") && !specGlob.endsWith("*")) {
+		specGlob += "*";
+	}
+
+	const specs = prefix + specGlob;
+	return specs;
+}
 
 gulp.task("default", () => {
 	return gulp.src("src/**/*.js")
@@ -24,7 +37,11 @@ gulp.task("eslint", [], () => {
 });
 
 // there are no tests for this project :(
-gulp.task("test", ["eslint"]);
+gulp.task("test", ["default", "eslint"], () => {
+	process.env.NODE_ENV = "__react-server-cli-unit-test__"; // eslint-disable-line no-process-env
+	return gulp.src(getSpecGlob("target/__tests__/**/"))
+		.pipe(jasmine({verbose:true, includeStackTrace: true}));
+});
 
 gulp.task("watch", () => {
 	gulp.watch("src/*.js", ['default']);

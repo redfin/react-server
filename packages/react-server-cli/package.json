@@ -59,6 +59,8 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^3.0.1",
+    "gulp-jasmine": "^2.4.2",
+    "memory-stream": "0.0.3",
     "nsp": "^2.6.2",
     "react-hot-loader": "^1.3.1",
     "react-server-gulp-module-tagger": "^0.4.10",
