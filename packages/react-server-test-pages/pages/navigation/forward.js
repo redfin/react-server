@@ -1,4 +1,4 @@
-import {ReactServerAgent} from "react-server";
+import {ReactServerAgent, isBrowser} from "react-server";
 
 export default class ForwardPage {
 	handleRoute() {
@@ -16,8 +16,7 @@ export default class ForwardPage {
 		return this.data.then((res) => {
 			//then depending on said data, forward to one of two pages, and pass along the data we pre-fetched
 			const pageName = (res.body % 2 === 0) ? "./forwardEven" : "./forwardOdd";
-			// TODO: change this to use isBrowser when that check is available.
-			if (typeof window !== 'undefined') {
+			if (isBrowser) {
 				return require.ensure([pageName], () => {
 					return {
 						page: require(pageName).default,
