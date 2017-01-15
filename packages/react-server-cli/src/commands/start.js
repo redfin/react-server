@@ -119,23 +119,23 @@ const startServer = (serverRoutes, options, compiler) => {
 			serverRoutes.then((serverRoutesFile) => {
 				logger.info("Starting react-server...");
 
-			    let rsMiddlewareCalled = false;
-	    		const rsMiddleware = () => {
-	    			rsMiddlewareCalled = true;
+				let rsMiddlewareCalled = false;
+				const rsMiddleware = () => {
+					rsMiddlewareCalled = true;
 
-	    			expressState.extend(server);
+					expressState.extend(expressServer);
 
-	    			// parse cookies into req.cookies property
-	    			server.use(cookieParser());
+					// parse cookies into req.cookies property
+					expressServer.use(cookieParser());
 
-	    			// sets the namespace that data will be exposed into client-side
-	    			// TODO: express-state doesn't do much for us until we're using a templating library
-	    			server.set('state namespace', '__reactServerState');
+					// sets the namespace that data will be exposed into client-side
+					// TODO: express-state doesn't do much for us until we're using a templating library
+					expressServer.set('state namespace', '__reactServerState');
 
-	    			server.use((req, res, next) => {
-	    				reactServer.middleware(req, res, next, require(serverRoutesFile));
-	    			});
-	    		};
+					expressServer.use((req, res, next) => {
+						reactServer.middleware(req, res, next, require(serverRoutesFile));
+					});
+				};
 
 				if (customMiddlewarePath) {
 					const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);
