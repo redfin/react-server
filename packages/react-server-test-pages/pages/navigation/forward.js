@@ -15,31 +15,18 @@ export default class ForwardPage {
 
 		return this.data.then((res) => {
 			//then depending on said data, forward to one of two pages, and pass along the data we pre-fetched
-			if (res.body % 2 === 0) {
-				if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
-					return require.ensure(["./forwardEven"], () => {
-						return {
-							page: require("./forwardEven").default,
-						};
-					});
-				} else {
-					return {
-						page: require("./forwardEven").default,
-					};
-				}
-			} else {
-				if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
-					return require.ensure(["./forwardOdd"], () => {
-						return {
-							page: require("./forwardOdd").default,
-						};
-					});
-				} else {
-					return {
-						page: require("./forwardOdd").default,
-					};
-				}
-			}
+			const pageName = (res.body % 2 === 0) ? "./forwardEven" : "./forwardOdd";
+            if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
+            	return require.ensure([pageName], () => {
+	            	return {
+	            		page: require(pageName).default,
+	            	};
+            	});
+            } else {
+            	return {
+	            	page: require(pageName).default,
+            	};
+            }
 		});
 	}
 
