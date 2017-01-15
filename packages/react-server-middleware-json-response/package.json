@@ -6,7 +6,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "babel index.src.js --out-file index.js",
-    "clean": "rm index.js",
+    "clean": "rimraf index.js",
     "test": "eslint src"
   },
   "repository": {
