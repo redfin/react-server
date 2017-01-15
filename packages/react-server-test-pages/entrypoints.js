@@ -29,6 +29,10 @@ module.exports = {
 		entry: "/navigation/playground",
 		description: "Navigation playground",
 	},
+	Forwarding: {
+		entry: "/navigation/forward",
+		description: "Test how page forwarding works with passing data down",
+	},
 	StylePromises: {
 		entry: "/styles/promises",
 		description: "Stylesheets returned from promises",
@@ -48,5 +52,17 @@ module.exports = {
 	ErrorLogs: {
 		entry: "/error/logs",
 		description: "Generate errors in the logs",
+	},
+	BottleneckElements: {
+		entry: "/bottleneck/elements",
+		description: "Test if number of elements on a page is a bottleneck",
+	},
+	BottleneckDataRequests: {
+		entry: "/bottleneck/dataRequests",
+		description: "Test if number of data requests on a page is a bottleneck",
+	},
+	BottleneckMiddleware: {
+		entry: "/bottleneck/middleware",
+		description: "Test if amount of middleware on a page is a bottleneck",
 	},
 }

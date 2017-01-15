@@ -9,6 +9,7 @@
       "enhancement": "Enhancement",
       "performance": "Performance",
       "bug": "Bug fix",
+      "documentation": "Documentation",
       "security": "Security"
     },
     "cacheDir": ".changelog"

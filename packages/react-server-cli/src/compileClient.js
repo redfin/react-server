@@ -4,9 +4,9 @@ import mkdirp from "mkdirp"
 import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
-import crypto from "crypto"
 import StatsPlugin from "webpack-stats-plugin"
 import callerDependency from "./callerDependency"
+import serverSideHotModuleReload from "./serverSideHotModuleReload"
 
 
 // commented out to please eslint, but re-add if logging is needed in this file.
@@ -95,7 +95,13 @@ export default (opts = {}) => {
 				fs.unlinkSync(path.join(outputDir, "chunk-manifest.json"));
 			}
 
-			resolve(writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, manifest));
+			const routesFilePath = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, manifest);
+
+			if (hot) {
+				serverSideHotModuleReload(stats);
+			}
+
+			resolve(routesFilePath);
 		});
 	});
 
@@ -123,8 +129,14 @@ function statsToManifest(stats) {
 	for (const chunk of stats.compilation.chunks) {
 		if (chunk.name) {
 			jsChunksByName[chunk.name] = chunk.files[0];
-			if (chunk.files.length > 1) {
-				cssChunksByName[chunk.name] = chunk.files[1];
+
+			for (let i = 1; i < chunk.files.length; i++) {
+				if (/\.css$/.test(chunk.files[i])) {
+					// the CSS file is probably last file in the array, unless there have been hot updates for the JS
+					// which show up in the array prior to the CSS file.
+					cssChunksByName[chunk.name] = chunk.files[i];
+					break;
+				}
 			}
 		}
 		jsChunksById[chunk.id] = chunk.files[0];
@@ -329,8 +341,7 @@ module.exports = {
 	const routesContent = routesOutput.join("");
 	// make a unique file name so that when it is required, there are no collisions
 	// in the module loader between different invocations.
-	const routesMD5 = crypto.createHash('md5').update(routesContent).digest("hex");
-	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server_" + routesMD5}.js`;
+	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server"}.js`;
 	fs.writeFileSync(routesFilePath, routesContent);
 
 	return routesFilePath;

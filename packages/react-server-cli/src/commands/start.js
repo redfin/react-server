@@ -11,6 +11,8 @@ import handleCompilationErrors from "../handleCompilationErrors";
 import reactServer from "../react-server";
 import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
+import expressState from 'express-state';
+import cookieParser from 'cookie-parser';
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
@@ -117,11 +119,23 @@ const startServer = (serverRoutes, options, compiler) => {
 			serverRoutes.then((serverRoutesFile) => {
 				logger.info("Starting react-server...");
 
-				let rsMiddlewareCalled = false;
-				const rsMiddleware = () => {
-					rsMiddlewareCalled = true;
-					reactServer.middleware(expressServer, require(serverRoutesFile));
-				};
+			    let rsMiddlewareCalled = false;
+	    		const rsMiddleware = () => {
+	    			rsMiddlewareCalled = true;
+
+	    			expressState.extend(server);
+
+	    			// parse cookies into req.cookies property
+	    			server.use(cookieParser());
+
+	    			// sets the namespace that data will be exposed into client-side
+	    			// TODO: express-state doesn't do much for us until we're using a templating library
+	    			server.set('state namespace', '__reactServerState');
+
+	    			server.use((req, res, next) => {
+	    				reactServer.middleware(req, res, next, require(serverRoutesFile));
+	    			});
+	    		};
 
 				if (customMiddlewarePath) {
 					const customMiddlewareDirAb = path.resolve(process.cwd(), customMiddlewarePath);

@@ -206,7 +206,7 @@ without some sort of process/cluster manager if your application may throw an un
 
 Read this first: [http://expressjs.com/en/advanced/pm.html](http://expressjs.com/en/advanced/pm.html)
 
-Additionally, if you are running `react-server` on a machine with smaller amounts of memory (under 2GB), make sure to tune your node settings to start garbage collection at an appropriate time for your environment.  You can read more details here: http://fiznool.com/blog/2016/10/01/running-a-node-dot-js-app-in-a-low-memory-environment/
+Additionally, if you are running `react-server` on a machine with smaller amounts of memory (under 2GB), make sure to tune your node settings to start garbage collection at an appropriate time for your environment.  You can read more details here: [http://fiznool.com/blog/2016/10/01/running-a-node-dot-js-app-in-a-low-memory-environment/](http://fiznool.com/blog/2016/10/01/running-a-node-dot-js-app-in-a-low-memory-environment/)
 
 ## `pm2`
 If using [pm2](http://pm2.keymetrics.io) to start `react-server`, add a file called `pm2.yml` to the top level directory
