@@ -4,7 +4,6 @@ var ReactServerAgent = require("../../ReactServerAgent")
 ,   React = require("react")
 ,   ReactDOMServer = require("react-dom/server")
 ,   FragmentDataCache = require("../FragmentDataCache")
-,   isArray = require("lodash/isArray")
 ;
 
 var {
@@ -326,7 +325,7 @@ describe("FragmentDataCache", () => {
 	function getSingleEntry(parsedData, url) {
 		var entryOrArray = parsedData.dataCache[url];
 		// we expect a _single_ entry
-		expect(isArray(entryOrArray)).toBeFalsy();
+		expect(Array.isArray(entryOrArray)).toBeFalsy();
 		return entryOrArray;
 	}
 

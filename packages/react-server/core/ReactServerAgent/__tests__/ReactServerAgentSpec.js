@@ -1,8 +1,6 @@
 var ReactServerAgent = require("../../ReactServerAgent");
 var superagent = require("superagent");
 var Q = require("q");
-var isArray = require("lodash/isArray");
-
 
 var {
 	makeServer,
@@ -508,7 +506,7 @@ describe("ReactServerAgent", () => {
 				var dehydrated = cache.dehydrate();
 
 				// single entry; not an array
-				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
+				expect(Array.isArray(dehydrated.dataCache[URL])).toBeFalsy();
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
@@ -536,7 +534,7 @@ describe("ReactServerAgent", () => {
 				var cache = ReactServerAgent.cache();
 				var dehydrated = cache.dehydrate();
 
-				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
+				expect(Array.isArray(dehydrated.dataCache[URL])).toBeFalsy();
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
@@ -676,7 +674,7 @@ describe("ReactServerAgent", () => {
 	function getSingleDehydratedCacheEntry(dehydratedCache, url) {
 		var entryOrArray = dehydratedCache.dataCache[url];
 		// we expect a _single_ entry, i.e. not an array
-		expect(isArray(entryOrArray)).toBeFalsy();
+		expect(Array.isArray(entryOrArray)).toBeFalsy();
 		return entryOrArray;
 	}
 
