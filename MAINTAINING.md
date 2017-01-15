@@ -39,5 +39,7 @@ Asini do most of the setup work for us, though:
 ### Merging pull requests
 
 As React Server is growing the number of contributers and maintainers, our policy around
-merging pull requests needs to grow to accomodate.  Feel confident merging any pull
-request that has at least one approval from another maintainer (one that is not yourself).
+merging pull requests needs to grow to accomodate.  Documentation changes and bug fixes
+that include automated tests can be approved and merged by a single maintainer who is not
+the author. All other changes must be approved by two maintainers (who are not the
+author) prior to merging.
