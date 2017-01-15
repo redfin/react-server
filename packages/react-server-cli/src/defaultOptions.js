@@ -12,7 +12,7 @@
 //   with a self-signed certificate. if an object, it can include any of the options that can
 //   be passed to https.createServer.
 export default {
-	host: "localhost",
+	host: "0.0.0.0",
 	port:3000,
 	jsPort: 3001,
 	bindIp: "0.0.0.0",
