@@ -3,7 +3,6 @@ var logger = require('../logging').getLogger(__LOGGER__)
 ,	Q = require('q')
 ,	merge = require("lodash/merge")
 ,	isEqual = require("lodash/isEqual")
-,	isArray = require("lodash/isArray")
 ;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender
@@ -366,7 +365,7 @@ class RequestDataCache {
 			var entries = state.dataCache[url];
 			// convert entries to an array, if it was serialized as
 			// a single entry
-			entries = isArray(entries) ? entries : [entries];
+			entries = Array.isArray(entries) ? entries : [entries];
 			dataCache[url] = entries.map(entryData => {
 				var newEntry = new CacheEntry(this);
 				newEntry.rehydrate(entryData);
