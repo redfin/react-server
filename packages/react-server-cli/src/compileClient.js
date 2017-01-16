@@ -294,7 +294,7 @@ module.exports = {
 		// if the route doesn't have a method, we'll assume it's "get". routr doesn't
 		// have a default (method is required), so we set it here.
 		if (!route.method) {
-			route.method = "get";
+			route.method = ["get", "head"];
 		}
 
 		routesOutput.push(`
