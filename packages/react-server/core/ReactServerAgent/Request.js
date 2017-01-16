@@ -18,7 +18,7 @@ function Request(method, urlPath, cache) {
 	this._postParams = {};
 	this._headers = {};
 	this._timeout = null;
-	this._type = "json"; // superagent's default
+	this._type = "json"; // superagent's default, only for POST/PUT/PATCH methods
 
 	// public field
 	this.aborted = undefined; //default to undefined
@@ -206,34 +206,48 @@ function buildSuperagentRequest() {
 		req.agent(this._agent);
 	}
 
-	// superagent has some weird, implicit file upload support
-	// that only works if you don't set `type`.
-	if (this._type && this._type !== 'form-data') {
-		req.type(this._type);
-	}
-
 	req.set(this._headers);
-	this._queryParams.forEach(params => req.query(params));
 
-	var postParams = this._postParams;
+	switch (this._method) {
+		case 'GET':
+		case 'HEAD':
+			this._queryParams.forEach(params => req.query(params));
+			break;
 
-	// convert params to FormData if the request type is form-data
-	if (this._type === "form-data") {
-		if (!SERVER_SIDE) {
-			var formData = new FormData();
-			if (postParams) {
-				var paramKeys = Object.keys(postParams);
-				paramKeys.forEach(key => {
-					formData.append(key, postParams[key]);
-				});
+		case 'POST':
+		case 'PATCH':
+		case 'PUT':
+			// superagent has some weird, implicit file upload support
+			// that only works if you don't set `type`.
+			if (this._type && this._type !== 'form-data') {
+				req.type(this._type);
 			}
-			postParams = formData;
-		} else {
-			throw new Error(`ReactServerAgent.type("form-data") not allowed server-side`);
-		}
-	}
 
-	req.send(postParams);
+
+			var postParams = this._postParams;
+
+			// convert params to FormData if the request type is form-data
+			if (this._type === "form-data") {
+				if (!SERVER_SIDE) {
+					var formData = new FormData();
+					if (postParams) {
+						var paramKeys = Object.keys(postParams);
+						paramKeys.forEach(key => {
+							formData.append(key, postParams[key]);
+						});
+					}
+					postParams = formData;
+				} else {
+					throw new Error(`ReactServerAgent.type("form-data") not allowed server-side`);
+				}
+			}
+
+			if (postParams) {
+				req.send(postParams);
+			}
+
+			break;
+	}
 
 	if (this._timeout) {
 		req.timeout(this._timeout);
