@@ -10,7 +10,7 @@ A binding of URL paths to a Page class that can render the results for those URL
 
 * The HTTP method(s) that are acceptable.
 
-* Default: “get”
+* Default: [“get”, "head"]
 
 `page: Page`
 * The page to render
