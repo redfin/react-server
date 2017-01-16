@@ -62,7 +62,6 @@ describe("Navigator", () => {
 			url: "/postPage",
 		};
 		const expressRequest = new ExpressServerRequest(req);
-		console.log('method: ', expressRequest.getMethod());
 
 		requestContext.navigator.on('page', () => {
 			expect(expressRequest.getRouteName() === 'PostPage');
@@ -82,7 +81,6 @@ describe("Navigator", () => {
 			url: "/getAndPostPage",
 		};
 		const expressRequest = new ExpressServerRequest(req);
-		console.log('method: ', expressRequest.getMethod());
 
 		requestContext.navigator.on('page', () => {
 			expect(expressRequest.getRouteName() === 'GetAndPostPage');
@@ -101,7 +99,6 @@ describe("Navigator", () => {
 			url: "/getAndPostPage",
 		};
 		const expressRequest = new ExpressServerRequest(req);
-		console.log('method: ', expressRequest.getMethod());
 
 		requestContext.navigator.on('page', () => {
 			expect(expressRequest.getRouteName() === 'GetAndPostPage');
