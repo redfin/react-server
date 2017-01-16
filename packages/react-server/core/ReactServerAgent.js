@@ -20,7 +20,7 @@ var API = {
 
 	head (url, data) {
 		var req = new Request('HEAD', url, API.cache());
-		if (data) req.send(data);
+		if (data) req.query(data);
 		return req;
 	},
 
