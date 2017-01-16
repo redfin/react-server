@@ -291,14 +291,17 @@ module.exports = {
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
 
+		// if the route doesn't have a method, we'll assume it's "get". routr doesn't
+		// have a default (method is required), so we set it here.
+		if (!route.method) {
+			route.method = "get";
+		}
+
 		routesOutput.push(`
 		${routeName}: {`);
 		routesOutput.push(`
-			path: ${JSON.stringify(route.path)},`);
-		// if the route doesn't have a method, we'll assume it's "get". routr doesn't
-		// have a default (method is required), so we set it here.
-		routesOutput.push(`
-			method: "${route.method || "get"}",`);
+			path: ${JSON.stringify(route.path)},
+			method: ${JSON.stringify(route.method)},`);
 
 		let formats = normalizeRoutesPage(route.page);
 		routesOutput.push(`
