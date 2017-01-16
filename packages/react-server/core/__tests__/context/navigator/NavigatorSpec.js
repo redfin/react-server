@@ -1,7 +1,19 @@
-import RequestContext from "../../../context/RequestContext";
+import Navigator from "../../../context/Navigator";
 import History from "../../../components/History";
 import ExpressServerRequest from "../../../ExpressServerRequest";
 import NavigatorRoutes from "./NavigatorRoutes";
+
+class RequestContextStub {
+	constructor(options) {
+		this.navigator = new Navigator(this, options);
+	}
+	navigate (request, type) {
+		this.navigator.navigate(request, type);
+	}
+	framebackControllerWillHandle() { return false; }
+	getMobileDetect() { return null; }
+}
+
 
 describe("Navigator", () => {
 	let requestContext;
@@ -10,7 +22,8 @@ describe("Navigator", () => {
 	};
 
 	beforeEach(() => {
-		requestContext = new RequestContext(options);
+		//requestContext = new RequestContext(options);
+		requestContext = new RequestContextStub(options);
 	});
 	afterEach(() => {
 		requestContext = null;
@@ -34,6 +47,23 @@ describe("Navigator", () => {
 		requestContext.navigate(expressRequest, History.events.PAGELOAD);
 	});
 
+	it("routes to a basic page using an unspecified method HEAD", (done) => {
+		const req = {
+			method: "head",
+			protocol: "http",
+			secure: false,
+			hostname: "localhost",
+			url: "/basicPage",
+		};
+		const expressRequest = new ExpressServerRequest(req);
+
+		requestContext.navigator.on('page', () => {
+			expect(expressRequest.getRouteName() === 'BasicPage');
+			done();
+		});
+
+		requestContext.navigate(expressRequest, History.events.PAGELOAD);
+	});
 
 	it("routes to a page using a method GET (caps)", (done) => {
 		const req = {
