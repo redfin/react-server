@@ -22,7 +22,6 @@ describe("Navigator", () => {
 	};
 
 	beforeEach(() => {
-		//requestContext = new RequestContext(options);
 		requestContext = new RequestContextStub(options);
 	});
 	afterEach(() => {
