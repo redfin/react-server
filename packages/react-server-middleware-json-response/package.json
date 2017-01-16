@@ -7,7 +7,7 @@
     "prepublish": "npm run build",
     "build": "babel index.src.js --out-file index.js",
     "clean": "rimraf index.js",
-    "test": "eslint src"
+    "test": "eslint index.src.js"
   },
   "repository": {
     "type": "git",
