@@ -50,7 +50,7 @@ class Navigator extends EventEmitter {
 
 		this._haveInitialized = true;
 
-		var route = this.router.getRoute(request.getUrl(), {method: request.method});
+		var route = this.router.getRoute(request.getUrl(), {method: request.getMethod()});
 
 		if (route) {
 			logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
