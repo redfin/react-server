@@ -126,6 +126,4 @@ gulp.task("eslint", [], function() {
         .pipe(eslint.failAfterError());
 });
 
-// todo: where should tests go?
-
 // todo: add clean
