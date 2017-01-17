@@ -295,9 +295,9 @@ module.exports = {
 		// routr passes through and matches any method
 		// https://github.com/yahoo/routr/blob/v2.1.0/lib/router.js#L49-L57
 		let method = route.method;
-		if ((Array.isArray(route.method) && route.method.length === 0) ||
-			(typeof route.method === 'string' && route.method !== "")) {
-			// If it's an empty array or empty string, specifically set it to 'undefined'
+
+		// Safely check for an empty object, array, or string and specifically set it to 'undefined'
+		if (method === undefined || method === null || method === {} || method.length === 0) {
 			method = undefined; // 'undefined' is the value that routr needs to accept any method
 		}
 
