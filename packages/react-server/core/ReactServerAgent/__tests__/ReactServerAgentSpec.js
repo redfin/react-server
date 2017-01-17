@@ -170,7 +170,8 @@ describe("ReactServerAgent", () => {
 	describe("general POST requests", () => {
 
 		it("defaults to application/json", withRlsContext( (done) => {
-			ReactServerAgent.post("/describe")
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {blankData: true})
 				.then( res => {
 					// lowercase
 					expect(res.body.req.headers['content-type']).toBe("application/json");
@@ -180,7 +181,8 @@ describe("ReactServerAgent", () => {
 		}));
 
 		it("can be set to form-encoded", withRlsContext( (done) => {
-			ReactServerAgent.post("/describe")
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {blankData: true})
 				.type("form")
 				.then(res => {
 					// lowercase
