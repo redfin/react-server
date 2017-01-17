@@ -208,44 +208,53 @@ function buildSuperagentRequest() {
 
 	req.set(this._headers);
 
+	this._queryParams.forEach(params => req.query(params));
+
+	var postParams = this._postParams;
+
+	// convert params to FormData if the request type is form-data
+	if (this._type === "form-data") {
+		if (!SERVER_SIDE) {
+			var formData = new FormData();
+			if (postParams) {
+				var paramKeys = Object.keys(postParams);
+				paramKeys.forEach(key => {
+					formData.append(key, postParams[key]);
+				});
+			}
+			postParams = formData;
+		} else {
+			throw new Error(`ReactServerAgent.type("form-data") not allowed server-side`);
+		}
+	}
+
+	let hasQueryParams = (this._queryParams.length > 0),
+		hasPostParams = (Object.keys(this._postParams).length > 0);
+
+	if (hasPostParams) {
+		// superagent has some weird, implicit file upload support
+		// that only works if you don't set `type`.
+		if (this._type && this._type !== 'form-data') {
+			req.type(this._type);
+		}
+
+		req.send(postParams);
+	}
+
 	switch (this._method) {
 		case 'GET':
 		case 'HEAD':
-			this._queryParams.forEach(params => req.query(params));
+			if (hasPostParams) {
+				logger.warning(`Attempting a ${this._method} request with POST data (using SuperAgent's .send() function). This might result in a CORS preflight request`);
+			}
 			break;
 
 		case 'POST':
 		case 'PATCH':
 		case 'PUT':
-			// superagent has some weird, implicit file upload support
-			// that only works if you don't set `type`.
-			if (this._type && this._type !== 'form-data') {
-				req.type(this._type);
+			if (hasQueryParams) {
+				logger.info(`Attempting a ${this._method} request with query data (using SuperAgent's .query() function). This might not be what you want.`);
 			}
-
-
-			var postParams = this._postParams;
-
-			// convert params to FormData if the request type is form-data
-			if (this._type === "form-data") {
-				if (!SERVER_SIDE) {
-					var formData = new FormData();
-					if (postParams) {
-						var paramKeys = Object.keys(postParams);
-						paramKeys.forEach(key => {
-							formData.append(key, postParams[key]);
-						});
-					}
-					postParams = formData;
-				} else {
-					throw new Error(`ReactServerAgent.type("form-data") not allowed server-side`);
-				}
-			}
-
-			if (postParams) {
-				req.send(postParams);
-			}
-
 			break;
 	}
 
