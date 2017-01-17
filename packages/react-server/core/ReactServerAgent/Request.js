@@ -228,7 +228,7 @@ function buildSuperagentRequest() {
 		}
 	}
 
-	let hasQueryParams = (this._queryParams.length > 0),
+	const hasQueryParams = (this._queryParams.length > 0),
 		hasPostParams = (Object.keys(this._postParams).length > 0);
 
 	if (hasPostParams) {
