@@ -291,7 +291,7 @@ module.exports = {
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
 
-		// On the line below specifying 'method', if the route doesn't have a method, we'll assume it's [] so that
+		// On the line below specifying 'method', if the route doesn't have a method, we'll set it to `undefined` so that
 		// routr passes through and matches any method
 		// https://github.com/yahoo/routr/blob/v2.1.0/lib/router.js#L49-L57
 		let method = route.method;
