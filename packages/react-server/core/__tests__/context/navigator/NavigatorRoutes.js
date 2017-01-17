@@ -10,19 +10,39 @@ const pageWrapper = {
 };
 
 const Routes = {
-	"BasicPage": {
-		"path": ["/basicPage"],
+	"GetPage": {
+		"path": ["/getPage"],
 		"page": pageWrapper,
+		"method": "get",
 	},
-	"BasicPageCaps": {
-		"path": ["/basicPageCaps"],
+	"HeadPage": {
+		"path": ["/headPage"],
 		"page": pageWrapper,
-		"method": "GET", // this should be all caps because the req.getMethod() will return 'get'.
+		"method": "head",
 	},
 	"PostPage": {
 		"path": ["/postPage"],
 		"page": pageWrapper,
 		"method": "post",
+	},
+	"PatchPage": {
+		"path": ["/patchPage"],
+		"page": pageWrapper,
+		"method": "patch",
+	},
+	"PutPage": {
+		"path": ["/putPage"],
+		"page": pageWrapper,
+		"method": "put",
+	},
+	"GetPageCaps": {
+		"path": ["/getPageCaps"],
+		"page": pageWrapper,
+		"method": "GET", // this should be all caps because the req.getMethod() will return 'get'.
+	},
+	"GetAndHeadPage": {
+		"path": ["/getAndHeadPage"],
+		"page": pageWrapper,
 	},
 	"GetAndPostPage": {
 		"path": ["/getAndPostPage"],
