@@ -28,42 +28,6 @@ describe("Navigator", () => {
 		requestContext = null;
 	});
 
-	it("routes to a page using an unspecified method get", (done) => {
-		const req = {
-			method: "get",
-			protocol: "http",
-			secure: false,
-			hostname: "localhost",
-			url: "/getAndHeadPage",
-		};
-		const expressRequest = new ExpressServerRequest(req);
-
-		requestContext.navigator.on('page', () => {
-			expect(expressRequest.getRouteName() === 'GetAndHeadPage');
-			done();
-		});
-
-		requestContext.navigate(expressRequest, History.events.PAGELOAD);
-	});
-
-	it("routes to a page using an unspecified method HEAD", (done) => {
-		const req = {
-			method: "head",
-			protocol: "http",
-			secure: false,
-			hostname: "localhost",
-			url: "/getAndHeadPage",
-		};
-		const expressRequest = new ExpressServerRequest(req);
-
-		requestContext.navigator.on('page', () => {
-			expect(expressRequest.getRouteName() === 'GetAndHeadPage');
-			done();
-		});
-
-		requestContext.navigate(expressRequest, History.events.PAGELOAD);
-	});
-
 	it("routes to a page using a method GET (caps)", (done) => {
 		const req = {
 			method: "get",
@@ -74,10 +38,12 @@ describe("Navigator", () => {
 		};
 		const expressRequest = new ExpressServerRequest(req);
 
-		requestContext.navigator.on('page', () => {
-			expect(expressRequest.getRouteName() === 'GetPageCaps');
+		const navigatedToPage = () => {
+			expect(expressRequest.getRouteName()).toBe('GetPageCaps');
 			done();
-		});
+		};
+		requestContext.navigator.on('navigateDone', navigatedToPage);
+		requestContext.navigator.on('page', navigatedToPage);
 
 		requestContext.navigate(expressRequest, History.events.PAGELOAD);
 	});
@@ -92,10 +58,12 @@ describe("Navigator", () => {
 		};
 		const expressRequest = new ExpressServerRequest(req);
 
-		requestContext.navigator.on('page', () => {
-			expect(expressRequest.getRouteName() === 'GetAndPostPage');
+		const navigatedToPage = () => {
+			expect(expressRequest.getRouteName()).toBe('GetAndPostPage');
 			done();
-		});
+		};
+		requestContext.navigator.on('navigateDone', navigatedToPage);
+		requestContext.navigator.on('page', navigatedToPage);
 
 		requestContext.navigate(expressRequest, History.events.PAGELOAD);
 	});
@@ -110,10 +78,12 @@ describe("Navigator", () => {
 		};
 		const expressRequest = new ExpressServerRequest(req);
 
-		requestContext.navigator.on('page', () => {
-			expect(expressRequest.getRouteName() === 'GetAndPostPage');
+		const navigatedToPage = () => {
+			expect(expressRequest.getRouteName()).toBe('GetAndPostPage');
 			done();
-		});
+		};
+		requestContext.navigator.on('navigateDone', navigatedToPage);
+		requestContext.navigator.on('page', navigatedToPage);
 
 		requestContext.navigate(expressRequest, History.events.PAGELOAD);
 	});
@@ -138,10 +108,9 @@ describe("Navigator", () => {
 			};
 			const expressRequest = new ExpressServerRequest(req);
 
-			let navigatedToPage;
 			if (testingMethod === otherMethod) {
 				it(`does route to a page expecting ${otherMethod} using a method ${testingMethod}`, (done) => {
-					navigatedToPage = (err) => {
+					const navigatedToPage = (err) => {
 						const httpStatus = err.status || 200;
 						expect(httpStatus).toBe(200, `A route with method ${testingMethod} was not found when one should have been found.`);
 						done();
@@ -150,9 +119,73 @@ describe("Navigator", () => {
 					requestContext.navigator.on('page', navigatedToPage);
 					requestContext.navigate(expressRequest, History.events.PAGELOAD);
 				});
+
+				it("routes to a page that accepts all methods", (done) => {
+					const allMethodReq = {
+						method: otherMethod,
+						protocol: "http",
+						secure: false,
+						hostname: "localhost",
+						url: "/allMethodsPage",
+					};
+					const allMethodExpressRequest = new ExpressServerRequest(allMethodReq);
+
+					const navigatedToPage = (err) => {
+						const httpStatus = err.status || 200;
+						expect(httpStatus).toBe(200, `A route with method ${testingMethod} was not found for the AllMethodsPage.`);
+						expect(allMethodExpressRequest.getRouteName()).toBe('AllMethodsPage');
+						done();
+					};
+					requestContext.navigator.on('navigateDone', navigatedToPage);
+					requestContext.navigator.on('page', navigatedToPage);
+
+					requestContext.navigate(allMethodExpressRequest, History.events.PAGELOAD);
+				});
+
+				it("doesn't route to a page because the methods were set improperly with a 'null'", (done) => {
+					const noMethodReq = {
+						method: otherMethod,
+						protocol: "http",
+						secure: false,
+						hostname: "localhost",
+						url: "/nullMethodsPage",
+					};
+					const noMethodExpressRequest = new ExpressServerRequest(noMethodReq);
+
+					const navigatedToPage = (err) => {
+						const httpStatus = err.status || 200;
+						expect(httpStatus).toBe(404, `A route with method ${testingMethod} was found for the NullMethodsPage.`);
+						done();
+					};
+					requestContext.navigator.on('navigateDone', navigatedToPage);
+					requestContext.navigator.on('page', navigatedToPage);
+
+					requestContext.navigate(noMethodExpressRequest, History.events.PAGELOAD);
+				});
+
+				it("doesn't route to a page because the methods were set improperly with a '[]'", (done) => {
+					const noMethodReq = {
+						method: otherMethod,
+						protocol: "http",
+						secure: false,
+						hostname: "localhost",
+						url: "/emptyArrayMethodsPage",
+					};
+					const noMethodExpressRequest = new ExpressServerRequest(noMethodReq);
+
+					const navigatedToPage = (err) => {
+						const httpStatus = err.status || 200;
+						expect(httpStatus).toBe(404, `A route with method ${testingMethod} was found for the EmptyArrayMethodsPage.`);
+						done();
+					};
+					requestContext.navigator.on('navigateDone', navigatedToPage);
+					requestContext.navigator.on('page', navigatedToPage);
+
+					requestContext.navigate(noMethodExpressRequest, History.events.PAGELOAD);
+				});
 			} else {
 				it(`doesn't route to a page expecting ${otherMethod} using a method ${testingMethod}`, (done) => {
-					navigatedToPage = (err) => {
+					const navigatedToPage = (err) => {
 						const httpStatus = err.status || 200;
 						expect(httpStatus).toBe(404, `A route with method ${testingMethod} was found when one should not have been found.`);
 						done();

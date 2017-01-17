@@ -6,11 +6,13 @@ A binding of URL paths to a Page class that can render the results for those URL
 * A string or regex that will be tested against the path of the URL to
   determine if this route applies.
 
-`method, optional: String | [String]`
+`method, optional: undefined | String | [String]`
 
-* The HTTP method(s) that are acceptable.
+* The HTTP method(s) that are acceptable.  Use an array of strings to specify multiple methods.  Do not
+  set this value to `null` or `[]`.  To match all HTTP methods, either leave out the parameter altogether or explicitly
+  set the value to `undefined`.
 
-* Default: [“get”, "head"]
+* Default: undefined
 
 `page: Page`
 * The page to render

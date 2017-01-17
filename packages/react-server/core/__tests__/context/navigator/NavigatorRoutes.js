@@ -40,15 +40,27 @@ const Routes = {
 		"page": pageWrapper,
 		"method": "GET", // this should be all caps because the req.getMethod() will return 'get'.
 	},
-	"GetAndHeadPage": {
-		"path": ["/getAndHeadPage"],
-		"page": pageWrapper,
-	},
 	"GetAndPostPage": {
 		"path": ["/getAndPostPage"],
 		"page": pageWrapper,
 		"method": ["get", "post"],
 	},
+	"AllMethodsPage": {
+		"path": ["/allMethodsPage"],
+		"page": pageWrapper,
+		"method": undefined,
+	},
+	"NullMethodsPage": {
+		"path": ["/nullMethodsPage"],
+		"page": pageWrapper,
+		"method": null,
+	},
+	"EmptyArrayMethodsPage": {
+		"path": ["/emptyArrayMethodsPage"],
+		"page": pageWrapper,
+		"method": [],
+	},
+
 };
 
 export default Routes;

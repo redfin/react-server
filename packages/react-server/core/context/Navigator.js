@@ -50,9 +50,10 @@ class Navigator extends EventEmitter {
 
 		this._haveInitialized = true;
 
-		var route = this.router.getRoute(request.getUrl(), {method: request.getMethod()});
+		var route = this.router.getRoute(request.getUrl(), { method: request.getMethod() });
 
 		if (route) {
+			console.log(`Mapped ${request.getUrl()} to route ${route.name} when method = ${JSON.stringify(request.getMethod())}`);
 			logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
 		} else if (!request._frameback) {
 			this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);

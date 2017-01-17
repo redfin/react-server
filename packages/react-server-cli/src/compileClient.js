@@ -291,17 +291,20 @@ module.exports = {
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
 
-		// if the route doesn't have a method, we'll assume it's ["get", "head"]. routr doesn't
-		// have a default (method is required), so we set it here.
-		if (!route.method) {
-			route.method = ["get", "head"];
+		// On the line below specifying 'method', if the route doesn't have a method, we'll assume it's [] so that
+		// routr passes through and matches any method
+		// https://github.com/yahoo/routr/blob/v2.1.0/lib/router.js#L49-L57
+		let method = route.method;
+		if ((Array.isArray(route.method) && route.method.length === 0) ||
+			(typeof route.method === 'string' && route.method !== "")) {
+			// If it's an empty array or empty string, specifically set it to 'undefined'
+			method = undefined; // 'undefined' is the value that routr needs to accept any method
 		}
 
 		routesOutput.push(`
-		${routeName}: {`);
-		routesOutput.push(`
+		${routeName}: {
 			path: ${JSON.stringify(route.path)},
-			method: ${JSON.stringify(route.method)},`);
+			method: ${JSON.stringify(method)},`);
 
 		let formats = normalizeRoutesPage(route.page);
 		routesOutput.push(`
