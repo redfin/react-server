@@ -136,4 +136,25 @@ describe("Navigator", () => {
 
 		requestContext.navigate(expressRequest, History.events.PAGELOAD);
 	});
+
+
+	it("doesn't route to a page expecting POST using a method GET", (done) => {
+		const req = {
+			method: "get",
+			protocol: "http",
+			secure: false,
+			hostname: "localhost",
+			url: "/postPage",
+		};
+		const expressRequest = new ExpressServerRequest(req);
+
+		const navigatedToPage = (err) => {
+			const httpStatus = err.status || 200;
+			expect(httpStatus).toBe(404, "A route was found when one should not have been found.");
+			done();
+		};
+		requestContext.navigator.on('page', navigatedToPage);
+		requestContext.navigator.on('navigateDone', navigatedToPage);
+		requestContext.navigate(expressRequest, History.events.PAGELOAD);
+	});
 });
