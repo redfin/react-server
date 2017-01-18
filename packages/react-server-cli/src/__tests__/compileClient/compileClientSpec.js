@@ -1,11 +1,25 @@
 import fs from "fs";
 const MemoryStream = require('memory-stream');
 import path from "path";
-
-import { writeWebpackCompatibleRoutesFile } from "../../compileClient";
+import mockery from "mockery";
 
 describe("compileClient", () => {
-	let mockFs;
+	let mockFs,
+		writeWebpackCompatibleRoutesFile;
+
+	beforeAll(() => {
+		mockery.registerSubstitute('./callerDependency', './callerDependency-Mock');
+		mockery.enable({
+			useCleanCache: true,
+			warnOnUnregistered: false,
+		});
+
+		writeWebpackCompatibleRoutesFile = require("../../compileClient").writeWebpackCompatibleRoutesFile;
+	});
+
+	afterAll(() => {
+		mockery.disable();
+	});
 
 	describe("writes client routes file for Webpack", () => {
 		const pathStringTests = [

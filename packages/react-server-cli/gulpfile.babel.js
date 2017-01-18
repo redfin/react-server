@@ -37,7 +37,6 @@ gulp.task("eslint", [], () => {
 });
 
 gulp.task("test", ["default", "eslint"], () => {
-	process.env.NODE_ENV = "__react-server-cli-unit-test__"; // eslint-disable-line no-process-env
 	return gulp.src(getSpecGlob("target/__tests__/**/"))
 		.pipe(jasmine({}));
 });
