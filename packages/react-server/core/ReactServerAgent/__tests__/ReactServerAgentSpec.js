@@ -169,8 +169,20 @@ describe("ReactServerAgent", () => {
 
 	describe("general POST requests", () => {
 
-		it("defaults to application/json", withRlsContext( (done) => {
+		it("have no content-type set when there is no data passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
 			ReactServerAgent.post("/describe")
+				.then( res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe(undefined);
+					done();
+				})
+				.done();
+		}));
+
+		it("defaults to application/json when an empty object is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {})
 				.then( res => {
 					// lowercase
 					expect(res.body.req.headers['content-type']).toBe("application/json");
@@ -179,8 +191,33 @@ describe("ReactServerAgent", () => {
 				.done();
 		}));
 
-		it("can be set to form-encoded", withRlsContext( (done) => {
+		it("defaults to application/json when data is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {blankData: true})
+				.then( res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe("application/json");
+					done();
+				})
+				.done();
+		}));
+
+		it("type is not set to form-encoded when there is no data passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
 			ReactServerAgent.post("/describe")
+				.type("form")
+				.then(res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe(undefined);
+					// TODO: check data somehow?
+					done();
+				})
+				.done();
+		}));
+
+		it("can be set to form-encoded when data is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {blankData: true})
 				.type("form")
 				.then(res => {
 					// lowercase
