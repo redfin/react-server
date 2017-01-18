@@ -180,6 +180,17 @@ describe("ReactServerAgent", () => {
 				.done();
 		}));
 
+		it("defaults to application/json when an empty object is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {})
+				.then( res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe("application/json");
+					done();
+				})
+				.done();
+		}));
+
 		it("defaults to application/json when data is passed", withRlsContext( (done) => {
 			// This needs to pass some data or else the POST request won't have a content type set at all.
 			ReactServerAgent.post("/describe", {blankData: true})

@@ -15,7 +15,10 @@ function Request(method, urlPath, cache) {
 	this._cache = cache;
 
 	this._queryParams = [];
-	this._postParams = {};
+	// _postParams should initially be null instead of {} because we want to allow people to send POST requests with
+	// empty data sets (if they need to).  This way, we can differentiate between a default of null, an empty data set,
+	// and a populated data set.
+	this._postParams = null;
 	this._headers = {};
 	this._timeout = null;
 	this._type = "json"; // superagent's default, only for POST/PUT/PATCH methods
@@ -71,9 +74,14 @@ Request.prototype.query = function (queryParams) {
 
 Request.prototype.send = function (postParams) {
 	if (typeof postParams === 'undefined') {
-		return merge({}, this._postParams);
+		return merge({}, this._postParams || {});
 	}
-	merge(this._postParams, postParams);
+	if (postParams !== null) {
+		if (this._postParams === null) {
+			this._postParams = {};
+		}
+		merge(this._postParams, postParams);
+	}
 	return this;
 }
 
@@ -228,8 +236,10 @@ function buildSuperagentRequest() {
 		}
 	}
 
+	// query parameters exist if there are more than one set
+	// post parameters exist if the value is not null
 	const hasQueryParams = (this._queryParams.length > 0),
-		hasPostParams = (Object.keys(this._postParams).length > 0);
+		hasPostParams = (this._postParams !== null);
 
 	if (hasPostParams) {
 		// superagent has some weird, implicit file upload support
