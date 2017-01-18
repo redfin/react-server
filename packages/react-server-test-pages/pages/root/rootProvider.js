@@ -4,7 +4,7 @@ import {createStore} from "redux"; // eslint-disable-line
 import { connect } from 'react-redux'; // eslint-disable-line
 import React from 'react'; // eslint-disable-line
 
-function simpleReducer(state = {simpleValue: "Hello"}, action) {
+function simpleReducer(state = {simpleValue: "Hello"}) {
 	return state;
 }
 
@@ -20,7 +20,7 @@ BasicComponent.propTypes = {
 
 const mapStateToProps = function(state) {
 	return {
-		simpleValue: state.simpleValue
+		simpleValue: state.simpleValue,
 	}
 }
 
@@ -38,7 +38,7 @@ export default class RootProviderPage {
 					<BasicReduxComponent></BasicReduxComponent>
 				</RootElement>
 				<div>Basic Div</div>
-			</RootProvider>
+			</RootProvider>,
 		]
 	}
 }

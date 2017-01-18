@@ -22,6 +22,7 @@
     "react-server-cli": "^0.5.1",
     "react-server-data-bundle-cache": "^0.5.1",
     "react-server-middleware-json-response": "^0.4.13",
+    "react-server-redux": "^0.5.1",
     "redux-thunk": "^2.1.0",
     "eslint-plugin-react": "^6.4.1"
   },

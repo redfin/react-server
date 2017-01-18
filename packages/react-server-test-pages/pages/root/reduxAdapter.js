@@ -70,7 +70,7 @@ export default class ReduxAdapterPage {
 				<RootElement when={this._storeAdapter.when(['elementData'])}>
 					<BasicReduxComponent></BasicReduxComponent>
 				</RootElement>
-			</RootProvider>
+			</RootProvider>,
 		]
 	}
 }
