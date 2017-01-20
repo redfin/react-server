@@ -20,6 +20,9 @@ var stopFns = [];
 
 function getBrowser(opts) {
 	var browser = new Browser(opts);
+	if (process.env.DEBUG) {
+		browser.debug();
+	}
 	browser.silent = (!process.env.DEBUG);
 	browser.on('error', function (e) {
 		console.error("An error occurred running zombie tests", e);
@@ -107,7 +110,6 @@ var startServer = function (specFile, routes) {
 		routesFile: routesFile,
 		hot: false,
 		port: PORT,
-		jsPort: +PORT+1,
 		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",
