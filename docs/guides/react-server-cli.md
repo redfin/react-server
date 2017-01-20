@@ -132,10 +132,10 @@ React Server will take care of the default Webpack options but if you need to se
 ```javascript
 export default (webpackConfig) => {
 	// Insert a new sass and css loader before the default.
-	webpackConfig.module.loaders.splice(0, {
+	webpackConfig.module.loaders.unshift({
 		test: /\.s(a|c)ss$/,
 		loaders: ["style", "css", "sass", "customloader"],
-	})
+	});
 	return webpackConfig
 }
 ```
