@@ -191,6 +191,8 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setHasDocument     : makeSetter('hasDocument'),
 	getJsBelowTheFold  : makeGetter('jsBelowTheFold'),
 	setJsBelowTheFold  : makeSetter('jsBelowTheFold'),
+	getSplitJsLoad     : makeGetter('jsBelowTheFold'),
+	setSplitJsLoad     : makeSetter('jsBelowTheFold'),
 };
 
 // We log all method calls on the page chain for debugging purposes.

@@ -316,7 +316,7 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderTitle(pageObject, res),
 		// PLAT-602: inline scripts come before stylesheets because
 		// stylesheet downloads block inline script execution.
-		pageObject.getJsBelowTheFold()
+		(pageObject.getJsBelowTheFold() && !pageObject.getSplitJsLoad())
 			? Q()
 			: renderScripts(pageObject, res),
 		renderStylesheets(pageObject, res)
@@ -489,10 +489,15 @@ function renderScriptsAsync(scripts, res) {
 		res.write(DebugUtil.getLab() ? flab.src : flab.min);
 
 		// We always want scripts to be executed in order.
-		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
+		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true,UseCORSXHR:true});");
 
 		// We'll use this to store state between calls (see below).
 		res.write("window._tLAB=$LAB")
+
+		// If we're splitting our JS load from the execution of our JS then we
+		// need to tell LABjs to preload our bundles but hold off on executing
+		// them.
+		if (RLS().page.getSplitJsLoad()) res.write(".cork()");
 
 		// Only need to do this part once.
 		RLS().didLoadLAB = true;
@@ -919,9 +924,12 @@ function bootstrapClient(res, lastElementSent) {
 
 	logAboveTheFoldTime(res);
 
-	// If we've deferred _all_ JS below the fold then we need to kick off our
-	// fetch/load of the page JS now.
-	if (RLS().page.getJsBelowTheFold()) {
+	if (RLS().page.getSplitJsLoad()) {
+		// If we've corked our LABjs chain then we need to start executing JS.
+		renderScriptsSync([{text:'_tLAB.uncork()'}], res);
+	} else if (RLS().page.getJsBelowTheFold()) {
+		// Otherwise if we've deferred _all_ JS below the fold then we need to
+		// kick off our fetch/load of the page JS now.
 		renderScripts(RLS().page, res);
 	}
 
