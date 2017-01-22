@@ -1,16 +1,17 @@
 {
   "name": "react-server-redux",
   "version": "0.5.1",
-  "description": "Package to support Redux in React-Server",
+  "description": "Redux support for React-Server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "ava test/*.spec.js && eslint *.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/redfin/react-server"
   },
   "keywords": [
+    "react-server",
     "redux"
   ],
   "author": "Sresan Thevarajah",
@@ -25,5 +26,11 @@
   },
   "peerDependencies": {
     "react": "~0.14.2 || ^15.1.0"
+  },
+  "devDependencies": {
+    "ava": "^0.16.0",
+    "eslint": "^3.8.1",
+    "eslint-plugin-react": "^6.4.1",
+    "babel-eslint": "^7.0.0"
   }
 }

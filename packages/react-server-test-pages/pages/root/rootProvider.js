@@ -1,8 +1,8 @@
-import {RootElement} from "react-server"; // eslint-disable-line
-import {RootProvider} from "react-server-redux"; // eslint-disable-line
-import {createStore} from "redux"; // eslint-disable-line
-import { connect } from 'react-redux'; // eslint-disable-line
-import React from 'react'; // eslint-disable-line
+import {RootElement} from "react-server";
+import {RootProvider} from "react-server-redux";
+import {createStore} from "redux";
+import { connect } from 'react-redux';
+import React from 'react';
 
 function simpleReducer(state = {simpleValue: "Hello"}) {
 	return state;

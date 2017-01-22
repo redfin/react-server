@@ -11,11 +11,9 @@ module.exports = class ReduxAdapter {
 	//undefined or null
 	checkStateStatus() {
 		const state = this.store.getState();
-		const stateKeys = Object.keys(this.stateWaitMap);
-
-		for (let i = 0; i < stateKeys.length; i++) {
-			if (this.stateWaitMap[stateKeys[i]].promise.isPending()) {
-				const keys = stateKeys[i].split('.');
+		Object.keys(this.stateWaitMap).forEach((stateKey) => {
+			if (this.stateWaitMap[stateKey].promise.isPending()) {
+				const keys = stateKey.split('.');
 				let searchState = state;
 				let isSatisfied = true;
 
@@ -27,14 +25,14 @@ module.exports = class ReduxAdapter {
 						break;
 					}
 
-					searchState = searchState[keys[y]];
+					searchState = searchState[key];
 				}
 
 				if (isSatisfied) {
-					this.stateWaitMap[stateKeys[i]].resolve(searchState);
+					this.stateWaitMap[stateKey].resolve(searchState);
 				}
 			}
-		}
+		});
 	}
 
 	//This implementation will watch for state changes and resolve once the state values
