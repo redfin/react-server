@@ -15,25 +15,22 @@ function testReducer(state = {}, action) {
 	}
 }
 
-let store;
-let storeAdapter;
-
 test.beforeEach(t => {
-	store = createStore(testReducer);
-	storeAdapter = new ReduxAdapter(store);
+	t.context.store = createStore(testReducer);
+	t.context.storeAdapter = new ReduxAdapter(t.context.store);
 });
 
 test.cb('ReduxAdapter when resolves immediately when there are no pending values', t => {
-	storeAdapter.when([]).then(() => {
+	t.context.storeAdapter.when([]).then(() => {
 		t.end();
 	});
 });
 
 test.cb('ReduxAdapter when resolves when the pending value is ready', t => {
-	storeAdapter.when(['testValue']).then((state) => {
+	t.context.storeAdapter.when(['testValue']).then((state) => {
 		t.is(state.testValue, 'foo');
 		t.end();
 	});
 
-	store.dispatch({type: TEST_ACTION_TYPE, value: 'foo'});
+	t.context.store.dispatch({type: TEST_ACTION_TYPE, value: 'foo'});
 });
