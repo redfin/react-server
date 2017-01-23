@@ -1,9 +1,9 @@
-import {createStore, applyMiddleware} from "redux"; // eslint-disable-line
-import React from 'react'; // eslint-disable-line
-import { connect } from 'react-redux'; // eslint-disable-line
-import {RootElement} from "react-server"; // eslint-disable-line
-import {RootProvider, ReduxAdapter} from "react-server-redux"; // eslint-disable-line
-import ReduxThunk from "redux-thunk"; // eslint-disable-line
+import {createStore, applyMiddleware} from "redux";
+import React from 'react';
+import { connect } from 'react-redux';
+import {RootElement} from "react-server";
+import {RootProvider, ReduxAdapter} from "react-server-redux";
+import ReduxThunk from "redux-thunk";
 
 function reduxAdapterReducer(state = {}, action) {
 	if (action.type === 'ACTION_ROUTE') {

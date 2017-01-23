@@ -1,5 +1,3 @@
-const Q = require('q');
-
 module.exports = class ReduxAdapter {
 	constructor(store) {
 		this.stateWaitMap = {};
@@ -12,7 +10,7 @@ module.exports = class ReduxAdapter {
 	checkStateStatus() {
 		const state = this.store.getState();
 		Object.keys(this.stateWaitMap).forEach((stateKey) => {
-			if (this.stateWaitMap[stateKey].promise.isPending()) {
+			if (!this.stateWaitMap[stateKey].resolved) {
 				const keys = stateKey.split('.');
 				let searchState = state;
 				let isSatisfied = true;
@@ -29,7 +27,8 @@ module.exports = class ReduxAdapter {
 				}
 
 				if (isSatisfied) {
-					this.stateWaitMap[stateKey].resolve(searchState);
+					this.stateWaitMap[stateKey].resolved = true;
+					this.stateWaitMap[stateKey].resolver(searchState);
 				}
 			}
 		});
@@ -39,18 +38,21 @@ module.exports = class ReduxAdapter {
 	//are available
 	when(stateProps) {
 		const promises = stateProps.map((stateProp) => {
-			if (!this.stateWaitMap.hasOwnProperty(stateProp)) {
-				this.stateWaitMap[stateProp] = Q.defer();
+			let promise = this.stateWaitMap[stateProp];
+			if (!promise) {
+				promise = new Promise((resolve) => {
+					this.stateWaitMap[stateProp] = {resolver: resolve, resolved: false};
+				});
 			}
 
-			return this.stateWaitMap[stateProp].promise;
+			return promise;
 		});
 
 		//Check for state immediately once
 		this.checkStateStatus();
 		const unsub = this.store.subscribe(this.checkStateStatus.bind(this));
 
-		return Q.all(promises).then(() => {
+		return Promise.all(promises).then(() => {
 			unsub();
 			return this.store.getState()
 		});

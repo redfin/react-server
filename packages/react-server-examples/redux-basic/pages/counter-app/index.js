@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import { RootElement } from 'react-server'
 import { RootProvider } from 'react-server-redux'
 import Counter from '../../components/Counter'

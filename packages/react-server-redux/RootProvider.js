@@ -4,12 +4,12 @@ var { Provider } = require('react-redux');
 const rootProviderSymbol = Symbol();
 class RootProvider extends React.Component {
 	constructor() {
-	      super();
-	      this[rootProviderSymbol] = true;
+		super();
+		this[rootProviderSymbol] = true;
 	}
 
 	static isRootProvider(elem) {
-	      return elem[rootProviderSymbol];
+		return elem[rootProviderSymbol];
 	}
 
 	render() {
