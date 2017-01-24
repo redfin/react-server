@@ -4,18 +4,6 @@ import babel from "gulp-babel";
 import jasmine from "gulp-jasmine";
 import logging from "react-server-gulp-module-tagger";
 
-function getSpecGlob (prefix) {
-	// add a wildcard onto the end if no file extension or wildcard
-	// currently present
-	let specGlob = "*[Ss]pec.js";
-	if (!specGlob.endsWith(".js") && !specGlob.endsWith("*")) {
-		specGlob += "*";
-	}
-
-	const specs = prefix + specGlob;
-	return specs;
-}
-
 gulp.task("default", () => {
 	return gulp.src("src/**/*.js")
 		.pipe(logging())
@@ -37,7 +25,7 @@ gulp.task("eslint", [], () => {
 });
 
 gulp.task("test", ["default", "eslint"], () => {
-	return gulp.src(getSpecGlob("target/__tests__/**/"))
+	return gulp.src("target/__tests__/**/*[Ss]pec.js")
 		.pipe(jasmine({}));
 });
 
