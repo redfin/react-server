@@ -28,7 +28,7 @@
     "react": "~0.14.2 || ^15.1.0"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "^0.17.0",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
     "babel-eslint": "^7.0.0"
