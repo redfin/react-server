@@ -127,7 +127,13 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 // files and start up a web server at http://host:port/ that serves the
 // static compiled JavaScript. returns an object with two properties, started and stop;
 // see the default function doc for explanation.
-const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptions) => {
+const startStaticJsServer = (compiler, options) => {
+	const {
+		jsPort,
+		bindIp,
+		longTermCaching,
+		httpsOptions,
+	} = options;
 	const server = express();
 	const httpServer = httpsOptions ? https.createServer(httpsOptions, server) : http.createServer(server);
 	return {
@@ -152,13 +158,13 @@ const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptio
 					console.error(e);
 					reject(e)
 				});
-				httpServer.listen(port, bindIp, (e) => {
+				httpServer.listen(jsPort, bindIp, (e) => {
 					if (e) {
 						reject(e);
 						return;
 					}
 
-					logger.info(`Started static JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`);
+					logger.info(`Started static JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${jsPort}`);
 					resolve();
 				});
 			});
@@ -170,7 +176,13 @@ const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptio
 // for hot reloading at http://localhost:port/. note that the webpack compiler
 // must have been configured correctly for hot reloading. returns an object with
 // two properties, started and stop; see the default function doc for explanation.
-const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOptions) => {
+const startHotLoadJsServer = (compiler, options) => {
+	const {
+		jsPort,
+		bindIp,
+		httpsOptions,
+	} = options;
+
 	logger.info("Starting hot reload JavaScript server...");
 	const compiledPromise = new Promise((resolve) => compiler.plugin("done", () => resolve()));
 	const jsServer = new WebpackDevServer(compiler, {
@@ -183,7 +195,7 @@ const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOpti
 		ca: httpsOptions ? httpsOptions.ca : undefined,
 	});
 	const serverStartedPromise = new Promise((resolve, reject) => {
-		jsServer.listen(port, bindIp, (e) => {
+		jsServer.listen(jsPort, bindIp, (e) => {
 			if (e) {
 				reject(e);
 				return;
@@ -194,7 +206,7 @@ const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOpti
 	return {
 		stop: serverToStopPromise(jsServer),
 		started: Promise.all([compiledPromise, serverStartedPromise])
-			.then(() => logger.info(`Started hot reload JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${port}`)),
+			.then(() => logger.info(`Started hot reload JavaScript server over ${httpsOptions ? "HTTPS" : "HTTP"} on ${bindIp}:${jsPort}`)),
 	};
 };
 
@@ -202,21 +214,31 @@ const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOpti
 // names for the server routes file) but don't really want to actually up a JavaScript
 // server. Supports the same signature as startStaticJsServer and startHotLoadJsServer,
 // returning the same {stop, started} object.
-const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) => {
+const startDummyJsServer = (compiler, options) => {
+	const {
+		compileOnStartup,
+	} = options;
+
 	return {
 		stop: () => Promise.resolve(),
-		started: new Promise((resolve, reject) => compiler.run((err, stats)=> {
-			// even though we aren't using the compiled code (we're pointing at jsUrl),
-			// we still need to run the compilation to get the chunk file names.
-			try {
-				handleCompilationErrors(err, stats);
-			} catch (e) {
-				logger.emergency("Failed to compile the local code.", e.stack);
-				reject(e);
-				return;
+		started: new Promise((resolve, reject) => {
+			if (compileOnStartup) {
+				compiler.run((err, stats) => {
+					// even though we aren't using the compiled code (we're pointing at jsUrl),
+					// we still need to run the compilation to get the chunk file names.
+					try {
+						handleCompilationErrors(err, stats);
+					} catch (e) {
+						logger.emergency("Failed to compile the local code.", e.stack);
+						reject(e);
+						return;
+					}
+					resolve();
+				})
+			} else {
+				resolve();
 			}
-			resolve();
-		})),
+		}),
 	};
 };
 
@@ -232,11 +254,9 @@ export default function start(options){
 	const {
 		port,
 		bindIp,
-		jsPort,
 		hot,
 		jsUrl,
 		httpsOptions,
-		longTermCaching,
 		customMiddlewarePath,
 	} = options;
 
@@ -255,7 +275,8 @@ export default function start(options){
 
 		logger.notice("Starting servers...");
 
-		const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
+		//const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
+		const jsServer = startJsServer(compiler, options);
 		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
 
 		return {

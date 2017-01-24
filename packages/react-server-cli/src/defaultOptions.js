@@ -19,6 +19,7 @@ export default {
 	hot: true,
 	minify: false,
 	compileOnly: false,
+	compileOnStartup: true,
 	logLevel: "debug",
 	timingLogLevel: "fast",
 	gaugeLogLevel: "ok",
