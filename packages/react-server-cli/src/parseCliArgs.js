@@ -107,6 +107,11 @@ export default (args = process.argv) => {
 			default: false,
 			type: "boolean",
 		})
+		.option("compile-on-startup", {
+			describe: "Enable/disable compiling on startup.  Recommended for use in production when files have been pre-compiled.",
+			default: true,
+			type: "boolean",
+		})
 		.version(function() {
 			return require('../package').version;
 		})

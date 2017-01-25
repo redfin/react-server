@@ -13,6 +13,7 @@ import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
 import expressState from 'express-state';
 import cookieParser from 'cookie-parser';
+import fs from 'fs';
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
@@ -214,7 +215,7 @@ const startHotLoadJsServer = (compiler, options) => {
 // names for the server routes file) but don't really want to actually up a JavaScript
 // server. Supports the same signature as startStaticJsServer and startHotLoadJsServer,
 // returning the same {stop, started} object.
-const startDummyJsServer = (compiler, options) => {
+const startDummyJsServer = (compiler, options, routesFile) => {
 	const {
 		compileOnStartup,
 	} = options;
@@ -222,7 +223,16 @@ const startDummyJsServer = (compiler, options) => {
 	return {
 		stop: () => Promise.resolve(),
 		started: new Promise((resolve, reject) => {
-			if (compileOnStartup) {
+			if (compileOnStartup === false || compileOnStartup === "false") {
+				fs.access(routesFile, fs.constants.R_OK, (err) => {
+					if (err) {
+						logger.emergency("You must first compile your application when compileOnStartup is set to false.");
+						reject(err.message);
+						return;
+					}
+					resolve();
+				});
+			} else {
 				compiler.run((err, stats) => {
 					// even though we aren't using the compiled code (we're pointing at jsUrl),
 					// we still need to run the compilation to get the chunk file names.
@@ -235,8 +245,6 @@ const startDummyJsServer = (compiler, options) => {
 					}
 					resolve();
 				})
-			} else {
-				resolve();
 			}
 		}),
 	};
@@ -258,16 +266,26 @@ export default function start(options){
 		jsUrl,
 		httpsOptions,
 		customMiddlewarePath,
+		compileOnStartup,
 	} = options;
 
+	const routesFileLocation = path.join(process.cwd(), '__clientTemp/routes_server.js');
 	const {serverRoutes, compiler} = compileClient(options);
 
 	const startServers = () => {
 		// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
 		// server.
-		let startJsServer = startDummyJsServer;
+		let startJsServer;
+		let serverRoutesPromise = serverRoutes;
 
-		if (!jsUrl) {
+		if (jsUrl) {
+			startJsServer = startDummyJsServer;
+			if (compileOnStartup === false || compileOnStartup === "false") {
+				// We need to replace the promise returned by the compiler with an already-resolved promise with the path
+				// of the compiled routes file.
+				serverRoutesPromise = Promise.resolve(routesFileLocation);
+			}
+		} else {
 			// if jsUrl is not set, we need to start up a JS server, either hot load
 			// or static.
 			startJsServer = hot ? startHotLoadJsServer : startStaticJsServer;
@@ -275,9 +293,8 @@ export default function start(options){
 
 		logger.notice("Starting servers...");
 
-		//const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
-		const jsServer = startJsServer(compiler, options);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
+		const jsServer = startJsServer(compiler, options, routesFileLocation);
+		const htmlServerPromise = serverRoutesPromise.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
 
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
