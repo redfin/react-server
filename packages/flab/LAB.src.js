@@ -5,7 +5,7 @@
 
 (function(global){
 	var _$LAB = global.$LAB,
-	
+
 		// constants for the valid keys of the options object
 		_UseLocalXHR = "UseLocalXHR",
 		_AlwaysPreserveOrder = "AlwaysPreserveOrder",
@@ -13,27 +13,27 @@
 		_CacheBust = "CacheBust",
 		/*!START_DEBUG*/_Debug = "Debug",/*!END_DEBUG*/
 		_BasePath = "BasePath",
-		
+
 		// stateless variables used across all $LAB instances
 		root_page = /^[^?#]*\//.exec(location.href)[0],
 		root_domain = /^\w+\:\/\/\/?[^\/]+/.exec(root_page)[0],
 		append_to = document.head || document.getElementsByTagName("head"),
-		
+
 		// inferences... ick, but still necessary
 		opera_or_gecko = (global.opera && Object.prototype.toString.call(global.opera) == "[object Opera]") || ("MozAppearance" in document.documentElement.style),
 
 /*!START_DEBUG*/
 		// console.log() and console.error() wrappers
-		log_msg = function(){}, 
+		log_msg = function(){},
 		log_error = log_msg,
 /*!END_DEBUG*/
-		
+
 		// feature sniffs (yay!)
 		test_script_elem = document.createElement("script"),
 		explicit_preloading = typeof test_script_elem.preload == "boolean", // http://wiki.whatwg.org/wiki/Script_Execution_Control#Proposal_1_.28Nicholas_Zakas.29
 		real_preloading = explicit_preloading || (test_script_elem.readyState && test_script_elem.readyState == "uninitialized"), // will a script preload with `src` set before DOM append?
 		script_ordered_async = !real_preloading && test_script_elem.async === true, // http://wiki.whatwg.org/wiki/Dynamic_Script_Execution_Order
-		
+
 		// XHR preloading (same-domain) and cache-preloading (remote-domain) are the fallbacks (for some browsers)
 		xhr_or_cache_preloading = !real_preloading && !script_ordered_async && !opera_or_gecko
 	;
@@ -56,7 +56,7 @@
 	// make script URL absolute/canonical
 	function canonical_uri(src,base_path) {
 		var absolute_regex = /^\w+\:\/\//;
-		
+
 		// is `src` is protocol-relative (begins with // or ///), prepend protocol
 		if (/^\/\/\/?/.test(src)) {
 			src = location.protocol + src;
@@ -115,7 +115,7 @@
 		// setTimeout() "yielding" prevents some weird race/crash conditions in older browsers
 		setTimeout(function(){
 			var script, src = script_obj.real_src, xhr;
-			
+
 			// don't proceed until `append_to` is ready to append to
 			if ("item" in append_to) { // check if `append_to` ref is still a live node list
 				if (!append_to[0]) { // `append_to` node not yet ready
@@ -129,7 +129,7 @@
 			script = document.createElement("script");
 			if (script_obj.type) script.type = script_obj.type;
 			if (script_obj.charset) script.charset = script_obj.charset;
-			
+
 			// should preloading be used for this script?
 			if (preload_this_script) {
 				// real script preloading?
@@ -191,7 +191,7 @@
 			}
 		},0);
 	}
-		
+
 	// create a clean instance of $LAB
 	function create_sandbox() {
 		var global_defaults = {},
@@ -200,34 +200,34 @@
 			registry = {},
 			instanceAPI
 		;
-		
+
 		// global defaults
 		global_defaults[_UseLocalXHR] = true;
 		global_defaults[_AlwaysPreserveOrder] = false;
 		global_defaults[_AllowDuplicates] = false;
 		global_defaults[_CacheBust] = false;
-		/*!START_DEBUG*/global_defaults[_Debug] = false;/*!END_DEBUG*/
+		/*!START_DEBUG*/global_defaults[_Debug] = true;/*!END_DEBUG*/
 		global_defaults[_BasePath] = "";
 
 		// execute a script that has been preloaded already
 		function execute_preloaded_script(chain_opts,script_obj,registry_item) {
 			var script;
-			
+
 			function preload_execute_finished() {
 				if (script != null) { // make sure this only ever fires once
 					script = null;
 					script_executed(registry_item);
 				}
 			}
-			
+
 			if (registry[script_obj.src].finished) return;
 			if (!chain_opts[_AllowDuplicates]) registry[script_obj.src].finished = true;
-			
+
 			script = registry_item.elem || document.createElement("script");
 			if (script_obj.type) script.type = script_obj.type;
 			if (script_obj.charset) script.charset = script_obj.charset;
 			create_script_load_listener(script,registry_item,"finished",preload_execute_finished);
-			
+
 			// script elem was real-preloaded
 			if (registry_item.elem) {
 				registry_item.elem = null;
@@ -248,7 +248,7 @@
 				preload_execute_finished();
 			}
 		}
-	
+
 		// process the script request setup
 		function do_script(chain_opts,script_obj,chain_group,preload_this_script) {
 			var registry_item,
@@ -256,13 +256,13 @@
 				ready_cb = function(){ script_obj.ready_cb(script_obj,function(){ execute_preloaded_script(chain_opts,script_obj,registry_item); }); },
 				finished_cb = function(){ script_obj.finished_cb(script_obj,chain_group); }
 			;
-			
+
 			script_obj.src = canonical_uri(script_obj.src,chain_opts[_BasePath]);
-			script_obj.real_src = script_obj.src + 
+			script_obj.real_src = script_obj.src +
 				// append cache-bust param to URL?
 				(chain_opts[_CacheBust] ? ((/\?.*$/.test(script_obj.src) ? "&_" : "?_") + ~~(Math.random()*1E9) + "=") : "")
 			;
-			
+
 			if (!registry[script_obj.src]) registry[script_obj.src] = {items:[],finished:false};
 			registry_items = registry[script_obj.src].items;
 
@@ -312,7 +312,7 @@
 				scripts_currently_loading = false,
 				group
 			;
-			
+
 			// called when a script has finished preloading
 			function chain_script_ready(script_obj,exec_trigger) {
 				/*!START_DEBUG*/if (chain_opts[_Debug]) log_msg("script preload finished: "+script_obj.real_src);/*!END_DEBUG*/
@@ -357,7 +357,7 @@
 					group = false;
 				}
 			}
-			
+
 			// setup next chain script group
 			function init_script_chain_group() {
 				if (!group || !group.scripts) {
@@ -372,14 +372,14 @@
 					for (var i=0; i<arguments.length; i++) {
 						(function(script_obj,script_list){
 							var splice_args;
-							
+
 							if (!is_array(script_obj)) {
 								script_list = [script_obj];
 							}
 							for (var j=0; j<script_list.length; j++) {
 								init_script_chain_group();
 								script_obj = script_list[j];
-								
+
 								if (is_func(script_obj)) script_obj = script_obj();
 								if (!script_obj) continue;
 								if (is_array(script_obj)) {
@@ -399,10 +399,10 @@
 								});
 								group.finished = false;
 								group.scripts.push(script_obj);
-								
+
 								do_script(chain_opts,script_obj,group,(can_use_preloading && scripts_currently_loading));
 								scripts_currently_loading = true;
-								
+
 								if (chain_opts[_AlwaysPreserveOrder]) chainedAPI.wait();
 							}
 						})(arguments[i],arguments[i]);
@@ -418,17 +418,17 @@
 						group = chain[chain.length-1];
 					}
 					else group = false;
-					
+
 					advance_exec_cursor();
-					
+
 					return chainedAPI;
 				}
 			};
 
 			// the first chain link API (includes `setOptions` only this first time)
 			return {
-				script:chainedAPI.script, 
-				wait:chainedAPI.wait, 
+				script:chainedAPI.script,
+				wait:chainedAPI.wait,
 				setOptions:function(opts){
 					merge_objs(opts,chain_opts);
 					return chainedAPI;
@@ -494,13 +494,13 @@
 
 	/* The following "hack" was suggested by Andrea Giammarchi and adapted from: http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
 	   NOTE: this hack only operates in FF and then only in versions where document.readyState is not present (FF < 3.6?).
-	   
-	   The hack essentially "patches" the **page** that LABjs is loaded onto so that it has a proper conforming document.readyState, so that if a script which does 
-	   proper and safe dom-ready detection is loaded onto a page, after dom-ready has passed, it will still be able to detect this state, by inspecting the now hacked 
-	   document.readyState property. The loaded script in question can then immediately trigger any queued code executions that were waiting for the DOM to be ready. 
-	   For instance, jQuery 1.4+ has been patched to take advantage of document.readyState, which is enabled by this hack. But 1.3.2 and before are **not** safe or 
+
+	   The hack essentially "patches" the **page** that LABjs is loaded onto so that it has a proper conforming document.readyState, so that if a script which does
+	   proper and safe dom-ready detection is loaded onto a page, after dom-ready has passed, it will still be able to detect this state, by inspecting the now hacked
+	   document.readyState property. The loaded script in question can then immediately trigger any queued code executions that were waiting for the DOM to be ready.
+	   For instance, jQuery 1.4+ has been patched to take advantage of document.readyState, which is enabled by this hack. But 1.3.2 and before are **not** safe or
 	   fixed by this hack, and should therefore **not** be lazy-loaded by script loader tools such as LABjs.
-	*/ 
+	*/
 	(function(addEvent,domLoaded,handler){
 		if (document.readyState == null && document[addEvent]){
 			document.readyState = "loading";
