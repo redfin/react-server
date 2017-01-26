@@ -1,0 +1,4 @@
+{
+	"args": ["start"],
+	"stderrIncludes": "Cannot find module"
+}
