@@ -1,0 +1,38 @@
+{
+  "name": "flab",
+  "version": "0.0.1",
+  "description": "Future Loading and Blocking JS",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "string"
+  ],
+  "scripts": {
+    "prepublish": "mkdir -p string && npm run build-src && npm run build-min",
+    "build-src": "node stringify.js < LAB.src.js > string/src.js",
+    "build-min": "node minify.js < LAB.src.js | node stringify.js > string/min.js",
+    "clean": "rimraf string",
+    "test": "echo \"No tests yet...\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redfin/react-server.git"
+  },
+  "keywords": [
+    "loading",
+    "blocking",
+    "js",
+    "asynchronous",
+    "loader"
+  ],
+  "author": "Bo Borgerson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/redfin/react-server/issues"
+  },
+  "homepage": "https://github.com/redfin/react-server#readme",
+  "devDependencies": {
+    "rimraf": "^2.5.4",
+    "uglify-js": "^2.7.5"
+  }
+}

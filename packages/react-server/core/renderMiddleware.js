@@ -6,7 +6,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	RLS = RequestLocalStorage.getNamespace(),
-	LABString = require('./util/LABString'),
+	flab = require('flab'),
 	Q = require('q'),
 	config = require('./config'),
 	ExpressServerRequest = require("./ExpressServerRequest"),
@@ -484,7 +484,7 @@ function renderScriptsAsync(scripts, res) {
 	if (!RLS().didLoadLAB){
 
 		// This is the full implementation of LABjs.
-		res.write(LABString);
+		res.write(flab.min);
 
 		// We always want scripts to be executed in order.
 		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
