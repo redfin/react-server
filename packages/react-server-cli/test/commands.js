@@ -47,6 +47,7 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 		const frequency = 100;
 		let elapsed = 0;
 
+		// Wait for the expected output or the timeout
 		await new Promise(resolve => {
 			const checkForExpectedOutput = setInterval(() => {
 				// Increment the elapsed time if neither stdout nor stderr includes the expected content and the time limit hasn't been reached.
