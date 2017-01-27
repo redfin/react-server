@@ -1,0 +1,4 @@
+{
+	"args": ["start", "--config-path", "config"],
+	"stdoutIncludes": "Started HTML server over HTTP on"
+}
