@@ -58,8 +58,20 @@ export default (opts = {}) => {
 
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
+
+	// This is required because WebpackDevServer uses Node's url module to parse the URL.  That module does not
+	// support protocol-relative URLs, therefore doesn't actually parse the URL properly.  We can "fake" out the
+	// url module by specifying http://.  Don't worry, WebpackDevServer will actually use window.location.protocol
+	// instead of what we hardcode.
+	// Node issue: https://github.com/nodejs/node-v0.x-archive/issues/9123
+	// WebpackDevServer overriding protocol: https://github.com/webpack/webpack-dev-server/blob/master/client/index.js#L123-L129
+	let webpackDevServerClientUrl = outputUrl;
+	if (/^\/\//.test(outputUrl)) {
+		// this is a protocol relative URL like '//0.0.0.0'
+		webpackDevServerClientUrl = "http:" + outputUrl;
+	}
 	const entrypointBase = hot ? [
-		require.resolve("webpack-dev-server/client") + "?" + outputUrl,
+		require.resolve("webpack-dev-server/client") + "?" + webpackDevServerClientUrl,
 		require.resolve("webpack/hot/only-dev-server"),
 	] : [];
 	let entrypoints = {};
