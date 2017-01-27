@@ -1,9 +1,8 @@
-console.log(
-	'module.exports = '+
-	require("fs").readFileSync("/dev/stdin", "utf-8")
+require("get-stdin")().then(src => console.log(
+	'module.exports = ' + src
 		.replace(/\\/g, '\\\\')
 		.replace(/"/g, '\\"')
 		.replace(/^/gm, '"')
 		.replace(/$/gm, '\\n"+')+
 	'"";'
-);
+));

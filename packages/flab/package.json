@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
+    "get-stdin": "^5.0.1",
     "rimraf": "^2.5.4",
     "uglify-js": "^2.7.5"
   }
