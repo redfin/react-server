@@ -27,14 +27,14 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 		const {
 			args,
 			stdoutIncludes,
-			stderrIncludes
+			stderrIncludes,
 		} = JSON.parse(fs.readFileSync(path.join(testPath, 'options.json')));
 
 		const server = child_process.spawn(
 			process.execPath,
 			[
 				path.join(__dirname, '..', 'bin', 'react-server-cli'),
-				...args
+				...args,
 			]
 		);
 
