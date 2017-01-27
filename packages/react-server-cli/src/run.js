@@ -26,7 +26,15 @@ export default function run(options = {}) {
 
 	// No routes file available when performing init command
 	if (options.command !== 'init') {
-		options.routes = require(options.routesPath);
+		try {
+			options.routes = require(options.routesPath);
+		} catch (e) {
+			if (e.code === 'MODULE_NOT_FOUND') {
+				console.error(chalk.red(`Failed to load routes file at ${options.routesPath}`));
+			}
+
+			throw e;
+		}
 	}
 
 	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;

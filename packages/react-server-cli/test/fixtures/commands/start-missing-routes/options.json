@@ -1,4 +1,4 @@
 {
 	"args": ["start"],
-	"stderrIncludes": "Cannot find module"
+	"stderrIncludes": "Failed to load routes file at"
 }
