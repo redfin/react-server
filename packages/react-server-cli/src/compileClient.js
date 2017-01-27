@@ -163,7 +163,10 @@ function statsToManifest(stats) {
 function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats, configPath) {
 	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
 	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
-	const babelConfig = configPath ? JSON.parse(fs.readFileSync(path.join(configPath, ".babelrc"))) : {};
+	const babelrcPath = path.join(configPath, ".babelrc");
+	const babelConfig = configPath && fs.existsSync(babelrcPath) ?
+		JSON.parse(fs.readFileSync(babelrcPath)) :
+		{};
 	let webpackConfig = {
 		entry: entrypoints,
 		output: {
