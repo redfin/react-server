@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter,
 	History = require("../components/History"),
 	ReactServerAgent = require("../ReactServerAgent"),
 	PageUtil = require("../util/PageUtil"),
+	DebugUtil = require("../util/DebugUtil"),
 	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
 
 var _ = {
@@ -49,6 +50,10 @@ class Navigator extends EventEmitter {
 		type = type || History.events.PAGELOAD;
 
 		this._haveInitialized = true;
+
+		// Pull debug parameters out of the query string and expose via a well
+		// defined interface.
+		DebugUtil.setRequest(request);
 
 		var route = this.router.getRoute(request.getUrl(), { method: request.getMethod() });
 
