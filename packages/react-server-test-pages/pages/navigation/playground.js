@@ -3,6 +3,7 @@ import React from "react";
 import {
 	Link,
 	RootContainer,
+	isBrowser,
 } from "react-server";
 
 import {
@@ -25,7 +26,7 @@ const LINK = (page, pick) => `${BASE}?${
 // For simplicity of 'pick' link management.
 // Add a 'pushstate' method.
 ;(function() {
-	if (typeof window === 'undefined') return;
+	if (!isBrowser) return;
 	const pushState = history.pushState;
 	history.pushState = function(state){
 		window.dispatchEvent(_.assign(new Event('pushstate'), {state}));

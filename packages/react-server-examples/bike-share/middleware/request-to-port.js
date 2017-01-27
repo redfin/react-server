@@ -1,7 +1,7 @@
-import {ReactServerAgent} from 'react-server';
+import {ReactServerAgent, isBrowser} from 'react-server';
 export default class RequestToPortMiddleware {
 	handleRoute(next) {
-		if (typeof window === 'undefined') { //eslint-disable-line
+		if (!isBrowser) {
 			ReactServerAgent.plugRequest(req => {
 				req.urlPrefix('localhost:3000');
 			});
