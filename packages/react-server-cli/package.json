@@ -69,7 +69,7 @@
     "react-server": "^0.5.1",
     "react-server-gulp-module-tagger": "^0.4.10",
     "rimraf": "^2.5.4",
-    "superagent": "^1.8.4"
+    "superagent": "1.8.4"
   },
   "ava": {
     "require": [
