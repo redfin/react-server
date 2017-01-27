@@ -280,18 +280,18 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 }
 
 // writes out a routes file that can be used at runtime.
-function writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) {
+export function writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) {
 	let routesOutput = [];
 
-	const coreMiddleware = require.resolve("react-server-core-middleware");
+	const coreMiddleware = JSON.stringify(require.resolve("react-server-core-middleware"));
 	const existingMiddleware = routes.middleware ? routes.middleware.map((middlewareRelativePath) => {
-		return `unwrapEs6Module(require("${path.relative(workingDirAbsolute, path.resolve(routesDir, middlewareRelativePath))}"))`
+		return `unwrapEs6Module(require(${JSON.stringify(path.relative(workingDirAbsolute, path.resolve(routesDir, middlewareRelativePath)))}))`
 	}) : [];
 	routesOutput.push(`
 var manifest = ${manifest ? JSON.stringify(manifest) : "undefined"};
 function unwrapEs6Module(module) { return module.__esModule ? module.default : module }
-var coreJsMiddleware = require('${coreMiddleware}').coreJsMiddleware;
-var coreCssMiddleware = require('${coreMiddleware}').coreCssMiddleware;
+var coreJsMiddleware = require(${coreMiddleware}).coreJsMiddleware;
+var coreCssMiddleware = require(${coreMiddleware}).coreCssMiddleware;
 module.exports = {
 	middleware:[
 		coreJsMiddleware(${JSON.stringify(staticUrl)}, manifest),
@@ -323,22 +323,22 @@ module.exports = {
 			page: {`);
 		for (let format of Object.keys(formats)) {
 			const formatModule = formats[format];
-			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule));
+			var relativePathToPage = JSON.stringify(path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule)));
 			routesOutput.push(`
 				${format}: function() {
 					return {
 						done: function(cb) {`);
 			if (isClient) {
 				routesOutput.push(`
-							require.ensure("${relativePathToPage}", function() {
-								cb(unwrapEs6Module(require("${relativePathToPage}")));
+							require.ensure(${relativePathToPage}, function() {
+								cb(unwrapEs6Module(require(${relativePathToPage})));
 							});`);
 			} else {
 				routesOutput.push(`
 							try {
-								cb(unwrapEs6Module(require("${relativePathToPage}")));
+								cb(unwrapEs6Module(require(${relativePathToPage})));
 							} catch (e) {
-								console.error('Failed to load page at "${relativePathToPage}"', e.stack);
+								console.error('Failed to load page at ${relativePathToPage}', e.stack);
 							}`);
 			}
 			routesOutput.push(`

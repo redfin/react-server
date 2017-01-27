@@ -1,6 +1,7 @@
 import eslint from "gulp-eslint";
 import gulp from "gulp";
 import babel from "gulp-babel";
+import jasmine from "gulp-jasmine";
 import logging from "react-server-gulp-module-tagger";
 
 gulp.task("default", () => {
@@ -23,8 +24,10 @@ gulp.task("eslint", [], () => {
         .pipe(eslint.failAfterError());
 });
 
-// there are no tests for this project :(
-gulp.task("test", ["eslint"]);
+gulp.task("test", ["default", "eslint"], () => {
+	return gulp.src("target/__tests__/**/*[Ss]pec.js")
+		.pipe(jasmine({}));
+});
 
 gulp.task("watch", () => {
 	gulp.watch("src/*.js", ['default']);
