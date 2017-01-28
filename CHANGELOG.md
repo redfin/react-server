@@ -1,3 +1,68 @@
+## v0.6.0 (2017-01-28)
+
+#### Breaking change
+* `react-server-cli`, `react-server`
+  * [#837](https://github.com/redfin/react-server/pull/837) Address routr api changes & Handle POST. ([@drewpc](https://github.com/drewpc))
+* `react-server-cli`, `react-server`
+  * [#809](https://github.com/redfin/react-server/pull/809) Server side hot reload. ([@drewpc](https://github.com/drewpc))
+
+#### Enhancement
+* `react-server-examples`, `react-server-redux`, `react-server-test-pages`
+  * [#839](https://github.com/redfin/react-server/pull/839) Add Redux Support. ([@sresant](https://github.com/sresant))
+* `react-server-cli`, `react-server`
+  * [#809](https://github.com/redfin/react-server/pull/809) Server side hot reload. ([@drewpc](https://github.com/drewpc))
+* `babel-plugin-react-server`, `babel-preset-react-server`, `generator-react-server`, `react-server-cli`, `react-server-gulp-module-tagger`, `react-server-module-tagger`, `react-server`
+  * [#787](https://github.com/redfin/react-server/pull/787) Update dependencies with david. ([@doug-wade](https://github.com/doug-wade))
+* Other
+  * [#784](https://github.com/redfin/react-server/pull/784) Run bootstrap as a postinstall script. ([@doug-wade](https://github.com/doug-wade))
+* `babel-plugin-react-server`
+  * [#778](https://github.com/redfin/react-server/pull/778) Add support for logger labels. ([@doug-wade](https://github.com/doug-wade))
+
+#### Bug fix
+* `react-server-cli`, `react-server`
+  * [#833](https://github.com/redfin/react-server/pull/833) Fix file path issues. ([@drewpc](https://github.com/drewpc))
+  * [#837](https://github.com/redfin/react-server/pull/837) Address routr api changes & Handle POST. ([@drewpc](https://github.com/drewpc))
+* `generator-react-server`, `react-server-cli`
+  * [#836](https://github.com/redfin/react-server/pull/836) Make output url more relative. ([@drewpc](https://github.com/drewpc))
+* `react-server`
+  * [#838](https://github.com/redfin/react-server/pull/838) Fix ReactServerAgent CORS preflight. ([@drewpc](https://github.com/drewpc))
+  * [#805](https://github.com/redfin/react-server/pull/805) Handle Null and Promise.resolve(null) in renderMetaTags + renderLinkTags. ([@drewpc](https://github.com/drewpc))
+* `react-server-cli`
+  * [#786](https://github.com/redfin/react-server/pull/786) Resolve ReactMount not found error. ([@doug-wade](https://github.com/doug-wade))
+
+#### Documentation
+* Other
+  * [#821](https://github.com/redfin/react-server/pull/821) Remove asini run prepublish since it doesn't run in topo order. ([@doug-wade](https://github.com/doug-wade))
+  * [#815](https://github.com/redfin/react-server/pull/815) Add merging prs policy. ([@doug-wade](https://github.com/doug-wade))
+  * [#834](https://github.com/redfin/react-server/pull/834) Fix configuration key in documentation. ([@karlhorky](https://github.com/karlhorky))
+  * [#827](https://github.com/redfin/react-server/pull/827) Fix broken Markdown link in production.md. ([@drewpc](https://github.com/drewpc))
+  * [#817](https://github.com/redfin/react-server/pull/817) Documentation update: bullet list for express middlewares. ([@feychou](https://github.com/feychou))
+  * [#814](https://github.com/redfin/react-server/pull/814) Documentation update: add details about node GC. ([@drewpc](https://github.com/drewpc))
+  * [#777](https://github.com/redfin/react-server/pull/777) Add a guide for running react-server in production. ([@drewpc](https://github.com/drewpc))
+* `react-server-test-pages`
+  * [#806](https://github.com/redfin/react-server/pull/806) Test page for page forwarding. ([@lidawang](https://github.com/lidawang))
+  * [#803](https://github.com/redfin/react-server/pull/803) Adding bottleneck vanilla test sites. ([@krisxw](https://github.com/krisxw))
+
+#### Security
+* `react-server-test-pages`, `react-server-website`
+  * [#819](https://github.com/redfin/react-server/pull/819) Remove outdated nsprcs. ([@doug-wade](https://github.com/doug-wade))
+* `react-server-cli`
+  * [#812](https://github.com/redfin/react-server/pull/812) Helmet as default express middleware in react-server-cli. ([@feychou](https://github.com/feychou))
+
+#### Commiters: 12
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Fey Chou ([feychou](https://github.com/feychou))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Helen Weng ([helenaut](https://github.com/helenaut))
+- Karl Horky ([karlhorky](https://github.com/karlhorky))
+- Kristopher X Williams ([krisxw](https://github.com/krisxw))
+- Lida Wang ([lidawang](https://github.com/lidawang))
+- Mark Thomas ([markthethomas](https://github.com/markthethomas))
+- PC Drew ([drewpc](https://github.com/drewpc))
+- Richie Thomas ([richiethomas](https://github.com/richiethomas))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+
 ## v0.5.1 (2016-11-30)
 
 #### Enhancement

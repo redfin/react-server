@@ -1,6 +1,6 @@
 {
   "name": "react-server",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "React framework with server render for blazing fast page load and seamless transitions between pages in the browser.",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
@@ -68,7 +68,7 @@
     "memory-stream": "0.0.3",
     "react": "~0.14.2 || ^15.1.0",
     "react-dom": "~0.14.2 || ^15.1.0",
-    "react-server-gulp-module-tagger": "^0.4.10",
+    "react-server-gulp-module-tagger": "^0.6.0",
     "rimraf": "^2.5.4",
     "superagent": "^3.1.0"
   }
