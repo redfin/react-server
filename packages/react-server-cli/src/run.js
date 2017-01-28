@@ -23,10 +23,17 @@ export default function run(options = {}) {
 	options.routesPath = path.resolve(process.cwd(), routesFile);
 	options.routesDir = path.dirname(options.routesPath);
 
-	try {
-		options.routes = require(options.routesPath);
-	} catch (e) {
-		// Pass. Commands need to check for routes themselves.
+	// No routes file available when performing init command
+	if (options.command !== 'init') {
+		try {
+			options.routes = require(options.routesPath);
+		} catch (e) {
+			if (e.code === 'MODULE_NOT_FOUND') {
+				console.error(chalk.red(`Failed to load routes file at ${options.routesPath}`));
+			}
+
+			throw e;
+		}
 	}
 
 	// The non-jsUrl created output URL should be as relative as possible.  '//' ensures that we use the same

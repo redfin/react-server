@@ -1,0 +1,4 @@
+{
+	"args": ["start"],
+	"stderrIncludes": "Failed to load routes file at"
+}
