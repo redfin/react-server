@@ -3,8 +3,9 @@ const path = require("path");
 const cli = require(".");
 
 cli.parseCliArgs().then(args => {
-	const babelrcPath = path.join(args.configPath, ".babelrc");
-	const config = args.configPath && fs.existsSync(babelrcPath) ?
+	const {configPath = ''} = args;
+	const babelrcPath = path.join(configPath, ".babelrc");
+	const config = configPath && fs.existsSync(babelrcPath) ?
 		JSON.parse(fs.readFileSync(babelrcPath)) :
 		{};
 	require("babel-core/register")(config);

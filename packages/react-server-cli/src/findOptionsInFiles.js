@@ -18,7 +18,7 @@ export default (args = process.argv) => {
 
 	do {
 		let reactServerRc = null;
-		let configPath = args.configPath || '';
+		const {configPath = ''} = args;
 		try {
 			// readFileSync throws if the file doesn't exist.
 			reactServerRc = fs.readFileSync(path.join(dir, configPath, REACT_SERVER_RC));
