@@ -9,7 +9,7 @@ export default class Footer extends React.Component {
 			<footer>
 				<p>
 					<small>
-						<a href="https://www.redfin.com/">Redfin</a> open-source project. &copy;2016 Redfin.
+						<a href="https://www.redfin.com/">Redfin</a> open-source project. &copy;2017 Redfin.
 					</small>
 				</p>
 				<p>
