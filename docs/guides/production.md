@@ -138,6 +138,7 @@ static assets from `nginx` for HTTP only.  Details are provided after the exampl
 server {
     listen 80;
     server_name www.myhostname.com;
+    gzip on;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -165,6 +166,8 @@ server {
 that `nginx` and `react-server` are running on the same machine.
 - `location /assets/ {}` tells `nginx` to server all assets directly from the `__clientTemp/build` directory that
 `react-server` creates when it compiles the application.  It also does some compression as well.
+- `gzip on` enables gzip compression, reducing the size of transmitted data and potentially significantly decreasing
+page load times. You can read more about gzip compression in `nginx` [here](https://www.nginx.com/resources/admin-guide/compression-and-decompression/).
 
 Further enhancements can/should be made on the `nginx` side to account for other needs, but this is a basic working
 example.  At this point, `nginx` handles all requests on port 80 and proxies it to `react-server` running inside `ExpressJS`
