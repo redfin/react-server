@@ -1,9 +1,14 @@
 ## v0.6.0 (2017-01-28)
 
 #### Breaking change
+
+Previously, routes marked explicitly as GET would also accept POST and other
+requests.  After upgrading to v0.6.0, routes will only match the verbs they are
+marked to accept, which may break some existing use cases.  We recommended
+auditing your non-GET routes as part of upgrading to 0.6.0
+
 * `react-server-cli`, `react-server`
   * [#837](https://github.com/redfin/react-server/pull/837) Address routr api changes & Handle POST. ([@drewpc](https://github.com/drewpc))
-* `react-server-cli`, `react-server`
   * [#809](https://github.com/redfin/react-server/pull/809) Server side hot reload. ([@drewpc](https://github.com/drewpc))
 
 #### Enhancement
