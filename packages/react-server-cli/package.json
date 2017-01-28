@@ -69,7 +69,7 @@
     "react": "~0.14.2 || ^15.1.0",
     "react-dom": "~0.14.2 || ^15.1.0",
     "react-hot-loader": "^1.3.1",
-    "react-server": "^0.5.1",
+    "react-server": "^0.6.0",
     "react-server-gulp-module-tagger": "^0.6.0",
     "rimraf": "^2.5.4",
     "superagent": "1.8.4"
