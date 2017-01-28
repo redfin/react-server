@@ -18,7 +18,6 @@ export default function run(options = {}) {
 		jsUrl,
 		jsPort,
 		host,
-		httpsOptions,
 	} = options;
 
 	options.routesPath = path.resolve(process.cwd(), routesFile);
@@ -37,7 +36,11 @@ export default function run(options = {}) {
 		}
 	}
 
-	options.outputUrl = jsUrl || `${httpsOptions ? "https" : "http"}://${host}:${jsPort}/`;
+	// The non-jsUrl created output URL should be as relative as possible.  '//' ensures that we use the same
+	// scheme as the browser, which is important when using a fronting server that terminates HTTPS connections and
+	// proxies requests to react-server over HTTP.  Another note, is that `host` should be `0.0.0.0` to make it relative
+	// to the hostname being used.
+	options.outputUrl = jsUrl || `//${host}:${jsPort}/`;
 
 	try {
 		return require("./" + path.join("commands", options.command))(options);

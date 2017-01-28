@@ -1,6 +1,6 @@
 {
   "name": "react-server-test-pages",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
@@ -18,10 +18,12 @@
     "q": "1.4.1",
     "react": "~0.14.2 || ^15.1.0",
     "react-dom": "~0.14.2 || ^15.1.0",
-    "react-server": "^0.5.1",
-    "react-server-cli": "^0.5.1",
-    "react-server-data-bundle-cache": "^0.5.1",
-    "react-server-middleware-json-response": "^0.4.13",
+    "react-server": "^0.6.0",
+    "react-server-cli": "^0.6.0",
+    "react-server-data-bundle-cache": "^0.6.0",
+    "react-server-middleware-json-response": "^0.6.0",
+    "react-server-redux": "^0.6.0",
+    "redux-thunk": "^2.1.0",
     "eslint-plugin-react": "^6.4.1"
   },
   "devDependencies": {

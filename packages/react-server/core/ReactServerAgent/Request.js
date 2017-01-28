@@ -15,10 +15,13 @@ function Request(method, urlPath, cache) {
 	this._cache = cache;
 
 	this._queryParams = [];
-	this._postParams = {};
+	// _postParams should initially be null instead of {} because we want to allow people to send POST requests with
+	// empty data sets (if they need to).  This way, we can differentiate between a default of null, an empty data set,
+	// and a populated data set.
+	this._postParams = null;
 	this._headers = {};
 	this._timeout = null;
-	this._type = "json"; // superagent's default
+	this._type = "json"; // superagent's default, only for POST/PUT/PATCH methods
 
 	// public field
 	this.aborted = undefined; //default to undefined
@@ -71,9 +74,14 @@ Request.prototype.query = function (queryParams) {
 
 Request.prototype.send = function (postParams) {
 	if (typeof postParams === 'undefined') {
-		return merge({}, this._postParams);
+		return merge({}, this._postParams || {});
 	}
-	merge(this._postParams, postParams);
+	if (postParams !== null) {
+		if (this._postParams === null) {
+			this._postParams = {};
+		}
+		merge(this._postParams, postParams);
+	}
 	return this;
 }
 
@@ -206,13 +214,8 @@ function buildSuperagentRequest() {
 		req.agent(this._agent);
 	}
 
-	// superagent has some weird, implicit file upload support
-	// that only works if you don't set `type`.
-	if (this._type && this._type !== 'form-data') {
-		req.type(this._type);
-	}
-
 	req.set(this._headers);
+
 	this._queryParams.forEach(params => req.query(params));
 
 	var postParams = this._postParams;
@@ -233,7 +236,37 @@ function buildSuperagentRequest() {
 		}
 	}
 
-	req.send(postParams);
+	// query parameters exist if there are more than one set
+	// post parameters exist if the value is not null
+	const hasQueryParams = (this._queryParams.length > 0),
+		hasPostParams = (this._postParams !== null);
+
+	if (hasPostParams) {
+		// superagent has some weird, implicit file upload support
+		// that only works if you don't set `type`.
+		if (this._type && this._type !== 'form-data') {
+			req.type(this._type);
+		}
+
+		req.send(postParams);
+	}
+
+	switch (this._method) {
+		case 'GET':
+		case 'HEAD':
+			if (hasPostParams) {
+				logger.warning(`Attempting a ${this._method} request with POST data (using SuperAgent's .send() function). This might result in a CORS preflight request`);
+			}
+			break;
+
+		case 'POST':
+		case 'PATCH':
+		case 'PUT':
+			if (hasQueryParams) {
+				logger.info(`Attempting a ${this._method} request with query data (using SuperAgent's .query() function). This might not be what you want.`);
+			}
+			break;
+	}
 
 	if (this._timeout) {
 		req.timeout(this._timeout);

@@ -290,7 +290,7 @@ to parse and execute JavaScript.
 
 To combat this, over the past decade some in the web developer community have
 embraced the [single-page
-application](http://en.wikipedia.org/wiki/Single-page_application), or SPA.
+application](https://en.wikipedia.org/wiki/Single-page_application), or SPA.
 The idea behind an SPA is that the browser downloads all the code for an
 application on first page load. The upside to this is that when a user clicks
 on an internal link that would normally download a new HTML page and force a

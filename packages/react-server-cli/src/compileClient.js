@@ -4,9 +4,9 @@ import mkdirp from "mkdirp"
 import fs from "fs"
 import ExtractTextPlugin from "extract-text-webpack-plugin"
 import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
-import crypto from "crypto"
 import StatsPlugin from "webpack-stats-plugin"
 import callerDependency from "./callerDependency"
+import serverSideHotModuleReload from "./serverSideHotModuleReload"
 
 
 // commented out to please eslint, but re-add if logging is needed in this file.
@@ -58,8 +58,20 @@ export default (opts = {}) => {
 
 	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
+
+	// This is required because WebpackDevServer uses Node's url module to parse the URL.  That module does not
+	// support protocol-relative URLs, therefore doesn't actually parse the URL properly.  We can "fake" out the
+	// url module by specifying http://.  Don't worry, WebpackDevServer will actually use window.location.protocol
+	// instead of what we hardcode.
+	// Node issue: https://github.com/nodejs/node-v0.x-archive/issues/9123
+	// WebpackDevServer overriding protocol: https://github.com/webpack/webpack-dev-server/blob/master/client/index.js#L123-L129
+	let webpackDevServerClientUrl = outputUrl;
+	if (/^\/\//.test(outputUrl)) {
+		// this is a protocol relative URL like '//0.0.0.0'
+		webpackDevServerClientUrl = "http:" + outputUrl;
+	}
 	const entrypointBase = hot ? [
-		require.resolve("webpack-dev-server/client") + "?" + outputUrl,
+		require.resolve("webpack-dev-server/client") + "?" + webpackDevServerClientUrl,
 		require.resolve("webpack/hot/only-dev-server"),
 	] : [];
 	let entrypoints = {};
@@ -94,7 +106,13 @@ export default (opts = {}) => {
 				fs.unlinkSync(path.join(outputDir, "chunk-manifest.json"));
 			}
 
-			resolve(writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, manifest));
+			const routesFilePath = writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, outputUrl, false, manifest);
+
+			if (hot) {
+				serverSideHotModuleReload(stats);
+			}
+
+			resolve(routesFilePath);
 		});
 	});
 
@@ -121,8 +139,14 @@ function statsToManifest(stats) {
 	for (const chunk of stats.compilation.chunks) {
 		if (chunk.name) {
 			jsChunksByName[chunk.name] = chunk.files[0];
-			if (chunk.files.length > 1) {
-				cssChunksByName[chunk.name] = chunk.files[1];
+
+			for (let i = 1; i < chunk.files.length; i++) {
+				if (/\.css$/.test(chunk.files[i])) {
+					// the CSS file is probably last file in the array, unless there have been hot updates for the JS
+					// which show up in the array prior to the CSS file.
+					cssChunksByName[chunk.name] = chunk.files[i];
+					break;
+				}
 			}
 		}
 		jsChunksById[chunk.id] = chunk.files[0];
@@ -256,18 +280,18 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 }
 
 // writes out a routes file that can be used at runtime.
-function writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) {
+export function writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) {
 	let routesOutput = [];
 
-	const coreMiddleware = require.resolve("react-server-core-middleware");
+	const coreMiddleware = JSON.stringify(require.resolve("react-server-core-middleware"));
 	const existingMiddleware = routes.middleware ? routes.middleware.map((middlewareRelativePath) => {
-		return `unwrapEs6Module(require("${path.relative(workingDirAbsolute, path.resolve(routesDir, middlewareRelativePath))}"))`
+		return `unwrapEs6Module(require(${JSON.stringify(path.relative(workingDirAbsolute, path.resolve(routesDir, middlewareRelativePath)))}))`
 	}) : [];
 	routesOutput.push(`
 var manifest = ${manifest ? JSON.stringify(manifest) : "undefined"};
 function unwrapEs6Module(module) { return module.__esModule ? module.default : module }
-var coreJsMiddleware = require('${coreMiddleware}').coreJsMiddleware;
-var coreCssMiddleware = require('${coreMiddleware}').coreCssMiddleware;
+var coreJsMiddleware = require(${coreMiddleware}).coreJsMiddleware;
+var coreCssMiddleware = require(${coreMiddleware}).coreCssMiddleware;
 module.exports = {
 	middleware:[
 		coreJsMiddleware(${JSON.stringify(staticUrl)}, manifest),
@@ -279,36 +303,42 @@ module.exports = {
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
 
+		// On the line below specifying 'method', if the route doesn't have a method, we'll set it to `undefined` so that
+		// routr passes through and matches any method
+		// https://github.com/yahoo/routr/blob/v2.1.0/lib/router.js#L49-L57
+		let method = route.method;
+
+		// Safely check for an empty object, array, or string and specifically set it to 'undefined'
+		if (method === undefined || method === null || method === {} || method.length === 0) {
+			method = undefined; // 'undefined' is the value that routr needs to accept any method
+		}
+
 		routesOutput.push(`
-		${routeName}: {`);
-		routesOutput.push(`
-			path: ${JSON.stringify(route.path)},`);
-		// if the route doesn't have a method, we'll assume it's "get". routr doesn't
-		// have a default (method is required), so we set it here.
-		routesOutput.push(`
-			method: "${route.method || "get"}",`);
+		${routeName}: {
+			path: ${JSON.stringify(route.path)},
+			method: ${JSON.stringify(method)},`);
 
 		let formats = normalizeRoutesPage(route.page);
 		routesOutput.push(`
 			page: {`);
 		for (let format of Object.keys(formats)) {
 			const formatModule = formats[format];
-			var relativePathToPage = path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule));
+			var relativePathToPage = JSON.stringify(path.relative(workingDirAbsolute, path.resolve(routesDir, formatModule)));
 			routesOutput.push(`
 				${format}: function() {
 					return {
 						done: function(cb) {`);
 			if (isClient) {
 				routesOutput.push(`
-							require.ensure("${relativePathToPage}", function() {
-								cb(unwrapEs6Module(require("${relativePathToPage}")));
+							require.ensure(${relativePathToPage}, function() {
+								cb(unwrapEs6Module(require(${relativePathToPage})));
 							});`);
 			} else {
 				routesOutput.push(`
 							try {
-								cb(unwrapEs6Module(require("${relativePathToPage}")));
+								cb(unwrapEs6Module(require(${relativePathToPage})));
 							} catch (e) {
-								console.error('Failed to load page at "${relativePathToPage}"', e.stack);
+								console.error('Failed to load page at ${relativePathToPage}', e.stack);
 							}`);
 			}
 			routesOutput.push(`
@@ -327,8 +357,7 @@ module.exports = {
 	const routesContent = routesOutput.join("");
 	// make a unique file name so that when it is required, there are no collisions
 	// in the module loader between different invocations.
-	const routesMD5 = crypto.createHash('md5').update(routesContent).digest("hex");
-	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server_" + routesMD5}.js`;
+	const routesFilePath = `${workingDirAbsolute}/routes_${isClient ? "client" : "server"}.js`;
 	fs.writeFileSync(routesFilePath, routesContent);
 
 	return routesFilePath;

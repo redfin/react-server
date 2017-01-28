@@ -1,8 +1,6 @@
 var ReactServerAgent = require("../../ReactServerAgent");
 var superagent = require("superagent");
 var Q = require("q");
-var isArray = require("lodash/isArray");
-
 
 var {
 	makeServer,
@@ -171,8 +169,20 @@ describe("ReactServerAgent", () => {
 
 	describe("general POST requests", () => {
 
-		it("defaults to application/json", withRlsContext( (done) => {
+		it("have no content-type set when there is no data passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
 			ReactServerAgent.post("/describe")
+				.then( res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe(undefined);
+					done();
+				})
+				.done();
+		}));
+
+		it("defaults to application/json when an empty object is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {})
 				.then( res => {
 					// lowercase
 					expect(res.body.req.headers['content-type']).toBe("application/json");
@@ -181,8 +191,33 @@ describe("ReactServerAgent", () => {
 				.done();
 		}));
 
-		it("can be set to form-encoded", withRlsContext( (done) => {
+		it("defaults to application/json when data is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {blankData: true})
+				.then( res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe("application/json");
+					done();
+				})
+				.done();
+		}));
+
+		it("type is not set to form-encoded when there is no data passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
 			ReactServerAgent.post("/describe")
+				.type("form")
+				.then(res => {
+					// lowercase
+					expect(res.body.req.headers['content-type']).toBe(undefined);
+					// TODO: check data somehow?
+					done();
+				})
+				.done();
+		}));
+
+		it("can be set to form-encoded when data is passed", withRlsContext( (done) => {
+			// This needs to pass some data or else the POST request won't have a content type set at all.
+			ReactServerAgent.post("/describe", {blankData: true})
 				.type("form")
 				.then(res => {
 					// lowercase
@@ -508,7 +543,7 @@ describe("ReactServerAgent", () => {
 				var dehydrated = cache.dehydrate();
 
 				// single entry; not an array
-				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
+				expect(Array.isArray(dehydrated.dataCache[URL])).toBeFalsy();
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
@@ -536,7 +571,7 @@ describe("ReactServerAgent", () => {
 				var cache = ReactServerAgent.cache();
 				var dehydrated = cache.dehydrate();
 
-				expect(isArray(dehydrated.dataCache[URL])).toBeFalsy();
+				expect(Array.isArray(dehydrated.dataCache[URL])).toBeFalsy();
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
@@ -676,7 +711,7 @@ describe("ReactServerAgent", () => {
 	function getSingleDehydratedCacheEntry(dehydratedCache, url) {
 		var entryOrArray = dehydratedCache.dataCache[url];
 		// we expect a _single_ entry, i.e. not an array
-		expect(isArray(entryOrArray)).toBeFalsy();
+		expect(Array.isArray(entryOrArray)).toBeFalsy();
 		return entryOrArray;
 	}
 

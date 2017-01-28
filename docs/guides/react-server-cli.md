@@ -96,7 +96,7 @@ It looks like this:
 
 ```json
 {
-	"routes": "routes.json",
+	"routesFile": "routes.json",
 	"port": "5000",
 	"env": {
 		"production": {
@@ -132,10 +132,10 @@ React Server will take care of the default Webpack options but if you need to se
 ```javascript
 export default (webpackConfig) => {
 	// Insert a new sass and css loader before the default.
-	webpackConfig.module.loaders.splice(0, {
+	webpackConfig.module.loaders.unshift({
 		test: /\.s(a|c)ss$/,
 		loaders: ["style", "css", "sass", "customloader"],
-	})
+	});
 	return webpackConfig
 }
 ```
@@ -143,7 +143,14 @@ export default (webpackConfig) => {
 In the `.reactserverrc` file add an option for `webpackConfig` that points to that function file and when React Server is setting up Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed. This may also be specified on the command line with the `--webpack-config=<FILE>` option.
 
 ### Use Custom Express Middleware
-Currently the default Express Middlewares used are compression, body-parser, cookie-parser, helmet with default configuration. If you need to setup custom express middleware you can do it with a setup function.
+Currently the default Express Middlewares used are
+
+* [compression](https://www.npmjs.com/package/compression)
+* [body-parser](https://www.npmjs.com/package/body-parser)
+* [cookie-parser](https://www.npmjs.com/package/cookie-parser)
+* [helmet](https://www.npmjs.com/package/helmet) with [default configuration](https://www.npmjs.com/package/helmet#how-it-works).
+
+If you need to setup custom express middleware you can do it with a setup function.
 
 ```javascript
 export default (server, reactServerMiddleware) => {

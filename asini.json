@@ -1,6 +1,6 @@
 {
   "asini": "1.1.0",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "hoist": true,
   "changelog": {
     "repo": "redfin/react-server",
@@ -9,6 +9,7 @@
       "enhancement": "Enhancement",
       "performance": "Performance",
       "bug": "Bug fix",
+      "documentation": "Documentation",
       "security": "Security"
     },
     "cacheDir": ".changelog"

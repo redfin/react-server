@@ -11,6 +11,7 @@ var	fs = require("fs"),
 // in the main `react-server` package, since those tests run concurrently with
 // these during a top-level `npm test`.
 var PORT = process.env.PORT;
+let HTTPS = false;
 
 if (!PORT) throw new Error("Need a port");
 
@@ -94,15 +95,15 @@ var routesArrayToMap = function (routesArray) {
 	return result;
 }
 
-var startServer = function (specFile, routes) {
+const startServer = function (specFile, routes, httpsOptions) {
   // if we got an array, normalize it to a map of URLs to file paths.
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
-	var testTempDir = path.join(__dirname, "../../test-temp");
+	const testTempDir = path.join(__dirname, "../../test-temp");
 
-	var routesFile = writeRoutesFile(specFile, routes, testTempDir);
+	const routesFile = writeRoutesFile(specFile, routes, testTempDir);
 
-	return CLI.run({
+	const options = {
 		command: "start",
 		routesFile: routesFile,
 		hot: false,
@@ -111,36 +112,52 @@ var startServer = function (specFile, routes) {
 		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",
-	});
-}
+	};
 
-var getServerBrowser = function (url, cb) {
-	var browser = getBrowser({runScripts:false});
+	if (httpsOptions) {
+		HTTPS = true;
+		options.httpsOptions = httpsOptions;
 
-	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser), (e) => {
-		console.error(e)
-		console.error(arguments)
-	})
-}
+		// Necessary to handle self-signed certificates.  This setting is fine for testing, but shouldn't be used in production
+		// https://github.com/assaf/zombie/issues/1021
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+	} else {
+		HTTPS = false;
+	}
 
-var getClientBrowser = function (url, cb) {
-	var browser = getBrowser();
-	browser.visit(`http://localhost:${PORT}${url}`).then(() => cb(browser), (e) => {
-		console.error(e)
+	return CLI.run(options);
+};
+
+const getServerBrowser = function (url, cb) {
+	const browser = getBrowser({runScripts:false}),
+		scheme = HTTPS ? 'https' : 'http';
+
+	browser.visit(`${scheme}://localhost:${PORT}${url}`).then(() => cb(browser), (e) => {
+		console.error(e);
 		console.error(arguments)
 	})
 };
 
-var getTransitionBrowser = function (url, cb) {
-	var browser = getBrowser();
+const getClientBrowser = function (url, cb) {
+	const browser = getBrowser(),
+		scheme = HTTPS ? 'https' : 'http';
+	browser.visit(`${scheme}://localhost:${PORT}${url}`).then(() => cb(browser), (e) => {
+		console.error(e);
+		console.error(arguments);
+	})
+};
+
+const getTransitionBrowser = function (url, cb) {
+	const browser = getBrowser(),
+		scheme = HTTPS ? 'https' : 'http';
 	// go to the transition page and click the link.
-	browser.visit(`http://localhost:${PORT}/__transition?url=${url}`).then(() => {
+	browser.visit(`${scheme}://localhost:${PORT}/__transition?url=${url}`).then(() => {
 		browser.clickLink("Click me", () => {
 			cb(browser);
 		});
 	});
 
-}
+};
 
 // vists the url `url` and calls `cb` with the browser's window
 // object after the page has completely downloaded from the server but before any client
@@ -275,10 +292,16 @@ var testWithElement = (url, query, testFn) => testWithDocument(
 	url, document => testFn(document.querySelector(query))
 );
 
-var testSetupFn = function (specFile, routes) {
+var testSetupFn = function (specFile, routes, httpsOptions) {
 	return (done) => {
 		try {
-			const {stop, started} = startServer(specFile, routes);
+			// Since we're not using hot-reloading, we need to explicitly delete all of the require.cache to ensure
+			// that the latest Webpack compiled server code is being used.
+			Object.keys(require.cache)
+				.filter((key) => /(__clientTemp|test-temp)/.test(key))
+				.forEach((key) => delete require.cache[key]);
+
+			const {stop, started} = startServer(specFile, routes, httpsOptions);
 			started.then(done, (e) => {
 				console.error("There was an error while starting the server.");
 				// No point in continuing.
@@ -311,10 +334,10 @@ var startServerBeforeEach = function (specFile, routes) {
 
 // convenience function to start a react-server server before all the tests. make sure to
 // call stopServerAfterEach so that the server is stopped.
-var startServerBeforeAll = function (specFile, routes) {
+var startServerBeforeAll = function (specFile, routes, httpsOptions) {
 
 	// Give ourselves a while to start up (increase the timeout).
-	beforeAll(testSetupFn(specFile, routes), 60000);
+	beforeAll(testSetupFn(specFile, routes, httpsOptions), 60000);
 }
 
 // convenience function to stop a react-server server after each test. to be paired

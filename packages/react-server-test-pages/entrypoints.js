@@ -17,6 +17,14 @@ module.exports = {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
 	},
+	RootProvider: {
+		entry: "/root/rootProvider",
+		description: "<RootProvider store={...}>",
+	},
+	ReduxAdapter: {
+		entry: "/root/reduxAdapter",
+		description: "Redux Adapter basics",
+	},
 	RootError: {
 		entry: "/root/error",
 		description: "A data error for a root element",
@@ -28,6 +36,10 @@ module.exports = {
 	NavigationPlayground: {
 		entry: "/navigation/playground",
 		description: "Navigation playground",
+	},
+	Forwarding: {
+		entry: "/navigation/forward",
+		description: "Test how page forwarding works with passing data down",
 	},
 	StylePromises: {
 		entry: "/styles/promises",
@@ -48,5 +60,17 @@ module.exports = {
 	ErrorLogs: {
 		entry: "/error/logs",
 		description: "Generate errors in the logs",
+	},
+	BottleneckElements: {
+		entry: "/bottleneck/elements",
+		description: "Test if number of elements on a page is a bottleneck",
+	},
+	BottleneckDataRequests: {
+		entry: "/bottleneck/dataRequests",
+		description: "Test if number of data requests on a page is a bottleneck",
+	},
+	BottleneckMiddleware: {
+		entry: "/bottleneck/middleware",
+		description: "Test if amount of middleware on a page is a bottleneck",
 	},
 }
