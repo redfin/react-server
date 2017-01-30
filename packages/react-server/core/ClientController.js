@@ -5,6 +5,7 @@ var React = require('react'),
 	logging = require('./logging'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
+	DebugUtil = require('./util/DebugUtil'),
 	Q = require('q'),
 	cssHelper = require('./util/ClientCssHelper'),
 	EventEmitter = require("events").EventEmitter,
@@ -421,7 +422,9 @@ class ClientController extends EventEmitter {
 	_handleDebugParams(page) {
 		if (!page) return;
 
-		const params = page.getRequest().getQuery();
+		DebugUtil.setRequest(page.getRequest());
+
+		const params = DebugUtil.getAllDebugValues();
 
 		// Allow adjustment of log levels.
 		_.forEach({

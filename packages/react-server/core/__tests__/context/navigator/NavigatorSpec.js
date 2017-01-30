@@ -2,13 +2,16 @@ import Navigator from "../../../context/Navigator";
 import History from "../../../components/History";
 import ExpressServerRequest from "../../../ExpressServerRequest";
 import NavigatorRoutes from "./NavigatorRoutes";
+import RequestLocalStorage from "../../../util/RequestLocalStorage";
 
 class RequestContextStub {
 	constructor(options) {
 		this.navigator = new Navigator(this, options);
 	}
 	navigate (request, type) {
-		this.navigator.navigate(request, type);
+		RequestLocalStorage.startRequest(() => {
+			this.navigator.navigate(request, type);
+		});
 	}
 	framebackControllerWillHandle() { return false; }
 	getMobileDetect() { return null; }

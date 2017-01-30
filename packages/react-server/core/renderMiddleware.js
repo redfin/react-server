@@ -5,6 +5,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
+	DebugUtil = require('./util/DebugUtil'),
 	RLS = RequestLocalStorage.getNamespace(),
 	LABString = require('./util/LABString'),
 	Q = require('q'),
@@ -715,7 +716,7 @@ function writeBody(req, res, context, start, page) {
 	// Some time has already elapsed since the request started.
 	// Note that you can override `FAILSAFE_RENDER_TIMEOUT` with a
 	// `?_debug_render_timeout={ms}` query string parameter.
-	var totalWait     = req.query._debug_render_timeout || FAILSAFE_RENDER_TIMEOUT
+	var totalWait     = DebugUtil.getRenderTimeout() || FAILSAFE_RENDER_TIMEOUT
 	,   timeRemaining = totalWait - (new Date - start)
 
 	var retval = Q.defer();
@@ -988,7 +989,7 @@ function wrapUpLateArrivals(){
 
 function closeBody(req, res) {
 	// Flush timing/log data to the response document
-	if (req.query._debug_output_logs) {
+	if (DebugUtil.getOutputLogs()) {
 		flushLogsToResponse(res);
 	}
 	res.write("</div></body></html>");
