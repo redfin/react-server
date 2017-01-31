@@ -5,7 +5,15 @@ require("get-stdin")().then(src => console.log(
 	"    MIT License\n"+
 	"*/\n"+
 	require("uglify-js").minify(
-		src.replace(/\/\*!START_DEBUG(?:.|[\n\r])*?END_DEBUG\*\//g, ""),
+		src
+
+			// Remove a few hand-annotated debug-related chunks.
+			.replace(/\/\*!START_DEBUG(?:.|[\n\r])*?END_DEBUG\*\//g, "")
+
+
+			// Let Uglify's dead-code elimination handle the rest.
+			.replace(/\w+\[_Debug]/g, "false"),
+
 		{fromString: true}
 	).code
 ));
