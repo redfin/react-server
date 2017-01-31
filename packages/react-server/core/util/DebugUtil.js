@@ -17,6 +17,7 @@ const RLS = RequestLocalStorage.getNamespace();
 const DEBUG_PARAMS = {
 	getRenderTimeout : "_debug_render_timeout",
 	getOutputLogs    : "_debug_output_logs",
+	getLab           : "_debug_lab",
 	getLogLevel      : "_react_server_log_level",
 	getLogLevelMain  : "_react_server_log_level_main",
 	getLogLevelTime  : "_react_server_log_level_time",

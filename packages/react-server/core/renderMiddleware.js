@@ -485,7 +485,8 @@ function renderScriptsAsync(scripts, res) {
 	if (!RLS().didLoadLAB){
 
 		// This is the full implementation of LABjs.
-		res.write(flab.min);
+		// Pass `?_debug_lab=1` for unminified source with debugging output.
+		res.write(DebugUtil.getLab() ? flab.src : flab.min);
 
 		// We always want scripts to be executed in order.
 		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
