@@ -10,7 +10,7 @@ const logger = logging.getLogger(__LOGGER__);
 export default class IndexPage {
 	handleRoute(next) {
 		logger.info('handling index');
-		this.data = ReactServerAgent.get('/api/networks').then(d => d.body.body);
+		this.data = ReactServerAgent.get('/api/networks').then(d => d.body);
 		return next();
 	}
 

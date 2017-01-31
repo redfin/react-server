@@ -1,3 +1,4 @@
 {
-  "routesFile": "./routes.js"
+  "routesFile": "./routes.js",
+  "customMiddlewarePath": "./api"
 }

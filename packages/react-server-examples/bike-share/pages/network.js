@@ -11,12 +11,12 @@ const logger = logging.getLogger(__LOGGER__);
 export default class NetworkPage {
 	handleRoute(next) {
 		this.network = this.getRequest().getQuery().network;
-		const url = `/api/networks?network=${this.network}`;
+		const url = `/api/networks/${this.network}`;
 
 		logger.info(`rendering network page for network ${this.network}`);
 		logger.info(`getting data from url ${url}`);
 
-		this.data = ReactServerAgent.get(url).then(d => d.body.body.network);
+		this.data = ReactServerAgent.get(url).then(d => d.body.network);
 		return next();
 	}
 
