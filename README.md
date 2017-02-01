@@ -74,7 +74,7 @@ See [the contributing guide](CONTRIBUTING.md) to get started.
 
 #### Where's all the code?!
 
-This is an [Asini](https://github.com/asini/asini) respository with multiple npm packages!
+This is a [Lerna](https://github.com/lerna/lerna) respository with multiple npm packages!
 Check out the [`packages/`](packages/) directory :eyes:.
 
 [build-badge-img]: https://travis-ci.org/redfin/react-server.svg?branch=master
