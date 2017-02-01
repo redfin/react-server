@@ -177,22 +177,16 @@ class CacheEntry {
 		this.res    = res;
 		this.loaded = true;
 
-		if (SERVER_SIDE){
-
-			// Deep copy.
-			//
-			// Leave ourselves with a clean copy of the original
-			// response regardless of what mutation might happen
-			// once stores get ahold of it.
-			//
-			// This is important to ensure that we provide the same
-			// data from the cache when we wake up in the browser
-			// as we initially provide on the server.
-			//
-			res = JSON.parse(JSON.stringify(res));
-		}
-
-		this.dfd.resolve(res);
+		// Resolve with a serialized copy.  We'll unserialize for each
+		// requester.  This way we provide a fresh copy each time so mutations
+		// don't leak.
+		//
+		// This also leaves _us_ with a clean copy of the original response.
+		// This is important to ensure that we provide the same data from the
+		// cache when we wake up in the browser as we initially provide on the
+		// server.
+		//
+		this.dfd.resolve(JSON.stringify(res));
 	}
 
 	setError (err) {
@@ -218,17 +212,21 @@ class CacheEntry {
 		this.dfd.reject(err);
 	}
 
+	_parsePromise(dfd) {
+		return dfd.promise.then(val => JSON.parse(val));
+	}
+
 	whenDataReady () {
 		if (SERVER_SIDE) {
 			// server-side, we increment the number of requesters
 			// we expect to retrieve the data on the frontend
 			this.requesters += 1;
-			return this.dfd.promise;
+			return this._parsePromise(this.dfd);
 		} else {
 			// client-side, whenever someone retrieves data from the cache,
 			// we decrement the number of retrievals expected, and when we
 			// hit zero, remove the cache entry.
-			return this._requesterDecrementingPromise(this.dfd.promise);
+			return this._requesterDecrementingPromise(this.dfd);
 		}
 	}
 
@@ -250,11 +248,11 @@ class CacheEntry {
 	 * Chain a promise with another promise that decrements
 	 * the number of expected requesters.
 	 */
-	_requesterDecrementingPromise (promise) {
+	_requesterDecrementingPromise (dfd) {
 		// regardless of whether we're resolved with a 'res' or 'err',
 		// we want to decrement requests. the appropriate 'success' or 'error'
 		// callback will be executed on whatever is chained after this method
-		return promise.fin( resOrErr => {
+		return this._parsePromise(dfd).fin( resOrErr => {
 			this.decrementRequesters();
 			return resOrErr;
 		});
