@@ -57,6 +57,10 @@ module.exports = {
 		entry: "/bottleneck/dataRequests",
 		description: "Test if number of data requests on a page is a bottleneck",
 	},
+	BottleneckLargeDataRequests: {
+		entry: "/bottleneck/largeDataRequests",
+		description: "Test if large data requests on a page is a bottleneck",
+	},
 	BottleneckMiddleware: {
 		entry: "/bottleneck/middleware",
 		description: "Test if amount of middleware on a page is a bottleneck",
