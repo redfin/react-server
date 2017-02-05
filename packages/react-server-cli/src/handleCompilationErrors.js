@@ -10,13 +10,13 @@ export default function handleCompilationErrors (err, stats){
 		logger.error(err);
 		return new Error(err);
 		// TODO: inspect stats to see if there are errors -sra.
-	} else if (stats.hasErrors()) {
+	} else if (stats && stats.hasErrors()) {
 		console.error("There were errors in the JavaScript compilation.");
 		stats.toJson().errors.forEach((error) => {
 			console.error(error);
 		});
 		return new Error("There were errors in the JavaScript compilation.");
-	} else if (stats.hasWarnings()) {
+	} else if (stats && stats.hasWarnings()) {
 		logger.warning("There were warnings in the JavaScript compilation. Note that this is normal if you are minifying your code.");
 		// for now, don't enumerate warnings; they are absolutely useless in minification mode.
 		// TODO: handle this more intelligently, perhaps with a --reportwarnings flag or with different
