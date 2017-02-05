@@ -6,7 +6,6 @@
   "hot": false,
   "minify": false,
   "longTermCaching": false,
-  "compileOnly": false,
   "https": false,
   "logLevel": "debug",
   "env": {

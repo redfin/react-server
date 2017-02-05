@@ -383,7 +383,6 @@ run({
     jsPort          : 3001,
     hot             : true,
     minify          : false,
-    compileOnly     : false,
     jsUrl           : null,
     longTermCaching : true,
 });
