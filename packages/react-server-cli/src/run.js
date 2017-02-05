@@ -43,8 +43,7 @@ export default function run(options = {}) {
 	options.outputUrl = jsUrl || `//${host}:${jsPort}/`;
 
 	try {
-		const commandResult = require("./" + path.join("commands", options.command))(options);
-		return (options.command === "start") ? commandResult.started : commandResult;
+		return require("./" + path.join("commands", options.command))(options);
 	} catch (e) {
 		if (e instanceof ConfigurationError) {
 			console.error(chalk.red(e.message));
