@@ -4,7 +4,8 @@
 // jsPort: the port number for JavaScript and CSS on the server.
 // hot: enable hot reloading. do not use in production.
 // minify: minify the client-side JavaScript.
-// compileOnly: just compile the client-side JavaScript; don't start up a server.
+// compileOnStartup: start up a server without compiling the client-side JavaScript; this expects that you have already
+//   run the compile command prior to starting (i.e. in a production environment where build and run times are separated).
 // jsUrl: serve up the HTML, but don't serve up the JavaScript and CSS; instead point the
 //   JS & CSS URLs at this URL.
 // logLevel: the level of logging to use.
@@ -18,7 +19,6 @@ export default {
 	bindIp: "0.0.0.0",
 	hot: true,
 	minify: false,
-	compileOnly: false,
 	compileOnStartup: true,
 	logLevel: "debug",
 	timingLogLevel: "fast",

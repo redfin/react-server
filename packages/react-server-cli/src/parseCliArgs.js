@@ -93,11 +93,6 @@ export default (args = process.argv) => {
 			describe: "Set the severity level for the gauge logs. Values are, in ascending order of severity: 'no', 'hi', 'lo', 'ok'. Default is 'no' in production mode, 'ok' otherwise.",
 			type: "string",
 		})
-		.option("compile-only", {
-			describe: "Compile the client JavaScript only, and don't start any servers. This is what you want to do if you are building the client JavaScript to be hosted on a CDN. Unless you have a very specific reason, it's almost alway a good idea to only do this in production mode. Defaults to false.",
-			default: undefined,
-			type: "boolean",
-		})
 		.option("js-url", {
 			describe: "A URL base for the pre-compiled client JavaScript. Setting a value for jsurl means that react-server-cli will not compile the client JavaScript at all, and it will not serve up any JavaScript. Obviously, this means that --jsurl overrides all of the options related to JavaScript compilation: --hot, --minify, and --bundleperroute.",
 			type: "string",
