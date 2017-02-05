@@ -104,6 +104,7 @@ export default (args = process.argv) => {
 		})
 		.option("compile-on-startup", {
 			describe: "Enable/disable compiling on startup.  Recommended for use in production when files have been pre-compiled.",
+			default: undefined,
 			type: "boolean",
 		})
 		.version(function() {
