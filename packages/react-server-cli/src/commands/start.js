@@ -274,6 +274,9 @@ export default function start(options){
 				cb(null, null);
 			};
 		} else {
+			// ES6 destructuring without a preceding `let` or `const` results in a syntax error.  Therefore, the below
+			// statement must be wrapped in parentheses to work properly.
+			// http://exploringjs.com/es6/ch_destructuring.html#sec_leading-curly-brace-destructuring
 			({serverRoutes, compiler} = compileClient(options));
 		}
 
