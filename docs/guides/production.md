@@ -87,6 +87,15 @@ into your application.  One example of the file `_configs/production/config.json
 }
 ```
 
+If dynamic config is preferred, just replace `config.json` with file `config.js`. One example of `config.js` might look like this:
+
+```js
+module.exports = {
+  APP_ENV: process.env.NODE_ENV === "production" ? "prod" : "dev",
+  MY_GLOBAL_VARIABLE: process.env.NODE_ENV === "production" ? "foo" : "bar"
+}
+```
+
 To use these config variables inside your application, just use the `config()` function inside `react-server` and
 you're all set!  This works reliably on both server and client sides of the application--fully isomorphic! 
 Here's an example:
