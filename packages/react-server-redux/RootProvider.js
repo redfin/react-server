@@ -25,7 +25,7 @@ class RootProvider extends React.Component {
 				}
 			});
 		} else {
-			wrappedElements.push(React.createElement(Provider, {store: this.props.store}, this.props.children));
+			wrappedElements.push(React.createElement(Provider, {key: 0, store: this.props.store}, this.props.children));
 		}
 
 		return React.createElement('div', null, wrappedElements);
