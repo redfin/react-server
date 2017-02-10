@@ -5,7 +5,7 @@ import './homepage.less';
 export default class Homepage {
 
 	getTitle() {
-		return "React Server";
+		return "React Server - Fast Server and Client Side Rendering";
 	}
 
 	getElements() {
