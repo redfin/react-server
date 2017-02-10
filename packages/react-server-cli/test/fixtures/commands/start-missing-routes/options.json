@@ -1,4 +1,4 @@
 {
-	"args": ["start"],
+	"args": ["start", "--port", "8782", "--js-port", "8783"],
 	"stderrIncludes": "Failed to load routes file at"
 }

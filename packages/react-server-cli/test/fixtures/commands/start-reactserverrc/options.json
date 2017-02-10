@@ -1,4 +1,4 @@
 {
-	"args": ["start"],
+	"args": ["start", "--port", "8784", "--js-port", "8785"],
 	"stdoutIncludes": "Started HTML server over HTTP on"
 }
