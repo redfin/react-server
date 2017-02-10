@@ -67,8 +67,14 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 			}, frequency);
 		});
 
-		if (stdoutIncludes) t.true(stdout.includes(stdoutIncludes), 'stdout includes expected output');
-		if (stderrIncludes) t.true(stderr.includes(stderrIncludes), 'stderr includes expected output');
+		t.true(
+			stderrIncludes ? stderr.includes(stderrIncludes) : stderr === '',
+			'stderr does not include expected output.  Instead, it says: ' + stderr
+		);
+		t.true(
+			stdoutIncludes ? stdout.includes(stdoutIncludes) : stdout === '',
+			'stdout does not include expected output.  Instead, it says: ' + stdout
+		);
 
 		server.kill();
 
