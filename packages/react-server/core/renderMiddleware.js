@@ -484,12 +484,22 @@ function renderScriptsAsync(scripts, res) {
 	// Lazily load LAB the first time we spit out async scripts.
 	if (!RLS().didLoadLAB){
 
+		const globalDefaults = {AlwaysPreserveOrder:true};
+
+		// The "cache-preloading" option in stock LABjs doesn't work in modern
+		// Chrome. If you're configured for splitJsLoad then you'd better have
+		// xhr access to your scripts!  They need to either be on the same
+		// domain or have CORS headers.
+		if (RLS().page.getSplitJsLoad()) {
+			globalDefaults.UseCORSXHR = true;
+		}
+
 		// This is the full implementation of LABjs.
 		// Pass `?_debug_lab=1` for unminified source with debugging output.
 		res.write(DebugUtil.getLab() ? flab.src : flab.min);
 
 		// We always want scripts to be executed in order.
-		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true,UseCORSXHR:true});");
+		res.write(`$LAB.setGlobalDefaults(${JSON.stringify(globalDefaults)});`);
 
 		// We'll use this to store state between calls (see below).
 		res.write("window._tLAB=$LAB")
