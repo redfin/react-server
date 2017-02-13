@@ -13,7 +13,6 @@ class RequestContextStub {
 			this.navigator.navigate(request, type);
 		});
 	}
-	framebackControllerWillHandle() { return false; }
 	getMobileDetect() { return null; }
 }
 

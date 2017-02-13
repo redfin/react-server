@@ -6,7 +6,7 @@ const logger = logging.getLogger(__LOGGER__);
 const NetworkCard = ({id, name, location, company}) => {
 	logger.info(`rendering card for network ${name}`);
 	return (
-		<div><Link path={`/network?network=${id}`} frameback>{name}</Link> in {location.city}, {location.country}, run by {company}</div>
+		<div><Link path={`/network?network=${id}`}>{name}</Link> in {location.city}, {location.country}, run by {company}</div>
 	);
 };
 

@@ -1,7 +1,7 @@
 # react-server-examples/bike-share
 
 An example project for `react-server` which demos server rendering, interactivity
-on the client side, frameback, ReactServerAgent, url parameters and logging.
+on the client side, ReactServerAgent, url parameters and logging.
 Uses [api.citybik.es](http://api.citybik.es/v2/) to get data about bike shares
 and their availability around the world.
 

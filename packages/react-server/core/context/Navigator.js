@@ -38,14 +38,6 @@ class Navigator extends EventEmitter {
 	 */
 	navigate (request, type) {
 
-		// If we're in a frameback frame we might need to make a
-		// round-trip through the outer frame for navigaton to make
-		// sure the history navigation stack of the primary window is
-		// maintained properly.
-		if (this.context.framebackControllerWillHandle(request, type)) {
-			return;
-		}
-
 		logger.debug(`Navigating to ${request.getUrl()}`);
 		type = type || History.events.PAGELOAD;
 
@@ -59,7 +51,7 @@ class Navigator extends EventEmitter {
 
 		if (route) {
 			logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
-		} else if (!request._frameback) {
+		} else {
 			this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);
 			return;
 		}

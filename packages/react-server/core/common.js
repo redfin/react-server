@@ -8,7 +8,6 @@ module.exports = {
 	History: require('./components/History'),
 	navigateTo: require('./util/navigateTo'),
 	ClientRequest: require('./ClientRequest'),
-	FramebackController: require('./FramebackController'),
 	components: {
 		FragmentDataCache: require('./components/FragmentDataCache'),
 	},
