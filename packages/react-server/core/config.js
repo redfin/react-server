@@ -19,7 +19,7 @@ if (SERVER_SIDE) {
 				// Node.js tries to load `config.js` file first. If `config.js` doesn't exist, Node.js
 				// then try to load `config.json`.
 				configFilePath = path.join(process.cwd(), configFilePath + "/config");
-				config = Object.freeze(configFilePath);
+				config = Object.freeze(require(configFilePath));
 			} else {
 				config = Object.freeze({});
 			}
