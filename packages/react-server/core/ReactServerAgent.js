@@ -24,8 +24,10 @@ var API = {
 		return req;
 	},
 
-	del (url) {
-		return new Request('DELETE', url, API.cache());
+	del (url, data) {
+		var req = new Request('DELETE', url, API.cache());
+		if (data) req.send(data);
+		return req;
 	},
 
 	patch (url, data) {
