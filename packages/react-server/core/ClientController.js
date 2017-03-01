@@ -13,7 +13,6 @@ var React = require('react'),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
 	ReactServerAgent = require('./ReactServerAgent'),
-	FramebackController = require('./FramebackController'),
 	{getRootElementAttributes} = require('./components/RootElement'),
 	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
 
@@ -106,82 +105,18 @@ class ClientController extends EventEmitter {
 			:new Date;                       // There's no naviagation.  We're it.
 
 		const url = request.getUrl();
-		const FC = this.context.framebackController;
 		const isPush = type === History.events.PUSHSTATE;
-		const shouldEnterFrame = request.getFrameback() && (
-			// A push to a frame, or a pop _from_ a previous push.
-			isPush || ((this._lastState||{}).reactServerFrame||{})._framebackExit
-		);
 
-		// This is who we're going to listen to regarding when navigation is
-		// complete for timing purposes.  By default it's our navigator, but
-		// if we're going to do a frameback navigation we'll listen to the
-		// frameback controller instead.
+		// This is the navigator we're going to listen to regarding when navigation
+		// is complete for timing purposes.
 		let navigationTimingAuthority = this.context.navigator;
 
 		this._reuseDom = request.getReuseDom();
 
-		// If we're _entering_ a frame or we're _already in_ a frame
-		// then we'll delegate navigation to the frameback controller,
-		// which will tell the client controller within the frame what
-		// to do.
-		if (shouldEnterFrame || FC.isActive()) {
+		if (this._previouslyRendered) {
 
-			// Tell the navigator we got this one.
-			this.context.navigator.ignoreCurrentNavigation();
-
-			// This only happens on a popstate.
-			if (request.getOpts()._framebackExit) {
-
-				// That was fun!
-				FC.navigateBack();
-				setTimeout(() => {
-
-					// Need to do this in a new time slice
-					// to get order of events right in
-					// external subscribers.
-					this.context.navigator.finishRoute();
-				});
-
-			} else {
-
-				// We're going to let the navigator unlock navigation (via
-				// back button) as soon as our frame starts loading.  This is
-				// nice from an interactivity perspective.  But we still want
-				// to know how long it actually took to load the content in
-				// the frame.  For that we'll listen to the frameback
-				// controller.
-				navigationTimingAuthority = FC;
-
-				// Here we go...
-				FC.navigate(request).then(() => {
-					this.context.navigator.finishRoute();
-				});
-			}
-
-		} else if (this._previouslyRendered) {
-
-			// If we're supposed to exit a frame, and we don't
-			// have one open, then we need to do a full browser
-			// navigation.  There's no provision for client
-			// transitions between the outer page and the frame.
-			if (request.getOpts()._framebackExit) {
-
-				// This is just so the navigator doesn't try
-				// to proceed with an ordinary navigation.
-				// This whole window is toast.
-				this.context.navigator.ignoreCurrentNavigation();
-
-				// Start from scratch with current URL (we've
-				// just popped).
-				document.location.reload();
-
-				// That's all, folks.
-				return;
-			}
-
-			// If this is a secondary request (client transition)
-			// within a session, then we'll get a fresh
+			// This is a secondary request (client transition)
+			// within a session, so we'll get a fresh
 			// RequestLocalStorage container.
 			RequestLocalStorage.startRequest();
 
@@ -197,15 +132,14 @@ class ClientController extends EventEmitter {
 		}
 
 		// If this is a History.events.PUSHSTATE navigation,
-		// and we have control of the navigation bar (we're
-		// not in a frameback frame) we should change the URL
-		// in the location bar before rendering.
+		// and we have control of the navigation bar we should
+		// change the URL in the location bar before rendering.
 		//
 		// Note that for browsers that do not have pushState,
 		// this will result in a window.location change and
 		// full browser load.
 		//
-		if (this._history && this._history.hasControl()) {
+		if (this._history) {
 
 			if (isPush) {
 
@@ -231,20 +165,10 @@ class ClientController extends EventEmitter {
 				}
 
 				this._setHistoryRequestOpts({
-
-					// If we're entering a frame, then
-					// when we get back here we need to
-					// exit.
-					_framebackExit: request.getFrameback(),
-
 					// If we're reusing the DOM on the way
 					// forward, then we can also reuse on
 					// the way back.
 					reuseDom: request.getReuseDom(),
-
-					// The same reasoning as for
-					// `reuseDom` also applies here.
-					reuseFrame: request.getReuseFrame(),
 				});
 
 				this._history.pushState(
@@ -283,34 +207,24 @@ class ClientController extends EventEmitter {
 					reuseDom: true,
 				});
 			}
-		} else if (this._history) {
-
-			// We're in a frameback frame, but we want to make sure that the
-			// frame's `document.location` stays up to date.
-			window.history.replaceState(null, null, url);
 		}
 
-		// If we've got control of the URL bar we'll also take responsibility
-		// for logging how long the request took in a variety of ways:
+		// logging how long the request took in a variety of ways:
 		// - Request type (pageload, pushstate, popstate)
 		// - Request options (reuseDom, bundleData, etc)
-		if (!window.__reactServerIsFrame) {
-			navigationTimingAuthority.once('loadComplete', () => {
-				const bas = `handleRequest`;
-				const typ = `type.${type||'PAGELOAD'}`;
-				logTimingData(`${bas}.all`, t0);
-				logTimingData(`${bas}.${typ}.all`, t0);
-				_.forEach(request.getOpts(), (val, key) => {
-					if (val) {
-						const opt = `opt.${key}`;
-						logTimingData(`${bas}.${opt}`, t0);
-						logTimingData(`${bas}.${typ}.${opt}`, t0);
-					}
-				});
+		navigationTimingAuthority.once('loadComplete', () => {
+			const bas = `handleRequest`;
+			const typ = `type.${type||'PAGELOAD'}`;
+			logTimingData(`${bas}.all`, t0);
+			logTimingData(`${bas}.${typ}.all`, t0);
+			_.forEach(request.getOpts(), (val, key) => {
+				if (val) {
+					const opt = `opt.${key}`;
+					logTimingData(`${bas}.${opt}`, t0);
+					logTimingData(`${bas}.${typ}.${opt}`, t0);
+				}
 			});
-		}
-
-
+		});
 
 		this._lastState = history.state;
 	}
@@ -936,8 +850,6 @@ function buildContext(routes) {
 		.create();
 
 	context.setMobileDetect(new MobileDetect(navigator.userAgent));
-
-	context.setFramebackController(new FramebackController());
 
 	return context;
 }

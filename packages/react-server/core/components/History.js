@@ -2,11 +2,6 @@
  * Copyright 2014, Yahoo! Inc.
  * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
  */
- /*
-  * Changes for use in react-server:
-  * - Disables history navigation in a frameback child based on presence of
-  *   `window.__reactServerIsFrame` flag.
-  */
 /*global window */
 
 var events = {
@@ -104,22 +99,11 @@ History.prototype = {
 	},
 
 	canClientNavigate: function() {
-		return this._hasPushState && this.hasControl();
-	},
-
-	// If we're in a frameback frame we don't have control of the URL bar.
-	// The other page does.
-	hasControl: function() {
-		return !this.win.__reactServerIsFrame;
+		return this._hasPushState;
 	},
 
 	navigationWindow: function() {
-		var win = this.win;
-		if (win.__reactServerIsFrame){
-			return win.parent;
-		} else {
-			return win;
-		}
+		return this.win;
 	},
 
 	// This is current URL for current window (not navigation window).

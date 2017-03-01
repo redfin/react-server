@@ -9,7 +9,6 @@ module.exports = React.createClass({
 		path       : React.PropTypes.string,
 		href       : React.PropTypes.string,
 		bundleData : React.PropTypes.bool,
-		frameback  : React.PropTypes.bool,
 		reuseDom   : React.PropTypes.bool,
 		className  : React.PropTypes.string,
 	},
@@ -17,9 +16,7 @@ module.exports = React.createClass({
 	getDefaultProps(){
 		return {
 			bundleData : false,
-			frameback  : false,
 			reuseDom   : false,
-			reuseFrame : false,
 		}
 	},
 
@@ -37,12 +34,10 @@ module.exports = React.createClass({
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			const {bundleData, frameback, reuseDom, reuseFrame} = this.props;
+			const {bundleData, reuseDom} = this.props;
 			navigateTo(this.props.path || this.props.href, {
 				bundleData,
-				frameback,
 				reuseDom,
-				reuseFrame,
 			});
 		} else {
 			// do normal browser navigate

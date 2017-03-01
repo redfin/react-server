@@ -82,32 +82,6 @@ const CT       = ({row}) => <Link path={LINK(row)}>CT</Link>
 const RD       = ({row}) => <Link reuseDom={true} path={LINK(row)}>CT/RD</Link>
 const BD       = ({row}) => <Link bundleData={true} path={LINK(row)}>CT/BD</Link>
 const BDRD     = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>CT/BD/RD</Link>
-const FB       = (props) => <FBL {...props}></FBL>
-const FBCT     = (props) => <FBL {...props} link={{reuseFrame:true}}>CT</FBL>
-const FBCTBD   = (props) => <FBL {...props} link={{reuseFrame:true, bundleData:true}}>CT/BD</FBL>
-const FBCTRD   = (props) => <FBL {...props} link={{reuseFrame:true, reuseDom:true}}>CT/RD</FBL>
-const FBCTBDRD = (props) => <FBL {...props} link={{reuseFrame:true, bundleData:true, reuseDom:true}}>CT/BD/RD</FBL>
-
-// Frameback Link.
-class FBL extends React.Component {
-	constructor(props){
-		super(props);
-		this.state = {available: true};
-	}
-	componentDidMount() {
-		if (window.__reactServerIsFrame) {
-			this.setState({available: false});
-		}
-	}
-	render() {
-		return <Link path={LINK(this.props.row)} frameback={true} {...this.props.link}>
-			<span className={this.state.available?'available':'not-available'}>FB</span>{
-				this.props.children?['/',...React.Children.toArray(this.props.children)]:[]
-			}
-		</Link>
-	}
-}
-
 
 export default class NavigationPlaygroundPage {
 	handleRoute(next) {
@@ -131,8 +105,6 @@ export default class NavigationPlaygroundPage {
 					<li>CT: Client Transition</li>
 					<li>RD: Reuse DOM</li>
 					<li>BD: Bundle Data</li>
-					<li>FB: Frameback</li>
-					<li><span className='not-available'>FB</span>: Frameback disabled (already in a frame)</li>
 				</ul>
 			</RootContainer>,
 			...this.data.map(promise => <RootContainer when={promise} className="row">
@@ -146,11 +118,6 @@ export default class NavigationPlaygroundPage {
 				<RD />
 				<BD />
 				<BDRD />
-				<FB />
-				<FBCT />
-				<FBCTBD />
-				<FBCTRD />
-				<FBCTBDRD />
 			</RootContainer>),
 		]
 	}
