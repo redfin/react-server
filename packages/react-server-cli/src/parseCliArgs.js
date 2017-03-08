@@ -107,6 +107,11 @@ export default (args = process.argv) => {
 			default: false,
 			type: "boolean",
 		})
+		.option("config-path", {
+			describe: "Path to configuration files such as .reactserverrc, .eslintrc and .babelrc.",
+			default: undefined,
+			type: "string",
+		})
 		.version(function() {
 			return require('../package').version;
 		})

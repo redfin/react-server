@@ -1,0 +1,5 @@
+{
+	"routesFile": "customRoutes.js",
+	"port": 5000,
+	"jsPort": 5001
+}
