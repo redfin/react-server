@@ -13,6 +13,7 @@ import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
 import expressState from 'express-state';
 import cookieParser from 'cookie-parser';
+import fs from 'fs';
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
@@ -140,7 +141,10 @@ const startStaticJsServer = (compiler, port, bindIp, longTermCaching, httpsOptio
 					return;
 				}
 
-				logger.debug("Successfully compiled static JavaScript.");
+				if (stats) {
+					logger.debug("Successfully compiled static JavaScript.");
+				}
+
 				// TODO: make this parameterized based on what is returned from compileClient
 				server.use('/', compression(), express.static(`__clientTemp/build`, {
 					maxage: longTermCaching ? '365d' : '0s',
@@ -238,14 +242,43 @@ export default function start(options){
 		httpsOptions,
 		longTermCaching,
 		customMiddlewarePath,
+		compileOnStartup,
 	} = options;
 
-	const {serverRoutes, compiler} = compileClient(options);
+	const routesFileLocation = path.join(process.cwd(), '__clientTemp/routes_server.js');
+	let serverRoutes,
+		compiler;
 
 	const startServers = () => {
 		// if jsUrl is set, we need to run the compiler, but we don't want to start a JS
 		// server.
 		let startJsServer = startDummyJsServer;
+
+		if ((hot === false || hot === "false") && (compileOnStartup === false || compileOnStartup === "false")) {
+			serverRoutes = new Promise((resolve, reject) => {
+				fs.access(routesFileLocation, fs.constants.R_OK, (err) => {
+					if (err) {
+						reject("You must manually compile your application when compileOnStartup is set to false.");
+					} else {
+						// We need to replace the promise returned by the compiler with an already-resolved promise with the path
+						// of the compiled routes file.
+						resolve(routesFileLocation);
+					}
+				});
+			});
+
+			// mock the compiler object used by the various JS servers so that the compiler.run function always succeeds.
+			// This will allow the JS servers to work properly, thinking that the compiler actually ran.
+			compiler = {};
+			compiler.run = (cb) => {
+				cb(null, null);
+			};
+		} else {
+			// ES6 destructuring without a preceding `let` or `const` results in a syntax error.  Therefore, the below
+			// statement must be wrapped in parentheses to work properly.
+			// http://exploringjs.com/es6/ch_destructuring.html#sec_leading-curly-brace-destructuring
+			({serverRoutes, compiler} = compileClient(options));
+		}
 
 		if (!jsUrl) {
 			// if jsUrl is not set, we need to start up a JS server, either hot load
@@ -256,7 +289,9 @@ export default function start(options){
 		logger.notice("Starting servers...");
 
 		const jsServer = startJsServer(compiler, jsPort, bindIp, longTermCaching, httpsOptions);
-		const htmlServerPromise = serverRoutes.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath));
+		const htmlServerPromise = serverRoutes
+			.then(serverRoutesFile => startHtmlServer(serverRoutesFile, port, bindIp, httpsOptions, customMiddlewarePath))
+			.catch((e) => { throw e; });
 
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
