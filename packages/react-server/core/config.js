@@ -1,4 +1,3 @@
-
 /**
  * Thin wrapper around the environment-specific configuration file
  */
@@ -10,13 +9,17 @@ if (SERVER_SIDE) {
 	module.exports = function () {
 		// only read out the config once, and then cache it. -sra.
 		if (null === config) {
-			/*eslint-disable no-process-env */
+
+			//eslint-disable-next-line no-process-env
 			if (process.env.REACT_SERVER_CONFIGS) {
-				var fs = require("fs");
-				/*eslint-disable no-process-env */
-				var configFile = fs.readFileSync(process.env.REACT_SERVER_CONFIGS + "/config.json");
-				/*eslint-disable no-process-env */
-				config = Object.freeze(JSON.parse(configFile));
+				var path = require('path');
+				//eslint-disable-next-line no-process-env
+				var configFilePath = process.env.REACT_SERVER_CONFIGS;
+
+				// Node.js tries to load `config.js` file first. If `config.js` doesn't exist, Node.js
+				// then try to load `config.json`.
+				configFilePath = path.join(process.cwd(), configFilePath + "/config");
+				config = Object.freeze(require(configFilePath));
 			} else {
 				config = Object.freeze({});
 			}
