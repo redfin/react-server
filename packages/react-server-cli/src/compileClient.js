@@ -181,7 +181,6 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 				{
 					test: /\.css$/,
 					loader: extractTextLoader,
-					exclude: /node_modules/,
 				},
 				{
 					test: /\.(eot|woff|woff2|ttf|ttc|png|svg|jpg|jpeg|gif|cgm|tiff|webp|bmp|ico)$/i,
