@@ -537,7 +537,10 @@ describe("ReactServerAgent", () => {
 			]).then(results => {
 				var [res1, res2] = results;
 
-				expect(res1).toBe(res2);
+				expect(res1).toEqual(res2);
+
+				// Must be a deep copy, not a reference.
+				expect(res1).not.toBe(res2);
 
 				var cache = ReactServerAgent.cache();
 				var dehydrated = cache.dehydrate();
@@ -566,7 +569,10 @@ describe("ReactServerAgent", () => {
 			]).then(results => {
 				var [res1, res2] = results;
 
-				expect(res1).toBe(res2);
+				expect(res1).toEqual(res2);
+
+				// Must be a deep copy, not a reference.
+				expect(res1).not.toBe(res2);
 
 				var cache = ReactServerAgent.cache();
 				var dehydrated = cache.dehydrate();
