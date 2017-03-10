@@ -3,6 +3,7 @@ import {RootElement} from 'react-server';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
+import Error from '../components/error';
 
 import '../styles/index.scss';
 
@@ -16,12 +17,16 @@ export default class NotFoundPage {
       <RootElement key={0}>
         <Header/>
       </RootElement>,
-      <RootElement>
-        <div>404 - The page you were looking for was not found.</div>
+      <RootElement key={1}>
+        <Error />
       </RootElement>,
-      <RootElement key={3}>
+      <RootElement key={2}>
         <Footer/>
       </RootElement>,
     ]
+  }
+
+  getBodyClasses() {
+    return ['page-body'];
   }
 }
