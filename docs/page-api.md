@@ -103,9 +103,8 @@ String, page?:Page})`
   results in HTML and late arrival of HTTP responses that occur after a
   rendering timeout.
 
-* If an error code is returned, and a custom page needs to be presented to
-  the user, an additional property `hasDocument` with value `true` can be returned:
-  `{code: 404, hasDocument: true}`.
+* If an error code is returned, and a custom page needs to be presented to the user,
+  an additional property `hasDocument` can be returned: `{code: 404, hasDocument: true}`.
 
 * If the `code` is 301 or 302, then it must also return a `location` String to
   tell the browser where to redirect.
