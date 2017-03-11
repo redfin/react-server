@@ -13,9 +13,9 @@ module.exports = {
 			method: 'get',
 			page: './pages/network',
 		},
-	  NotFoundPage: {
-	    path: '/(.*)',
-	    page: './pages/not-found.js',
-	  },
+		NotFoundPage: {
+			path: '/(.*)',
+			page: './pages/not-found.js',
+		},
 	},
 };
