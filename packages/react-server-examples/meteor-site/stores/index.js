@@ -1,12 +1,14 @@
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import thunkMiddleware from "redux-thunk";
 import reducers from "./reducers";
+
+const composeEnhancers = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const configureStore = (preloadedState) => {
 	const store = createStore(
 		reducers,
 		preloadedState,
-		applyMiddleware(thunkMiddleware)
+		composeEnhancers(applyMiddleware(thunkMiddleware))
 	);
 
 	// https://github.com/reactjs/react-redux/releases/tag/v2.0.0
