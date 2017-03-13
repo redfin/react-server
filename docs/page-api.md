@@ -87,7 +87,7 @@ This `next function may be used to call the default implementation of the
 function in question.
 
 `handleRoute(request:Request, loader:Loader, next: Function), optional:
-{code?: int, location?: String, page?:Page} | Promise({code?: int, location?:
+{code?: int, location?: String, page?:Page, hasDocument?: boolean} | Promise({code?: int, location?:
 String, page?:Page})`
 
 * This method is called before any of the other methods, and its purpose is to
@@ -102,6 +102,10 @@ String, page?:Page})`
 * The Loader is an HTTP loading interface that supports client caching of
   results in HTML and late arrival of HTTP responses that occur after a
   rendering timeout.
+
+* If an error code is returned, and a custom page needs to be presented to the user,
+  an additional property `hasDocument` with value `true` can be returned:
+  `{code: 404, hasDocument: true}`.
 
 * If the `code` is 301 or 302, then it must also return a `location` String to
   tell the browser where to redirect.
