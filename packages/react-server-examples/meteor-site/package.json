@@ -18,13 +18,14 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-redux": "^4.4.6",
-    "react-server": "^0.5.1",
+    "react-server": "^0.6.0",
+    "react-server-redux": "^0.6.0",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
     "superagent": "1.8.4"
   },
   "devDependencies": {
     "babel-preset-react-server": "^0.4.10",
-    "react-server-cli": "^0.5.1"
+    "react-server-cli": "^0.6.0"
   }
 }
