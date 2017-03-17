@@ -1,8 +1,7 @@
 import { default as React } from "react";
 import { RootElement, TheFold } from "react-server";
 import Q from "q";
-import { Provider } from "react-redux";
-
+import { RootProvider, ReduxAdapter } from "react-server-redux";
 import configureStore from "../stores";
 import { Header, Footer, MeteorMap, MeteorTable } from "../components";
 import { selectSort, fetchPostsIfNeeded } from "../stores/actions";
@@ -22,6 +21,8 @@ export default class Homepage {
 		const sort = params.sort ? params.sort : "name";
 
 		this.meteorStore = configureStore();
+		this.storeAdapter = new ReduxAdapter(this.meteorStore);
+
 		this.storePromise = this.meteorStore.dispatch(fetchPostsIfNeeded())
 			.then(() => this.meteorStore.dispatch(selectSort(sort)));
 
@@ -33,8 +34,8 @@ export default class Homepage {
 			// A basic component
 			<Header />,
 			// More complex container components using redux
-			<RootElement key={1} when={this.storePromise}>
-				<Provider store={this.meteorStore}>
+			<RootProvider store={this.meteorStore}>
+				<RootElement key={1} when={this.storeAdapter.when(['meteors'])}>
 					<div className="row">
 						<div className="col-md-6">
 							<MeteorMap />
@@ -43,8 +44,8 @@ export default class Homepage {
 							<MeteorTable />
 						</div>
 					</div>
-				</Provider>
-			</RootElement>,
+				</RootElement>
+			</RootProvider>,
 			// Mark when we want our js/css to bind on the client side
 			<TheFold />,
 			// A delayed loaded component
