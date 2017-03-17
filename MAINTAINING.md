@@ -1,6 +1,8 @@
 ### Deployment Checklist
 
 - `git checkout master && git pull upstream master`
+- verify `packages/generator-react-server/generators/app/templates/package.json` has the
+  correct versions of react-server packages
 - `npm config get registry`
     - Make sure it's `https://registry.npmjs.org/`
 - `npm run clean`
