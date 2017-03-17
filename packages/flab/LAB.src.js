@@ -8,6 +8,7 @@
 
 		// constants for the valid keys of the options object
 		_UseLocalXHR = "UseLocalXHR",
+		_UseCORSXHR = "UseCORSXHR",
 		_AlwaysPreserveOrder = "AlwaysPreserveOrder",
 		_AllowDuplicates = "AllowDuplicates",
 		_CacheBust = "CacheBust",
@@ -149,8 +150,14 @@
 					script.src = src;
 					// NOTE: no append to DOM yet, appending will happen when ready to execute
 				}
-				// same-domain and XHR allowed? use XHR preloading
-				else if (preload_this_script && src.indexOf(root_domain) == 0 && chain_opts[_UseLocalXHR]) {
+
+				// This is the ultimate fallback in React Server.  The
+				// "cache-preloading" option in stock LABjs doesn't work in
+				// modern Chrome, so... this is our last best hope.  If you're
+				// configured for splitJsLoadFromExecution then you'd better
+				// have xhr access to your scripts!  They need to either be on
+				// the same domain or have CORS headers.
+				else if (chain_opts[_UseCORSXHR] || (src.indexOf(root_domain) == 0 && chain_opts[_UseLocalXHR])) {
 					xhr = new XMLHttpRequest(); // note: IE never uses XHR (it supports true preloading), so no more need for ActiveXObject fallback for IE <= 7
 					if (chain_opts[_Debug]) log_msg("start script preload (xhr): "+src);
 					xhr.onreadystatechange = function() {
@@ -204,6 +211,7 @@
 
 		// global defaults
 		global_defaults[_UseLocalXHR] = true;
+		global_defaults[_UseCORSXHR] = false;
 		global_defaults[_AlwaysPreserveOrder] = false;
 		global_defaults[_AllowDuplicates] = false;
 		global_defaults[_CacheBust] = false;
@@ -312,6 +320,7 @@
 				chain = [],
 				exec_cursor = 0,
 				scripts_currently_loading = false,
+				chain_is_corked = false,
 				group
 			;
 
@@ -319,7 +328,10 @@
 			function chain_script_ready(script_obj,exec_trigger) {
 				if (chain_opts[_Debug]) log_msg("script preload finished: "+script_obj.real_src);
 				script_obj.ready = true;
-				script_obj.exec_trigger = exec_trigger;
+				script_obj.exec_trigger = function() {
+					if (chain_opts[_Debug]) log_msg("script execute start: "+script_obj.real_src);
+					exec_trigger();
+				}
 				advance_exec_cursor(); // will only check for 'ready' scripts to be executed
 			}
 
@@ -339,6 +351,7 @@
 
 			// main driver for executing each part of the chain
 			function advance_exec_cursor() {
+				if (chain_is_corked) return;
 				while (exec_cursor < chain.length) {
 					if (is_func(chain[exec_cursor])) {
 						if (chain_opts[_Debug]) log_msg("$LAB.wait() executing: "+chain[exec_cursor]);
@@ -401,8 +414,9 @@
 								});
 								group.finished = false;
 								group.scripts.push(script_obj);
-
-								do_script(chain_opts,script_obj,group,(can_use_preloading && scripts_currently_loading));
+								do_script(chain_opts,script_obj,group,(
+									(can_use_preloading && scripts_currently_loading) || chain_is_corked
+								));
 								scripts_currently_loading = true;
 
 								if (chain_opts[_AlwaysPreserveOrder]) chainedAPI.wait();
@@ -424,6 +438,19 @@
 					advance_exec_cursor();
 
 					return chainedAPI;
+				},
+				cork:function(){
+					if (chain_opts[_Debug]) log_msg("$LAB.cork()");
+					chain_is_corked = true;
+					return chainedAPI;
+				},
+				uncork:function(){
+					if (chain_opts[_Debug]) log_msg("$LAB.uncork()");
+					if (chain_is_corked) {
+						chain_is_corked = false;
+						advance_exec_cursor();
+					}
+					return chainedAPI;
 				}
 			};
 
@@ -431,6 +458,8 @@
 			return {
 				script:chainedAPI.script,
 				wait:chainedAPI.wait,
+				cork:chainedAPI.cork,
+				uncork:chainedAPI.uncork,
 				setOptions:function(opts){
 					merge_objs(opts,chain_opts);
 					return chainedAPI;
@@ -453,6 +482,9 @@
 			},
 			wait:function(){
 				return create_chain().wait.apply(null,arguments);
+			},
+			cork:function(){
+				return create_chain().cork.apply(null,arguments);
 			},
 
 			// built-in queuing for $LAB `script()` and `wait()` calls

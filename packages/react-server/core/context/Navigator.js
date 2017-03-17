@@ -197,7 +197,8 @@ class Navigator extends EventEmitter {
 
 			page.setHasDocument(handleRouteResult.hasDocument);
 
-			page.setJsBelowTheFold(handleRouteResult.jsBelowTheFold);
+			page.setJsBelowTheFold(DebugUtil.getJsBelowTheFold() || handleRouteResult.jsBelowTheFold);
+			page.setSplitJsLoad(DebugUtil.getSplitJsLoad() || handleRouteResult.splitJsLoad);
 
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
