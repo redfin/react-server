@@ -1,3 +1,62 @@
+## v0.6.1 (2017-03-17)
+
+#### Breaking change
+* `react-server`
+  * [#880](https://github.com/redfin/react-server/pull/880) Drop Frameback. ([@szhou8813](https://github.com/szhou8813))
+
+#### Enhancement
+* `react-server-examples`
+  * [#895](https://github.com/redfin/react-server/pull/895) Upgrade meteor to use new ReduxAdapter. ([@ptomasroos](https://github.com/ptomasroos))
+  * [#894](https://github.com/redfin/react-server/pull/894) Make sure Redux Devtools is finding the store. ([@ptomasroos](https://github.com/ptomasroos))
+* `react-server`
+  * [#891](https://github.com/redfin/react-server/pull/891) Upgrade to request-local-storage@1.2.0. ([@gigabo](https://github.com/gigabo))
+  * [#871](https://github.com/redfin/react-server/pull/871) Get dynamic config from process.env.REACT_SERVER_CONFIGS. ([@mocheng](https://github.com/mocheng))
+  * [#864](https://github.com/redfin/react-server/pull/864) Add support for a `?_debug_lab=1` parameter. ([@gigabo](https://github.com/gigabo))
+  * [#852](https://github.com/redfin/react-server/pull/852) Manage debug parameters with a `DebugUtil` helper. ([@gigabo](https://github.com/gigabo))
+* `generator-react-server`, `react-server-cli`
+  * [#869](https://github.com/redfin/react-server/pull/869) Add compileOnStartup Option. ([@drewpc](https://github.com/drewpc))
+* `generator-react-server`
+  * [#889](https://github.com/redfin/react-server/pull/889) Enable hot reloading in yeoman generated projects.. ([@dfabulich](https://github.com/dfabulich))
+* `flab`, `react-server`
+  * [#846](https://github.com/redfin/react-server/pull/846) Build LABjs string from source. ([@gigabo](https://github.com/gigabo))
+
+#### Performance
+* `flab`, `react-server`
+  * [#881](https://github.com/redfin/react-server/pull/881) Add an option to split bundle load from execution. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `generator-react-server`
+  * [#899](https://github.com/redfin/react-server/pull/899) Updating generator-react-server to use ^v0.6.0. ([@roblg](https://github.com/roblg))
+* `react-server-cli`
+  * [#892](https://github.com/redfin/react-server/pull/892) Let webpack see CSS from dependencies. ([@gigabo](https://github.com/gigabo))
+* `react-server`
+  * [#866](https://github.com/redfin/react-server/pull/866) Protect multiple RSA requesters from each other. ([@gigabo](https://github.com/gigabo))
+  * [#882](https://github.com/redfin/react-server/pull/882) Updated delete method. ([@cashhh](https://github.com/cashhh))
+* `react-server-middleware-json-response`
+  * [#860](https://github.com/redfin/react-server/pull/860) Fix issue with rm causing an error if index.js doesn't exist. ([@drewpc](https://github.com/drewpc))
+
+#### Documentation
+* `react-server-examples`
+  * [#893](https://github.com/redfin/react-server/pull/893) Document hasDocument option. ([@feychou](https://github.com/feychou))
+
+#### Committers: 16
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Dan Fabulich ([dfabulich](https://github.com/dfabulich))
+- David Alber ([davidalber](https://github.com/davidalber))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Fey Chou ([feychou](https://github.com/feychou))
+- Jason Zhou ([szhou8813](https://github.com/szhou8813))
+- Johannes Ewald ([jhnns](https://github.com/jhnns))
+- Karl Horky ([karlhorky](https://github.com/karlhorky))
+- Kristopher X Williams ([krisxw](https://github.com/krisxw))
+- Morgan Cheng ([mocheng](https://github.com/mocheng))
+- Nick ([cashhh](https://github.com/cashhh))
+- PC Drew ([drewpc](https://github.com/drewpc))
+- Robert Gay ([roblg](https://github.com/roblg))
+- Robert Law ([emecell](https://github.com/emecell))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+- Tomas Roos ([ptomasroos](https://github.com/ptomasroos))
+
 ## v0.6.0 (2017-01-28)
 
 #### Breaking change
