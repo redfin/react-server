@@ -18,7 +18,12 @@ if (SERVER_SIDE) {
 
 				// Node.js tries to load `config.js` file first. If `config.js` doesn't exist, Node.js
 				// then try to load `config.json`.
-				configFilePath = path.join(process.cwd(), configFilePath + "/config");
+				//
+				// If `configFilePath` is absolute `require.resolve` will
+				// reset to it, correctly overriding `process.cwd()`.  If it
+				// is relative, then it will be relative to `process.cwd()`.
+				//
+				configFilePath = path.resolve(process.cwd(), configFilePath, "config");
 				config = Object.freeze(require(configFilePath));
 			} else {
 				config = Object.freeze({});
