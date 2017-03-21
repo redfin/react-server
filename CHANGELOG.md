@@ -1,3 +1,12 @@
+## v0.6.2 (2017-03-21)
+
+#### Bug fix
+* `react-server`
+  * [#901](https://github.com/redfin/react-server/pull/901) Handle absolute paths in `REACT_SERVER_CONFIGS`. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
 ## v0.6.1 (2017-03-17)
 
 #### Breaking change
