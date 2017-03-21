@@ -157,7 +157,8 @@ export default (server, reactServerMiddleware) => {
 	server.use(compression());
 	server.use(bodyParser.urlencoded({ extended: false }));
 	server.use(bodyParser.json());
-	server.use(session(options));
+	server.use(helmet());
+	server.use(session(options));  // Custom express middleware being added
 	reactServerMiddleware(); // Must be called once or server will not start
 }
 ```
@@ -302,6 +303,14 @@ is incompatible with --hot.
 
 Defaults to **false** in development mode and **true** in production.
 
+#### --compile-on-startup
+Tells `react-server` to compile the client code during the startup procedure.
+In many cases, such as in production, the code has already been compiled and
+the server shouldn't take the time to compile it again.
+This option is incompatible with --hot and will be ignored if hot is `true`.
+
+Defaults to **true**.
+
 #### --js-url
 A URL base for the pre-compiled client JavaScript; usually this is a base URL
 on a CDN or separate server. Setting a value for js-url means that
@@ -383,7 +392,6 @@ run({
     jsPort          : 3001,
     hot             : true,
     minify          : false,
-    compileOnly     : false,
     jsUrl           : null,
     longTermCaching : true,
 });

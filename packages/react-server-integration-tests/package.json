@@ -15,14 +15,15 @@
     "gulp-filter": "^4.0.0",
     "gulp-jasmine": "^2.4.2",
     "lodash": "^4.16.4",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "q": "1.4.1",
     "react": "~0.14.2 || ^15.1.0",
     "react-dom": "~0.14.2 || ^15.1.0",
-    "react-server": "^0.6.0",
-    "react-server-cli": "^0.6.0",
+    "react-server": "^0.6.2",
+    "react-server-cli": "^0.6.2",
     "rimraf": "^2.5.4",
     "zombie": "^5.0.5"
   },
-  "version": "0.6.0"
+  "version": "0.6.2"
 }

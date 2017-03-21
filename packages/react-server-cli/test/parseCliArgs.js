@@ -308,3 +308,40 @@ test('react-server-cli:parseCliArgs::longTermCaching option can be turned on usi
   	t.is(parsedArgs.longTermCaching, true, 'longTermCaching is true');
   	t.true(Object.keys(defaultOptions).indexOf('longTermCaching') > -1, 'longTermCaching key exists in defaultOptions');
 });
+
+// **** compileOnStartup ****
+// compileOnStartup will be undefined if no argument is provided
+test('react-server-cli:parseCliArgs::compileOnStartup will be undefined if no argument is provided', async t => {
+	const args = [
+		...defaultArgs,
+		'compile'
+	];
+	const parsedArgs = await parseCliArgs(args);
+	t.is(parsedArgs.compileOnStartup, undefined, 'compileOnStartup is undefined if no argument is provided');
+});
+
+// compileOnStartup option can be turned on using --compileOnStartup argument
+test('react-server-cli:parseCliArgs::compileOnStartup option can be turned on using --compileOnStartup argument', async t => {
+	const args = [
+		...defaultArgs,
+		'compile',
+		'--compileOnStartup'
+	];
+	const parsedArgs = await parseCliArgs(args);
+	t.is(typeof parsedArgs.compileOnStartup, 'boolean', 'compileOnStartup is true');
+	t.is(parsedArgs.compileOnStartup, true, 'compileOnStartup is true');
+	t.true(Object.keys(defaultOptions).indexOf('compileOnStartup') > -1, 'compileOnStartup key exists in defaultOptions');
+});
+
+// compileOnStartup option can be turned on using --compile-on-startup argument
+test('react-server-cli:parseCliArgs::compileOnStartup option can be turned on using --compile-on-startup argument', async t => {
+	const args = [
+		...defaultArgs,
+		'compile',
+		'--compile-on-startup'
+	];
+	const parsedArgs = await parseCliArgs(args);
+	t.is(typeof parsedArgs.compileOnStartup, 'boolean', 'compileOnStartup is true');
+	t.is(parsedArgs.compileOnStartup, true, 'compileOnStartup is true');
+	t.true(Object.keys(defaultOptions).indexOf('compileOnStartup') > -1, 'compileOnStartup key exists in defaultOptions');
+});

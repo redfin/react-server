@@ -3,10 +3,9 @@
   "host": "0.0.0.0",
   "port": 3000,
   "jsPort": 3001,
-  "hot": false,
+  "hot": true,
   "minify": false,
   "longTermCaching": false,
-  "compileOnly": false,
   "https": false,
   "logLevel": "debug",
   "env": {

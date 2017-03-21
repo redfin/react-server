@@ -27,6 +27,7 @@ It helps to setup your project with per-environment settings that are appropriat
        "jsUrl": "/assets/"
     },
     "production": {
+       "compileOnStartup": false,
        "jsUrl": "/assets/",
        "logLevel": "error",
        "minify": true
@@ -84,6 +85,15 @@ into your application.  One example of the file `_configs/production/config.json
 {
   "APP_ENV": "production",
   "MY_GLOBAL_VARIABLE": "foo"
+}
+```
+
+If dynamic config is preferred, just replace `config.json` with file `config.js`. One example of `config.js` might look like this:
+
+```js
+module.exports = {
+  APP_ENV: process.env.NODE_ENV === "production" ? "prod" : "dev",
+  MY_GLOBAL_VARIABLE: process.env.NODE_ENV === "production" ? "foo" : "bar"
 }
 ```
 
@@ -185,6 +195,16 @@ and 3001.  This is probably not what you want in production.
 
 A referenced asset would be something that your application links to, but `react-server` doesn't know about.  This might
 be a logo image that you link to with an `<img>` tag.
+
+## Compiling Static Assets
+See the [`react-server-cli`](https://react-server.io/docs/guides/react-server-cli) documentation to understand how to
+compile static assets.  After you have compiled the assets, you can decrease the startup time on a server by setting the
+`compileOnStartup` option to `false`.  This tells `react-server` that you previously compiled the assets and it doesn't
+need to compile anything at run time.  Integrating this into your deployment pipeline can greatly improve server startup
+time, especially with immutable infrastructure.  As a simple example of this pipeline, you can compile the assets when
+building a server image then, when starting many servers using the same image, each server has the already-compiled version
+of the software and can reliably startup.  If you use this option without previously compiling your application, `react-server`
+will fail to start.
 
 ## Served through a Fronting Server
 The example fronting server configurations show how to configure a fronting HTTP/HTTPS server to serve the static assets

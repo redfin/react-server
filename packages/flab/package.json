@@ -1,6 +1,6 @@
 {
   "name": "flab",
-  "version": "0.0.1",
+  "version": "0.6.1",
   "description": "Future Loading and Blocking JS",
   "main": "index.js",
   "files": [

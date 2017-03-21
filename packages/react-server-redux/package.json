@@ -1,6 +1,6 @@
 {
   "name": "react-server-redux",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Redux support for React-Server",
   "main": "index.js",
   "scripts": {
