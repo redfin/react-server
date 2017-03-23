@@ -602,7 +602,11 @@ function renderScripts(pageObject, res) {
 		script => script.type && script.type !== "text/javascript"
 	).length;
 
-	if (thereIsAtLeastOneNonJSScript){
+	var hasSyncScript = scripts.some(function (script) {
+		return !script.async
+	});
+
+	if (thereIsAtLeastOneNonJSScript || hasSyncScript) {
 
 		// If there are non-JS scripts we can't use LAB for async
 		// loading.  We still want to preserve script execution order,
@@ -1074,4 +1078,5 @@ module.exports._testFunctions = {
 	renderMetaTags,
 	renderLinkTags,
 	renderBaseTag,
+	renderScripts,
 };

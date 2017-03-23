@@ -280,6 +280,8 @@ function standardizeScripts(scripts) {
 			script = { href:script }
 		}
 
+		if (script.async === undefined) script.async = true;
+
 		if (!script.type) script.type = "text/javascript";
 
 		// Default is strict mode unless otherwise specified.

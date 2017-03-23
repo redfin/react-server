@@ -123,5 +123,13 @@ describe("renderMiddleware", () => {
 				}, finishTest.fail)
 				.done(finishTest);
 		});
+
+		it("render a script tag", (finishTest) => {
+			_testFunctions.renderScripts(page, mockSocket)
+				.then(() => {
+					expect(mockSocket.toString()).toBe('<script src="//www.google.com/test.js" type="text/javascript"></script>');
+				}, finishTest.fail)
+				.done(finishTest);
+		});
 	});
 });
