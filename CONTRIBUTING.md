@@ -136,6 +136,15 @@ CI test target runs many packages' tests simultaneously, so its
 important that every server starts on a unique port.  You can find
 the manifest in the docs.
 
+If you're making changes to the website, you'll want it to use the docs that are
+checked out on disk, rather than on github (we get the markdown directly from
+github so we don't have to reploy the site every time we update the docs).  You
+can do this by setting the `LOCAL_DOCS` environment variable.
+
+```sh
+LOCAL_DOCS=1 npm start
+```
+
 ## Contributor License Agreement
 
 To get started, please [sign the Contributor License
