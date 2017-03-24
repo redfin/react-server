@@ -21,7 +21,7 @@
     "react-server-module-tagger": "^0.6.0"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
+    "ava": "^0.18.2",
     "babel-eslint": "^7.0.0",
     "del": "^2.2.1",
     "eslint": "^3.8.1",
