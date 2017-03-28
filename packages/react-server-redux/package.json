@@ -2,7 +2,7 @@
   "name": "react-server-redux",
   "version": "0.6.0",
   "description": "Redux support for React-Server",
-  "main": "index.js",
+  "main": "target/index.js",
   "scripts": {
     "test": "ava test/*.spec.js && gulp eslint",
     "prepublish": "gulp build"

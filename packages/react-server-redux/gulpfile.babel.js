@@ -4,7 +4,7 @@ const eslint = require("gulp-eslint");
 
 const SRC = ["src/*.js", "!node_modules/**"];
 
-const DEST = ".";
+const DEST = "target/";
 
 gulp.task("eslint", [], () => gulp.src(SRC)
 	.pipe(eslint())
