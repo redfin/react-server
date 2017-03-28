@@ -4,7 +4,8 @@
   "description": "Redux support for React-Server",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/*.spec.js && eslint *.js"
+    "test": "ava test/*.spec.js && gulp eslint",
+    "prepublish": "gulp build"
   },
   "repository": {
     "type": "git",
@@ -29,8 +30,11 @@
   },
   "devDependencies": {
     "ava": "^0.17.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-babel": "^6.1.2",
+    "babel-preset-es2015": "^6.18.0",
     "eslint": "^3.8.1",
-    "eslint-plugin-react": "^6.4.1",
     "babel-eslint": "^7.0.0"
   }
 }
