@@ -136,19 +136,7 @@ class Navigator extends EventEmitter {
 	}
 
 	handlePage(pageConstructor, request, type) {
-		// instantiate the pages we need to fulfill this request.
-		var pageClasses = [];
-
-		this._addPageMiddlewareToArray(this._globalMiddleware, pageClasses);
-		this._addPageMiddlewareToArray([pageConstructor], pageClasses);
-
-		var pages = pageClasses.map((pageClass) => {
-			if (Object.getOwnPropertyNames(pageClass).length === 0) {
-				throw new Error("Tried to instantiate a page or middleware class that was an empty object. Did you forget to assign a class to module.exports?");
-			}
-			return new pageClass();
-		});
-		var page = PageUtil.createPageChain(pages);
+		var page = PageUtil.createPageChain(pageConstructor, this._globalMiddleware);
 
 		this.emit("page", page);
 
@@ -198,19 +186,6 @@ class Navigator extends EventEmitter {
 			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type);
 		});
 
-	}
-
-	/**
-	 * recursively adds the middleware in the pages array to array.
-	 */
-	_addPageMiddlewareToArray(pages, array) {
-		if (!pages) return;
-		pages.forEach((page) => {
-			if (page.middleware) {
-				this._addPageMiddlewareToArray(page.middleware(), array);
-			}
-			array.push(page);
-		});
 	}
 
 	getState () {
