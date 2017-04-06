@@ -123,8 +123,10 @@ function addTransport(group, transport) {
 	});
 }
 
-function addRewriter(rewriter) {
-	common.forEachLogger(logger => logger.rewriters.push(rewriter));
+function addRewriter(group, rewriter) {
+	common.forEachLogger((logger, loggerGroup) => {
+		if (loggerGroup === group) logger.rewriters.push(rewriter);
+	});
 }
 
 function setTimestamp(bool) {
