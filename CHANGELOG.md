@@ -1,3 +1,26 @@
+## v0.6.3 (2017-04-07)
+
+#### Breaking change
+* `react-server`
+  * [#918](https://github.com/redfin/react-server/pull/918) Allow group selection in `logging.addRewriter`. ([@gigabo](https://github.com/gigabo))
+
+#### Enhancement
+* `react-server`
+  * [#918](https://github.com/redfin/react-server/pull/918) Allow group selection in `logging.addRewriter`. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-redux`
+  * [#915](https://github.com/redfin/react-server/pull/915) Redux Package Compilation Issues. ([@sresant](https://github.com/sresant))
+
+#### Documentation
+* Other
+  * [#909](https://github.com/redfin/react-server/pull/909) Document LOCAL_DOCS for website. ([@doug-wade](https://github.com/doug-wade))
+
+#### Committers: 3
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Douglas Wade ([doug-wade](https://github.com/doug-wade))
+- Sresan Thevarajah ([sresant](https://github.com/sresant))
+
 ## v0.6.2 (2017-03-21)
 
 #### Bug fix
