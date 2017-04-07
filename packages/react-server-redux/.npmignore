@@ -1,0 +1,5 @@
+/src
+gulpfile.babel.js
+.*
+npm-debug.log*
+/test

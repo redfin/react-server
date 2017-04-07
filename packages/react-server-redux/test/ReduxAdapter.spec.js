@@ -1,6 +1,6 @@
 const test = require('ava');
 const {createStore} = require('redux');
-const {ReduxAdapter} = require('../index.js');
+const {ReduxAdapter} = require('../src/index.js');
 
 const TEST_ACTION_TYPE = 'ACTION_TEST_VALUE';
 
