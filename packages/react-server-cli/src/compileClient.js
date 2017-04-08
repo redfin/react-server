@@ -2,9 +2,6 @@ import webpack from "webpack"
 import path from "path"
 import mkdirp from "mkdirp"
 import fs from "fs"
-import ExtractTextPlugin from "extract-text-webpack-plugin"
-import ChunkManifestPlugin from "chunk-manifest-webpack-plugin"
-import StatsPlugin from "webpack-stats-plugin"
 import callerDependency from "./callerDependency"
 import serverSideHotModuleReload from "./serverSideHotModuleReload"
 
@@ -34,19 +31,10 @@ export default (opts = {}) => {
 		longTermCaching = false,
 	} = opts;
 
-	// support legacy webpack configuration name
-	const webpackConfiguration = webpackConfig || opts['webpack-config'];
 	if (longTermCaching && hot) {
 		// chunk hashes can't be used in hot mode, so we can't use long-term caching
 		// and hot mode at the same time.
 		throw new Error("Hot reload cannot be used with long-term caching. Please disable either long-term caching or hot reload.");
-	}
-
-	var webpackConfigFunc = (data) => { return data }
-	if (webpackConfiguration) {
-		const webpackDirAbsolute = path.resolve(process.cwd(), webpackConfiguration);
-		const userWebpackConfigFunc = require(webpackDirAbsolute)
-		webpackConfigFunc = userWebpackConfigFunc.default
 	}
 
 	const workingDirAbsolute = path.resolve(process.cwd(), workingDir);
@@ -93,7 +81,21 @@ export default (opts = {}) => {
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
 	// finally, let's pack this up with webpack.
-	const compiler = webpack(webpackConfigFunc(packageCodeForBrowser(entrypoints, outputDirAbsolute, outputUrl, hot, minify, longTermCaching, stats)));
+
+	// support legacy webpack configuration name
+	const userWebpackConfigOpt = webpackConfig || opts['webpack-config'];
+
+	const clientConfig = getWebpackConfig(userWebpackConfigOpt, {
+		isServer: false,
+		outputDir: outputDirAbsolute,
+		entrypoints,
+		outputUrl,
+		hot,
+		minify,
+		longTermCaching,
+		stats
+	});
+	const compiler = webpack(clientConfig);
 
 	const serverRoutes = new Promise((resolve) => {
 		compiler.plugin("done", (stats) => {
@@ -120,6 +122,22 @@ export default (opts = {}) => {
 		serverRoutes,
 		compiler,
 	};
+}
+
+// get the webpack configuration object
+// loads data from default configuration at webpack/webpack.config.fn.js, and
+// extends it by calling user-supplied function, if one was provided
+function getWebpackConfig(userWebpackConfigOpt, wpAffectingOpts) {
+
+	let extend = (data) => { return data }
+	if (userWebpackConfigOpt) {
+		const userWebpackConfigPath = path.resolve(process.cwd(), userWebpackConfigOpt);
+		const userWebpackConfigFunc = require(userWebpackConfigPath);
+		extend = userWebpackConfigFunc.default;
+	}
+
+	const baseConfig = require(path.join(__dirname, "webpack/webpack.config.fn.js"))(wpAffectingOpts);
+	return extend(baseConfig);
 }
 
 // takes in the stats object from a successful compilation and returns a manifest
@@ -157,125 +175,6 @@ function statsToManifest(stats) {
 		cssChunksByName,
 		hash: stats.hash,
 	};
-}
-
-function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats) {
-	const NonCachingExtractTextLoader = path.join(__dirname, "./NonCachingExtractTextLoader");
-	const extractTextLoader = require.resolve(NonCachingExtractTextLoader) + "?{remove:true}!css-loader";
-	let webpackConfig = {
-		entry: entrypoints,
-		output: {
-			path: outputDir,
-			// other than hot mode, the public path is set at runtime.
-			publicPath: hot ? outputUrl : undefined,
-			filename: `[name]${longTermCaching ? ".[chunkhash]" : ""}.bundle.js`,
-			chunkFilename: `[id]${longTermCaching ? ".[chunkhash]" : ""}.bundle.js`,
-		},
-		module: {
-			loaders: [
-				{
-					test: /\.jsx?$/,
-					loader: "babel",
-					exclude: /node_modules/,
-				},
-				{
-					test: /\.css$/,
-					loader: extractTextLoader,
-				},
-				{
-					test: /\.(eot|woff|woff2|ttf|ttc|png|svg|jpg|jpeg|gif|cgm|tiff|webp|bmp|ico)$/i,
-					loader: "file",
-					exclude: /node_modules/,
-				},
-				{
-					test: /\.json/,
-					loader: "json",
-					// exclude: /node_modules/,
-				},
-				{
-					test: /\.less/,
-					loader: extractTextLoader + "!less-loader",
-					exclude: /node_modules/,
-				},
-				{
-					test: /\.s(a|c)ss$/,
-					loader: extractTextLoader + "!sass-loader",
-					exclude: /node_modules/,
-				},
-				{
-					test: /\.md/,
-					loader: "raw",
-					exclude: /node_modules/,
-				},
-			],
-		},
-		resolve: {
-			alias: {
-				// These need to be singletons.
-				"react"        : callerDependency("react"),
-				"react-server" : callerDependency("react-server"),
-			},
-		},
-		resolveLoader: {
-			root: [
-				path.resolve(path.join(path.dirname(require.resolve("webpack")), "../..")),
-			],
-		},
-		plugins: [
-			new ChunkManifestPlugin({
-				filename: "chunk-manifest.json",
-				manifestVariable: "webpackManifest",
-			}),
-			new ExtractTextPlugin(`[name]${longTermCaching ? ".[chunkhash]" : ""}.css`),
-			new webpack.optimize.CommonsChunkPlugin({
-				name:"common",
-			}),
-		],
-	};
-
-	if (stats) {
-		webpackConfig.plugins.push(new StatsPlugin.StatsWriterPlugin({
-			fields: ["assets", "assetsByChunkName", "chunks", "errors", "warnings", "version", "hash", "time", "filteredModules", "children", "modules"],
-		}));
-	}
-
-	if (minify) {
-		webpackConfig.plugins = [
-			...webpackConfig.plugins,
-			new webpack.DefinePlugin({
-				'process.env': {NODE_ENV: '"production"'},
-			}),
-			// TODO: should this be done as babel plugin?
-			new webpack.optimize.UglifyJsPlugin(),
-		];
-	} else {
-		webpackConfig.plugins.push(new webpack.SourceMapDevToolPlugin());
-	}
-
-	if (hot) {
-		webpackConfig.module.loaders = [
-			{
-				test: /\.jsx?$/,
-				loader: "react-hot",
-				exclude: /node_modules/,
-			},
-			...webpackConfig.module.loaders,
-		];
-		webpackConfig.plugins = [
-			...webpackConfig.plugins,
-			new webpack.HotModuleReplacementPlugin(),
-			new webpack.NoErrorsPlugin(),
-		];
-	}
-
-	if (longTermCaching) {
-		webpackConfig.plugins = [
-			new webpack.optimize.OccurenceOrderPlugin(),
-			...webpackConfig.plugins,
-		];
-	}
-
-	return webpackConfig;
 }
 
 // writes out a routes file that can be used at runtime.
