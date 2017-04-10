@@ -13,8 +13,8 @@
   "dependencies": {
     "react": "^15.4.1",
     "react-dom": "15.4.1",
-    "react-server": "^0.5.1",
-    "react-server-cli": "^0.5.1",
+    "react-server": "^0.6.3",
+    "react-server-cli": "^0.6.3",
     "request-promise": "^4.1.1",
     "superagent": "1.8.4"
   },
