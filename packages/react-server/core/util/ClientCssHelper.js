@@ -96,8 +96,6 @@ module.exports = {
 }
 
 function normalizeLocalUrl(url) {
-	const urlBase = location.host + (location.port ? ':' + location.port : '');
-
 	// Step 1: make the url protocol less first.  This helps recognizing http://0.0.0.0:3001/common.css
 	// and //0.0.0.0:3001/common.css as the same file.
 	// Step 2: The browser will give us a full URL even if we only put a
@@ -107,7 +105,7 @@ function normalizeLocalUrl(url) {
 	if (typeof url === 'string') {
 		url = url
 			.replace(/^http[s]?:/, '')
-			.replace(new RegExp("^\/\/" + urlBase), '');
+			.replace(new RegExp("^\/\/" + location.host), '');
 	}
 
 	return url;
