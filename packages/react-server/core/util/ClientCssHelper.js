@@ -98,8 +98,8 @@ module.exports = {
 function normalizeLocalUrl(url) {
 	const urlBase = location.host + (location.port ? ':' + location.port : '');
 
-	// Step 1: make the url protocol less first.  This helps recognizing http://0.0.0.0:3001/common.css and //0.0.0.0:3001/common.css
-	// as the same file
+	// Step 1: make the url protocol less first.  This helps recognizing http://0.0.0.0:3001/common.css
+	// and //0.0.0.0:3001/common.css as the same file.
 	// Step 2: The browser will give us a full URL even if we only put a
 	// path in on the server.  So, if we're comparing against just
 	// a path here we need to strip the base off to avoid a flash
@@ -109,8 +109,6 @@ function normalizeLocalUrl(url) {
 			.replace(/^http[s]?:/, '')
 			.replace(new RegExp("^\/\/" + urlBase), '');
 	}
-
-	console.log('after modification: ', url);
 
 	return url;
 }
