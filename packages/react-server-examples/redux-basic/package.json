@@ -15,9 +15,9 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-redux": "^4.4.5",
-    "react-server": "^0.5.1",
-    "react-server-redux": "^0.5.1",
-    "react-server-cli": "^0.5.1",
+    "react-server": "^0.6.3",
+    "react-server-redux": "^0.6.3",
+    "react-server-cli": "^0.6.3",
     "redux": "^3.5.2",
     "superagent": "1.8.4"
   },
