@@ -35,7 +35,10 @@ var makeLogger = function(group, opts){
 
 	logger.setLevels(config.levels);
 
-	logger.rewriters.push(errorInterceptor);
+	// Only need to look for errors in the main logger's meta.
+	if (group === "main") {
+		logger.rewriters.push(errorInterceptor);
+	}
 
 	logger.stack = common.stack;
 
