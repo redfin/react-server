@@ -1,6 +1,6 @@
 {
   "name": "generator-react-server",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "A react-server yeoman generator",
   "homepage": "http://github.com/redfin/react-server",
   "author": {
@@ -34,7 +34,7 @@
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
     "nsp": "^2.6.2",
-    "react-server-cli": "^0.6.3",
+    "react-server-cli": "^0.6.4",
     "rimraf": "^2.5.4",
     "shell-escape": "^0.2.0",
     "yeoman-assert": "^2.0.0",

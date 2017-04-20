@@ -1,3 +1,20 @@
+## v0.6.4 (2017-04-20)
+
+#### Performance
+* `react-server`
+  * [#925](https://github.com/redfin/react-server/pull/925) Only add the errorInterceptor to the main logger. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-examples`
+  * [#924](https://github.com/redfin/react-server/pull/924) Update react-server dependencies on examples to latest. ([@nashio](https://github.com/nashio))
+* `react-server`
+  * [#927](https://github.com/redfin/react-server/pull/927) Another flash of unstyled content. ([@drewpc](https://github.com/drewpc))
+
+#### Committers: 3
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Ignacio Chavez ([nashio](https://github.com/nashio))
+- PC Drew ([drewpc](https://github.com/drewpc))
+
 ## v0.6.3 (2017-04-07)
 
 #### Breaking change
