@@ -28,8 +28,15 @@ module.exports = React.createClass({
 
 	_onClick: function (e) {
 
-		// TODO: IE8-9 detection
-
+		 // TODO: IE8-9 detection
+         var userAgent = navigator.userAgent,
+         ieTest8 = /MSIE\s8\../,
+         ieTest9 = /MSIE\s9\../;
+         userAgent = userAgent.split(";");       
+         if (userAgent[1].match(ieTest8) || userAgent[1].match(ieText9)) {
+                //do something
+         }
+         
 		// TODO: if OSX && key.isMeta?
 		if (!e.metaKey) {
 			e.preventDefault();
