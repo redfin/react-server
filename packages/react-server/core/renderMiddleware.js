@@ -312,6 +312,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
+		renderCustomScripts(pageObject, res),
 		renderDebugComments(pageObject, res),
 		renderTitle(pageObject, res),
 		// PLAT-602: inline scripts come before stylesheets because
@@ -1068,6 +1069,24 @@ function getNonInternalConfigs() {
 		}
 	});
 	return nonInternal;
+}
+
+function renderCustomScripts(pageObject, res) {
+
+	// Want to gather these into one list of scripts, because we care if
+	// there are any non-JS scripts in the whole bunch.
+	var scripts = pageObject.getCustomScripts();
+
+	var thereIsAtLeastOneNonJSScript = scripts.filter(
+		script => script.type && script.type !== "text/javascript"
+	).length;
+
+	if (!thereIsAtLeastOneNonJSScript) {
+		renderScriptsSync(scripts, res);
+	}
+
+	// resolve immediately.
+	return Q("");
 }
 
 module.exports._testFunctions = {
