@@ -14,4 +14,9 @@ export default class NormalValuesPage {
 			href: '//www.google.com',
 		};
 	}
+	getScripts() {
+		return [
+			{href: '//www.google.com/test.js', async: false}
+		];
+	}
 }
