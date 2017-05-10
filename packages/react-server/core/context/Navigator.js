@@ -180,6 +180,7 @@ class Navigator extends EventEmitter {
 		PageUtil.PageConfig.initFromPageWithDefaults(page, {
 			isFragment    : false,
 			isRawResponse : false,
+			preloadJS     : false,
 		});
 
 		// Set the page context on the response logger so it can figure
