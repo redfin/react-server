@@ -1,0 +1,9 @@
+{
+  "description": "The docs for react-server",
+  "gitbook": "0.0.5",
+  "language": "en",
+  "structure": {
+    "readme": "intro.md"
+  },
+  "title": "react-server-docs"
+}
