@@ -164,6 +164,22 @@ describe("ReactServerAgent", () => {
 				.done();
 		}));
 
+		it("supports withCredentials()", withRlsContext((done) => {
+			ReactServerAgent.get('/describe')
+				.withCredentials()
+				.then(res => {
+					expect(res).toBeDefined();
+					expect(res.status).toEqual(200);
+					done();
+				})
+				.catch (err => {
+					// this should never get called
+					expect(err).toBeUndefined();
+					done(err);
+				})
+				.done();
+		}));
+
 	});
 
 
