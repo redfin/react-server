@@ -87,7 +87,7 @@ function testStdOutput(stdOutput, includes) {
 	if (includes) {
 		return stdOutput.includes(includes);
 	}
-	return stdOutput === '';
+	return !stdOutput;
 }
 
 function createAndChangeToTempDir(tmpPath){
