@@ -84,8 +84,8 @@ function testStdOutput(stdOutput, includes) {
 	if (stdOutput.startsWith("Warning:")) {
 		return true;
 	}
-	if (includes) {
-		return stdOutput.includes(includes);
+	if (includes && stdOutput.includes(includes)) {
+		return true;
 	}
 	return !stdOutput;
 }
