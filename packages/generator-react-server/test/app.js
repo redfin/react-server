@@ -87,7 +87,9 @@ test('generator-react-server:app passes the test target', async t => {
 	console.log("Installing dependencies...");
 	await installDeps();
 	console.log("Running ./generators/app/test.js");
-	t.true(await runsSuccessfully('npm test', testDir));
+	let testServerResult = await runsSuccessfully('npm test', testDir);
+	console.error("SERVER TEST RESULT: " + testServerResult);
+	t.falsy(testServerResult);
 });
 
 function exists(filename, dir) {
@@ -116,12 +118,12 @@ function runsSuccessfully(command, dir) {
 		cp.exec(command, {
 			cwd: dir,
 		}, (error, stdout, stderr) => {
-			console.log(stdout);
 			if (error) {
+				console.log(stdout);
 				console.error(error);
 				console.error(stderr);
 			}
-			resolve(!error);
+			resolve(error);
 		});
 	});
 }
