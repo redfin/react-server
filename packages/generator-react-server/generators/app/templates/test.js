@@ -6,7 +6,7 @@ let rs;
 
 test.before('start the server', async () => {
 	rs = cp.spawn('npm', ['start']);
-	rs.stderr.on('data', data => console.error(`ERR: ${data}`));
+	rs.stderr.on('data', data => console.error(data.toString()));
 	await sleep(10000);
 });
 
