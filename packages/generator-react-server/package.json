@@ -41,6 +41,9 @@
     "yeoman-test": "^1.0.0"
   },
   "repository": "redfin/react-server",
+  "ava": {
+    "files": ["!**/generators/app/templates/test.js"]
+  },
   "scripts": {
     "//": "Keep these in sync",
     "prepublish": "cp ../../.eslintrc generators/app/templates/_eslintrc",

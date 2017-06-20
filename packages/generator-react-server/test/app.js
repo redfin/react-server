@@ -76,14 +76,20 @@ test('generator-react-server:app creates docker files', async t => {
 
 test('generator-react-server:app passes the test target', async t => {
 	let testDir;
+	console.log("Running generator...");
 	await helpers.run(path.join(__dirname, '../generators/app'))
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
 		.withPrompts({name: 'foo', dockerCfg: false})
 		.toPromise();
+
+	console.log("Installing dependencies...");
 	await installDeps();
-	t.true(await runsSuccessfully('npm test', testDir));
+	console.log("Running ./generators/app/test.js");
+	let testServerResult = await runsSuccessfully('npm test', testDir);
+	console.error("SERVER TEST RESULT: " + testServerResult);
+	t.falsy(testServerResult);
 });
 
 function exists(filename, dir) {
@@ -113,11 +119,11 @@ function runsSuccessfully(command, dir) {
 			cwd: dir,
 		}, (error, stdout, stderr) => {
 			if (error) {
+				console.log(stdout);
 				console.error(error);
-				console.error(stdout);
 				console.error(stderr);
 			}
-			resolve(!error);
+			resolve(error);
 		});
 	});
 }

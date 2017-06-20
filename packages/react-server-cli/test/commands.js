@@ -67,14 +67,8 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 			}, frequency);
 		});
 
-		t.true(
-			stderrIncludes ? stderr.includes(stderrIncludes) : stderr === '',
-			'stderr does not include expected output.  Instead, it says: ' + stderr
-		);
-		t.true(
-			stdoutIncludes ? stdout.includes(stdoutIncludes) : stdout === '',
-			'stdout does not include expected output.  Instead, it says: ' + stdout
-		);
+		t.true(testStdOutput(stderr, stderrIncludes), 'stderr does not include expected output.  Instead, it says: ' + stderr);
+		t.true(testStdOutput(stdout, stdoutIncludes), 'stdout does not include expected output.  Instead, it says: ' + stdout);
 
 		server.kill();
 
@@ -82,6 +76,19 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 		rimraf.sync(tmpPath);
 	});
 });
+
+//Test the output to stderr or stdout against an approved message.
+//Ignore messages that start with "Warning:"
+function testStdOutput(stdOutput, includes) {
+	//Ignore warning messages
+	if (stdOutput.startsWith("Warning:")) {
+		return true;
+	}
+	if (includes && stdOutput.includes(includes)) {
+		return true;
+	}
+	return !stdOutput;
+}
 
 function createAndChangeToTempDir(tmpPath){
 	if (fs.existsSync(tmpPath)) rimraf.sync(tmpPath);
