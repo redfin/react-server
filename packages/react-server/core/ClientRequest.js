@@ -38,11 +38,14 @@ class ClientRequest {
 	}
 
 	getQuery() {
-		var indexOfQuestion = this._url.indexOf("?");
-		if (-1 === indexOfQuestion) {
+		//Grab fragment between first "?" and first "#" or end of string
+		var match = this._url.match(/\?([^#]*)/);
+
+		if (match === null || !match[1]) {
 			return {};
 		}
-		return decode(this._url.substring(indexOfQuestion + 1));
+
+		return decode(match[1]);
 	}
 
 	getHostname() {
