@@ -1,4 +1,4 @@
 var common = require("./common.js");
-
-common.middleware = require("./renderMiddleware")
+common.renderMiddleware = require("./renderMiddleware");
+common.errorHandlingMiddleWare = require("./errorHandlingMiddleWare");
 module.exports = common;

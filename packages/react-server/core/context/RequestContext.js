@@ -1,5 +1,6 @@
 
 var Navigator = require('./Navigator'),
+	Q = require("q"),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace();
 
 class RequestContext {
@@ -51,6 +52,12 @@ class RequestContext {
 		this.navigator.on('navigateDone', callback);
 	}
 
+	onNavigatePromise () {
+		let defer = Q.defer();
+		this.navigator.on('navigateDone', (err, page) => err ? defer.reject(err) : defer.resolve(page));
+		return defer.promise;
+	}
+
 	onNavigateStart (callback) {
 		this.navigator.on('navigateStart', callback);
 	}
@@ -88,4 +95,3 @@ class RequestContextBuilder {
 
 module.exports = RequestContext;
 module.exports.Builder = RequestContextBuilder;
-
