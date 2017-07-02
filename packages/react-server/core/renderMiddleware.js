@@ -89,8 +89,6 @@ module.exports = function(req, res, next) {
 			timeoutDefer.reject(new HttpError(`Navigation timed out after ${FAILSAFE_ROUTER_TIMEOUT}ms`, metaData));
 		}, FAILSAFE_ROUTER_TIMEOUT);
 
-		context.onNavigate((err, page) => logger.debug('on nav' , err, page))
-
 		// setup navigation handler (TODO: should we have a 'once' version?)
 		Q.race([
 			context.onNavigatePromise(),
@@ -103,7 +101,7 @@ module.exports = function(req, res, next) {
 		.finally(() => {
 			clearTimeout(timeout);
 			handleResponseComplete(req, res, context);
-		}); //Clear timeout if promise fails
+		});
 
 		context.navigate(new ExpressServerRequest(req));
 	});
@@ -155,7 +153,12 @@ function renderPage(req, res, context, page) {
 	// see: http://security.stackexchange.com/a/12916
 	res.set('X-Content-Type-Options', 'nosniff');
 
-	res.status(page.getStatus()||200);
+	let redirectUrl = page.getRedirectUrl();
+	if (redirectUrl) {
+		res.location(redirectUrl);
+	}
+
+	res.status(page.getStatus() || 200);
 
 	// Handy to have random access to this rather than needing to thread it
 	// through everywhere.
@@ -247,8 +250,6 @@ function writeHeader(req, res, context, start, pageObject) {
 	res.set('Transfer-Encoding', 'chunked');
 
 	res.write("<!DOCTYPE html><html><head>");
-
-	logger.debug("WRITE HEADER")
 
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
@@ -602,8 +603,6 @@ function startBody(req, res, context, start, page) {
  * all the ReactElements have been written out.
  */
 function writeBody(req, res, context, start, page) {
-
-	logger.debug("write body")
 
 	// standardize to an array of EarlyPromises of ReactElements
 	var elementPromises = PageUtil.standardizeElements(page.getElements());

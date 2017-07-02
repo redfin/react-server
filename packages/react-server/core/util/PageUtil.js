@@ -193,6 +193,8 @@ var PAGE_CHAIN_PROTOTYPE = {
 	setJsBelowTheFold  : makeSetter('jsBelowTheFold'),
 	getSplitJsLoad     : makeGetter('splitJsLoad'),
 	setSplitJsLoad     : makeSetter('splitJsLoad'),
+	getRedirectUrl     : makeGetter('redirectUrl'),
+	setRedirectUrl     : makeSetter('redirectUrl'),
 };
 
 // We log all method calls on the page chain for debugging purposes.

@@ -204,11 +204,11 @@ class Navigator extends EventEmitter {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && ((handleRouteResult.code / 100)|0) !== 2) {
-				let redirectError = new HttpError("Redirect");
-				redirectError.code = handleRouteResult.code;
-				redirectError.redirectUrl = handleRouteResult.location;
 
-				this.emit("navigateDone", redirectError, page, request.getUrl(), type);
+				let error = new HttpError("Page returned code " + handleRouteResult.code, {code: handleRouteResult.code});
+				error.redirectUrl = handleRouteResult.location;
+				page.setRedirectUrl(handleRouteResult.location);
+				this.emit("navigateDone", error, page, request.getUrl(), type);
 				return;
 			}
 			if (handleRouteResult.page) {
@@ -220,9 +220,7 @@ class Navigator extends EventEmitter {
 			}
 
 			this.emit('navigateDone', null, page, request.getUrl(), type);
-		}).catch(err => {
-			this.emit('navigateDone', err, page, request.getUrl(), type);
-		});
+		}).catch(err => this.emit('navigateDone', err, page, request.getUrl(), type));
 
 	}
 
