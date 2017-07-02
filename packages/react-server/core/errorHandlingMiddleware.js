@@ -1,20 +1,36 @@
-
-import HttpError from './errors/HttpError';
-
 var logger = require('./logging').getLogger(__LOGGER__);
+
+const getDevErrorPage = (error) => {
+	let message = error.stack || error.message || error;
+	return `<pre>
+<b>Couldn't render a page!</b>\n
+<b>Code:</b> ${error.code}\n
+<b>Error:</b> ${message}\n
+</pre>`;
+}
+
+const logError = (code, error) => {
+	//If this is an internal server error log the whole stack trace, otherwise
+	//just log the message
+	if (!code || String(code).startsWith("5")) {
+		logger.error(error);
+	}
+	else {
+		logger.error(error.message || error);
+	}
+}
 
 module.exports = function(err, req, res, next) {
 
-	logger.error(err.message, err);
+	let code = err.code || err.status;
 
-	//Delegate to default express error handler if headers have been sent,
-	//or if we are dealing with a native error
-	if (res.headersSent || !(err instanceof HttpError)) {
+	logError(code, err);
+
+	//Delegate to default express error handler if headers have been sent
+	if (res.headersSent) {
 		next(err);
 		return;
 	}
-
-	let code = err.code || err.status;
 
 	if (code === 301 || code === 302 || code === 307) {
 		res.redirect(code, err.redirectUrl);
@@ -29,13 +45,9 @@ module.exports = function(err, req, res, next) {
 	res.status(code);
 
 	if (process.env.NODE_ENV === "production") { // eslint-disable-line no-process-env
-		res.send(err.message);
+		res.send(`<pre>${err.message || err}</pre>`); //Just send error message in production
 		return;
 	}
 
-	res.json({
-		message: err.message,
-		code: code,
-		metaData: err.metaData,
-	});
+	res.send(getDevErrorPage(err));
 }
