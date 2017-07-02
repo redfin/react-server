@@ -69,7 +69,7 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 		server.use(bodyParser.json());
 		server.use(helmet());
 		rsMiddleware();
-		server.use(reactServer.errorHandlingMiddleWare);
+		server.use(reactServer.errorHandlingMiddleware);
 	};
 
 	return {
