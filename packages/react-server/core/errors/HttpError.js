@@ -6,12 +6,6 @@ export default class HttpError extends Error {
 		this.name = this.constructor.name;
 		this.code = this.status = metaData && metaData.code ? metaData.code : 500;
 		this.metaData = metaData;
-
-		if (typeof Error.captureStackTrace === 'function') {
-			Error.captureStackTrace(this, this.constructor);
-		}
-		else {
-			this.stack = (new Error(message)).stack;
-		}
+		this.stack = (new Error(message)).stack;
 	}
 }
