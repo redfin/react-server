@@ -56,11 +56,9 @@ class RequestContext {
 		let defer = Q.defer();
 		this.navigator.on('navigateDone', (err, page) => {
 			if (!err) {
-				logger.debug("no error")
 				return defer.resolve(page);
 			}
 			if (!page || !page.getHasDocument()) {
-				logger.debug("no page document")
 				return defer.reject(err);
 			}
 
