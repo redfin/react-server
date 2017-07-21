@@ -307,7 +307,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	res.type('html');
 	res.set('Transfer-Encoding', 'chunked');
 
-	res.write("<!DOCTYPE html><html><head>");
+	res.write('<!DOCTYPE html><html lang="en"><head>');
 
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
