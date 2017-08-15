@@ -27,7 +27,7 @@ export default function serverSideHotModuleReload (webpackStats) {
 	// For now, loop through all of the project code to remove require caches so that we ensure the server is most up
 	// to date.
 	Object.keys(require.cache).map((filename) => {
-		if (/node_modules/.test(filename) === false && require.cache.hasOwnProperty(filename)) {
+		if (/node_modules/.test(filename) === false && Object.prototype.hasOwnProperty.call(require.cache, filename)) {
 			logger.info(`Reloading file: ${filename}`);
 			delete require.cache[filename];
 		}
