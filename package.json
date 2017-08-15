@@ -5,7 +5,7 @@
     "bootstrap-no-i": "lerna bootstrap",
     "test": "lerna run test",
     "clean": "rimraf lerna-debug.log && lerna run clean",
-    "nuke": "npm run clean && lerna clean --yes && rm -r node_modules",
+    "nuke": "npm run clean && lerna clean --yes && rm -rf node_modules",
     "changelog": "lerna-changelog",
     "debug": "cat lerna-debug.log && for d in packages/*/npm-debug.log*; do echo $d; cat $d; done",
     "postinstall": "npm run bootstrap-no-i",
