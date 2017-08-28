@@ -8,6 +8,7 @@ module.exports = React.createClass({
 	propTypes: {
 		path       : React.PropTypes.string,
 		href       : React.PropTypes.string,
+		onClick    : React.PropTypes.func,
 		bundleData : React.PropTypes.bool,
 		reuseDom   : React.PropTypes.bool,
 		className  : React.PropTypes.string,
@@ -39,6 +40,9 @@ module.exports = React.createClass({
 				bundleData,
 				reuseDom,
 			});
+			if (this.props.onClick) {
+				this.props.onClick(e);
+			}
 		} else {
 			// do normal browser navigate
 		}
