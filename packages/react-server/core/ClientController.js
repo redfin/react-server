@@ -604,12 +604,8 @@ class ClientController extends EventEmitter {
 		// As elements become ready, prime them to render as soon as
 		// their mount point is available.
 		//
-		// Always render in order to proritize content higher in the
-		// page.
-		//
-		elementPromisesOr.reduce((chain, promise, index) => chain
-			.then(() => promise
-				.then(element => rootNodePromises[index]
+		Q.all(elementPromisesOr.map((promise, index) => promise.then(
+				element => rootNodePromises[index]
 					.then(root => renderElement(element, root, index))
 					.catch(e => {
 						// The only case where this should evaluate to false is
@@ -619,9 +615,8 @@ class ClientController extends EventEmitter {
 							: 'element';
 						logger.error(`Error with element ${componentType}'s lifecycle methods at index ${index}`, e);
 					})
-				).catch(e => logger.error(`Error with element promise ${index}`, e))
-			),
-		Q()).then(retval.resolve);
+			).catch(e => logger.error(`Error with element promise ${index}`, e))
+		)).then(retval.resolve);
 
 		// Look out for a failsafe timeout from the server on our
 		// first render.
