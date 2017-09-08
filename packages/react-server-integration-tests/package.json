@@ -20,10 +20,10 @@
     "q": "1.4.1",
     "react": "~0.14.2 || ^15.1.0",
     "react-dom": "~0.14.2 || ^15.1.0",
-    "react-server": "^0.6.4",
-    "react-server-cli": "^0.6.4",
+    "react-server": "^0.6.5",
+    "react-server-cli": "^0.6.5",
     "rimraf": "^2.5.4",
     "zombie": "^5.0.5"
   },
-  "version": "0.6.4"
+  "version": "0.6.5"
 }

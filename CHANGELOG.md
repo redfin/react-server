@@ -1,3 +1,31 @@
+## v0.6.5 (2017-09-08)
+
+#### Enhancement
+* `react-server`
+  * [#948](https://github.com/redfin/react-server/pull/948) Add support for out-of-order render client side. ([@gigabo](https://github.com/gigabo))
+  * [#944](https://github.com/redfin/react-server/pull/944) Add english as the default document language. ([@monicatie](https://github.com/monicatie))
+
+#### Performance
+* `react-server`
+  * [#949](https://github.com/redfin/react-server/pull/949) Don't load cls-q browser-side. ([@gigabo](https://github.com/gigabo))
+  * [#926](https://github.com/redfin/react-server/pull/926) Add a simple benchmark for Navigator.handlePage. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-cli`
+  * [#947](https://github.com/redfin/react-server/pull/947) Fix require.cache.hasOwnProperty call for Node 8. ([@dfadev](https://github.com/dfadev))
+* `react-server`
+  * [#946](https://github.com/redfin/react-server/pull/946) Fix no onclick bug on Link Component. ([@hbucius](https://github.com/hbucius))
+  * [#939](https://github.com/redfin/react-server/pull/939) Exclude hash fragments when extracting query string. ([@mlolson](https://github.com/mlolson))
+
+#### Committers: 7
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Matt Olson ([mlolson](https://github.com/mlolson))
+- Robert Gay ([roblg](https://github.com/roblg))
+- Russ Panula ([dfadev](https://github.com/dfadev))
+- Monica Tie ([monicatie](https://github.com/monicatie))
+- hbucius ([hbucius](https://github.com/hbucius))
+
 ## v0.6.4 (2017-04-20)
 
 #### Performance
