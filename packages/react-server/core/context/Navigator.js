@@ -9,10 +9,6 @@ var EventEmitter = require('events').EventEmitter,
 	DebugUtil = require("../util/DebugUtil"),
 	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
 
-var _ = {
-	isFunction: require('lodash/isFunction'),
-};
-
 class Navigator extends EventEmitter {
 
 	constructor (context, routes) {
