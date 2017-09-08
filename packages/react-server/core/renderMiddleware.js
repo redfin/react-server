@@ -1073,7 +1073,7 @@ function getNonInternalConfigs() {
 
 function getDeviceType(req) {
 	var md = new MobileDetect(req.get('user-agent'));
-	var types = [ 'phone', 'tablet', 'mobile' ];
+	var types = [ 'phone', 'tablet' ];
 	for (var i = 0; i < types.length; i++) {
 		if (md[types[i]]()) {
 			return types[i];
