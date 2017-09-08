@@ -76,7 +76,7 @@ module.exports = function(req, res, next, routes) {
 		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
 
-		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
+		context.setDeviceType(getDeviceType(req));
 
 		var navigateDfd = Q.defer();
 
@@ -945,6 +945,7 @@ function bootstrapClient(res, lastElementSent) {
 
 	var initialContext = {
 		'ReactServerAgent.cache': ReactServerAgent.cache().dehydrate(),
+		'deviceType': RequestContext.getCurrentRequestContext().getDeviceType(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
@@ -1068,6 +1069,17 @@ function getNonInternalConfigs() {
 		}
 	});
 	return nonInternal;
+}
+
+function getDeviceType(req) {
+	var md = new MobileDetect(req.get('user-agent'));
+	var types = [ 'phone', 'tablet', 'mobile' ];
+	for (var i = 0; i < types.length; i++) {
+		if (md[types[i]]()) {
+			return types[i];
+		}
+	}
+	return 'desktop';
 }
 
 module.exports._testFunctions = {

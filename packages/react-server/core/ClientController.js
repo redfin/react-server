@@ -1,7 +1,6 @@
 
 var React = require('react'),
 	ReactDOM = require('react-dom'),
-	MobileDetect = require('mobile-detect'),
 	logging = require('./logging'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -71,6 +70,7 @@ class ClientController extends EventEmitter {
 		}
 
 		this.context = buildContext(routes);
+		this.context.setDeviceType(dehydratedState.deviceType);
 		ReactServerAgent.cache().rehydrate(dehydratedState.InitialContext['ReactServerAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
@@ -843,8 +843,6 @@ function buildContext(routes) {
 	var context = new RequestContext.Builder()
 		.setRoutes(routes)
 		.create();
-
-	context.setMobileDetect(new MobileDetect(navigator.userAgent));
 
 	return context;
 }
