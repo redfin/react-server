@@ -79,6 +79,12 @@ class Navigator extends EventEmitter {
 
 			var loaders = route.config.page;
 
+			var deviceType = this.context.getDeviceType();
+
+			if (loaders[deviceType]) {
+				route.name += "-" + deviceType;
+			}
+
 			// Our route may have multiple page implementations if
 			// there are device-specific variations.
 			//
@@ -89,7 +95,7 @@ class Navigator extends EventEmitter {
 			// loader or it may be an object whose values are
 			// loaders.
 			(
-				loaders[this.context.getDeviceType()] ||
+				loaders[deviceType] ||
 				loaders.default ||
 				loaders
 			)().done(pageConstructor => {
