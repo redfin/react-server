@@ -1,5 +1,6 @@
-
 var Navigator = require('./Navigator'),
+	logger = require('../logging').getLogger(__LOGGER__),
+	Q = require("q"),
 	RequestLocals = require('../util/RequestLocalStorage').getNamespace();
 
 class RequestContext {
@@ -51,6 +52,26 @@ class RequestContext {
 		this.navigator.on('navigateDone', callback);
 	}
 
+	onNavigatePromise () {
+		let defer = Q.defer();
+		this.navigator.on('navigateDone', (err, page) => {
+			if (!err) {
+				return defer.resolve(page);
+			}
+			if (!page || !page.getHasDocument()) {
+				return defer.reject(err);
+			}
+
+			//Special case: navigator may elect to render the page even if an error occurs
+			//In this case we allow the page to be rendered.
+			//Log the error, then resolve promise with the page.
+			logger.debug("onNavigate received a non-2xx HTTP code, proceeding to render anyway", err)
+			return defer.resolve(page);
+		});
+
+		return defer.promise;
+	}
+
 	onNavigateStart (callback) {
 		this.navigator.on('navigateStart', callback);
 	}
@@ -88,4 +109,3 @@ class RequestContextBuilder {
 
 module.exports = RequestContext;
 module.exports.Builder = RequestContextBuilder;
-

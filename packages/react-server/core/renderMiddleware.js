@@ -6,6 +6,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
 	DebugUtil = require('./util/DebugUtil'),
+	HttpError = require('./errors/HttpError'),
 	RLS = RequestLocalStorage.getNamespace(),
 	flab = require('flab'),
 	Q = require('q'),
@@ -43,7 +44,8 @@ var ELEMENT_ALREADY_WRITTEN = -2;
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(req, res, next, routes) {
+module.exports = function(req, res, next) {
+
 	RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
 
@@ -67,7 +69,7 @@ module.exports = function(req, res, next, routes) {
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
-				.setRoutes(routes)
+				.setRoutes(req.app.get("reactServerRoutes"))
 				.setDefaultXhrHeadersFromRequest(req)
 				.create({
 					// TODO: context opts?
@@ -75,77 +77,33 @@ module.exports = function(req, res, next, routes) {
 
 		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
-
 		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
 
-		var navigateDfd = Q.defer();
+		let timeoutDefer = Q.defer();
+
+		const timeout = setTimeout(() => {
+			let metaData = {
+				page: context.page,
+				path: req.path,
+			};
+			timeoutDefer.reject(new HttpError(`Navigation timed out after ${FAILSAFE_ROUTER_TIMEOUT}ms`, metaData));
+		}, FAILSAFE_ROUTER_TIMEOUT);
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
-		context.onNavigate( (err, page) => {
-
-			if (!navigateDfd.promise.isPending()) {
-				logger.error("Finished navigation after FAILSAFE_ROUTER_TIMEOUT", {
-					page: context.page,
-					path: req.path,
-				});
-				return;
-			}
-
-			// Success.
-			navigateDfd.resolve();
-
-
-			if (err) {
-				// The page can elect to proceed to render
-				// even with a non-2xx response.  If it
-				// _doesn't_ do so then we're done.
-				var done = !(page && page.getHasDocument());
-
-				if (err.status === 301 || err.status === 302 || err.status === 307) {
-					if (done){
-						// This adds a boilerplate body.
-						res.redirect(err.status, err.redirectUrl);
-					} else {
-						// This expects our page to
-						// render a body.  Hope they
-						// know what they're doing.
-						res.set('Location', err.redirectUrl);
-					}
-				} else if (done) {
-					if (err.status === 404) {
-						next();
-					} else {
-						next(err);
-					}
-				}
-				if (done) {
-					logger.log("onNavigate received a non-2xx HTTP code", err);
-					handleResponseComplete(req, res, context, start, page);
-					return;
-				}
-			}
-			renderPage(req, res, context, start, page);
-
-		});
-
-
-		const timeout = setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
-
-		// Don't leave dead timers hanging around.
-		navigateDfd.promise.then(() => clearTimeout(timeout));
-
-		// If we fail to navigate, we'll throw a 500 and move on.
-		navigateDfd.promise.catch(() => {
-			logger.error("Failed to navigate after FAILSAFE_ROUTER_TIMEOUT", {
-				page: context.navigator.getCurrentRoute().name,
-				path: req.path,
-			});
-			handleResponseComplete(req, res, context, start, context.page);
-			next({status: 500});
+		Q.race([
+			context.onNavigatePromise(),
+			timeoutDefer.promise,
+		])
+		.tap(() => clearTimeout(timeout)) //Clear timeout if promise succeeds - not strictly neccessary
+		.then((page) => renderPage(req, res, context, page))
+		.then(() => endResponse(req, res))
+		.catch(next)
+		.finally(() => {
+			clearTimeout(timeout);
+			handleResponseComplete(req, res, context);
 		});
 
 		context.navigate(new ExpressServerRequest(req));
-
 	});
 };
 
@@ -160,7 +118,7 @@ function initResponseCompletePromise(res){
 	RLS().responseCompletePromise = dfd.promise;
 }
 
-function handleResponseComplete(req, res, context, start, page) {
+function handleResponseComplete(req, res, context) {
 
 	RLS().responseCompletePromise.then(RequestLocalStorage.bind(() => {
 
@@ -174,15 +132,16 @@ function handleResponseComplete(req, res, context, start, page) {
 		// a page, we won't be able to call middleware
 		// `handleComplete()` here.
 		//
+		let page = RLS().page;
 		if (page) {
-			logRequestStats(req, res, context, start, page);
+			logRequestStats(req, res, context, page);
 
 			page.handleComplete();
 		}
 	}));
 }
 
-function renderPage(req, res, context, start, page) {
+function renderPage(req, res, context, page) {
 
 	var routeName = context.navigator.getCurrentRoute().name;
 
@@ -194,7 +153,12 @@ function renderPage(req, res, context, start, page) {
 	// see: http://security.stackexchange.com/a/12916
 	res.set('X-Content-Type-Options', 'nosniff');
 
-	res.status(page.getStatus()||200);
+	let redirectUrl = page.getRedirectUrl();
+	if (redirectUrl) {
+		res.location(redirectUrl);
+	}
+
+	res.status(page.getStatus() || 200);
 
 	// Handy to have random access to this rather than needing to thread it
 	// through everywhere.
@@ -213,69 +177,47 @@ function renderPage(req, res, context, start, page) {
 		lifecycleMethods = pageLifecycle();
 	}
 
-	lifecycleMethods.reduce((chain, func) => chain
+	let start = RLS().startTime;
+
+	return lifecycleMethods.reduce((chain, func) => chain
 		.then(() => func(req, res, context, start, page))
 		.then(() => {
 			timer.tick(func.name);
 			logger.time(`lifecycle.fromStart.${func.name}`, new Date - start);
-		})
-	).catch(err => {
-		logger.error("Error in renderPage chain", err)
-
-		// Register `finish` listener before ending response.
-		handleResponseComplete(req, res, context, start, page);
-
-		// Bummer.
-		res.status(500).end();
-	});
-
-	// TODO: we probably want a "we're not waiting any longer for this"
-	// timeout as well, and cancel the waiting deferreds
+		}), Q())
 }
 
 function rawResponseLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
 		setHttpHeaders,
 		setContentType,
 		writeResponseData,
-		handleResponseComplete,
-		endResponse,
 	];
 }
 
 function fragmentLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
 		setHttpHeaders,
 		writeDebugComments,
 		writeBody,
-		handleResponseComplete,
-		endResponse,
 	];
 }
 
 function dataBundleLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
 		setDataBundleContentType,
 		writeDataBundle,
-		handleResponseComplete,
-		endResponse,
 	];
 }
 
 function pageLifecycle() {
 	return [
-		Q(), // This is just a NOOP lead-in to prime the reduction.
 		setHttpHeaders,
 		writeHeader,
 		startBody,
 		writeBody,
 		wrapUpLateArrivals,
 		closeBody,
-		handleResponseComplete,
-		endResponse,
 	];
 }
 
@@ -1020,7 +962,7 @@ function endResponse(req, res) {
 	return Q();
 }
 
-function logRequestStats(req, res, context, start){
+function logRequestStats(req, res, context){
 	var allRequests = ReactServerAgent.cache().getAllRequests()
 	,   notLoaded   = ReactServerAgent.cache().getLateRequests()
 	,   sock        = req.socket
@@ -1042,7 +984,7 @@ function logRequestStats(req, res, context, start){
 	logger.gauge("bytesRead", stash.bytesR, {hi: 1<<12});
 	logger.gauge("bytesWritten", stash.bytesW, {hi: 1<<18});
 
-	var time = new Date - start;
+	var time = new Date - RLS().startTime;
 
 	logger.time(`responseCode.${res.statusCode}`, time);
 	logger.time("totalRequestTime", time);

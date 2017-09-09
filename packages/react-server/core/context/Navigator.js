@@ -1,4 +1,3 @@
-
 var EventEmitter = require('events').EventEmitter,
 	logger = require('../logging').getLogger(__LOGGER__),
 	Router = require('routr'),
@@ -7,6 +6,7 @@ var EventEmitter = require('events').EventEmitter,
 	ReactServerAgent = require("../ReactServerAgent"),
 	PageUtil = require("../util/PageUtil"),
 	DebugUtil = require("../util/DebugUtil"),
+	HttpError = require('../errors/HttpError'),
 	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
 
 var _ = {
@@ -52,7 +52,8 @@ class Navigator extends EventEmitter {
 		if (route) {
 			logger.debug(`Mapped ${request.getUrl()} to route ${route.name}`);
 		} else {
-			this.emit('navigateDone', { status: 404, message: "No Route!" }, null, request.getUrl(), type);
+			let url = request.getUrl();
+			this.emit('navigateDone', new HttpError("Route not found " + url, {code: 404, url: url}), null, request.getUrl(), type);
 			return;
 		}
 
@@ -203,7 +204,11 @@ class Navigator extends EventEmitter {
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
 			if (handleRouteResult.code && ((handleRouteResult.code / 100)|0) !== 2) {
-				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, page, request.getUrl(), type);
+
+				let error = new HttpError("Page returned code " + handleRouteResult.code, {code: handleRouteResult.code});
+				error.redirectUrl = handleRouteResult.location;
+				page.setRedirectUrl(handleRouteResult.location);
+				this.emit("navigateDone", error, page, request.getUrl(), type);
 				return;
 			}
 			if (handleRouteResult.page) {
@@ -215,11 +220,7 @@ class Navigator extends EventEmitter {
 			}
 
 			this.emit('navigateDone', null, page, request.getUrl(), type);
-		}).catch(err => {
-			logger.error("Error while handling route", err);
-
-			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type);
-		});
+		}).catch(err => this.emit('navigateDone', err, page, request.getUrl(), type));
 
 	}
 

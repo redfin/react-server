@@ -69,6 +69,7 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 		server.use(bodyParser.json());
 		server.use(helmet());
 		rsMiddleware();
+		server.use(reactServer.errorHandlingMiddleware);
 	};
 
 	return {
@@ -88,10 +89,9 @@ const startHtmlServer = (serverRoutes, port, bindIp, httpsOptions, customMiddlew
 				// sets the namespace that data will be exposed into client-side
 				// TODO: express-state doesn't do much for us until we're using a templating library
 				server.set('state namespace', '__reactServerState');
+				server.set("reactServerRoutes", require(serverRoutes));
+				server.use(reactServer.renderMiddleware);
 
-				server.use((req, res, next) => {
-					reactServer.middleware(req, res, next, require(serverRoutes));
-				});
 			};
 
 			if (customMiddlewarePath) {
