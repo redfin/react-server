@@ -9,10 +9,6 @@ var EventEmitter = require('events').EventEmitter,
 	DebugUtil = require("../util/DebugUtil"),
 	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
 
-var _ = {
-	isFunction: require('lodash/isFunction'),
-};
-
 class Navigator extends EventEmitter {
 
 	constructor (context, routes) {
@@ -83,14 +79,11 @@ class Navigator extends EventEmitter {
 
 			var loaders = route.config.page;
 
-			// Normalize.
-			// The page object may either directly be a loader or
-			// it may be an object whose values are loaders.
-			if (_.isFunction(loaders)){
-				loaders = {'default': loaders};
-			}
+			var deviceType = this.context.getDeviceType();
 
-			var mobileDetect = this.context.getMobileDetect();
+			if (loaders[deviceType]) {
+				route.name += "-" + deviceType;
+			}
 
 			// Our route may have multiple page implementations if
 			// there are device-specific variations.
@@ -98,30 +91,14 @@ class Navigator extends EventEmitter {
 			// We'll take one of those if the request device
 			// matches, otherwise we'll use the default.
 			//
-			// Note that 'mobile' is the _union_ of 'phone' and
-			// 'tablet'.  If you _really_ want an iPad and an
-			// iPhone to get the _same_ non-desktop experience,
-			// use that.
-			//
-			var loadPage = [
-				'phone',
-				'tablet',
-				'mobile',
-			].reduce((loader, format) => {
-
-				// We'll take the _first_ format that matches.
-				if (!loader && loaders[format] && mobileDetect[format]()){
-
-					// Need to disambiguate for bundleNameUtil.
-					route.name += '-'+format;
-
-					return loaders[format];
-				}
-
-				return loader;
-			}, null) || loaders.default;
-
-			loadPage().done(pageConstructor => {
+			// Note that the page object may either directly be a
+			// loader or it may be an object whose values are
+			// loaders.
+			(
+				loaders[deviceType] ||
+				loaders.default ||
+				loaders
+			)().done(pageConstructor => {
 				if (request.setRoute) {
 					request.setRoute(route);
 				}
