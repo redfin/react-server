@@ -1,3 +1,12 @@
+## v0.7.0 (2017-09-12)
+
+#### Breaking change
+* `react-server`
+  * [#950](https://github.com/redfin/react-server/pull/950) Simplify device type routing. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
 ## v0.6.5 (2017-09-08)
 
 #### Enhancement
