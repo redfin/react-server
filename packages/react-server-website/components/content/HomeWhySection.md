@@ -12,4 +12,4 @@ One of the great things about React is its support for server-side rendering, wh
 
 React-server is a framework designed to make universal (neé isomorphic) React easier to write, providing standard answers for these questions and more. When you write your app for react-server, you concentrate on your React components, and react-server takes care of everything else that's needed to run and deploy real React server-rendered apps. Under the hood, react-server is doing a bunch of clever optimizations, many borrowed from the ideas behind [Facebook's Big Pipe](https://www.facebook.com/notes/facebook-engineering/bigpipe-pipelining-web-pages-for-high-performance/389414033919/), to make sure that your site shows up as quickly as humanly possible for your users.
 
-Once you're hungry for more, dig into [the docs](/docs) and [`react-server`](https://github.com/redfin/react-server/blob/hackathon-website/packages/react-server) itself.
+Once you're hungry for more, dig into [the docs](/docs) and [`react-server`](https://github.com/redfin/react-server/) itself.
