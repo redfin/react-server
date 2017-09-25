@@ -1,3 +1,12 @@
+## v0.7.1 (2017-09-25)
+
+#### Bug fix
+* `react-server`
+  * [#953](https://github.com/redfin/react-server/pull/953) Pull device type from InitialContext. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
 ## v0.7.0 (2017-09-12)
 
 #### Breaking change
