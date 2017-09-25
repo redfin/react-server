@@ -70,7 +70,7 @@ class ClientController extends EventEmitter {
 		}
 
 		this.context = buildContext(routes);
-		this.context.setDeviceType(dehydratedState.deviceType);
+		this.context.setDeviceType(dehydratedState.InitialContext.deviceType);
 		ReactServerAgent.cache().rehydrate(dehydratedState.InitialContext['ReactServerAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
