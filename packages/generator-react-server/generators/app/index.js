@@ -41,6 +41,7 @@ module.exports = yeoman.Base.extend({
 		var _this = this;
 
 		[
+			'_nsprc',
 			'_babelrc',
 			'_eslintrc',
 			'_gitignore',
