@@ -1,3 +1,12 @@
+## v0.7.2 (2017-09-29)
+
+#### Bug fix
+* `react-server`
+  * [#955](https://github.com/redfin/react-server/pull/955) Classify "unknown" mobile devices as phones. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
 ## v0.7.1 (2017-09-25)
 
 #### Bug fix
