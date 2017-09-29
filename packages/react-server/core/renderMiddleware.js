@@ -1073,13 +1073,21 @@ function getNonInternalConfigs() {
 
 function getDeviceType(req) {
 	var md = new MobileDetect(req.get('user-agent'));
-	var types = [ 'phone', 'tablet' ];
-	for (var i = 0; i < types.length; i++) {
-		if (md[types[i]]()) {
-			return types[i];
-		}
-	}
-	return 'desktop';
+
+	// "mobile" is the union of "phone" and "tablet" _except_ for
+	// "unknown" mobile devices, which are _neither_ phone _nor_ tablet.
+	//
+	// http://hgoebl.github.io/mobile-detect.js/doc/MobileDetect.html#mobile
+	//
+	// :rage:
+	//
+	// We'll call them "phone" to avoid introducing a weird third device
+	// type that depends on this implementation quirk of mobile-detect.
+	//
+	if (md.tablet()) return "tablet";
+	if (md.phone ()) return "phone";
+	if (md.mobile()) return "phone";
+	return "desktop";
 }
 
 module.exports._testFunctions = {
