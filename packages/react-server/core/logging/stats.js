@@ -100,29 +100,49 @@ function wrapLogger(getLoggerForConfig, opts) {
 
 // This is used for classifying `time` and `gauge` values.
 function makeThresholdsSieve(options, defaults) {
+
+	if (!options) options = {};
+
+	// Pre-apply defaults.
+	Object.keys(defaults).forEach(key => options[key] || (options[key] = defaults[key]));
+
 	return (key, overrides) => {
-		// Sure would be nice to have Array.prototype.find here.
-		if ((overrides||{})[key] !== void 0) return overrides[key];
-		if ((options  ||{})[key] !== void 0) return options  [key];
-		return defaults[key];
+		if (overrides && overrides[key] !== void 0) return overrides[key];
+		return options[key];
 	}
 }
 
 function makeTimeClassifier(opts) {
 	var thresholds = makeThresholdsSieve(opts.timing, DEFAULT_TIME_THRESHOLDS);
+	var fast = thresholds('fast');
+	var fine = thresholds('fine');
 	return (ms, o) => {
-		if (ms <= thresholds('fast', o)) return 'fast';
-		else if (ms <= thresholds('fine', o)) return 'fine';
-		else                                  return 'slow';
+		if (o) {
+			if      (ms <= thresholds('fast', o)) return 'fast';
+			else if (ms <= thresholds('fine', o)) return 'fine';
+			else                                  return 'slow';
+		} else {
+			if      (ms <= fast) return 'fast';
+			else if (ms <= fine) return 'fine';
+			else                 return 'slow';
+		}
 	}
 }
 
 function makeGaugeClassifier(opts) {
 	var thresholds = makeThresholdsSieve(opts.gauge, DEFAULT_GAUGE_THRESHOLDS);
+	var lo = thresholds('lo');
+	var hi = thresholds('hi');
 	return (val, o) => {
-		if (val <= thresholds('lo', o)) return 'lo';
-		else if (val >= thresholds('hi', o)) return 'hi';
-		else                                 return 'ok';
+		if (o) {
+			if      (val <= thresholds('lo', o)) return 'lo';
+			else if (val >= thresholds('hi', o)) return 'hi';
+			else                                 return 'ok';
+		} else {
+			if      (val <= lo) return 'lo';
+			else if (val >= hi) return 'hi';
+			else                return 'ok';
+		}
 	}
 
 }
