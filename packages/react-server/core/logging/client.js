@@ -40,6 +40,26 @@ var monochrome = typeof _console.log == "object";
 // We'll use a noop.
 var noop = () => {};
 
+var transportQueue = [];
+
+var transportTimer;
+
+function runTransports() {
+	var batch = transportQueue;
+	transportQueue = [];
+	transportTimer = null;
+	for (var i = 0; i < batch.length; i++) {
+		batch[i]();
+	}
+}
+
+function scheduleTransport(fn) {
+	transportQueue.push(fn);
+	if (!transportTimer) {
+		transportTimer = setTimeout(runTransports, 0);
+	}
+}
+
 var makeLogger = function(group, opts){
 	var config = common.config[group]
 
@@ -57,7 +77,7 @@ var makeLogger = function(group, opts){
 
 			this.transports.forEach(transport => {
 				if (config.levels[level] > config.levels[transport.level]) return;
-				setTimeout(transport.log.bind(transport, level, msg, meta, noop), 0);
+				scheduleTransport(transport.log.bind(transport, level, msg, meta, noop));
 			});
 
 			if (config.levels[level] > config.levels[this.level]) return;
@@ -84,8 +104,8 @@ var makeLogger = function(group, opts){
 		// note that this has to be an ES-5 style function and cannot be an arrow function
 		// because arguments doesn't bind to the arrow function's arguments; it would bind
 		// to makeLogger's arguments.
-		logger[level] = function(){
-			logger.log.apply(logger, [level].concat([].slice.call(arguments)));
+		logger[level] = function(a, b, c){
+			logger.log(level, a, b, c);
 		}
 	});
 
