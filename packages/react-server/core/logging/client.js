@@ -49,12 +49,13 @@ function runTransports() {
 	transportQueue = [];
 	transportTimer = null;
 	for (var i = 0; i < batch.length; i++) {
-		batch[i]();
+		const [transport, level, msg, meta] = batch[i];
+		transport.log(level, msg, meta, noop);
 	}
 }
 
-function scheduleTransport(fn) {
-	transportQueue.push(fn);
+function scheduleTransport(tuple) {
+	transportQueue.push(tuple);
 	if (!transportTimer) {
 		transportTimer = setTimeout(runTransports, 0);
 	}
@@ -77,7 +78,7 @@ var makeLogger = function(group, opts){
 
 			this.transports.forEach(transport => {
 				if (config.levels[level] > config.levels[transport.level]) return;
-				scheduleTransport(transport.log.bind(transport, level, msg, meta, noop));
+				scheduleTransport([transport, level, msg, meta]);
 			});
 
 			if (config.levels[level] > config.levels[this.level]) return;
