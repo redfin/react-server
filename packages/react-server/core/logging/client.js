@@ -76,10 +76,12 @@ var makeLogger = function(group, opts){
 			var args = [msg];
 			if (meta !== void 0) args.push(meta);
 
-			this.transports.forEach(transport => {
-				if (config.levels[level] > config.levels[transport.level]) return;
-				scheduleTransport([transport, level, msg, meta]);
-			});
+			if (this.transports.length) {
+				this.transports.forEach(transport => {
+					if (config.levels[level] > config.levels[transport.level]) return;
+					scheduleTransport([transport, level, msg, meta]);
+				});
+			}
 
 			if (config.levels[level] > config.levels[this.level]) return;
 
