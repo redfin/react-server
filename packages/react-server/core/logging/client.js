@@ -70,12 +70,6 @@ var makeLogger = function(group, opts){
 		level: config.baseLevel,
 		log: function(level, msg, meta){
 
-			// We want an array of arguments to apply to
-			// `console.log` so we don't trail an `undefined` when
-			// `meta` isn't passed.
-			var args = [msg];
-			if (meta !== void 0) args.push(meta);
-
 			if (this.transports.length) {
 				this.transports.forEach(transport => {
 					if (config.levels[level] > config.levels[transport.level]) return;
@@ -84,6 +78,12 @@ var makeLogger = function(group, opts){
 			}
 
 			if (config.levels[level] > config.levels[this.level]) return;
+
+			// We want an array of arguments to apply to
+			// `console.log` so we don't trail an `undefined` when
+			// `meta` isn't passed.
+			var args = [msg];
+			if (meta !== void 0) args.push(meta);
 
 			clog(level).apply(
 				_console,
