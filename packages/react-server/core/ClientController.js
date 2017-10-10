@@ -542,7 +542,7 @@ class ClientController extends EventEmitter {
 					mountNode = mountNode.parentNode;
 				} else if (this._reuseDom && oldRootElement) {
 					root = oldRootElement;
-				} else {
+				} else if (!element.isTheFold) {
 					this._cleanupPreviousRender(index);
 					if (element.containerOpen){
 
@@ -558,7 +558,7 @@ class ClientController extends EventEmitter {
 						// If we're closing a container its
 						// parent is once again our mountNode.
 						mountNode = mountNode.parentNode;
-					} else if (!element.isTheFold) {
+					} else {
 
 						// Need a new root element in our
 						// current mountNode.
