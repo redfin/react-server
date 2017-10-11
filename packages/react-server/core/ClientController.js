@@ -601,26 +601,35 @@ class ClientController extends EventEmitter {
 			}
 		};
 
-		// As elements become ready, prime them to render as soon as
-		// their mount point is available.
-		//
-		Q.all(elementPromisesOr.map((promise, index) => promise.then(
-				element => rootNodePromises[index]
-					.then(root => renderElement(element, root, index))
-					.catch(e => {
-						// The only case where this should evaluate to false is
-						// when `element` is a containerClose/containerOpen object
-						const componentType = typeof element.type === 'function'
-							? element.props.children.type.name
-							: 'element';
-						logger.error(`Error with element ${componentType}'s lifecycle methods at index ${index}`, e);
-					})
-			).catch(e => logger.error(`Error with element promise ${index}`, e))
-		)).then(retval.resolve);
+		const renderOne = (promise, index) => promise.then(
+			element => rootNodePromises[index]
+				.then(root => renderElement(element, root, index))
+				.catch(e => {
+					// The only case where this should evaluate to false is
+					// when `element` is a containerClose/containerOpen object
+					const componentType = typeof element.type === 'function'
+						? element.props.children.type.name
+						: 'element';
+					logger.error(`Error with element ${componentType}'s lifecycle methods at index ${index}`, e);
+				})
+		).catch(e => logger.error(`Error with element promise ${index}`, e))
 
-		// Look out for a failsafe timeout from the server on our
-		// first render.
-		if (!this._previouslyRendered){
+		if (this._previouslyRendered){
+
+			// On client transitions the root structure is laid out using a
+			// state machine that requires us to render in order.
+			elementPromisesOr.reduce(
+				(chain, promise, index) => chain.then(() => renderOne(promise, index)),
+				Q()
+			).then(retval.resolve);
+		} else {
+
+			// On the first render we can go out of order because the server
+			// has already laid out the root structure for us.
+			Q.all(elementPromisesOr.map(renderOne)).then(retval.resolve);
+
+			// Look out for a failsafe timeout from the server on our
+			// first render.
 			this._failDfd.promise.then(() => {
 				elementPromises.forEach((promise, index) => {
 					//Reject any elements that have failed to render
