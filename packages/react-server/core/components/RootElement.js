@@ -10,6 +10,13 @@ const _ = {
 var logger = require('../logging').getLogger(__LOGGER__);
 
 class RootElement extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			childProps: props.childProps,
+		};
+	}
+
 	componentDidMount() {
 		if (this.props.subscribe) {
 			this.props.subscribe(childProps => {
@@ -29,8 +36,10 @@ class RootElement extends React.Component {
 
 				// Okay, now we've complained about it
 				// sufficiently, let's go ahead and update.
-				this.props = _.assign({}, this.props, {childProps});
-				this.forceUpdate();
+				const newChildProps = _.assign({}, this.state.childProps, childProps);
+				this.setState({
+					childProps: newChildProps,
+				});
 			});
 		}
 	}
@@ -60,7 +69,7 @@ class RootElement extends React.Component {
 
 		return React.cloneElement(
 			React.Children.only(this.props.children),
-			this.props.childProps
+			this.state.childProps
 		);
 	}
 
@@ -157,14 +166,15 @@ RootElement.installListener = function(element, listen) {
 }
 
 RootElement.scheduleRender = function(element) {
-	var {listen, when} = (element||{}).props||{};
-	if (!(listen||when)) {
+	var {listen, when, componentLoader, childProps} = (element||{}).props||{};
+	if (!(listen||when||componentLoader||childProps)) {
 		return Q(element).then(RootElement.ensureRootElement);
 	}
 
 	// This is what we'll ultimately resolve our return promise with.
 	// It may be changed by the output of `listen` or `when`.
 	var rendered = element;
+	var componentLoaderDeferred = componentLoader ? componentLoader() : null;
 
 	// Install the listener right away to start gathering props.
 	// It may be a gated emitter, but we want to make sure we squeeze
@@ -172,11 +182,20 @@ RootElement.scheduleRender = function(element) {
 	// Finally gate on the `when`.
 	return Q(listen && RootElement.installListener(element, listen))
 		.then(el => el && (rendered = el))
-		.then(() => when)
-		.then(childProps => childProps
-			// merge "when" childProps and "listen" childProps preemptively
-			// to prevent cloneElement shallow merge from clobbering "listen" childProps
-			?React.cloneElement(rendered, {childProps: _.assign({}, rendered.props.childProps || {}, childProps)})
-			:rendered
-		)
+		.then(() => Q.allSettled([when, componentLoaderDeferred]))
+		.then(results => {
+			var [whenResult, loadedComponent] = results;
+			if (whenResult.value || loadedComponent.value || childProps) {
+				// merge in child props from listen, when, and childProps
+				const clonedChildProps = _.assign({}, rendered.props.childProps, whenResult.value, childProps);
+
+				// if we have a component loader specified, copy the resolved component
+				// and render that with the current child as a child of that component
+				const currentChild = rendered.props.children;
+				const childToRender = componentLoaderDeferred ? React.createElement(loadedComponent.value, null, currentChild) : currentChild;
+
+				return React.cloneElement(rendered, {childProps: clonedChildProps}, childToRender);
+			}
+			return rendered;
+		});
 }
