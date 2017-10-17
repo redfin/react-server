@@ -48,6 +48,16 @@ class RootElement extends React.Component {
 		if (this.props.unsubscribe) this.props.unsubscribe();
 	}
 
+	componentWillReceiveProps(nextProps) {
+		// Incase we receive new props such as during client transitions
+		// We will want to update our state's childProp with any new childProps
+		// that may have been passed in. This still respects props as the ultimate source of truth
+		const newChildProps = _.assign({}, this.state.childProps, nextProps.childProps);
+		this.setState({
+			childProps: newChildProps,
+		});
+	}
+
 	render() {
 
 		// We'll use these to log stuff about re-renders.
