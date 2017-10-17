@@ -40,6 +40,27 @@ var monochrome = typeof _console.log == "object";
 // We'll use a noop.
 var noop = () => {};
 
+var transportQueue = [];
+
+var transportTimer;
+
+function runTransports() {
+	var batch = transportQueue;
+	transportQueue = [];
+	transportTimer = null;
+	for (var i = 0; i < batch.length; i++) {
+		const [transport, level, msg, meta] = batch[i];
+		transport.log(level, msg, meta, noop);
+	}
+}
+
+function scheduleTransport(tuple) {
+	transportQueue.push(tuple);
+	if (!transportTimer) {
+		transportTimer = setTimeout(runTransports, 0);
+	}
+}
+
 var makeLogger = function(group, opts){
 	var config = common.config[group]
 
@@ -49,18 +70,20 @@ var makeLogger = function(group, opts){
 		level: config.baseLevel,
 		log: function(level, msg, meta){
 
+			if (this.transports.length) {
+				this.transports.forEach(transport => {
+					if (config.levels[level] > config.levels[transport.level]) return;
+					scheduleTransport([transport, level, msg, meta]);
+				});
+			}
+
+			if (config.levels[level] > config.levels[this.level]) return;
+
 			// We want an array of arguments to apply to
 			// `console.log` so we don't trail an `undefined` when
 			// `meta` isn't passed.
 			var args = [msg];
 			if (meta !== void 0) args.push(meta);
-
-			this.transports.forEach(transport => {
-				if (config.levels[level] > config.levels[transport.level]) return;
-				setTimeout(transport.log.bind(transport, level, msg, meta, noop), 0);
-			});
-
-			if (config.levels[level] > config.levels[this.level]) return;
 
 			clog(level).apply(
 				_console,
@@ -84,8 +107,8 @@ var makeLogger = function(group, opts){
 		// note that this has to be an ES-5 style function and cannot be an arrow function
 		// because arguments doesn't bind to the arrow function's arguments; it would bind
 		// to makeLogger's arguments.
-		logger[level] = function(){
-			logger.log.apply(logger, [level].concat([].slice.call(arguments)));
+		logger[level] = function(a, b, c){
+			logger.log(level, a, b, c);
 		}
 	});
 
