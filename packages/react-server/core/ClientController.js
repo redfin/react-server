@@ -751,6 +751,17 @@ class ClientController extends EventEmitter {
 	}
 
 	_navigateWithHistoryState({path, state, type, check}) {
+
+		// This is for browsers (Safari) which use a page cache for
+		// forward/back navigation. If we're coming back from a non-client
+		// transition then we'll get un-suspended with the current page still
+		// active, but we'll also receive a history navigation popstate event.
+		//
+		// If we receive a popstate event for the current page, ignore it.
+		//
+		if (path === this._previousPath) return;
+		this._previousPath = path;
+
 		const opts = (state||{}).reactServerFrame;
 
 		if (check && !opts) return; // Not our frame.
