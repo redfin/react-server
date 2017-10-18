@@ -8,3 +8,4 @@ Installation and running instructions are in the respective README.md files:
 - [**bike-share**](./bike-share): An example project for react-server which demos server rendering, interactivity on the client side, ReactServerAgent, url parameters and logging.
 - [**redux-basic**](./redux-basic): An example of the official Redux Counter app powered by react-server.
 - [**meteor-site**](./meteor-site): An example of react-server using Google Map, redux and transitions.
+- [**code-splitting**](./code-splitting): An example showing off how to do code splitting in react-server.
