@@ -1,3 +1,21 @@
+## v0.7.3 (2017-10-18)
+
+#### Enhancement
+* `react-server`
+  * [#963](https://github.com/redfin/react-server/pull/963) Add code splitting support to RootElement. ([@davidk107](https://github.com/davidk107))
+
+#### Performance
+* `react-server`
+  * [#960](https://github.com/redfin/react-server/pull/960) Reduce client logger overhead. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server`
+  * [#962](https://github.com/redfin/react-server/pull/962) Client transitions still need to render in order. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 2
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- David ([davidk107](https://github.com/davidk107))
+
 ## v0.7.2 (2017-09-29)
 
 #### Bug fix

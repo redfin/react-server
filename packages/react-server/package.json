@@ -1,6 +1,6 @@
 {
   "name": "react-server",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "React framework with server render for blazing fast page load and seamless transitions between pages in the browser.",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
