@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {logging} from 'react-server';
 import NetworkCard from './network-card';
@@ -13,7 +14,7 @@ const NetworkList = ({networks}) => {
 };
 
 NetworkList.propTypes = {
-	networks: React.PropTypes.array,
+	networks: PropTypes.array,
 };
 
 NetworkList.displayName = 'NetworkList';

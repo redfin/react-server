@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {logging} from 'react-server';
 import StationCard from './station-card';
@@ -11,7 +12,7 @@ const StationList = ({stations}) => {
 };
 
 StationList.propTypes = {
-	stations: React.PropTypes.array,
+	stations: PropTypes.array,
 };
 
 StationList.displayName = 'StationList';

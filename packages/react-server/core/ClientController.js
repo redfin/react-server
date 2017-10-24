@@ -585,7 +585,7 @@ class ClientController extends EventEmitter {
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
-			ReactDOM.render(element, root);
+			ReactDOM.hydrate(element, root);
 
 			_.forEach(
 				getRootElementAttributes(element),

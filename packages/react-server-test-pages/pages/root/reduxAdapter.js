@@ -1,5 +1,6 @@
 import {createStore, applyMiddleware} from "redux";
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {RootElement} from "react-server";
 import {RootProvider, ReduxAdapter} from "react-server-redux";
@@ -34,7 +35,7 @@ function initAction() {
 
 class BasicComponent extends React.Component {
 	propTypes: {
-		elementData: React.PropTypes.sting.isRequired,
+		elementData: PropTypes.sting.isRequired,
 	}
 
 	render() {

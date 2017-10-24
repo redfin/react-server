@@ -1,4 +1,5 @@
-import { default as React, PropTypes } from "react";
+import PropTypes from 'prop-types';
+import React from "react";
 import GoogleMap from "google-map-react";
 
 const MeteorMap = ({ defaultCenter, center , meteors }) => (

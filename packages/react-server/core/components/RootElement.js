@@ -1,4 +1,5 @@
 var React = require('react');
+const PropTypes = require('prop-types');
 var Q = require('q');
 
 const {isTheFold} = require('./TheFold');
@@ -97,10 +98,10 @@ class RootElement extends React.Component {
 module.exports = RootElement;
 
 RootElement.propTypes = {
-	listen: React.PropTypes.func,
-	when: React.PropTypes.object, // A promise.
-	childProps: React.PropTypes.object,
-	_isRootElement: React.PropTypes.bool,
+	listen: PropTypes.func,
+	when: PropTypes.object, // A promise.
+	childProps: PropTypes.object,
+	_isRootElement: PropTypes.bool,
 }
 
 RootElement.defaultProps = {

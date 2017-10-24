@@ -1,6 +1,8 @@
 
 var ReactServerAgent = require("../ReactServerAgent"),
-	React = require("react");
+	React = require('react'),
+	PropTypes = require('prop-types'),
+	createReactClass = require("create-react-class");
 
 /**
  * FragmentDataCache writes out a serialized form of the ReactServerAgent request
@@ -36,10 +38,10 @@ var ReactServerAgent = require("../ReactServerAgent"),
  * 	* entry.res and entry.err.response won't have any `body` entry if
  *	  the response from the server was HTML instead of JSON.
  */
-var FragmentDataCache = module.exports = React.createClass({
+var FragmentDataCache = module.exports = createReactClass({
 
 	propTypes: {
-		cacheNodeId: React.PropTypes.string,
+		cacheNodeId: PropTypes.string,
 	},
 
 	displayName: 'FragmentDataCache',

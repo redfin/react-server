@@ -1,3 +1,4 @@
+const PropTypes = require('prop-types');
 var React = require('react');
 var { Provider } = require('react-redux');
 
@@ -35,5 +36,5 @@ class RootProvider extends React.Component {
 module.exports = RootProvider;
 
 RootProvider.propTypes = {
-	store: React.PropTypes.object.isRequired,
+	store: PropTypes.object.isRequired,
 }
