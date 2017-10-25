@@ -1,4 +1,4 @@
 {
   "routesFile": "./routes.js",
-  "hot": false
+  "hot": true
 }

@@ -256,7 +256,7 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 		webpackConfig.module.loaders = [
 			{
 				test: /\.jsx?$/,
-				loader: "react-hot",
+				loader: "react-hot-loader/webpack",
 				exclude: /node_modules/,
 			},
 			...webpackConfig.module.loaders,
