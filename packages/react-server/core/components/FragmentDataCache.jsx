@@ -1,8 +1,7 @@
 
 var ReactServerAgent = require("../ReactServerAgent"),
 	React = require('react'),
-	PropTypes = require('prop-types'),
-	createReactClass = require("create-react-class");
+	PropTypes = require('prop-types');
 
 /**
  * FragmentDataCache writes out a serialized form of the ReactServerAgent request
@@ -38,37 +37,42 @@ var ReactServerAgent = require("../ReactServerAgent"),
  * 	* entry.res and entry.err.response won't have any `body` entry if
  *	  the response from the server was HTML instead of JSON.
  */
-var FragmentDataCache = module.exports = createReactClass({
+class FragmentDataCache extends React.Component {
 
-	propTypes: {
-		cacheNodeId: PropTypes.string,
-	},
+	static get displayName() {
+		return 'FragmentDataCache';
+	}
 
-	displayName: 'FragmentDataCache',
+	static get propTypes() {
+		return {
+			cacheNodeId: PropTypes.string,
+		};
+	}
 
-	getDefaultProps: function () {
+	static get defaultProps() {
 		return {
 			cacheNodeId: "react-server-fragment-data-cache",
-		}
-	},
+		};
+	}
 
-	render: function () {
+	/**
+	 * Return a promise that resolves with the FragmentDataCache component
+	 * when all pending data requests have resolved.
+	 */
+	static createWhenReady(fragmentDataCacheProps = {}) {
+		return ReactServerAgent.cache().whenAllPendingResolve().then(() => {
+			return <FragmentDataCache {...fragmentDataCacheProps} />;
+		});
+	}
+
+	render() {
 		return (
 			<div
 				id={this.props.cacheNodeId}
 				data-react-server-data-cache={JSON.stringify(ReactServerAgent.cache().dehydrate({ responseBodyOnly: true }))}>
 			</div>
 		);
-	},
+	}
+};
 
-});
-
-/**
- * Return a promise that resolves with the FragmentDataCache component
- * when all pending data requests have resolved.
- */
-FragmentDataCache.createWhenReady = function (fragmentDataCacheProps = {}) {
-	return ReactServerAgent.cache().whenAllPendingResolve().then(() => {
-		return <FragmentDataCache {...fragmentDataCacheProps} />;
-	});
-}
+module.exports = FragmentDataCache;

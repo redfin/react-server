@@ -39,7 +39,6 @@
     "winston": "^2.3.0"
   },
   "peerDependencies": {
-    "create-react-class": "^15.6.2",
     "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "superagent": "1.8.4"
@@ -52,7 +51,6 @@
     "babel-preset-stage-1": "^6.16.0",
     "benchmark": "^2.1.4",
     "cheerio": "^0.22.0",
-    "create-react-class": "^15.6.2",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
     "express": "^4.14.0",
