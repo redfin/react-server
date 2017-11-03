@@ -40,8 +40,8 @@
   },
   "peerDependencies": {
     "create-react-class": "^15.6.2",
-    "react": "~0.14.2 || ^15.1.0 || ^16.0.0",
-    "react-dom": "~0.14.2 || ^15.1.0 || ^16.0.0",
+    "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
+    "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "superagent": "1.8.4"
   },
   "devDependencies": {
