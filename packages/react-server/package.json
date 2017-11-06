@@ -69,8 +69,8 @@
     "gulp-sourcemaps": "^2.2.0",
     "memory-stream": "0.0.3",
     "minimist": "^1.2.0",
-    "react": "~0.14.2 || ^15.1.0 || ^16.0.0",
-    "react-dom": "~0.14.2 || ^15.1.0 || ^16.0.0",
+    "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
+    "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-server-gulp-module-tagger": "^0.6.0",
     "rimraf": "^2.5.4",
     "superagent": "^3.1.0"
