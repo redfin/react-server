@@ -1,6 +1,6 @@
 {
   "name": "react-server-website",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "private": true,
@@ -19,9 +19,9 @@
     "highlight.js": "^9.5.0",
     "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
-    "react-server": "^0.7.3",
-    "react-server-cli": "^0.7.3",
-    "react-server-data-bundle-cache": "^0.7.3",
+    "react-server": "^0.8.0",
+    "react-server-cli": "^0.8.0",
+    "react-server-data-bundle-cache": "^0.8.0",
     "remarkable": "^1.6.2"
   },
   "devDependencies": {

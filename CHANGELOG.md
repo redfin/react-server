@@ -1,3 +1,17 @@
+## v0.8.0 (2017-11-06)
+
+#### Enhancement
+* `react-server-cli`, `react-server-redux`, `react-server`
+  * [#965](https://github.com/redfin/react-server/pull/965) Upgrade React to v16.0.0. ([@salehhamadeh](https://github.com/salehhamadeh))
+
+#### Bug fix
+* `generator-react-server`
+  * [#966](https://github.com/redfin/react-server/pull/966) [generator-react-server] Reference the correct file for the yeoman generator in package.json. ([@negativetwelve](https://github.com/negativetwelve))
+
+#### Committers: 2
+- Mark Miyashita ([negativetwelve](https://github.com/negativetwelve))
+- Saleh Hamadeh ([salehhamadeh](https://github.com/salehhamadeh))
+
 ## v0.7.3 (2017-10-18)
 
 #### Enhancement

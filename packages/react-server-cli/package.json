@@ -1,6 +1,6 @@
 {
   "name": "react-server-cli",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
@@ -71,7 +71,7 @@
     "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-hot-loader": "^3.1.1",
-    "react-server": "^0.7.3",
+    "react-server": "^0.8.0",
     "react-server-gulp-module-tagger": "^0.6.0",
     "rimraf": "^2.5.4",
     "superagent": "1.8.4"
