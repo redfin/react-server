@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import React from "react";
-import {Component, PropTypes} from 'react';
+import { Component } from 'react';
 import Markdown from './Markdown';
 
 export default class DocBody extends Component {
