@@ -1,3 +1,12 @@
+## v0.8.1 (2017-12-27)
+
+#### Bug fix
+* `react-server`
+  * [#972](https://github.com/redfin/react-server/pull/972) [react-server] Made ClientRequest chop off fragment identifiers from urls. ([@j-beatzz](https://github.com/j-beatzz))
+
+#### Committers: 1
+- Joshua LEO-Irabor ([j-beatzz](https://github.com/j-beatzz))
+
 ## v0.8.0 (2017-11-06)
 
 #### Enhancement

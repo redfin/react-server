@@ -4,7 +4,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.8.0",
+  "version": "0.8.1",
   "changelog": {
     "repo": "redfin/react-server",
     "labels": {

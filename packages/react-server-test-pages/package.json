@@ -1,6 +1,6 @@
 {
   "name": "react-server-test-pages",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
@@ -14,17 +14,17 @@
   "author": "Bo Borgerson",
   "license": "Apache-2.0",
   "dependencies": {
+    "eslint-plugin-react": "^6.4.1",
     "lodash": "^4.16.4",
     "q": "1.4.1",
     "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
-    "react-server": "^0.8.0",
-    "react-server-cli": "^0.8.0",
-    "react-server-data-bundle-cache": "^0.8.0",
+    "react-server": "^0.8.1",
+    "react-server-cli": "^0.8.1",
+    "react-server-data-bundle-cache": "^0.8.1",
     "react-server-middleware-json-response": "^0.6.1",
     "react-server-redux": "^0.8.0",
-    "redux-thunk": "^2.1.0",
-    "eslint-plugin-react": "^6.4.1"
+    "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
@@ -32,7 +32,7 @@
     "eslint": "^3.8.1",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
-    "rimraf": "^2.5.4",
-    "gulp-nsp": "^2.4.2"
+    "gulp-nsp": "^2.4.2",
+    "rimraf": "^2.5.4"
   }
 }
