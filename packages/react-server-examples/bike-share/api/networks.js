@@ -14,7 +14,6 @@ export function getNetworks(req, res) {
 			res.status(200).send(data);
 		})
 		.catch(err => {
-			// TODO handle 404s
 			res.status(500).send(err);
 		});
 }
@@ -30,7 +29,6 @@ export function getNetwork(req, res) {
 			res.status(200).send(data);
 		})
 		.catch(err => {
-			// TODO handle 404s
 			res.status(500).send(err);
 		});
 }
