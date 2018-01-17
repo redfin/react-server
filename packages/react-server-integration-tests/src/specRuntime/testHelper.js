@@ -298,7 +298,7 @@ var testSetupFn = function (specFile, routes, httpsOptions) {
 			// Since we're not using hot-reloading, we need to explicitly delete all of the require.cache to ensure
 			// that the latest Webpack compiled server code is being used.
 			Object.keys(require.cache)
-				.filter((key) => /(__clientTemp|test-temp)/.test(key))
+				.filter((key) => /(__clientTemp|test-temp|TransitionPage)/.test(key))
 				.forEach((key) => delete require.cache[key]);
 
 			const {stop, started} = startServer(specFile, routes, httpsOptions);
