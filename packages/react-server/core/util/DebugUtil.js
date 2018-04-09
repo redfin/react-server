@@ -18,8 +18,6 @@ const DEBUG_PARAMS = {
 	getRenderTimeout : "_debug_render_timeout",
 	getOutputLogs    : "_debug_output_logs",
 	getLab           : "_debug_lab",
-	getJsBelowTheFold: "_debug_js_below_the_fold",
-	getSplitJsLoad   : "_debug_split_js_load",
 	getLogLevel      : "_react_server_log_level",
 	getLogLevelMain  : "_react_server_log_level_main",
 	getLogLevelTime  : "_react_server_log_level_time",
