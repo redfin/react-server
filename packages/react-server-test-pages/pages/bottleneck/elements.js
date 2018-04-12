@@ -14,7 +14,7 @@ const OrangeThing = () => <div className="orange-thing">This should be orange</d
 const IndigoThing = () => <div className="indigo-thing">This should be indigo</div>;
 const YellowThing = () => <div className="yellow-thing">This should be yellow</div>;
 const ColorWheel = [RedThing(), BlueThing(), PurpleThing(), GreenThing(),
-	OrangeThing(), IndigoThing(), YellowThing()];
+OrangeThing(), IndigoThing(), YellowThing()];
 const ColorSize = ColorWheel.length;
 
 /**

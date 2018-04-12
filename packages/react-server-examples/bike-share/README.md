@@ -1,4 +1,4 @@
-# react-server-examples/bike-share
+# react-server-examples/bike-share:
 
 An example project for `react-server` which demos server rendering, interactivity
 on the client side, ReactServerAgent, url parameters and logging.
@@ -28,7 +28,7 @@ after `--`. For example:
 npm start -- --port=4000
 ```
 
-# Developing using Docker and Docker Compose
+# Developing using Docker and Docker Compose:
 
 These steps assume you are familiar with docker and already have it installed.
 Some basics:

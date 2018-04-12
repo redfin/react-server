@@ -16,15 +16,15 @@ var isWindows = ('win32' === process.platform);
  * @param  {String}   prefix   A prefix to prepend to the name
  * @return {String}            The logger name, e.g. my-project.components.my-component
  */
-var getName = function(fn, opts, trim, basePath, prefix){
+var getName = function (fn, opts, trim, basePath, prefix) {
 	var slashPattern = isWindows
-		?/\\/g
-		:/\//g
-	var name = fn.substring(basePath.length+trim.length, fn.length)
+		? /\\/g
+		: /\//g
+	var name = fn.substring(basePath.length + trim.length, fn.length)
 		.replace(/\.jsx?$/, '')
-		.replace(slashPattern,'.')
+		.replace(slashPattern, '.')
 	if (opts.label) {
-		name += '.'+opts.label
+		name += '.' + opts.label
 	}
 	if (prefix) {
 		name = prefix + name
@@ -37,18 +37,18 @@ var getName = function(fn, opts, trim, basePath, prefix){
  * @param  {String} filename
  * @return {Object} An isomorphic color object in the form {"color":{"server":147,"client":"rgb(127,127,212)"}}
  */
-var getColor = (function(){
+var getColor = (function () {
 
 	// ANSI escape sequence on the server.
 	// CSS rgb(...) color in the browser.
-	var makeColor = function(r,g,b){
+	var makeColor = function (r, g, b) {
 		return {
-			server: 16 + r*36 + g*6 + b,
-			client: "rgb("+[
-				(r*42.5)|0,
-				(g*42.5)|0,
-				(b*42.5)|0,
-			].join(',')+")",
+			server: 16 + r * 36 + g * 6 + b,
+			client: "rgb(" + [
+				(r * 42.5) | 0,
+				(g * 42.5) | 0,
+				(b * 42.5) | 0,
+			].join(',') + ")",
 		}
 	}
 
@@ -56,11 +56,11 @@ var getColor = (function(){
 	// other to be visually distinct.  It's also, conveniently, the same
 	// palette client side and server side.
 	var colors = [];
-	for (var r = 1; r < 6; r+=2) {
-		for (var g = 1; g < 6; g+=2) {
-			for (var b = 1; b < 6; b+=2) {
+	for (var r = 1; r < 6; r += 2) {
+		for (var g = 1; g < 6; g += 2) {
+			for (var b = 1; b < 6; b += 2) {
 				if (r !== g || g !== b) { // No gray.
-					colors.push(makeColor(r,g,b));
+					colors.push(makeColor(r, g, b));
 				}
 			}
 		}
@@ -71,22 +71,22 @@ var getColor = (function(){
 	//
 	// Adapted from:
 	// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
-	var hash = function(str){
+	var hash = function (str) {
 		var hash = 0, i, chr, len;
 		if (!str || str.length === 0) return hash;
 		for (i = 0, len = str.length; i < len; i++) {
-			chr   = str.charCodeAt(i);
-			hash  = ((hash << 5) - hash) + chr;
+			chr = str.charCodeAt(i);
+			hash = ((hash << 5) - hash) + chr;
 			hash |= 0; // Convert to 32bit integer
 		}
 
 		len = colors.length;
 
 		// Positive mod.
-		return (hash%len+len)%len;
+		return (hash % len + len) % len;
 	}
 
-	return function(opts){
+	return function (opts) {
 		return colors[hash(opts.name)];
 	}
 })();
@@ -104,19 +104,19 @@ var getColor = (function(){
  * @param  {String} prefix    A prefix to prepend to the logger name
  * @return {String}           A json object containing a module identifier
  */
-module.exports = function(arg){
+module.exports = function (arg) {
 	var opts = arg.opts || {}
-		,   fn   = arg.filePath
-		,   trim = arg.trim || ''
-		,   basePath = arg.basePath || ''
-		,   prefix = arg.prefix
+		, fn = arg.filePath
+		, trim = arg.trim || ''
+		, basePath = arg.basePath || ''
+		, prefix = arg.prefix
 
 	if (fn.indexOf(basePath) !== 0) {
 		throw new Error("Unable to handle " + basePath + " for " + fn);
 	}
 
-	opts.name  = getName  (fn, opts, trim, basePath, prefix);
-	opts.color = getColor (opts);
+	opts.name = getName(fn, opts, trim, basePath, prefix);
+	opts.color = getColor(opts);
 
 	return JSON.stringify(opts);
 }

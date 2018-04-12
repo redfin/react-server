@@ -2,12 +2,12 @@ import loggerSpec from 'react-server-module-tagger';
 import path from 'path';
 import * as t from "babel-types";
 
-module.exports = function() {
+module.exports = function () {
 	return {
 		visitor: {
 			Identifier(p, state) {
-				const {node} = p;
-				const {name} = node;
+				const { node } = p;
+				const { name } = node;
 				const tokens = getTokens(state);
 
 				if (tokens.has(name)) {
@@ -21,9 +21,9 @@ module.exports = function() {
 				}
 			},
 			CallExpression(p, state) {
-				const {node} = p;
-				const {callee} = node;
-				const {name} = callee;
+				const { node } = p;
+				const { callee } = node;
+				const { name } = callee;
 				const tokens = getTokens(state);
 
 				if (tokens.has(name)) {
@@ -48,7 +48,7 @@ function convertObjectToObjectExpression(obj) {
 	const properties = [];
 	Object.keys(obj).forEach((key) => {
 		let literal;
-		switch (typeof obj[key]){
+		switch (typeof obj[key]) {
 			case 'string':
 				literal = t.stringLiteral(obj[key]);
 				break;

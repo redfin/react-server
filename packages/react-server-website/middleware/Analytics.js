@@ -26,6 +26,6 @@ export default class AnalyticsMiddleware {
 		return next();
 	}
 	getScripts(next) {
-		return next().concat({text});
+		return next().concat({ text });
 	}
 }

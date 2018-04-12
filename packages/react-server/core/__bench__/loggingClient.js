@@ -1,4 +1,4 @@
-import {Suite} from "benchmark";
+import { Suite } from "benchmark";
 import logging from "../logging/client";
 
 const n = 1000;
@@ -26,14 +26,14 @@ class NoopTimeTransport extends NoopTransport {
 	}
 }
 
-const noTransportLogger   = logging.getLogger({name: "noTransports"});
-const noopTransportLogger = logging.getLogger({name: "noopTransport"});
+const noTransportLogger = logging.getLogger({ name: "noTransports" });
+const noopTransportLogger = logging.getLogger({ name: "noopTransport" });
 
 noopTransportLogger.add(NoopTransport)
 noopTransportLogger.timeLogger.add(NoopTimeTransport)
 
 function run(logger, method) {
-	return function(deferred) {
+	return function (deferred) {
 		enclosedDeferred = deferred;
 		for (var i = 1; i <= n; i++) {
 			logger[method]("test", i);
@@ -42,9 +42,9 @@ function run(logger, method) {
 }
 
 new Suite()
-	.add("info no transports",  run(noTransportLogger,   'info'))
+	.add("info no transports", run(noTransportLogger, 'info'))
 	.add("info noop transport", run(noopTransportLogger, 'info'), { defer: true })
-	.add("time no transports",  run(noTransportLogger,   'time'))
+	.add("time no transports", run(noTransportLogger, 'time'))
 	.add("time noop transport", run(noopTransportLogger, 'time'), { defer: true })
 	.on('cycle', (v) => console.log(v.target.name + "\t" + v.target.stats.mean))
 	.run()

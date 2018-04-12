@@ -25,7 +25,7 @@ transitions.  Middle-clicks, command-clicks, etc, all still behave as
 expected, but a normal left-click to navigate becomes a light-weight
 transition within the browser.
 
-## The `navigateTo()` function
+## The `navigateTo()` function:
 
 Want to manage your own `<a>` tags and click handlers?  Want to navigate based
 on some other action?
@@ -38,7 +38,7 @@ navigateTo("/my-page");
 
 This is what the `<Link>` tag does for you on click.
 
-## The _Options_
+## The _Options_:
 
 Just transitioning from page to page in the browser is great, but if you know
 a little bit about the _type_ of navigation ahead of time you can make it

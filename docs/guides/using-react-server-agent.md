@@ -1,4 +1,4 @@
-# Using ReactServerAgent
+# Using ReactServerAgent:
 
 ReactServerAgent is used to handle data requests with React Server.  It has
 methods for requests using the most common
@@ -8,7 +8,7 @@ responses, so much of the api will be familiar to users of SuperAgent.  If you
 see an error from ReactServerAgent that says "$Method from superagent's API isn't implemented yet", please [submit an issue](https://github.com/redfin/react-server/issues/new) requesting it.
 
 
-# Extending SuperAgent
+# Extending SuperAgent:
 
 ReactServerAgent provides two points at which to extend SuperAgent: `plugRequest`
 and `plugResponse`.  These methods are called to modify the request or response

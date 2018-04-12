@@ -14,7 +14,7 @@
 //   be passed to https.createServer.
 export default {
 	host: "0.0.0.0",
-	port:3000,
+	port: 3000,
 	jsPort: 3001,
 	bindIp: "0.0.0.0",
 	hot: true,

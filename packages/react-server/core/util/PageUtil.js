@@ -3,28 +3,28 @@ var Q = require("q"),
 	logger = require("../logging").getLogger(__LOGGER__),
 	RLS = require("./RequestLocalStorage").getNamespace();
 
-var {isRootContainer, flattenForRender} = require('../components/RootContainer');
-var {ensureRootElement, scheduleRender} = require('../components/RootElement');
-var {isTheFold, markTheFold} = require('../components/TheFold');
+var { isRootContainer, flattenForRender } = require('../components/RootContainer');
+var { ensureRootElement, scheduleRender } = require('../components/RootElement');
+var { isTheFold, markTheFold } = require('../components/TheFold');
 
 
-var PageConfig = (function(){
-	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
+var PageConfig = (function () {
+	var logger = require("../logging").getLogger(__LOGGER__({ label: 'PageConfig' }));
 
-  // Below here are helpers. They are hidden from outside callers.
-	var _getCurrentConfigObject = function(){
+	// Below here are helpers. They are hidden from outside callers.
+	var _getCurrentConfigObject = function () {
 
 		// Return the current mutable config.
 		return RLS().pageConfig || (RLS().pageConfig = {});
 	}
 
-	var _set = function(isDefault, obj) {
+	var _set = function (isDefault, obj) {
 		var config = _getCurrentConfigObject();
 
 		// Copy input values into it.
-		Object.keys(obj||{}).forEach(key => {
+		Object.keys(obj || {}).forEach(key => {
 			var keyExists = config.hasOwnProperty(key);
-			if (isDefault && keyExists){
+			if (isDefault && keyExists) {
 				// Can't make this fatal, because request
 				// forwarding uses a dirty RLS() context.
 				logger.warning(`Duplicate PageConfig default: "${key}"`);
@@ -32,14 +32,14 @@ var PageConfig = (function(){
 				throw new Error(`Missing PageConfig default: "${key}"`);
 			}
 
-			logger.debug(`${isDefault?"Default":"Set"} "${key}" => "${obj[key]}"`);
+			logger.debug(`${isDefault ? "Default" : "Set"} "${key}" => "${obj[key]}"`);
 
 			config[key] = obj[key];
 		});
 	};
 
 	var _setDefaults = _set.bind({}, true);
-	var _setValues   = _set.bind({}, false);
+	var _setValues = _set.bind({}, false);
 
 	// This gets bound to the outer `PageConfig`.
 	//
@@ -51,12 +51,12 @@ var PageConfig = (function(){
 
 			// No access until all `Page.addConfigValues()` and
 			// `Page.setConfigValues()` methods are complete.
-			if (!RLS().pageConfigFinalized){
+			if (!RLS().pageConfigFinalized) {
 				throw new Error(`Premature access: "${key}"`);
 			}
 
 			// The key _must_ exist.
-			if (!_getCurrentConfigObject().hasOwnProperty(key)){
+			if (!_getCurrentConfigObject().hasOwnProperty(key)) {
 				throw new Error(`Invalid key: "${key}"`);
 			}
 
@@ -103,10 +103,10 @@ var PageConfig = (function(){
 // class will generate an error.
 //
 var PAGE_MIXIN = {
-	getExpressRequest  : makeGetter('expressRequest'),  // Only available with `isRawResponse`.
-	getExpressResponse : makeGetter('expressResponse'), // Only available with `isRawResponse`.
-	getRequest         : makeGetter('request'),
-	getConfig          : key => PageConfig.get(key),
+	getExpressRequest: makeGetter('expressRequest'),  // Only available with `isRawResponse`.
+	getExpressResponse: makeGetter('expressResponse'), // Only available with `isRawResponse`.
+	getRequest: makeGetter('request'),
+	getConfig: key => PageConfig.get(key),
 };
 
 // Each item here represents a method that page/middleware objects may override.
@@ -128,21 +128,21 @@ var PAGE_MIXIN = {
 // short-circuit responses (e.g. a redirect from `handleRoute`).
 //
 var PAGE_METHODS = {
-	handleRoute        : [() => ({code: 200}), Q],
-	getContentType     : [() => "text/html; charset=utf-8", _ => _],
-	getHeaders         : [() => [], Q],
-	getTitle           : [() => "", Q],
-	getScripts         : [() => [], standardizeScripts],
-	getSystemScripts   : [() => [], standardizeScripts],
+	handleRoute: [() => ({ code: 200 }), Q],
+	getContentType: [() => "text/html; charset=utf-8", _ => _],
+	getHeaders: [() => [], Q],
+	getTitle: [() => "", Q],
+	getScripts: [() => [], standardizeScripts],
+	getSystemScripts: [() => [], standardizeScripts],
 	getBodyStartContent: [() => [], Q],
-	getHeadStylesheets : [() => [], standardizeStyles],
-	getDebugComments   : [() => [], standardizeDebugComments],
-	getMetaTags        : [() => [], standardizeMetaTags],
-	getLinkTags        : [() => [], standardizeLinkTags],
-	getBase            : [() => null, Q],
-	getBodyClasses     : [() => [], Q],
-	getElements        : [() => [], standardizeElements],
-	getResponseData    : [() => "", Q],
+	getHeadStylesheets: [() => [], standardizeStyles],
+	getDebugComments: [() => [], standardizeDebugComments],
+	getMetaTags: [() => [], standardizeMetaTags],
+	getLinkTags: [() => [], standardizeLinkTags],
+	getBase: [() => null, Q],
+	getBodyClasses: [() => [], Q],
+	getElements: [() => [], standardizeElements],
+	getResponseData: [() => "", Q],
 };
 
 // These are similar to `PAGE_METHODS`, but differ as follows:
@@ -159,9 +159,9 @@ var PAGE_METHODS = {
 // The values are empty placeholder tuples.
 //
 var PAGE_HOOKS = {
-	addConfigValues : [], // Define new configuration values.
-	setConfigValues : [], // Alter existing configuration values.
-	handleComplete  : [], // Do stuff after the response has been sent.
+	addConfigValues: [], // Define new configuration values.
+	setConfigValues: [], // Alter existing configuration values.
+	handleComplete: [], // Do stuff after the response has been sent.
 };
 
 
@@ -169,10 +169,10 @@ var PAGE_HOOKS = {
 // These methods are only defined on the page _chain_ which is used internally
 // within react-server.  Page/middleware authers can ignore this.
 var PAGE_CHAIN_PROTOTYPE = {
-	setExpressRequest  : makeSetter('expressRequest'),
-	setExpressResponse : makeSetter('expressResponse'),
-	setRequest         : makeSetter('request'),
-	getRequest         : makeGetter('request'),
+	setExpressRequest: makeSetter('expressRequest'),
+	setExpressResponse: makeSetter('expressResponse'),
+	setRequest: makeSetter('request'),
+	getRequest: makeGetter('request'),
 
 	// TODO: Kill these?  They're only used to patch values
 	// through from navigator to renderMiddleware within react-server itself.
@@ -185,14 +185,14 @@ var PAGE_CHAIN_PROTOTYPE = {
 	// code is to include `hasDocument: true` in your `handleRoute()`
 	// response object.
 	//
-	getStatus          : makeGetter('status'),
-	setStatus          : makeSetter('status'),
-	getHasDocument     : makeGetter('hasDocument'),
-	setHasDocument     : makeSetter('hasDocument'),
-	getJsBelowTheFold  : makeGetter('jsBelowTheFold'),
-	setJsBelowTheFold  : makeSetter('jsBelowTheFold'),
-	getSplitJsLoad     : makeGetter('splitJsLoad'),
-	setSplitJsLoad     : makeSetter('splitJsLoad'),
+	getStatus: makeGetter('status'),
+	setStatus: makeSetter('status'),
+	getHasDocument: makeGetter('hasDocument'),
+	setHasDocument: makeSetter('hasDocument'),
+	getJsBelowTheFold: makeGetter('jsBelowTheFold'),
+	setJsBelowTheFold: makeSetter('jsBelowTheFold'),
+	getSplitJsLoad: makeGetter('splitJsLoad'),
+	setSplitJsLoad: makeSetter('splitJsLoad'),
 };
 
 // We log all method calls on the page chain for debugging purposes.
@@ -206,13 +206,13 @@ Object.keys(PAGE_CHAIN_PROTOTYPE).forEach(method => {
 // object directly, but rather stash values in request local storage.  Values
 // are therefore shared between the page and all middleware.
 //
-function makeGetter(key){
-	return () => (RLS().mixinValues||{})[key];
+function makeGetter(key) {
+	return () => (RLS().mixinValues || {})[key];
 }
 
-function makeSetter(key){
+function makeSetter(key) {
 	return val => {
-		(RLS().mixinValues||(RLS().mixinValues={}))[key] = val;
+		(RLS().mixinValues || (RLS().mixinValues = {}))[key] = val;
 	}
 }
 
@@ -220,17 +220,17 @@ function makeSetter(key){
 //
 // It does this only _once_, and thereafter short-circuits.
 //
-function lazyMixinPageUtilMethods(page){
+function lazyMixinPageUtilMethods(page) {
 	var proto = Object.getPrototypeOf(page);
 	if (proto._haveMixedInPageUtilMethods) return;
 
 	proto._haveMixedInPageUtilMethods = true;
 
 	Object.keys(PAGE_MIXIN).forEach(method => {
-		if (proto[method]){
+		if (proto[method]) {
 			throw new Error(`PAGE_MIXINS method override: ${
-				(proto.constructor||{}).name
-			}.${method}`);
+				(proto.constructor || {}).name
+				}.${method}`);
 		}
 		proto[method] = PAGE_MIXIN[method];
 	});
@@ -255,9 +255,9 @@ function standardizeElements(elements) {
 	// First, let's make sure that it's an array.
 	// Then, ensure that all elements are wrapped in promises.
 	return makeArray(elements)
-		.map(e => isRootContainer(e)?flattenForRender(e):e)
-		.reduce((m, e) => m.concat(Array.isArray(e)?e:[e]), [])
-		.map(e => isTheFold(e)?markTheFold():e)
+		.map(e => isRootContainer(e) ? flattenForRender(e) : e)
+		.reduce((m, e) => m.concat(Array.isArray(e) ? e : [e]), [])
+		.map(e => isTheFold(e) ? markTheFold() : e)
 		.map(ensureRootElement)
 		.map(scheduleRender)
 }
@@ -277,7 +277,7 @@ function standardizeLinkTags(linkTags) {
 function standardizeScripts(scripts) {
 	return makeArray(scripts).map((script) => {
 		if (!(script.href || script.text)) {
-			script = { href:script }
+			script = { href: script }
 		}
 
 		if (!script.type) script.type = "text/javascript";
@@ -304,15 +304,15 @@ function standardizeStyles(styles) {
 			}
 
 			// if the answer was a string, let's make a script object
-			return {href:style, type:"text/css", media:""};
+			return { href: style, type: "text/css", media: "" };
 		});
 	})
 }
 
 // This is used to log method calls on the page _chain_.  Method calls on
 // individual page/middleware objects are not automatically logged.
-function logInvocation(name, func){
-	return function(){
+function logInvocation(name, func) {
+	return function () {
 		logger.debug(`Call ${name}`);
 		return func.apply(this, [].slice.call(arguments));
 	}
@@ -320,8 +320,8 @@ function logInvocation(name, func){
 
 // Return `fn` with a wrapper that puts its return value through `standardize`
 // on the way out.
-function makeStandard(standardize, fn){
-	return function(){
+function makeStandard(standardize, fn) {
+	return function () {
 		return standardize(fn.apply(null, [].slice.call(arguments)));
 	}
 }
@@ -365,7 +365,7 @@ var PageUtil = {
 		pages.forEach(lazyMixinPageUtilMethods);
 
 		// Wire up the chained methods.
-		for (var method in PAGE_METHODS){
+		for (var method in PAGE_METHODS) {
 
 			if (!PAGE_METHODS.hasOwnProperty(method)) continue;
 
@@ -382,11 +382,11 @@ var PageUtil = {
 			// will receive as _its_ `next` argument.
 			//
 			pageChain[method] = logInvocation(method, pages
-				.filter      (page => page[method])
-				.map         (page => page[method].bind(page))
-				.concat      ([defaultImpl])
-				.map         (makeStandard.bind(null, standardize))
-				.reduceRight ((next, cur) => cur.bind(null, next))
+				.filter(page => page[method])
+				.map(page => page[method].bind(page))
+				.concat([defaultImpl])
+				.map(makeStandard.bind(null, standardize))
+				.reduceRight((next, cur) => cur.bind(null, next))
 			);
 		}
 
@@ -399,7 +399,7 @@ var PageUtil = {
 			// The resulting function calls each implementor's
 			// method in turn and returns an array containing in
 			// their return values.
-			pageChain[method] = logInvocation(method, function(){
+			pageChain[method] = logInvocation(method, function () {
 
 				// The `arguments` object isn't a real array.
 				// Pre-es5 `Function.apply()` required a real
@@ -423,7 +423,7 @@ var PageUtil = {
 
 	makeArray,
 
-	getElementDisplayName(element){
+	getElementDisplayName(element) {
 
 		// Gotta be a react element.
 		if (!(element && element.type && element.props)) return 'None';
@@ -436,7 +436,7 @@ var PageUtil = {
 			// has only a single child, we'll look at the child to
 			// see if it has a nice name.  This helps bypass
 			// anonymous wrapper elements.
-			if (React.Children.count(element.props.children) === 1){
+			if (React.Children.count(element.props.children) === 1) {
 
 				// Sigh.  `React.Children.count` will happily
 				// return 1 if the node contains only text, and
@@ -457,7 +457,7 @@ var PageUtil = {
 
 		// Some of our names are namespaced with dot-separation.  We
 		// just want the most significant part at the end.
-		return (name||'Unknown').split('.').pop();
+		return (name || 'Unknown').split('.').pop();
 	},
 
 }

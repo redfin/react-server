@@ -1,5 +1,5 @@
-var  SuperLogger = require('winston').Transport
-,	         RLS = require('../util/RequestLocalStorage').getNamespace();
+var SuperLogger = require('winston').Transport
+	, RLS = require('../util/RequestLocalStorage').getNamespace();
 
 // A subset of stats that are logged are not associated with requests
 // or occur before the request context is initialized. Simply ignore
@@ -30,7 +30,7 @@ class ResponseLogger extends SuperLogger {
 		this.name = 'ResponseLogger';
 		this.level = options.level || 'debug';
 		this.module = options.name;
-		this.lastModuleToken  = options.name.split('.').pop();
+		this.lastModuleToken = options.name.split('.').pop();
 	}
 
 	log(level, msg, meta, callback) {
@@ -41,24 +41,24 @@ class ResponseLogger extends SuperLogger {
 }
 
 class TimeResponseLogger extends ResponseLogger {
-	constructor(options){
+	constructor(options) {
 		super(options);
 		this.name = 'TimeResponseLogger';
 		this.level = 'fast';
-		this.key   = 'ms';
+		this.key = 'ms';
 	}
 }
 
 class GaugeResponseLogger extends ResponseLogger {
-	constructor(options){
+	constructor(options) {
 		super(options);
 		this.name = 'GaugeResponseLogger';
 		this.level = 'ok';
-		this.key   = 'val';
+		this.key = 'val';
 	}
 }
 
-var getTransportForGroup = function(group, opts) {
+var getTransportForGroup = function (group, opts) {
 	if (group === "time") {
 		return new TimeResponseLogger(opts);
 	}
@@ -70,7 +70,7 @@ var getTransportForGroup = function(group, opts) {
 	}
 }
 
-var flushLogsToResponse = function(res) {
+var flushLogsToResponse = function (res) {
 	if (queue().length > 0) {
 		res.write("<script>");
 		res.write(`window.reactServerLogs = ${JSON.stringify(queue())};\n`);
@@ -78,9 +78,9 @@ var flushLogsToResponse = function(res) {
 	}
 }
 
-var setResponseLoggerPage = function(page) {
+var setResponseLoggerPage = function (page) {
 	if (RLS.isActive() && !!page) {
 		RLS().doLog = page.getRequest().getQuery()._debug_output_logs;
 	}
 }
-module.exports = {setResponseLoggerPage, flushLogsToResponse, getTransportForGroup, TimeResponseLogger, ResponseLogger};
+module.exports = { setResponseLoggerPage, flushLogsToResponse, getTransportForGroup, TimeResponseLogger, ResponseLogger };

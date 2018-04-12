@@ -2,11 +2,11 @@ import reactServer from "./react-server";
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
-export default function logProductionWarnings({hot, minify, jsUrl, longTermCaching}){
+export default function logProductionWarnings({ hot, minify, jsUrl, longTermCaching }) {
 	// if the server is being launched with some bad practices for production mode, then we
 	// should output a warning. if arg.jsurl is set, then hot and minify are moot, since
 	// we aren't serving JavaScript & CSS at all.
-	if ((!jsUrl && (hot || !minify)) ||  process.env.NODE_ENV !== "production" || !longTermCaching) { //eslint-disable-line no-process-env
+	if ((!jsUrl && (hot || !minify)) || process.env.NODE_ENV !== "production" || !longTermCaching) { //eslint-disable-line no-process-env
 		logger.warning("PRODUCTION WARNING: the following current settings are discouraged in production environments. (If you are developing, carry on!):");
 		if (hot) {
 			logger.warning("-- Hot reload is enabled. To disable, set hot to false (--hot=false at the command-line) or set NODE_ENV=production.");

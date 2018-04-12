@@ -2,7 +2,7 @@ import React from "react"
 
 export default class InternalServerErrorException {
 	handleRoute() {
-		return {code: 500};
+		return { code: 500 };
 	}
 
 	// Should never get called.

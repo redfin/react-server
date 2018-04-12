@@ -1,7 +1,7 @@
-const path   = require('path');
-const gulp   = require('gulp');
-const nsp    = require('gulp-nsp');
-const babel  = require('gulp-babel');
+const path = require('path');
+const gulp = require('gulp');
+const nsp = require('gulp-nsp');
+const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
 const rename = require('gulp-rename');
 const tagger = require('react-server-gulp-module-tagger');
@@ -21,12 +21,12 @@ gulp.task('build-lib', () => gulp.src(SRC)
 	.pipe(gulp.dest("./lib"))
 );
 
-gulp.task('eslint', [], () =>  gulp.src(SRC)
+gulp.task('eslint', [], () => gulp.src(SRC)
 	.pipe(eslint())
 	.pipe(eslint.format())
 	.pipe(eslint.failAfterError())
 );
 
-gulp.task('nsp', (cb) => nsp({package: path.resolve('package.json')}, cb));
+gulp.task('nsp', (cb) => nsp({ package: path.resolve('package.json') }, cb));
 
 gulp.task('test', ['nsp', 'eslint']);

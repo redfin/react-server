@@ -11,19 +11,19 @@ class Link extends React.Component {
 
 	static get propTypes() {
 		return {
-			path       : PropTypes.string,
-			href       : PropTypes.string,
-			onClick    : PropTypes.func,
-			bundleData : PropTypes.bool,
-			reuseDom   : PropTypes.bool,
-			className  : PropTypes.string,
+			path: PropTypes.string,
+			href: PropTypes.string,
+			onClick: PropTypes.func,
+			bundleData: PropTypes.bool,
+			reuseDom: PropTypes.bool,
+			className: PropTypes.string,
 		};
 	}
 
 	static get defaultProps() {
 		return {
-			bundleData : false,
-			reuseDom   : false,
+			bundleData: false,
+			reuseDom: false,
 		};
 	}
 
@@ -47,7 +47,7 @@ class Link extends React.Component {
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			const {bundleData, reuseDom} = this.props;
+			const { bundleData, reuseDom } = this.props;
 			navigateTo(this.props.path || this.props.href, {
 				bundleData,
 				reuseDom,

@@ -1,4 +1,4 @@
-## A simple command line tool to build and run React Server sites
+## A simple command line tool to build and run React Server sites:
 
 To get started:
 
@@ -9,16 +9,16 @@ $ react-server add-page '/' Homepage
 $ react-server start
 ```
 
-## What It Does
+## What It Does:
 
 The CLI builds and runs a React Server project, using Express. It compiles
 JS(X) and CSS into efficiently loadable bundles with code splitting using
 webpack, and it supports hot reloading of React components on the client-side
 during development.
 
-## Built-in Features
+## Built-in Features:
 
-### Babel Compilation
+### Babel Compilation:
 It's rare to see a project these days in the JavaScript world that isn't at
 least experimenting with ES2015 and ES7. To make this easier, all code in your
 project will be run through Babel, and source maps will be generated back to
@@ -29,9 +29,9 @@ plugins and presets you want and reference them in a `.babelrc` file in your
 code directory. For more on the `.babelrc` format, see [its documentation
 here](https://babeljs.io/docs/usage/babelrc/).
 
-## Configuration
+## Configuration:
 
-### Routes
+### Routes:
 
 This is where URLs are mapped to pages.  It's also where global middleware
 (applied to all pages in the site) is defined.
@@ -85,7 +85,7 @@ In general, you should prefer a routes.json file over a routes.js file, unless
 you need the full expressiveness of javascript for your routes, for instance, if
 you're dynamically generating routes at runtime.
 
-## Server config
+## Server config:
 
 You can define JSON options either in a `.reactserverrc` or in a
 `reactServer` object in your `package.json`.
@@ -111,13 +111,13 @@ example configuration `port` will be set to 80 if `process.env.NODE_ENV` is
 `production`, and 5000 otherwise.
 
 
-## Options
+## Options:
 Smart defaults are the goal, and `react-server-cli` has two base modes:
 **development** and **production**. `react-server-cli` will determine which
 base mode it's in by looking at the NODE_ENV environment variable. If it's not
 "production", then `react-server-cli` will assume we are in development mode.
 
-### Ways to add options
+### Ways to add options:
 
 There are three ways to pass options to the CLI, through the command line,
 `.reactserverrc` JSON files, or as a `reactServer` entry in `package.json`
@@ -125,7 +125,7 @@ files. If there's no config file (or package.json config) in the current
 working directory, then parent directories are searched up to the root of the
 filesystem.  Options passed to the CLI take final precedence.
 
-### Webpack options
+### Webpack options:
 
 React Server will take care of the default Webpack options but if you need to set up custom loaders for example you can do it with a user callback function.
 
@@ -142,7 +142,7 @@ export default (webpackConfig) => {
 
 In the `.reactserverrc` file add an option for `webpackConfig` that points to that function file and when React Server is setting up Webpack it will call your function with the result of the built in Webpack options, allowing you to make any modifications needed. This may also be specified on the command line with the `--webpack-config=<FILE>` option.
 
-### Use Custom Express Middleware
+### Use Custom Express Middleware:
 Currently the default Express Middlewares used are
 
 * [compression](https://www.npmjs.com/package/compression)
@@ -166,7 +166,7 @@ export default (server, reactServerMiddleware) => {
 
 In the `.reactserverrc` file add an option for `customMiddlewarePath` that points to that function file and when React Server is setting up the server it will call your function for setup rather then the default middlewares mentioned above. This may also be specified on the command line with the `--custom-middleware-path=<FILE>` option.
 
-### Development mode: making a great DX
+### Development mode: making a great DX:
 
 Development mode is the default, and its goals are rapid startup and code-test
 loops. Hot mode is enabled for all code, although at this time, editing the
@@ -183,14 +183,14 @@ astray.
 We are also considering completely getting rid of server-side rendering in
 development mode by default to speed startup.
 
-### Production mode: optimizing delivery
+### Production mode: optimizing delivery:
 
 Production mode's priority is optimization at the expense of startup time. A
 separate code bundle is generated for every entry point into your app so that
 there is at most just one JS and one CSS file loaded by the framework. All
 code is minified, and hot reloading is turned off.
 
-#### Building static files for production use
+#### Building static files for production use:
 
 In many production configurations, you may not want `react-server-cli` to
 serve up your static JavaScript and CSS files. Typically, this is because you
@@ -220,7 +220,7 @@ In this case you'll want to specify a `jsUrl` key in your production config:
 }
 ```
 
-### Commands
+### Commands:
 
 #### `init`
 
@@ -247,7 +247,7 @@ you want to do if you are building the client JavaScript to be hosted on a CDN
 or separate server. Unless you have a very specific reason, it's almost always
 a good idea to only do this in production mode.
 
-### Options
+### Options:
 
 The following options are available.  Note that options on the command-line
 are dash-separated (e.g. `--js-port`), but options in config files are
@@ -377,7 +377,7 @@ Default is **'debug'** in development mode and **'notice'** in production.
 #### --help, -?
 Shows command line options.
 
-## API
+## API:
 
 You can also call `react-server-cli` programmatically. The module has a
 named export, `run`, which takes has the following signature:

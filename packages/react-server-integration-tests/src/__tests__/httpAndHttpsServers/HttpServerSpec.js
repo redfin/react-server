@@ -15,7 +15,7 @@ describe('A basic page', () => {
 
 		helper.stopServerAfterAll();
 
-		helper.testWithDocument("/helloWorld", (document) =>{
+		helper.testWithDocument("/helloWorld", (document) => {
 			expect(document.querySelector("div#foo").innerHTML).toMatch("Hello, world!");
 		});
 	});
@@ -27,7 +27,7 @@ describe('A basic page', () => {
 
 		helper.stopServerAfterAll();
 
-		helper.testWithDocument("/helloWorld", (document) =>{
+		helper.testWithDocument("/helloWorld", (document) => {
 			expect(document.querySelector("div#foo").innerHTML).toMatch("Hello, world!");
 		});
 	});

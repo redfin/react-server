@@ -12,8 +12,8 @@ var React = require('react'),
 	History = require('./components/History'),
 	PageUtil = require("./util/PageUtil"),
 	ReactServerAgent = require('./ReactServerAgent'),
-	{getRootElementAttributes} = require('./components/RootElement'),
-	{PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants');
+	{ getRootElementAttributes } = require('./components/RootElement'),
+	{ PAGE_LINK_NODE_ID, PAGE_CONTAINER_NODE_ID } = require('./constants');
 
 var _ = {
 	forEach: require('lodash/forEach'),
@@ -42,7 +42,7 @@ function getHistoryStateFrame(request) {
 
 	// Mark the frame as ours.
 	// Stash the request opts that were used to navigate to this frame.
-	return { reactServerFrame: request?request.getOpts():{} }
+	return { reactServerFrame: request ? request.getOpts() : {} }
 }
 
 function getHistoryPathname() {
@@ -51,7 +51,7 @@ function getHistoryPathname() {
 
 class ClientController extends EventEmitter {
 
-	constructor ({routes}) {
+	constructor({ routes }) {
 		super();
 
 		window.__reactServerTimingStart = window.performance ? window.performance.timing.navigationStart : undefined;
@@ -98,11 +98,11 @@ class ClientController extends EventEmitter {
 		this._history = null;
 	}
 
-	_startRequest({request, type}) {
+	_startRequest({ request, type }) {
 
 		const t0 = type === History.events.PAGELOAD
-			?window.__reactServerTimingStart // Try to use navigation timing.
-			:new Date;                       // There's no naviagation.  We're it.
+			? window.__reactServerTimingStart // Try to use navigation timing.
+			: new Date;                       // There's no naviagation.  We're it.
 
 		const url = request.getUrl();
 		const isPush = type === History.events.PUSHSTATE;
@@ -155,8 +155,8 @@ class ClientController extends EventEmitter {
 					// Don't replace state unless we've
 					// got a real history API.
 					this._history.canClientNavigate() &&
-					!(history.state||{}).reactServerFrame
-				){
+					!(history.state || {}).reactServerFrame
+				) {
 					this._history.replaceState(
 						getHistoryStateFrame(),
 						null,
@@ -214,7 +214,7 @@ class ClientController extends EventEmitter {
 		// - Request options (reuseDom, bundleData, etc)
 		navigationTimingAuthority.once('loadComplete', () => {
 			const bas = `handleRequest`;
-			const typ = `type.${type||'PAGELOAD'}`;
+			const typ = `type.${type || 'PAGELOAD'}`;
 			logTimingData(`${bas}.all`, t0);
 			logTimingData(`${bas}.${typ}.all`, t0);
 			_.forEach(request.getOpts(), (val, key) => {
@@ -238,11 +238,11 @@ class ClientController extends EventEmitter {
 		if (!this._history.canClientNavigate()) return;
 
 		const state = _.assign({}, history.state);
-		state.reactServerFrame = _.assign(state.reactServerFrame||{}, opts);
+		state.reactServerFrame = _.assign(state.reactServerFrame || {}, opts);
 		this._history.replaceState(state, null, getHistoryPathname());
 	}
 
-	_setupNavigateListener () {
+	_setupNavigateListener() {
 		var context = this.context;
 
 		context.onNavigateStart(this._startRequest.bind(this));
@@ -254,7 +254,7 @@ class ClientController extends EventEmitter {
 		 *    History.events.POPSTATE: user clicked back button but browser didn't do a full page load
 		 *    History.events.PAGELOAD: full browser page load, not using History API.
 		 */
-		context.onNavigate( (err, page) => {
+		context.onNavigate((err, page) => {
 			logger.debug('Executing navigate action');
 
 			this._handleDebugParams(page);
@@ -342,13 +342,13 @@ class ClientController extends EventEmitter {
 
 		// Allow adjustment of log levels.
 		_.forEach({
-			_react_server_log_level       : 'main',
-			_react_server_log_level_main  : 'main',
-			_react_server_log_level_time  : 'time',
-			_react_server_log_level_gauge : 'gauge',
+			_react_server_log_level: 'main',
+			_react_server_log_level_main: 'main',
+			_react_server_log_level_time: 'time',
+			_react_server_log_level_gauge: 'gauge',
 		}, (type, param) => {
 			if (params[param]) {
-				logging.setLevel(type,  params[param]);
+				logging.setLevel(type, params[param]);
 			}
 		});
 	}
@@ -362,12 +362,12 @@ class ClientController extends EventEmitter {
 			// This is the earliest we have everything we need for
 			// an analytics pageview event.
 			this.emit("pageview", {
-				page  : getHistoryPathname(),
-				title : newTitle,
+				page: getHistoryPathname(),
+				title: newTitle,
 			});
 		})
-		.catch(err => { logger.error("Error while setting the document title", err) })
-		.done();
+			.catch(err => { logger.error("Error while setting the document title", err) })
+			.done();
 	}
 
 	_renderBase(page) {
@@ -415,8 +415,8 @@ class ClientController extends EventEmitter {
 
 				parent.appendChild(meta);
 			})
-			.catch( err => { logger.error("Error rendering meta tags", err); })
-			.done();
+				.catch(err => { logger.error("Error rendering meta tags", err); })
+				.done();
 		});
 	}
 
@@ -428,16 +428,16 @@ class ClientController extends EventEmitter {
 
 		// Then add all the link tags for the new page.
 		page.getLinkTags()
-		.forEach(promise => promise.then(PageUtil.makeArray).then(tags => tags.forEach(tag => {
-			document.head.appendChild(
-				[document.createElement('link'), PAGE_LINK_NODE_ID]
-				.concat(Object.keys(tag))
-				.reduce((link, attr) => (link.setAttribute(attr, tag[attr] || ''), link))
-			);
-		})).catch(err => logger.error("Error rendering link tags", err)).done());
+			.forEach(promise => promise.then(PageUtil.makeArray).then(tags => tags.forEach(tag => {
+				document.head.appendChild(
+					[document.createElement('link'), PAGE_LINK_NODE_ID]
+						.concat(Object.keys(tag))
+						.reduce((link, attr) => (link.setAttribute(attr, tag[attr] || ''), link))
+				);
+			})).catch(err => logger.error("Error rendering link tags", err)).done());
 	}
 
-	_render (page) {
+	_render(page) {
 		var tStart = window.__reactServerTimingStart;
 		var t0 = new Date;
 		var retval = Q.defer();
@@ -468,7 +468,7 @@ class ClientController extends EventEmitter {
 		// Our behavior is different here for the _first_ render vs
 		// during a client transition.
 		var rootNodePromises;
-		if (this._previouslyRendered){
+		if (this._previouslyRendered) {
 
 			// On a client transition we've just blown away all of
 			// our mount points from the previous page, and we'll
@@ -544,7 +544,7 @@ class ClientController extends EventEmitter {
 					root = oldRootElement;
 				} else {
 					this._cleanupPreviousRender(index);
-					if (element.containerOpen){
+					if (element.containerOpen) {
 
 						// If we're opening a container that's
 						// our new mountNode.
@@ -568,10 +568,10 @@ class ClientController extends EventEmitter {
 
 			}
 
-			if (element.containerOpen || element.containerClose){
+			if (element.containerOpen || element.containerClose) {
 				return; // Nothing left to do.
 			} else if (element.isTheFold) {
-				if (!this._previouslyRendered){
+				if (!this._previouslyRendered) {
 					logTimingData(`renderAboveTheFold.fromStart`, tStart);
 					logTimingData(`renderAboveTheFold.individual`, 0, totalRenderTime);
 					logTimingData(`renderAboveTheFold.elementCount`, 0, index + 1);
@@ -581,8 +581,8 @@ class ClientController extends EventEmitter {
 				return; // Again, this isn't a real root element.
 			}
 
-			var name  = PageUtil.getElementDisplayName(element)
-			,   timer = logger.timer(`renderElement.individual.${name}`)
+			var name = PageUtil.getElementDisplayName(element)
+				, timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
 			var renderFunc = ReactDOM.hydrate || ReactDOM.render;
@@ -595,7 +595,7 @@ class ClientController extends EventEmitter {
 
 			totalRenderTime += timer.stop();
 
-			if (!this._previouslyRendered){
+			if (!this._previouslyRendered) {
 				var tDisplay = root.getAttribute('data-react-server-timing-offset');
 				logTimingData(`displayElement.fromStart.${name}`, 0, +tDisplay);
 				logTimingData(`renderElement.fromStart.${name}`, tStart);
@@ -615,7 +615,7 @@ class ClientController extends EventEmitter {
 				})
 		).catch(e => logger.error(`Error with element promise ${index}`, e))
 
-		if (this._previouslyRendered){
+		if (this._previouslyRendered) {
 
 			// On client transitions the root structure is laid out using a
 			// state machine that requires us to render in order.
@@ -657,7 +657,7 @@ class ClientController extends EventEmitter {
 			logTimingData('renderCPUTime', 0, totalRenderTime);
 
 			// Don't track this on client transitions.
-			if (!this._previouslyRendered){
+			if (!this._previouslyRendered) {
 				logTimingData('renderFromStart', tStart);
 
 				performanceMark('renderComplete');
@@ -735,9 +735,9 @@ class ClientController extends EventEmitter {
 		_.forEach(attrs, (v, k) => node.setAttribute(k, v));
 	}
 
-	init () {
+	init() {
 
-		var unloadHandler = () => {this.terminate(); };
+		var unloadHandler = () => { this.terminate(); };
 
 		if (window && window.addEventListener) {
 			window.addEventListener("unload", unloadHandler);
@@ -760,12 +760,12 @@ class ClientController extends EventEmitter {
 		});
 	}
 
-	_navigateWithHistoryState({path, state, type, check}) {
-		const opts = (state||{}).reactServerFrame;
+	_navigateWithHistoryState({ path, state, type, check }) {
+		const opts = (state || {}).reactServerFrame;
 
 		if (check && !opts) return; // Not our frame.
 
-		this.context.navigate(new ClientRequest(path, opts||{}), type);
+		this.context.navigate(new ClientRequest(path, opts || {}), type);
 	}
 
 	/**
@@ -774,12 +774,12 @@ class ClientController extends EventEmitter {
 	 */
 	_initializeHistoryListener() {
 
-		this._historyListener = ({state}) => {
+		this._historyListener = ({ state }) => {
 			this._navigateWithHistoryState({
 				state,
-				path  : this._history.getPath(),
-				type  : History.events.POPSTATE, // Forward/back.
-				check : true, // Only navigate if frame is ours.
+				path: this._history.getPath(),
+				type: History.events.POPSTATE, // Forward/back.
+				check: true, // Only navigate if frame is ours.
 			});
 		};
 
@@ -789,31 +789,31 @@ class ClientController extends EventEmitter {
 		// Need to go _after_ 'load' callbacks complete.
 		// Safari fires a 'popstate' on load (RED-67600).
 		// https://developer.mozilla.org/en-US/docs/Web/Events/popstate
-		if (document.readyState === 'complete'){
+		if (document.readyState === 'complete') {
 			init();
 		} else {
-			window.addEventListener('load', ()=>setTimeout(init,0));
+			window.addEventListener('load', () => setTimeout(init, 0));
 		}
 	}
 
-	_setupArrivalHandlers () {
+	_setupArrivalHandlers() {
 		// used by <script> callbacks to register data sent down on the
 		// initial connection after initial render
 		window.__reactServerClientController = this;
 	}
 
-	_ensureRootNodeDfd (index) {
-		if (!this._rootNodeDfds[index]){
+	_ensureRootNodeDfd(index) {
+		if (!this._rootNodeDfds[index]) {
 			this._rootNodeDfds[index] = Q.defer();
 		}
 		return this._rootNodeDfds[index];
 	}
 
-	dataArrival (url, dehydratedEntry) {
+	dataArrival(url, dehydratedEntry) {
 		ReactServerAgent.cache().lateArrival(url, dehydratedEntry);
 	}
 
-	nodeArrival (startIndex, endIndex) {
+	nodeArrival(startIndex, endIndex) {
 
 		// The server has just let us know that a pre-rendered root
 		// element has arrived.  We'll grab a reference to its DOM
@@ -828,7 +828,7 @@ class ClientController extends EventEmitter {
 		}
 	}
 
-	failArrival () {
+	failArrival() {
 		this._failDfd.resolve();
 	}
 

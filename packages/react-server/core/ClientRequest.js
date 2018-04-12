@@ -9,7 +9,7 @@ class ClientRequest {
 	constructor(url, {
 		bundleData,
 		reuseDom,
-	}={}) {
+	} = {}) {
 		this._opts = {
 			bundleData,
 			reuseDom,
@@ -68,7 +68,7 @@ class ClientRequest {
 	getProtocol() {
 		var proto = null;
 		if (typeof window.location.protocol === "string") {
-			proto = window.location.protocol.replace(/:/g,'');
+			proto = window.location.protocol.replace(/:/g, '');
 		}
 
 		return proto;

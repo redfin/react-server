@@ -5,4 +5,5 @@ class HelloWorldPage {
 		return <div id="foo">Hello, world!</div>;
 	}
 }
+
 module.exports = HelloWorldPage;

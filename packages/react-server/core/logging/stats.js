@@ -46,28 +46,28 @@ var loggers = {};
 // This helper wires them up.
 function wrapLogger(getLoggerForConfig, opts) {
 
-	var mainLogger    = getLoggerForConfig('main',  opts)
-	,   timeLogger    = getLoggerForConfig('time',  opts)
-	,   gaugeLogger   = getLoggerForConfig('gauge', opts)
-	,   classifyTime  = makeTimeClassifier(opts)
-	,   classifyGauge = makeGaugeClassifier(opts)
+	var mainLogger = getLoggerForConfig('main', opts)
+		, timeLogger = getLoggerForConfig('time', opts)
+		, gaugeLogger = getLoggerForConfig('gauge', opts)
+		, classifyTime = makeTimeClassifier(opts)
+		, classifyGauge = makeGaugeClassifier(opts)
 
 	// These are methods that are exposed on the primary logger.
 	// They just dispatch to appropriate log levels on secondary loggers.
-	mainLogger.time  = (token, ms,  opts) => timeLogger [classifyTime (ms,  opts)](token, {ms });
-	mainLogger.gauge = (token, val, opts) => gaugeLogger[classifyGauge(val, opts)](token, {val});
+	mainLogger.time = (token, ms, opts) => timeLogger[classifyTime(ms, opts)](token, { ms });
+	mainLogger.gauge = (token, val, opts) => gaugeLogger[classifyGauge(val, opts)](token, { val });
 
 	// Expose these.
-	mainLogger.timeLogger  = timeLogger;
+	mainLogger.timeLogger = timeLogger;
 	mainLogger.gaugeLogger = gaugeLogger;
 
 	// This is just a convenience wrapper around the `time` method.
 	mainLogger.timer = (token, opts) => {
 
 		var t0 = new Date // For use by `timer.stop`.
-		,   tt = t0       // For use by `timer.tick`.
-		,   nt = 0        // Number of times `tick` has been called.
-		,   ct = 0        // For storing return values.
+			, tt = t0       // For use by `timer.tick`.
+			, nt = 0        // Number of times `tick` has been called.
+			, ct = 0        // For storing return values.
 
 		return {
 
@@ -86,7 +86,7 @@ function wrapLogger(getLoggerForConfig, opts) {
 
 				name || (name = `tick_${nt++}`);
 
-				mainLogger.time(`${token}.${name}`, ct=now-tt, opts);
+				mainLogger.time(`${token}.${name}`, ct = now - tt, opts);
 
 				tt = now;
 
@@ -118,13 +118,13 @@ function makeTimeClassifier(opts) {
 	var fine = thresholds('fine');
 	return (ms, o) => {
 		if (o) {
-			if      (ms <= thresholds('fast', o)) return 'fast';
+			if (ms <= thresholds('fast', o)) return 'fast';
 			else if (ms <= thresholds('fine', o)) return 'fine';
-			else                                  return 'slow';
+			else return 'slow';
 		} else {
-			if      (ms <= fast) return 'fast';
+			if (ms <= fast) return 'fast';
 			else if (ms <= fine) return 'fine';
-			else                 return 'slow';
+			else return 'slow';
 		}
 	}
 }
@@ -135,13 +135,13 @@ function makeGaugeClassifier(opts) {
 	var hi = thresholds('hi');
 	return (val, o) => {
 		if (o) {
-			if      (val <= thresholds('lo', o)) return 'lo';
+			if (val <= thresholds('lo', o)) return 'lo';
 			else if (val >= thresholds('hi', o)) return 'hi';
-			else                                 return 'ok';
+			else return 'ok';
 		} else {
-			if      (val <= lo) return 'lo';
+			if (val <= lo) return 'lo';
 			else if (val >= hi) return 'hi';
-			else                return 'ok';
+			else return 'ok';
 		}
 	}
 

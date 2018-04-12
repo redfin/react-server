@@ -1,7 +1,7 @@
 export default class NormalValuesPage {
 	getMetaTags() {
 		return [
-			{charset: 'utf8'},
+			{ charset: 'utf8' },
 		];
 	}
 	getLinkTags() {

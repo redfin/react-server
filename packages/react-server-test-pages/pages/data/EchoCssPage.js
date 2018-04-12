@@ -7,7 +7,7 @@ export default class EchoCssPage {
 		return 'text/css';
 	}
 	getResponseData() {
-		const {css} = this.getRequest().getQuery();
+		const { css } = this.getRequest().getQuery();
 		return css;
 	}
 }

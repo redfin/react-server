@@ -1,10 +1,10 @@
-import {logging} from "./react-server";
+import { logging } from "./react-server";
 
 const logger = logging.getLogger(__LOGGER__);
 
 // takes in stats object returned by a webpack compilation and returns
 // removes the require.cache entry for modified files
-export default function serverSideHotModuleReload (webpackStats) {
+export default function serverSideHotModuleReload(webpackStats) {
 	if (webpackStats.compilation.errors.length !== 0) {
 		logger.warning("Not reloading server side code because Webpack ended with an error compiling.");
 		return;

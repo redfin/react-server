@@ -21,7 +21,7 @@ test.after.always('shut down the server', async () => {
 });
 
 // runs a command asynchronously
-function exec(cmd, opts = {maxBuffer: 1024 * 100000}) {
+function exec(cmd, opts = { maxBuffer: 1024 * 100000 }) {
 	return new Promise((resolve, reject) => {
 		cp.exec(cmd, opts, (error, stdout, stderr) => {
 			if (error) {

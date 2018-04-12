@@ -1,9 +1,9 @@
 var superagent = require('superagent')
-,	logger = require('../logging').getLogger(__LOGGER__)
-,	Q = require('q')
-,	Plugins = require("./Plugins")
-,	merge = require("lodash/merge")
-;
+	, logger = require('../logging').getLogger(__LOGGER__)
+	, Q = require('q')
+	, Plugins = require("./Plugins")
+	, merge = require("lodash/merge")
+	;
 
 /**
  * Implements a subset of superagent's API. Packages up arguments
@@ -31,7 +31,7 @@ function Request(method, urlPath, cache) {
 // for now, we'll just throw an exception if they're called. By default,
 // all methods throw exceptions, and we override some below
 Object.keys(superagent.Request.prototype)
-	.forEach( propName => {
+	.forEach(propName => {
 		var originalProp = superagent.Request.prototype[propName];
 		if (typeof originalProp === 'function') {
 			Request.prototype[propName] = function () {
@@ -109,7 +109,7 @@ Request.prototype.type = function (type) {
 	return this;
 }
 
-Request.prototype.toJSON = function(){
+Request.prototype.toJSON = function () {
 	return {
 		aborted: this.aborted,
 		cacheWhitelist: this._cacheWhitelist,
@@ -132,7 +132,7 @@ Request.prototype.end = function (fn) {
 
 	if (!fn || fn.length !== 2) {
 		// a superagent requirement, as of ~v1.0; We're providing a default callback here.
-		fn = (a, b) => {}; // eslint-disable-line no-unused-vars
+		fn = (a, b) => { }; // eslint-disable-line no-unused-vars
 	}
 
 	var executeRequest = function (cb) {
@@ -181,7 +181,7 @@ Request.prototype.end = function (fn) {
 }
 
 // private function
-function applyRequestPlugins (req) {
+function applyRequestPlugins(req) {
 	// run any registered plugins
 	Plugins.forRequest().asArray().forEach(function (pluginFunc) {
 		pluginFunc.apply(null, [req]);
@@ -210,7 +210,7 @@ function responsePluginApplyingCallback(cb) {
 function buildSuperagentRequest() {
 	var req = superagent(this._method, this._buildUrl());
 
-	if (this._agent){
+	if (this._agent) {
 		req.agent(this._agent);
 	}
 
@@ -298,10 +298,10 @@ Request.prototype._getCacheAffectingData = function () {
 	};
 }
 
-Request.prototype.getProtocol = function(){
+Request.prototype.getProtocol = function () {
 
 	// Returns undefined if no protocol found.
-	return (this._buildUrl().match(/^(.+?):/)||[])[1];
+	return (this._buildUrl().match(/^(.+?):/) || [])[1];
 }
 
 /**
@@ -329,7 +329,7 @@ Request.prototype.asPromise = function () {
 // private method; 'this' bound to request object
 function logRequestError(err) {
 
-	var {response} = err;
+	var { response } = err;
 	if (!response) {
 		logger.warning(`ReactServerAgent raised exception for URL ${this._urlPath}`, err);
 	} else if (response.notFound) {

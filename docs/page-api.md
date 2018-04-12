@@ -1,4 +1,4 @@
-# Route
+# Route:
 A binding of URL paths to a Page class that can render the results for those URLs.
 
 `path: String | RegEx | [ String | RegEx ]`
@@ -17,7 +17,7 @@ A binding of URL paths to a Page class that can render the results for those URL
 `page: Page`
 * The page to render
 
-# Page
+# Page:
 
 An HTML page to be rendered. Note that this Page may be rendered as a result
 of either an HTTP request or a client-side navigation. The Page’s core
@@ -62,7 +62,7 @@ The rendering process follows the following flow:
    the case of a timeout.
 
 
-# Page methods
+# Page methods:
 
 There are three groups of methods that are relevant to page objects, and they
 are all defined in simple data structures with ample commentary near the top of
@@ -71,7 +71,7 @@ react-server page interface.
 
 * Please see: `react-server/core/util/PageUtil.js`
 
-## Static methods
+## Static methods:
 
 `constructor()`
 
@@ -80,7 +80,7 @@ react-server page interface.
 * An array of page classes that should be used as mixins for this page. See
   Middleware section below to see what these are for.
 
-## PAGE_METHODS
+## PAGE_METHODS:
 
 Each of these methods receives a function, `next`, as its sole argument.
 This `next function may be used to call the default implementation of the
@@ -206,7 +206,7 @@ Promise(ReactElement) ]`
   effect when a page is transitioned to on the client.
 
 
-## PAGE_HOOKS
+## PAGE_HOOKS:
 
 These are additional methods that a page/middleware may implement.
 
@@ -220,7 +220,7 @@ Add new configuration values, with defaults (only used by middleware).
 
 `handleComplete()`: Called when the request is complete and the full response has been sent.
 
-### Config values
+### Config values:
 
 There are two config values that are honored by the navigator
 
@@ -228,7 +228,7 @@ There are two config values that are honored by the navigator
 * `isRawResponse` (boolean) indicates a response is to be served as-is
 
 
-## PAGE_MIXIN
+## PAGE_MIXIN:
 
 These are methods that are automatically made available on the page object.
 The page may call these methods on itself.
@@ -239,7 +239,7 @@ The page may call these methods on itself.
 
 `getExpressResponse()`: Get the express response object (only available for raw response pages).
 
-# Middleware
+# Middleware:
 
 Middlewares are objects that implement any subset of the Page API and are
 called before a `Page` in a chained fashion. If a middleware doesn’t implement
@@ -248,7 +248,7 @@ completely handle the method (thereby completely ignoring the Page’s
 implementation), or it can pass through to the Page’s implementation using the
 `next` argument.
 
-# Request
+# Request:
 
 The request that led to rendering a page, which is similar to a standard
 Express Request but is somewhat more constrained because of the need to be

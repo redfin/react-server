@@ -1,4 +1,4 @@
-import {ReactServerAgent, RootElement} from "react-server";
+import { ReactServerAgent, RootElement } from "react-server";
 
 export default class RootWhenPage {
 	handleRoute(next) {

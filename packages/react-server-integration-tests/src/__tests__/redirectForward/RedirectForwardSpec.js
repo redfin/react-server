@@ -44,7 +44,7 @@ describe("A redirect page", () => {
 				done();
 			});
 		})
-		.visit(`http://localhost:${helper.getPort()}/temporaryRedirect`);
+			.visit(`http://localhost:${helper.getPort()}/temporaryRedirect`);
 	});
 
 	it("gets the right body for a temp redirect with document", done => {
@@ -55,7 +55,7 @@ describe("A redirect page", () => {
 				done();
 			});
 		})
-		.visit(`http://localhost:${helper.getPort()}/temporaryRedirectWithDocument`);
+			.visit(`http://localhost:${helper.getPort()}/temporaryRedirectWithDocument`);
 	});
 
 	describe("redirects temporarily to the right page with document", () => {
@@ -95,7 +95,7 @@ describe("A redirect page", () => {
 				done();
 			});
 		})
-		.visit(`http://localhost:${helper.getPort()}/permanentRedirect`);
+			.visit(`http://localhost:${helper.getPort()}/permanentRedirect`);
 	});
 
 	it("gets the right body for a permanent redirect with document", done => {
@@ -106,7 +106,7 @@ describe("A redirect page", () => {
 				done();
 			});
 		})
-		.visit(`http://localhost:${helper.getPort()}/permanentRedirectWithDocument`);
+			.visit(`http://localhost:${helper.getPort()}/permanentRedirectWithDocument`);
 	});
 
 	describe("redirects permanently to the right page with document", () => {
@@ -140,7 +140,7 @@ describe("A forward page", () => {
 		});
 	});
 
-	it ("gets a 200 status code and doesn't redirect", (done) => {
+	it("gets a 200 status code and doesn't redirect", (done) => {
 		var browser = new Browser();
 
 		browser.silent = true;

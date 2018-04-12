@@ -1,7 +1,7 @@
-import {getCurrentRequestContext} from "react-server";
+import { getCurrentRequestContext } from "react-server";
 
 export default class CacheControlMiddleware {
-	handleRoute(next){
+	handleRoute(next) {
 		if (typeof window === "undefined") {
 			// Cache everything for one minute.
 			getCurrentRequestContext().getServerStash().res

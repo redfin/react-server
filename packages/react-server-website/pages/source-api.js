@@ -4,7 +4,7 @@ const extractBody = new RegExp('<body[^>]*>((.|[\n\r])*)<\/body>');
 
 export default class SourceApi {
 	setConfigValues() {
-		return {isRawResponse: true};
+		return { isRawResponse: true };
 	}
 
 	getContentType() {
@@ -19,7 +19,7 @@ export default class SourceApi {
 			}
 			try {
 				const text = extractBody.exec(require(filepath))[1]
-				resolve(JSON.stringify({text}));
+				resolve(JSON.stringify({ text }));
 			} catch (e) {
 				reject(e);
 			}

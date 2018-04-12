@@ -13,13 +13,13 @@ describe("A page with a title", () => {
 	helper.stopServerAfterAll();
 
 	describe("has a title", () => {
-		helper.testWithDocument("/simpleTitle", (document) =>{
+		helper.testWithDocument("/simpleTitle", (document) => {
 			expect(document.title).toMatch("This Is My Simple Title");
 		});
 	});
 
 	describe("can deal correctly with other scripts in Unicode", () => {
-		helper.testWithDocument("/unicodeTitle", (document) =>{
+		helper.testWithDocument("/unicodeTitle", (document) => {
 			expect(document.title).toMatch("我叫艾肯 Chișinău مرحبا 🐧");
 		});
 	});

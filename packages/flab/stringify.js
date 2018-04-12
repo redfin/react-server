@@ -3,6 +3,6 @@ require("get-stdin")().then(src => console.log(
 		.replace(/\\/g, '\\\\')
 		.replace(/"/g, '\\"')
 		.replace(/^/gm, '"')
-		.replace(/$/gm, '\\n"+')+
+		.replace(/$/gm, '\\n"+') +
 	'"";'
 ));

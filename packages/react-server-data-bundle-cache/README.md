@@ -1,8 +1,8 @@
-### React-server data bundle cache
+### React-server data bundle cache:
 
 Cache the data for `react-server` pages for blazing fast client transitions.
 
-## Usage
+## Usage:
 
 First, install the module:
 

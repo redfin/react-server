@@ -12,7 +12,7 @@ test('generator-react-server:app creates default files', async t => {
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
-		.withPrompts({name: 'foo', dockerCfg: false})
+		.withPrompts({ name: 'foo', dockerCfg: false })
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
@@ -32,7 +32,7 @@ test('generator-react-server:app .reactserverrc matches react-server-cli default
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
-		.withPrompts({name: 'foo', dockerCfg: false})
+		.withPrompts({ name: 'foo', dockerCfg: false })
 		.toPromise();
 
 	// Store cli's default option keys in memory
@@ -60,7 +60,7 @@ test('generator-react-server:app creates docker files', async t => {
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
-		.withPrompts({name: 'foo', dockerCfg: true})
+		.withPrompts({ name: 'foo', dockerCfg: true })
 		.toPromise();
 	t.true(await exists('.babelrc', testDir));
 	t.true(await exists('.gitignore', testDir));
@@ -81,7 +81,7 @@ test('generator-react-server:app passes the test target', async t => {
 		.inTmpDir(dir => {
 			testDir = dir;
 		})
-		.withPrompts({name: 'foo', dockerCfg: false})
+		.withPrompts({ name: 'foo', dockerCfg: false })
 		.toPromise();
 
 	console.log("Installing dependencies...");

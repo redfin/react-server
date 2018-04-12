@@ -1,11 +1,11 @@
-import {RootElement} from "react-server";
-import {RootProvider} from "react-server-redux";
-import {createStore} from "redux";
+import { RootElement } from "react-server";
+import { RootProvider } from "react-server-redux";
+import { createStore } from "redux";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-function simpleReducer(state = {simpleValue: "Hello"}) {
+function simpleReducer(state = { simpleValue: "Hello" }) {
 	return state;
 }
 
@@ -19,7 +19,7 @@ BasicComponent.propTypes = {
 	simpleValue: PropTypes.string,
 }
 
-const mapStateToProps = function(state) {
+const mapStateToProps = function (state) {
 	return {
 		simpleValue: state.simpleValue,
 	}

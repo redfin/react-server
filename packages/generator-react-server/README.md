@@ -1,4 +1,4 @@
-# generator-react-server
+# generator-react-server:
 
 [![NPM version][npm-image]][npm-url]
 [![Build Status][build-badge-img]][build-url]
@@ -7,7 +7,7 @@
 
 > A react-server yeoman generator
 
-## Installation
+## Installation:
 
 First, install [Yeoman](http://yeoman.io) and generator-react-server using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
 
@@ -22,7 +22,7 @@ Then generate your new project:
 yo react-server
 ```
 
-## Getting To Know Yeoman
+## Getting To Know Yeoman:
 
  * Yeoman has a heart of gold.
  * Yeoman is a person with feelings and opinions, but is very easy to work with.

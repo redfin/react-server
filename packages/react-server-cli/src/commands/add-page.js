@@ -1,6 +1,6 @@
 import _ from "lodash";
 import fs from "fs";
-import {join} from "path";
+import { join } from "path";
 import chalk from "chalk";
 import mkdirp from "mkdirp";
 import fileExists from "../fileExists";
@@ -21,8 +21,8 @@ export default class <%= className %> {
 }
 `);
 
-export default function addPage(options){
-	const {routesFile, routesPath, routes} = options;
+export default function addPage(options) {
+	const { routesFile, routesPath, routes } = options;
 
 	const path = options._[3];
 	const className = options._[4];
@@ -41,7 +41,7 @@ export default function addPage(options){
 
 	console.log(chalk.yellow("Generating " + page));
 
-	fs.writeFileSync(page, PAGE_SOURCE({className}));
+	fs.writeFileSync(page, PAGE_SOURCE({ className }));
 
 	routes.routes[className] = { path, page };
 

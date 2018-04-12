@@ -14,14 +14,14 @@ const redBackground = `
 `;
 
 export default class StylePromises {
-	getHeadStylesheets () {
+	getHeadStylesheets() {
 		return [
 			delay(1000).then(() => `/data/echo-css?css=${encodeURIComponent(redBackground)}`),
 			delay(100).then(() => `/data/echo-css?css=${encodeURIComponent(greenBackground)}`),
 		];
 	}
 
-	getElements () {
+	getElements() {
 		return [
 			<div>
 				<h2>If the background is GREEN at page load, all is well!</h2>

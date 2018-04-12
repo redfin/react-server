@@ -1,13 +1,13 @@
 var React = require("react")
-,	Q = require("q")
-;
+	, Q = require("q")
+	;
 
 var ELEMENT_DELAY = 150
-;
+	;
 
 class AsyncElementPage {
 
-	handleRoute (next) {
+	handleRoute(next) {
 		return next();
 	}
 

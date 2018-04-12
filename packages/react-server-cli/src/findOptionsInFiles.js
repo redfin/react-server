@@ -19,7 +19,7 @@ export default (dir = process.cwd()) => {
 		try {
 			// readFileSync throws if the file doesn't exist.
 			reactServerRc = fs.readFileSync(path.join(dir, REACT_SERVER_RC));
-		} catch (e) {} //eslint-disable-line no-empty
+		} catch (e) { } //eslint-disable-line no-empty
 		if (reactServerRc) {
 			return JSON.parse(reactServerRc);
 		}
@@ -27,7 +27,7 @@ export default (dir = process.cwd()) => {
 		let packageJson = null;
 		try {
 			packageJson = fs.readFileSync(path.join(dir, PACKAGE_JSON));
-		} catch (e) {} //eslint-disable-line no-empty
+		} catch (e) { } //eslint-disable-line no-empty
 
 		if (packageJson) {
 			const parsedPackageJson = JSON.parse(packageJson);

@@ -15,7 +15,7 @@ const headerLoader = () => {
 		const component = require("../components/Header").default;
 		deferred.resolve(component);
 	} else {
-		require.ensure([], function() {
+		require.ensure([], function () {
 			const component = require("../components/Header").default;
 			deferred.resolve(component);
 		}, "Header");

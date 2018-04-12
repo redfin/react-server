@@ -15,9 +15,9 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	PageUtil = require('./util/PageUtil'),
 	ReactServerAgent = require('./ReactServerAgent'),
 	StringEscapeUtil = require('./util/StringEscapeUtil'),
-	{getRootElementAttributes} = require('./components/RootElement'),
-	{PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID} = require('./constants'),
-	{flushLogsToResponse} = require('./logging/response');
+	{ getRootElementAttributes } = require('./components/RootElement'),
+	{ PAGE_CSS_NODE_ID, PAGE_LINK_NODE_ID, PAGE_CONTENT_NODE_ID, PAGE_CONTAINER_NODE_ID } = require('./constants'),
+	{ flushLogsToResponse } = require('./logging/response');
 
 var _ = {
 	map: require('lodash/map'),
@@ -37,13 +37,13 @@ var FAILSAFE_ROUTER_TIMEOUT = 20e3;
 var ACTIVE_REQUESTS = 0;
 
 // Some non-content items that can live in the elements array.
-var ELEMENT_PENDING         = -1;
+var ELEMENT_PENDING = -1;
 var ELEMENT_ALREADY_WRITTEN = -2;
 
 /**
  * renderMiddleware entrypoint. Called by express for every request.
  */
-module.exports = function(req, res, next, routes) {
+module.exports = function (req, res, next, routes) {
 	RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
 
@@ -67,11 +67,11 @@ module.exports = function(req, res, next, routes) {
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
-				.setRoutes(routes)
-				.setDefaultXhrHeadersFromRequest(req)
-				.create({
-					// TODO: context opts?
-				});
+			.setRoutes(routes)
+			.setDefaultXhrHeadersFromRequest(req)
+			.create({
+				// TODO: context opts?
+			});
 
 		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
@@ -81,7 +81,7 @@ module.exports = function(req, res, next, routes) {
 		var navigateDfd = Q.defer();
 
 		// setup navigation handler (TODO: should we have a 'once' version?)
-		context.onNavigate( (err, page) => {
+		context.onNavigate((err, page) => {
 
 			if (!navigateDfd.promise.isPending()) {
 				logger.error("Finished navigation after FAILSAFE_ROUTER_TIMEOUT", {
@@ -102,7 +102,7 @@ module.exports = function(req, res, next, routes) {
 				var done = !(page && page.getHasDocument());
 
 				if (err.status === 301 || err.status === 302 || err.status === 307) {
-					if (done){
+					if (done) {
 						// This adds a boilerplate body.
 						res.redirect(err.status, err.redirectUrl);
 					} else {
@@ -141,7 +141,7 @@ module.exports = function(req, res, next, routes) {
 				path: req.path,
 			});
 			handleResponseComplete(req, res, context, start, context.page);
-			next({status: 500});
+			next({ status: 500 });
 		});
 
 		context.navigate(new ExpressServerRequest(req));
@@ -151,10 +151,10 @@ module.exports = function(req, res, next, routes) {
 
 module.exports.getActiveRequests = () => ACTIVE_REQUESTS;
 
-function initResponseCompletePromise(res){
+function initResponseCompletePromise(res) {
 	var dfd = Q.defer();
 
-	res.on('close',  dfd.resolve);
+	res.on('close', dfd.resolve);
 	res.on('finish', dfd.resolve);
 
 	RLS().responseCompletePromise = dfd.promise;
@@ -194,7 +194,7 @@ function renderPage(req, res, context, start, page) {
 	// see: http://security.stackexchange.com/a/12916
 	res.set('X-Content-Type-Options', 'nosniff');
 
-	res.status(page.getStatus()||200);
+	res.status(page.getStatus() || 200);
 
 	// Handy to have random access to this rather than needing to thread it
 	// through everywhere.
@@ -203,9 +203,9 @@ function renderPage(req, res, context, start, page) {
 	// Each of these functions has the same signature and returns a
 	// promise, so we can chain them up with a promise reduction.
 	var lifecycleMethods;
-	if (PageUtil.PageConfig.get('isFragment')){
+	if (PageUtil.PageConfig.get('isFragment')) {
 		lifecycleMethods = fragmentLifecycle();
-	} else if (PageUtil.PageConfig.get('isRawResponse')){
+	} else if (PageUtil.PageConfig.get('isRawResponse')) {
 		lifecycleMethods = rawResponseLifecycle();
 	} else if (req.query[ReactServerAgent.DATA_BUNDLE_PARAMETER]) {
 		lifecycleMethods = dataBundleLifecycle();
@@ -233,7 +233,7 @@ function renderPage(req, res, context, start, page) {
 	// timeout as well, and cancel the waiting deferreds
 }
 
-function rawResponseLifecycle () {
+function rawResponseLifecycle() {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
 		setHttpHeaders,
@@ -244,7 +244,7 @@ function rawResponseLifecycle () {
 	];
 }
 
-function fragmentLifecycle () {
+function fragmentLifecycle() {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
 		setHttpHeaders,
@@ -255,7 +255,7 @@ function fragmentLifecycle () {
 	];
 }
 
-function dataBundleLifecycle () {
+function dataBundleLifecycle() {
 	return [
 		Q(), // NOOP lead-in to prime the reduction
 		setDataBundleContentType,
@@ -335,20 +335,20 @@ function writeHeader(req, res, context, start, pageObject) {
 	});
 }
 
-function flushRes(res){
+function flushRes(res) {
 
 	// This method is only defined on the response object if the compress
 	// middleware is installed, so we need to guard our calls.
 	if (res.flush) {
 		res.flush()
-		if (!RLS().didLogFirstFlush){
+		if (!RLS().didLogFirstFlush) {
 			RLS().didLogFirstFlush = true;
 			logger.time('firstFlush', new Date - RLS().startTime);
 		}
 	}
 }
 
-function renderDebugComments (pageObject, res) {
+function renderDebugComments(pageObject, res) {
 	var debugComments = pageObject.getDebugComments();
 	debugComments.map(debugComment => {
 		if (!debugComment.label || !debugComment.value) {
@@ -362,21 +362,21 @@ function renderDebugComments (pageObject, res) {
 	return Q("");
 }
 
-function writeDebugComments (req, res, context, start, pageObject) {
+function writeDebugComments(req, res, context, start, pageObject) {
 	return Q(renderDebugComments(pageObject, res));
 }
 
-function renderTitle (pageObject, res) {
+function renderTitle(pageObject, res) {
 	return pageObject.getTitle().then((title) => {
 		res.write(`<title>${title}</title>`);
 	});
 }
 
-function attrfy (value) {
+function attrfy(value) {
 	return value.replace(/"/g, '&quot;');
 }
 
-function renderMetaTags (pageObject, res) {
+function renderMetaTags(pageObject, res) {
 	var metaTags = pageObject.getMetaTags();
 
 	var metaTagsRendered = metaTags.map(metaTagPromise => {
@@ -409,7 +409,7 @@ function renderMetaTags (pageObject, res) {
 	return Q.all(metaTagsRendered);
 }
 
-function renderLinkTags (pageObject, res) {
+function renderLinkTags(pageObject, res) {
 	var linkTags = pageObject.getLinkTags();
 
 	var linkTagsRendered = linkTags.map(linkTagPromise => {
@@ -454,7 +454,7 @@ function renderScriptsSync(scripts, res) {
 
 	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
 	// immediately.
-	scripts.forEach( (script) => {
+	scripts.forEach((script) => {
 		// make sure there's a leading '/'
 		if (!script.type) script.type = "text/javascript";
 
@@ -482,9 +482,9 @@ function renderScriptsAsync(scripts, res) {
 	res.write("<script>");
 
 	// Lazily load LAB the first time we spit out async scripts.
-	if (!RLS().didLoadLAB){
+	if (!RLS().didLoadLAB) {
 
-		const globalDefaults = {AlwaysPreserveOrder:true};
+		const globalDefaults = { AlwaysPreserveOrder: true };
 
 		// The "cache-preloading" option in stock LABjs doesn't work in modern
 		// Chrome. If you're configured for splitJsLoad then you'd better have
@@ -548,13 +548,13 @@ function renderScriptsAsync(scripts, res) {
 		if (script.href) {
 			var LABScript = { src: script.href };
 
-			if (script.crossOrigin){
+			if (script.crossOrigin) {
 				LABScript.crossOrigin = script.crossOrigin;
 			}
 
 			// If we don't have any other options we can shave a
 			// few bytes by just passing the string.
-			if (Object.keys(LABScript).length === 1){
+			if (Object.keys(LABScript).length === 1) {
 				LABScript = LABScript.src;
 			}
 
@@ -578,10 +578,10 @@ function renderScriptsAsync(scripts, res) {
 			// being in a strict context).
 			//
 			res.write(`.wait(function(){${
-				script.strict?'"use strict";':''
-			}try{${
+				script.strict ? '"use strict";' : ''
+				}try{${
 				script.text
-			}}catch(e){setTimeout(function(){throw(e)},1)}}.bind(this))`);
+				}}catch(e){setTimeout(function(){throw(e)},1)}}.bind(this))`);
 
 		} else {
 
@@ -602,7 +602,7 @@ function renderScripts(pageObject, res) {
 		script => script.type && script.type !== "text/javascript"
 	).length;
 
-	if (thereIsAtLeastOneNonJSScript){
+	if (thereIsAtLeastOneNonJSScript) {
 
 		// If there are non-JS scripts we can't use LAB for async
 		// loading.  We still want to preserve script execution order,
@@ -618,7 +618,7 @@ function renderScripts(pageObject, res) {
 	return Q("");
 }
 
-function renderStylesheets (pageObject, res) {
+function renderStylesheets(pageObject, res) {
 
 	const writeTag = styleSheet => {
 		if (!styleSheet) {
@@ -637,7 +637,7 @@ function renderStylesheets (pageObject, res) {
 
 	const styles = PageUtil.standardizeStyles(pageObject.getHeadStylesheets());
 
-	return styles.reduce( (prev, styleP) => {
+	return styles.reduce((prev, styleP) => {
 		return prev.then(() => styleP.then(writeTag));
 	}, Q());
 }
@@ -732,8 +732,8 @@ function writeBody(req, res, context, start, page) {
 	// Some time has already elapsed since the request started.
 	// Note that you can override `FAILSAFE_RENDER_TIMEOUT` with a
 	// `?_debug_render_timeout={ms}` query string parameter.
-	var totalWait     = DebugUtil.getRenderTimeout() || FAILSAFE_RENDER_TIMEOUT
-	,   timeRemaining = totalWait - (new Date - start)
+	var totalWait = DebugUtil.getRenderTimeout() || FAILSAFE_RENDER_TIMEOUT
+		, timeRemaining = totalWait - (new Date - start)
 
 	var retval = Q.defer();
 	var writeBodyDfd = Q.defer();
@@ -744,7 +744,7 @@ function writeBody(req, res, context, start, page) {
 
 		// Write out what we've got.
 		writeElements(res, rendered.map(
-			value => value === ELEMENT_PENDING?'':value
+			value => value === ELEMENT_PENDING ? '' : value
 		));
 
 		// If it hasn't arrived by now, we're not going to wait for it.
@@ -809,17 +809,17 @@ function writeDataBundle(req, res) {
 
 function renderElement(res, element, context) {
 
-	if (element.containerOpen || element.containerClose || element.isTheFold){
+	if (element.containerOpen || element.containerClose || element.isTheFold) {
 
 		// Short-circuit out.  Don't want timing for control objects.
 		return element;
 	}
 
-	var name  = PageUtil.getElementDisplayName(element)
-	,   start = RLS().startTime
-	,   timer = logger.timer(`renderElement.individual.${name}`)
-	,   html  = ''
-	,   attrs = {}
+	var name = PageUtil.getElementDisplayName(element)
+		, start = RLS().startTime
+		, timer = logger.timer(`renderElement.individual.${name}`)
+		, html = ''
+		, attrs = {}
 
 	try {
 		if (element !== null) {
@@ -857,9 +857,9 @@ function renderElement(res, element, context) {
 function writeElements(res, elements) {
 
 	// Pick up where we left off.
-	var start = RLS().nextElement||(RLS().nextElement=0);
+	var start = RLS().nextElement || (RLS().nextElement = 0);
 
-	for (var i = start; i < elements.length; RLS().nextElement = ++i){
+	for (var i = start; i < elements.length; RLS().nextElement = ++i) {
 
 		// If we haven't rendered the next element yet, we're done.
 		if (elements[i] === ELEMENT_PENDING) break;
@@ -890,20 +890,20 @@ function writeElements(res, elements) {
 	if (i !== start) flushRes(res);
 }
 
-function writeElement(res, element, i){
+function writeElement(res, element, i) {
 	if (!element) {
 		// A falsy element was a render error.  We've gotta
 		// emit a root for it, so we'll cook up an empty
 		// element object.
 		element = {
-			attrs : {},
-			html  : '',
+			attrs: {},
+			html: '',
 		}
 	}
 	if (element.containerOpen) {
 		res.write(`<div ${PAGE_CONTAINER_NODE_ID}=${i}${
 			_.map(element.containerOpen, (v, k) => ` ${k}="${attrfy(v)}"`)
-		}>`);
+			}>`);
 	} else if (element.containerClose) {
 		res.write('</div>');
 	} else if (element.isTheFold) {
@@ -914,20 +914,22 @@ function writeElement(res, element, i){
 	} else {
 		res.write(`<div data-react-server-root-id=${
 			i
-		} data-react-server-timing-offset="${
+			} data-react-server-timing-offset="${
 			// Mark when we sent it.
 			new Date - RLS().timingDataT0
-		}"${
+			}"${
 			_.map(element.attrs, (v, k) => ` ${k}="${attrfy(v)}"`)
-		}>${element.html}</div>`);
+			}>${element.html}</div>`);
 	}
 }
 
 function logAboveTheFoldTime(res) {
 	// write a synchronous script to record the time on the browser when above the fold content shows up
 	// this is a proxy for "first paint" when the DOM is parsed and painted
-	renderScriptsSync([{text:'__displayAboveTheFold=new Date;' +
-		'window.performance && window.performance.mark && window.performance.mark("displayAboveTheFold.fromStart");'}], res);
+	renderScriptsSync([{
+		text: '__displayAboveTheFold=new Date;' +
+			'window.performance && window.performance.mark && window.performance.mark("displayAboveTheFold.fromStart");'
+	}], res);
 }
 
 function bootstrapClient(res, lastElementSent) {
@@ -936,7 +938,7 @@ function bootstrapClient(res, lastElementSent) {
 
 	if (RLS().page.getSplitJsLoad()) {
 		// If we've corked our LABjs chain then we need to start executing JS.
-		renderScriptsSync([{text:'_tLAB.uncork()'}], res);
+		renderScriptsSync([{ text: '_tLAB.uncork()' }], res);
 	} else if (RLS().page.getJsBelowTheFold()) {
 		// Otherwise if we've deferred _all_ JS below the fold then we need to
 		// kick off our fetch/load of the page JS now.
@@ -984,26 +986,26 @@ function setupLateArrivals(res) {
 	// all of the requests have resolved.
 	ReactServerAgent.cache().markLateRequests();
 
-	notLoaded.forEach( pendingRequest => {
-		pendingRequest.entry.whenDataReadyInternal().then( () => {
+	notLoaded.forEach(pendingRequest => {
+		pendingRequest.entry.whenDataReadyInternal().then(() => {
 			logger.time("lateArrival", new Date - start);
 			renderScriptsAsync([{
 				text: `__reactServerClientController.dataArrival(${
 					JSON.stringify(pendingRequest.url)
-				}, ${
+					}, ${
 					StringEscapeUtil.escapeForScriptTag(JSON.stringify(pendingRequest.entry.dehydrate()))
-				});`,
+					});`,
 			}], res);
 
 		})
 	});
 
 	// TODO: maximum-wait-time-exceeded-so-cancel-pending-requests code
-	var promises = notLoaded.map( result => result.entry.dfd.promise );
+	var promises = notLoaded.map(result => result.entry.dfd.promise);
 	RLS().lateArrivals = Q.allSettled(promises)
 }
 
-function wrapUpLateArrivals(){
+function wrapUpLateArrivals() {
 	return RLS().lateArrivals;
 }
 
@@ -1021,27 +1023,27 @@ function endResponse(req, res) {
 	return Q();
 }
 
-function logRequestStats(req, res, context, start){
+function logRequestStats(req, res, context, start) {
 	var allRequests = ReactServerAgent.cache().getAllRequests()
-	,   notLoaded   = ReactServerAgent.cache().getLateRequests()
-	,   sock        = req.socket
-	,   stash       = context.getServerStash()
+		, notLoaded = ReactServerAgent.cache().getLateRequests()
+		, sock = req.socket
+		, stash = context.getServerStash()
 
 	// The socket can be re-used for multiple requests with keep-alive.
 	// Fortunately, until HTTP/2 rolls around, the requests over a given
 	// socket will happen serially.  So we can just keep track of the
 	// previous values for each socket and log the delta for a given
 	// request.
-	stash.bytesR = sock.bytesRead    - (sock._preR||(sock._preR=0));
-	stash.bytesW = sock.bytesWritten - (sock._preW||(sock._preW=0));
+	stash.bytesR = sock.bytesRead - (sock._preR || (sock._preR = 0));
+	stash.bytesW = sock.bytesWritten - (sock._preW || (sock._preW = 0));
 
 	sock._preR += stash.bytesR;
 	sock._preW += stash.bytesW;
 
 	logger.gauge("countDataRequests", allRequests.length);
-	logger.gauge("countLateArrivals", notLoaded.length, {hi: 1});
-	logger.gauge("bytesRead", stash.bytesR, {hi: 1<<12});
-	logger.gauge("bytesWritten", stash.bytesW, {hi: 1<<18});
+	logger.gauge("countLateArrivals", notLoaded.length, { hi: 1 });
+	logger.gauge("bytesRead", stash.bytesR, { hi: 1 << 12 });
+	logger.gauge("bytesWritten", stash.bytesW, { hi: 1 << 18 });
 
 	var time = new Date - start;
 
@@ -1049,7 +1051,7 @@ function logRequestStats(req, res, context, start){
 	logger.time("totalRequestTime", time);
 
 	// Only populated for full pages and fragments.
-	if (RLS().renderTime){
+	if (RLS().renderTime) {
 		logger.time("totalRenderTime", RLS().renderTime);
 	}
 
@@ -1063,7 +1065,7 @@ function logRequestStats(req, res, context, start){
 function getNonInternalConfigs() {
 	var nonInternal = {};
 	var fullConfig = config();
-	Object.keys(fullConfig).forEach( configKey => {
+	Object.keys(fullConfig).forEach(configKey => {
 		if (configKey !== 'internal') {
 			nonInternal[configKey] = fullConfig[configKey];
 		}
@@ -1085,7 +1087,7 @@ function getDeviceType(req) {
 	// type that depends on this implementation quirk of mobile-detect.
 	//
 	if (md.tablet()) return "tablet";
-	if (md.phone ()) return "phone";
+	if (md.phone()) return "phone";
 	if (md.mobile()) return "phone";
 	return "desktop";
 }

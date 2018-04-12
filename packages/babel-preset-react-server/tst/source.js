@@ -1,4 +1,4 @@
-import {logging} from 'react-server';
+import { logging } from 'react-server';
 
 const label = 'foo';
 const logger = logging.getLogger(__LOGGER__);

@@ -7,7 +7,7 @@ export default class InternalServerErrorException {
 		// assign a property to the error to track its source context.
 		throw new Error("died");
 
-		return {code: 200};
+		return { code: 200 };
 	}
 
 	// Should never get called.

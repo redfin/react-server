@@ -10,35 +10,35 @@
  */
 
 var RLS = require('../util/RequestLocalStorage').getNamespace()
-;
+	;
 
 // Simple wrapper around an array the implements the
 // API we want for adding/getting plugins
 class PluginsHolder {
 
-	constructor () {
+	constructor() {
 		this.plugins = [];
 	}
 
-	asArray () {
+	asArray() {
 		// return a copy of the plugins array so that
 		// the returned array can't change underneath
 		// the caller
 		return [].concat(this.plugins);
 	}
 
-	add (plugin) {
+	add(plugin) {
 		this.plugins.push(plugin);
 	}
 
 }
 
-function getPlugins (pluginType) {
+function getPlugins(pluginType) {
 	return (RLS()[pluginType] || (RLS()[pluginType] = new PluginsHolder()));
 }
 
 
 module.exports = {
-	forRequest:  getPlugins.bind(null, "request"),
+	forRequest: getPlugins.bind(null, "request"),
 	forResponse: getPlugins.bind(null, "response"),
 };

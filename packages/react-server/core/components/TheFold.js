@@ -1,4 +1,4 @@
-import {Component} from "react";
+import { Component } from "react";
 
 export default class TheFold extends Component {
 	render() {
@@ -15,5 +15,5 @@ export function isTheFold(element) {
 }
 
 export function markTheFold() {
-	return {isTheFold:true};
+	return { isTheFold: true };
 }

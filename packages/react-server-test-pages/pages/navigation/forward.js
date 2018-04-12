@@ -1,4 +1,4 @@
-import {ReactServerAgent} from "react-server";
+import { ReactServerAgent } from "react-server";
 
 export default class ForwardPage {
 	handleRoute() {
@@ -11,7 +11,7 @@ export default class ForwardPage {
 		}
 
 		//fetch some data
-		this.data = ReactServerAgent.get('/data/delay?ms=1000&val='+params);
+		this.data = ReactServerAgent.get('/data/delay?ms=1000&val=' + params);
 
 		return this.data.then((res) => {
 			//then depending on said data, forward to one of two pages, and pass along the data we pre-fetched

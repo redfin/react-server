@@ -1,5 +1,5 @@
 import React from 'react';
-import {ReactServerAgent, RootElement, TheFold, logging} from 'react-server';
+import { ReactServerAgent, RootElement, TheFold, logging } from 'react-server';
 import NetworkList from '../components/network-list';
 import Header from '../components/header';
 import Footer from '../components/footer';
@@ -21,24 +21,24 @@ export default class IndexPage {
 	getElements() {
 		return [
 			<RootElement key={0}>
-				<Header/>
+				<Header />
 			</RootElement>,
 			<RootElement when={this.data} key={1}>
-				<NetworkList/>
+				<NetworkList />
 			</RootElement>,
-			<TheFold key={2}/>,
+			<TheFold key={2} />,
 			<RootElement key={3}>
-				<Footer/>
+				<Footer />
 			</RootElement>,
 		];
 	}
 
 	getMetaTags() {
 		return [
-			{charset: 'utf8'},
-			{name: 'description', content: 'Bike share availability by city, powered by React Server'},
-			{generator: 'React Server'},
-			{keywords: 'React Server bike share'},
+			{ charset: 'utf8' },
+			{ name: 'description', content: 'Bike share availability by city, powered by React Server' },
+			{ generator: 'React Server' },
+			{ keywords: 'React Server bike share' },
 		];
 	}
 

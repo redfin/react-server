@@ -1,5 +1,5 @@
 export default class ErrorPage {
 	handleRoute() {
-		return {code: 500};
+		return { code: 500 };
 	}
 }

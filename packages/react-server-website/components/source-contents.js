@@ -1,5 +1,5 @@
 import React from "react";
-import {join} from "path";
+import { join } from "path";
 import PageNameMixin from "../lib/page-name-mixin";
 import {
 	Link,
@@ -12,17 +12,17 @@ import './doc-contents.less'
 
 const currentPath = () => getCurrentRequestContext().getCurrentPath();
 
-const classIfActive = path => (path === currentPath())?{className:"active"}:{}
+const classIfActive = path => (path === currentPath()) ? { className: "active" } : {}
 
 const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 	<Link reuseDom bundleData path={path}>{name}</Link>
 </li>
 
-const ContentsLink = ({name, path}) => ContentsLinkWithMungedPath(
+const ContentsLink = ({ name, path }) => ContentsLinkWithMungedPath(
 	name, join("/source", path)
 )
 
-const SourceContentsSection = ({name, pages}) => <div className='contentsSection'>
+const SourceContentsSection = ({ name, pages }) => <div className='contentsSection'>
 	<h3>{name}</h3>
 	<ul>{pages.map(ContentsLink)}</ul>
 </div>
@@ -36,7 +36,7 @@ export default class SourceContents extends React.Component {
 	}
 
 	componentDidMount() {
-		getCurrentRequestContext().navigator.on( "navigateStart", this.closeMenu.bind(this) );
+		getCurrentRequestContext().navigator.on("navigateStart", this.closeMenu.bind(this));
 	}
 
 	render() {
@@ -51,12 +51,12 @@ export default class SourceContents extends React.Component {
 	}
 
 	toggleMenuOpen() {
-		console.log("MENUOPEN: ",this.state.menuOpen);
-		this.setState( {menuOpen: !this.state.menuOpen} );
+		console.log("MENUOPEN: ", this.state.menuOpen);
+		this.setState({ menuOpen: !this.state.menuOpen });
 	}
 
 	closeMenu() {
-		this.setState( {menuOpen: false} );
+		this.setState({ menuOpen: false });
 	}
 }
 

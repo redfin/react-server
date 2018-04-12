@@ -26,7 +26,7 @@ const ReceiveProps = OriginalComponent => class extends Component {
 				<button onClick={this.updateState.bind(this)}>
 					Click to update props
 				</button>
-				<OriginalComponent {...this.state}/>
+				<OriginalComponent {...this.state} />
 			</h2>
 		);
 	}
@@ -109,7 +109,7 @@ class MissingKeyPropInArrayIterator extends Component {
 		return (
 			<div>
 				<h2>Missing Key Prop in Array Iterator Warning</h2>
-				{ [1,2,3,4].map(n => <span>{n}</span>) }
+				{[1, 2, 3, 4].map(n => <span>{n}</span>)}
 			</div>
 		);
 	}
@@ -120,15 +120,15 @@ export default class ErrorReportingPage {
 		return [
 			<h1>Error Logging Tests</h1>,
 			<h2>Render error</h2>,
-			<RenderError/>,
-			<ComponentWillMountError/>,
-			<ComponentDidMountError/>,
-			<ComponentWillReceivePropsError/>,
-			<ComponentDidReceivePropsError/>,
-			<ComponentWillUpdateError/>,
-			<ComponentDidUpdateError/>,
-			<RootElementWhenPromiseFailure/>,
-			<MissingKeyPropInArrayIterator/>,
+			<RenderError />,
+			<ComponentWillMountError />,
+			<ComponentDidMountError />,
+			<ComponentWillReceivePropsError />,
+			<ComponentDidReceivePropsError />,
+			<ComponentWillUpdateError />,
+			<ComponentDidUpdateError />,
+			<RootElementWhenPromiseFailure />,
+			<MissingKeyPropInArrayIterator />,
 		];
 	}
 }

@@ -34,7 +34,7 @@ describe("A 500 internal server error page", () => {
 	});
 
 	// Pass `xit` for `the500` to mark a test as pending.
-	function a500(spec, url, callback, the500=it) {
+	function a500(spec, url, callback, the500 = it) {
 		the500(spec, done => new Browser()
 			.fetch(`http://localhost:${helper.getPort()}${url}`)
 			.then(res => (expect(res.status).toBe(500), res.text()))

@@ -1,10 +1,10 @@
 var ReactServerAgent = require("../../ReactServerAgent")
-,	RLS = require("../../util/RequestLocalStorage")
-;
+	, RLS = require("../../util/RequestLocalStorage")
+	;
 
 var PORT = 4221
-,	SIMPLE_SUCCESS = "SUCCESS"
-;
+	, SIMPLE_SUCCESS = "SUCCESS"
+	;
 
 module.exports = {
 	withRlsContext,
@@ -14,10 +14,10 @@ module.exports = {
 	SIMPLE_SUCCESS,
 }
 
-function withRlsContext (runTest) {
+function withRlsContext(runTest) {
 	return function (done) {
-		RLS.startRequest( () => {
-			ReactServerAgent.plugRequest( (request) => {
+		RLS.startRequest(() => {
+			ReactServerAgent.plugRequest((request) => {
 				request.urlPrefix(`http://localhost:${PORT}`);
 			});
 
@@ -29,7 +29,7 @@ function withRlsContext (runTest) {
 	};
 }
 
-function makeServer (cb, { port = PORT } = {}) {
+function makeServer(cb, { port = PORT } = {}) {
 	var http = require("http");
 	var express = require("express");
 	var bodyParser = require("body-parser");
@@ -37,7 +37,7 @@ function makeServer (cb, { port = PORT } = {}) {
 	var server = express();
 
 	server.use(bodyParser.json());
-	server.use(bodyParser.urlencoded({extended: true}));
+	server.use(bodyParser.urlencoded({ extended: true }));
 
 	server.get('/simple', function (req, res) {
 		res.type('text/plain').end(SIMPLE_SUCCESS);
@@ -49,27 +49,27 @@ function makeServer (cb, { port = PORT } = {}) {
 
 	server.use('/describe', function (req, res) {
 		var reqObject = {};
-		["method", "query", "body"].forEach( key => {
+		["method", "query", "body"].forEach(key => {
 			reqObject[key] = req[key];
 		});
 		reqObject.headers = req.headers;
 
 		var type = req.query.type ? req.query.type : 'application/json';
-		setTimeout( () => {
-			res.status(200).type(type).end(JSON.stringify({req: reqObject}));
+		setTimeout(() => {
+			res.status(200).type(type).end(JSON.stringify({ req: reqObject }));
 		}, req.query.delay || 0);
 	});
 
 	server.use('/error', function (req, res) {
-		setTimeout( () => {
-			res.status(req.query.status || 503).type('application/json').end(JSON.stringify({error: "An Error Occurred"}));
+		setTimeout(() => {
+			res.status(req.query.status || 503).type('application/json').end(JSON.stringify({ error: "An Error Occurred" }));
 		}, req.query.delay || 0);
 	});
 
 	server.use('/timeout', function (req, res) {
-		setTimeout( () => {
+		setTimeout(() => {
 			// wait 1s
-			res.status(200).type('application/json').end(JSON.stringify({Hello: "World"}));
+			res.status(200).type('application/json').end(JSON.stringify({ Hello: "World" }));
 		}, req.query.delay).unref();
 	});
 

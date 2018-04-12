@@ -15,7 +15,7 @@ data.forEach(fileish => {
 });
 
 contents.push(root);
-const str = JSON.stringify({contents: contents });
+const str = JSON.stringify({ contents: contents });
 fs.writeFileSync('dir-contents.json', str);
 
 function getFiles(fileish) {

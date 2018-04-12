@@ -1,7 +1,7 @@
 import Q from "q";
 
 const _loadFooterCode = (deferred) => {
-	require.ensure([], function() {
+	require.ensure([], function () {
 		const component = require("../components/Footer").default;
 		deferred.resolve(component);
 	}, "Footer");

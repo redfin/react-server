@@ -1,4 +1,4 @@
-import {ReactServerAgent, RootContainer, RootElement} from "react-server";
+import { ReactServerAgent, RootContainer, RootElement } from "react-server";
 import "./colors/red.scss";
 import "./colors/green.scss";
 

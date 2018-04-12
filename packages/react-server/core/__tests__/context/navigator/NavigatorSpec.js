@@ -8,7 +8,7 @@ class RequestContextStub {
 	constructor(options) {
 		this.navigator = new Navigator(this, options);
 	}
-	navigate (request, type) {
+	navigate(request, type) {
 		RequestLocalStorage.startRequest(() => {
 			this.navigator.navigate(request, type);
 		});

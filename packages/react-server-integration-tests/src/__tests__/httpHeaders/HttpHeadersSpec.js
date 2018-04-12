@@ -24,7 +24,7 @@ describe('A page with custom http headers', () => {
 	const expectSecurityPolicyHeaderExists = (browser, isTransition) => {
 		// Client transition renders execute on the client. That means we don't have an opportunity to send over
 		// headers
-		if(isTransition) return;
+		if (isTransition) return;
 
 		const headers = browser.resources['0'].response.headers._headers;
 		const csp = headers.find(header => header[0] === 'content-security-policy');

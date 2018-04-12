@@ -11,7 +11,7 @@ describe("A basic page", () => {
 	helper.stopServerAfterAll();
 
 	describe("can say 'Hello, world!'", () => {
-		helper.testWithDocument("/helloWorld", (document) =>{
+		helper.testWithDocument("/helloWorld", (document) => {
 			expect(document.querySelector("div#foo").innerHTML).toMatch("Hello, world!");
 		});
 	});

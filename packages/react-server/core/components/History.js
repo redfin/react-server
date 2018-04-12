@@ -98,16 +98,16 @@ History.prototype = {
 		}
 	},
 
-	canClientNavigate: function() {
+	canClientNavigate: function () {
 		return this._hasPushState;
 	},
 
-	navigationWindow: function() {
+	navigationWindow: function () {
 		return this.win;
 	},
 
 	// This is current URL for current window (not navigation window).
-	currentUrl: function() {
+	currentUrl: function () {
 		return location.pathname + location.search;
 	},
 };

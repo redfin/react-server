@@ -2,7 +2,7 @@ var React = require('react');
 const PropTypes = require('prop-types');
 var Q = require('q');
 
-const {isTheFold} = require('./TheFold');
+const { isTheFold } = require('./TheFold');
 
 const _ = {
 	assign: require('lodash/assign'),
@@ -21,12 +21,12 @@ class RootElement extends React.Component {
 	componentDidMount() {
 		if (this.props.subscribe) {
 			this.props.subscribe(childProps => {
-				var now            = new Date;
-				var name           = this.getChildName();
-				var count          = ++this._changeCount;
-				var fromMount      = now - this._t0;
+				var now = new Date;
+				var name = this.getChildName();
+				var count = ++this._changeCount;
+				var fromMount = now - this._t0;
 				var fromLastChange = now - this._t1;
-				this._t1           = now;
+				this._t1 = now;
 
 				// Log some stuff about the change.
 				[`byName.${name}`, 'all'].forEach(tag => {
@@ -85,10 +85,10 @@ class RootElement extends React.Component {
 	}
 
 	getChildName() {
-		if (!this._childName){
+		if (!this._childName) {
 			this._childName = (React.Children.only(
 				this.props.children
-			).type.displayName||'Unknown').split('.').pop();
+			).type.displayName || 'Unknown').split('.').pop();
 		}
 		return this._childName;
 	}
@@ -108,11 +108,11 @@ RootElement.defaultProps = {
 	_isRootElement: true,
 }
 
-RootElement.isRootElement = function(element) {
+RootElement.isRootElement = function (element) {
 	return element && element.props && element.props._isRootElement;
 }
 
-RootElement.getRootElementAttributes = function(element) {
+RootElement.getRootElementAttributes = function (element) {
 	var props = element.props;
 	var attrs = {};
 
@@ -127,7 +127,7 @@ RootElement.getRootElementAttributes = function(element) {
 	return attrs;
 }
 
-RootElement.ensureRootElementWithContainer = function(element, container) {
+RootElement.ensureRootElementWithContainer = function (element, container) {
 
 	// If it's _already_ a root element (or the fold), pass it along.
 	if (RootElement.isRootElement(element) || isTheFold(element) || (
@@ -138,23 +138,23 @@ RootElement.ensureRootElementWithContainer = function(element, container) {
 		// at render time.
 		//
 		!React.isValidElement(element) && typeof element !== 'string'
-	)){
+	)) {
 		return element;
 	}
 
-	const {listen, when} = container.props;
+	const { listen, when } = container.props;
 
 	return <RootElement listen={listen} when={when}>{element}</RootElement>;
 }
 
-RootElement.ensureRootElement = function(element){
-	return RootElement.ensureRootElementWithContainer(element, {props:{}});
+RootElement.ensureRootElement = function (element) {
+	return RootElement.ensureRootElementWithContainer(element, { props: {} });
 }
 
-RootElement.installListener = function(element, listen) {
+RootElement.installListener = function (element, listen) {
 	var dfd = Q.defer(),
 		updater,
-		subscribe = callback => {updater = callback},
+		subscribe = callback => { updater = callback },
 		unsubscribe = listen(childProps => {
 			// Once the component has mounted it will provide an updater.
 			// After that we can just short-circuit here and let it handle
@@ -176,9 +176,9 @@ RootElement.installListener = function(element, listen) {
 	return dfd.promise
 }
 
-RootElement.scheduleRender = function(element) {
-	var {listen, when, componentLoader, childProps} = (element||{}).props||{};
-	if (!(listen||when||componentLoader||childProps)) {
+RootElement.scheduleRender = function (element) {
+	var { listen, when, componentLoader, childProps } = (element || {}).props || {};
+	if (!(listen || when || componentLoader || childProps)) {
 		return Q(element).then(RootElement.ensureRootElement);
 	}
 
@@ -205,7 +205,7 @@ RootElement.scheduleRender = function(element) {
 				const currentChild = rendered.props.children;
 				const childToRender = componentLoaderDeferred ? React.createElement(loadedComponent.value, null, currentChild) : currentChild;
 
-				return React.cloneElement(rendered, {childProps: clonedChildProps}, childToRender);
+				return React.cloneElement(rendered, { childProps: clonedChildProps }, childToRender);
 			}
 			return rendered;
 		});

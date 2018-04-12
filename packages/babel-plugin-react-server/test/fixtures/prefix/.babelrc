@@ -1,5 +1,10 @@
 {
   "plugins": [
-    ["../../../src", { "prefix": "nicolas-lodeiro." }]
+    [
+      "../../../src",
+      {
+        "prefix": "nicolas-lodeiro."
+      }
+    ]
   ]
 }

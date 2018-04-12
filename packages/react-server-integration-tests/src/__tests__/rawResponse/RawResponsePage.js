@@ -1,6 +1,6 @@
 class RawResponsePage {
 
-	setConfigValues(){ return { isRawResponse: true } }
+	setConfigValues() { return { isRawResponse: true } }
 
 	getContentType() {
 		return "application/example";

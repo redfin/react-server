@@ -18,7 +18,7 @@ for serving universal (isomorphic) JavaScript applications built with [React](ht
 
 Read more on [our dev blog](https://www.redfin.com/blog/tag/react-server).
 
-## Getting started
+## Getting started:
 
 The _easiest_ way to get started is with our [yeoman
 generator](packages/generator-react-server):

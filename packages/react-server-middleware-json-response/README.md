@@ -1,4 +1,4 @@
-# JSON Response middleware for React Server
+# JSON Response middleware for React Server:
 
 Use this middleware to return a JSON-serialized object from a React Server page.
 
