@@ -1,9 +1,9 @@
-import {createStore, applyMiddleware} from "redux";
+import { createStore, applyMiddleware } from "redux";
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {RootElement} from "react-server";
-import {RootProvider, ReduxAdapter} from "react-server-redux";
+import { RootElement } from "react-server";
+import { RootProvider, ReduxAdapter } from "react-server-redux";
 import ReduxThunk from "redux-thunk";
 
 function reduxAdapterReducer(state = {}, action) {
@@ -23,11 +23,11 @@ function reduxAdapterReducer(state = {}, action) {
 function initAction() {
 	return function (dispatch) {
 		setTimeout(() => {
-			dispatch({type: 'ACTION_ROUTE', data: 'Route data'});
+			dispatch({ type: 'ACTION_ROUTE', data: 'Route data' });
 		}, 500);
 
 		setTimeout(() => {
-			dispatch({type: 'ACTION_ELEMENT', data: 'Element data'});
+			dispatch({ type: 'ACTION_ELEMENT', data: 'Element data' });
 		}, 3000);
 
 	}
@@ -43,7 +43,7 @@ class BasicComponent extends React.Component {
 	}
 }
 
-const mapStateToProps = function(state) {
+const mapStateToProps = function (state) {
 	return {
 		elementData: state.elementData,
 	}
@@ -58,10 +58,10 @@ export default class ReduxAdapterPage {
 		this._store.dispatch(initAction());
 		return this._storeAdapter.when(['routeData']).then((state) => {
 			if (state.routeData) {
-				return {code: 200};
+				return { code: 200 };
 			}
 
-			return {code: 400};
+			return { code: 400 };
 		});
 	}
 

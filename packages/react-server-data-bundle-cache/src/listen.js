@@ -1,10 +1,10 @@
-import {getCurrentRequestContext} from "react-server";
+import { getCurrentRequestContext } from "react-server";
 import fetch from "./fetch";
-import {reset, canCache} from "./opt-in";
+import { reset, canCache } from "./opt-in";
 import lastUrl from "./last-url";
 
 let didListen = 0;
-export default function(){
+export default function () {
 	if (didListen++) return;
 
 	const ctx = getCurrentRequestContext();

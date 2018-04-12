@@ -1,6 +1,6 @@
 
 var logger = require('../logging').getLogger(__LOGGER__);
-var {PAGE_CSS_NODE_ID} = require('../constants');
+var { PAGE_CSS_NODE_ID } = require('../constants');
 var Q = require('q');
 var PageUtil = require('./PageUtil')
 
@@ -36,7 +36,7 @@ module.exports = {
 			var newCssByKey = {};
 			newCss
 				.filter(style => !!style)
-				.forEach(style => {newCssByKey[this._keyFromStyleSheet(style)] = style});
+				.forEach(style => { newCssByKey[this._keyFromStyleSheet(style)] = style });
 
 			// first, remove the unneeded CSS link elements.
 			Object.keys(loadedCss).forEach(loadedCssKey => {
@@ -90,7 +90,7 @@ module.exports = {
 		});
 	},
 
-	_keyFromStyleSheet: function(style) {
+	_keyFromStyleSheet: function (style) {
 		return normalizeLocalUrl(style.href) || style.text;
 	},
 }

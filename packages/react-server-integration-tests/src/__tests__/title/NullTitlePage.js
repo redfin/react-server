@@ -4,4 +4,5 @@ class NullTitlePage {
 		return null;
 	}
 }
+
 module.exports = NullTitlePage;

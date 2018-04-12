@@ -1,48 +1,48 @@
 var RLS = require('./util/RequestLocalStorage').getNamespace()
-,	Cache = require("./ReactServerAgent/Cache")
-,	Request = require("./ReactServerAgent/Request")
-,	Plugins = require("./ReactServerAgent/Plugins")
-;
+	, Cache = require("./ReactServerAgent/Cache")
+	, Request = require("./ReactServerAgent/Request")
+	, Plugins = require("./ReactServerAgent/Plugins")
+	;
 
 
 const DATA_BUNDLE_PARAMETER = '_react_server_data_bundle';
-const DATA_BUNDLE_OPTS      = {[DATA_BUNDLE_PARAMETER]: 1};
+const DATA_BUNDLE_OPTS = { [DATA_BUNDLE_PARAMETER]: 1 };
 
 var API = {
 
 	DATA_BUNDLE_PARAMETER,
 
-	get (url, data) {
+	get(url, data) {
 		var req = new Request('GET', url, API.cache());
 		if (data) req.query(data);
 		return req;
 	},
 
-	head (url, data) {
+	head(url, data) {
 		var req = new Request('HEAD', url, API.cache());
 		if (data) req.query(data);
 		return req;
 	},
 
-	del (url, data) {
+	del(url, data) {
 		var req = new Request('DELETE', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},
 
-	patch (url, data) {
+	patch(url, data) {
 		var req = new Request('PATCH', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},
 
-	post (url, data) {
+	post(url, data) {
 		var req = new Request('POST', url, API.cache());
 		if (data) req.send(data);
 		return req;
 	},
 
-	put (url, data) {
+	put(url, data) {
 		var req = new Request('PUT', url, API.cache());
 		if (data) req.send(data);
 		return req;
@@ -51,7 +51,7 @@ var API = {
 	/**
 	 * Exposes the ReactServerAgent request data cache from RequestLocalStorage.
 	 */
-	cache () {
+	cache() {
 		var cache = RLS().cache;
 		if (!cache) {
 			cache = RLS().cache = new Cache();
@@ -59,7 +59,7 @@ var API = {
 		return cache;
 	},
 
-	_clearCache () {
+	_clearCache() {
 		delete RLS().cache;
 	},
 
@@ -77,7 +77,7 @@ var API = {
 	 * })
 	 * ```
 	 */
-	plugRequest (pluginFunc) {
+	plugRequest(pluginFunc) {
 		Plugins.forRequest().add(pluginFunc);
 	},
 
@@ -95,7 +95,7 @@ var API = {
 	 * })
 	 * ```
 	 */
-	plugResponse (pluginFunc) {
+	plugResponse(pluginFunc) {
 		Plugins.forResponse().add(pluginFunc);
 	},
 

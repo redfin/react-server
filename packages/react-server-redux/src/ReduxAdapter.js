@@ -41,7 +41,7 @@ module.exports = class ReduxAdapter {
 			let promise = this.stateWaitMap[stateProp];
 			if (!promise) {
 				promise = new Promise((resolve) => {
-					this.stateWaitMap[stateProp] = {resolver: resolve, resolved: false};
+					this.stateWaitMap[stateProp] = { resolver: resolve, resolved: false };
 				});
 			}
 

@@ -1,9 +1,9 @@
 
 var logger = require('../logging').getLogger(__LOGGER__)
-,	Q = require('q')
-,	merge = require("lodash/merge")
-,	isEqual = require("lodash/isEqual")
-;
+	, Q = require('q')
+	, merge = require("lodash/merge")
+	, isEqual = require("lodash/isEqual")
+	;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender
 var responseBodyParsers = {
@@ -31,7 +31,7 @@ class CacheEntry {
 	 * @param cacheWhiteList [optional] the whitelist of repsonse fields that
 	 *        will be serialized with this entry. Not passed when rehydrating.
 	 */
-	constructor (cache, requestData = {}, cacheWhitelist) {
+	constructor(cache, requestData = {}, cacheWhitelist) {
 		this.cache = cache;
 		this.cacheWhitelist = cacheWhitelist;
 		this.requesters = 0;
@@ -45,10 +45,10 @@ class CacheEntry {
 		this.url = requestData.urlPath;
 		this.requestData = {};
 		Object.keys(requestData)
-			.forEach(key => {this.requestData[key] = requestData[key]});
+			.forEach(key => { this.requestData[key] = requestData[key] });
 	}
 
-	dehydrate ( {responseBodyOnly} = {} ) {
+	dehydrate({ responseBodyOnly } = {}) {
 
 		var err = this.err;
 		if (err) {
@@ -84,7 +84,7 @@ class CacheEntry {
 	 * (We'll also log a warning saying that we should probably add another response type).
 	 *
 	 */
-	_copyResponseForDehydrate (res, {responseBodyOnly} = {}) {
+	_copyResponseForDehydrate(res, { responseBodyOnly } = {}) {
 		if (!res) return res;
 
 		var resCopy = {};
@@ -95,7 +95,7 @@ class CacheEntry {
 
 		var parseable = !!responseBodyParsers[res.type];
 
-		Object.keys(res).forEach( (prop) => {
+		Object.keys(res).forEach((prop) => {
 			if ("body" === prop && parseable) {
 				// don't copy body if it's a well-known (easily-parsed) content-type
 				resCopy._hasBody = true;
@@ -110,7 +110,7 @@ class CacheEntry {
 		return resCopy;
 	}
 
-	rehydrate (state) {
+	rehydrate(state) {
 
 		// NOTE: rehydrate will be called _TWICE_ for late arrivals:
 		// once initially, when not loaded, and once again when
@@ -143,7 +143,7 @@ class CacheEntry {
 		}
 	}
 
-	_rehydrateResponse (res) {
+	_rehydrateResponse(res) {
 		if (!res) return res;
 
 		if (res._hasBody) {
@@ -163,10 +163,10 @@ class CacheEntry {
 		return res;
 	}
 
-	setResponse (res) {
+	setResponse(res) {
 		// TODO: store superagent response? or body? or payload?
 
-		if (SERVER_SIDE){
+		if (SERVER_SIDE) {
 
 			// Pull out the pieces of the response we care about.
 			// This would be a NOOP client-side, so we'll skip it.
@@ -174,7 +174,7 @@ class CacheEntry {
 		}
 
 		// Stash away a reference to the response.
-		this.res    = res;
+		this.res = res;
 		this.loaded = true;
 
 		// Resolve with a serialized copy.  We'll unserialize for each
@@ -189,7 +189,7 @@ class CacheEntry {
 		this.dfd.resolve(JSON.stringify(res));
 	}
 
-	setError (err) {
+	setError(err) {
 
 		if (SERVER_SIDE) {
 
@@ -216,7 +216,7 @@ class CacheEntry {
 		return dfd.promise.then(val => JSON.parse(val));
 	}
 
-	whenDataReady () {
+	whenDataReady() {
 		if (SERVER_SIDE) {
 			// server-side, we increment the number of requesters
 			// we expect to retrieve the data on the frontend
@@ -231,11 +231,11 @@ class CacheEntry {
 	}
 
 	// for internal (react-server middleware) calls
-	whenDataReadyInternal () {
+	whenDataReadyInternal() {
 		return this.dfd.promise;
 	}
 
-	decrementRequesters () {
+	decrementRequesters() {
 		logger.debug("Decrementing: " + this.url);
 		this.requesters -= 1;
 
@@ -248,17 +248,17 @@ class CacheEntry {
 	 * Chain a promise with another promise that decrements
 	 * the number of expected requesters.
 	 */
-	_requesterDecrementingPromise (dfd) {
+	_requesterDecrementingPromise(dfd) {
 		// regardless of whether we're resolved with a 'res' or 'err',
 		// we want to decrement requests. the appropriate 'success' or 'error'
 		// callback will be executed on whatever is chained after this method
-		return this._parsePromise(dfd).fin( resOrErr => {
+		return this._parsePromise(dfd).fin(resOrErr => {
 			this.decrementRequesters();
 			return resOrErr;
 		});
 	}
 
-	isForSameRequest (requestData) {
+	isForSameRequest(requestData) {
 		var otherRD = requestData;
 		var myRD = this.requestData;
 
@@ -277,7 +277,7 @@ class CacheEntry {
 
 	// Pull out the properties of the superagent response that we care
 	// about and produce an object that's suitable for writing as JSON.
-	_trimResponseData (res) {
+	_trimResponseData(res) {
 		var result = {};
 		[
 			"body",
@@ -302,11 +302,11 @@ class CacheEntry {
 			"notAcceptable",
 			"notFound",
 			"forbidden",
-		].forEach( prop => {
+		].forEach(prop => {
 			result[prop] = res[prop];
 		});
 		if (this.cacheWhitelist) {
-			this.cacheWhitelist.forEach( prop => {
+			this.cacheWhitelist.forEach(prop => {
 				result[prop] = res[prop];
 			});
 		}
@@ -324,14 +324,14 @@ class CacheEntry {
  */
 class RequestDataCache {
 
-	constructor () {
+	constructor() {
 		/*
 		 * Map[String -> CacheEntry[]]
 		 */
 		this.dataCache = {};
 	}
 
-	dehydrate ({responseBodyOnly=false} = {}) {
+	dehydrate({ responseBodyOnly = false } = {}) {
 
 		var out = {
 			dataCache: {},
@@ -351,7 +351,7 @@ class RequestDataCache {
 		return out;
 	}
 
-	rehydrate (state) {
+	rehydrate(state) {
 
 		logger.debug("Rehydrating RequestDataCache");
 
@@ -380,7 +380,7 @@ class RequestDataCache {
 	 * @param createIfMissing boolean default false
 	 * @param cacheWhitelist array default []
 	 */
-	entry (requestData, createIfMissing = false, cacheWhitelist = []) {
+	entry(requestData, createIfMissing = false, cacheWhitelist = []) {
 		if (!requestData.urlPath) {
 			throw new Error("Missing requestData.urlPath");
 		}
@@ -395,7 +395,7 @@ class RequestDataCache {
 		return cacheEntry;
 	}
 
-	_findEntry (requestData) {
+	_findEntry(requestData) {
 		var urlPath = requestData.urlPath;
 		var entries = this.dataCache[urlPath] || [];
 		// old-school loop so we can break early
@@ -416,7 +416,7 @@ class RequestDataCache {
 	 * @param cacheWhiteList the whitelist of fields that will be provided
 	 *        on the request.
 	 */
-	_addEntry (requestData, cacheWhitelist) {
+	_addEntry(requestData, cacheWhitelist) {
 		var urlPath = requestData.urlPath,
 			entries = this.dataCache[urlPath] || (this.dataCache[urlPath] = []),
 			newEntry = new CacheEntry(this, requestData, cacheWhitelist);
@@ -424,7 +424,7 @@ class RequestDataCache {
 		return newEntry
 	}
 
-	_removeEntry (entry) {
+	_removeEntry(entry) {
 		var urlPath = entry.requestData.urlPath,
 			entries = this.dataCache[urlPath],
 			idx = entries.indexOf(entry);
@@ -434,15 +434,15 @@ class RequestDataCache {
 		this.checkCacheDepleted();
 	}
 
-	markLateRequests () {
-		this.getPendingRequests().forEach(req => {req.entry.late = true});
+	markLateRequests() {
+		this.getPendingRequests().forEach(req => { req.entry.late = true });
 	}
 
-	getLateRequests () {
+	getLateRequests() {
 		return this.getAllRequests().filter(req => req.entry.late);
 	}
 
-	getPendingRequests () {
+	getPendingRequests() {
 		return this.getAllRequests().filter(req => !req.entry.loaded);
 	}
 
@@ -456,7 +456,7 @@ class RequestDataCache {
 		return all;
 	}
 
-	whenAllPendingResolve () {
+	whenAllPendingResolve() {
 		var promises = this.getAllRequests().map(req => req.entry.dfd.promise);
 		return Q.allSettled(promises);
 	}
@@ -464,7 +464,7 @@ class RequestDataCache {
 	/**
 	 * Fires when the cache has been completely depleted, which is used as a signal to render when there was a timeout on the server.
 	 */
-	whenCacheDepleted () {
+	whenCacheDepleted() {
 		this.whenCacheDepletedDfd = this.whenCacheDepletedDfd || Q.defer();
 
 		this.checkCacheDepleted();
@@ -486,7 +486,7 @@ class RequestDataCache {
 		}
 	}
 
-	lateArrival (url, dehydratedEntry) {
+	lateArrival(url, dehydratedEntry) {
 		logger.debug(`Late arrival for ${url}`);
 		var entry = this._findEntry(dehydratedEntry.requestData);
 		if (entry) {

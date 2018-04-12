@@ -9,7 +9,7 @@ gulp.task("travis-ci", ["build"]);
 
 gulp.task("build", ["eslint"]);
 
-gulp.task('nsp', cb => nsp({package: path.resolve('package.json')}, cb));
+gulp.task('nsp', cb => nsp({ package: path.resolve('package.json') }, cb));
 
 gulp.task("eslint", [], () => gulp.src(SRC)
 	.pipe(eslint())

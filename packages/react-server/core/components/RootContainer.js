@@ -23,21 +23,21 @@ RootContainer.defaultProps = {
 	_isRootContainer: true,
 }
 
-RootContainer.flattenForRender = function(element) {
-	return [{containerOpen: getRootElementAttributes(element)}]
+RootContainer.flattenForRender = function (element) {
+	return [{ containerOpen: getRootElementAttributes(element) }]
 		.concat(prepChildren(element))
-		.concat([{containerClose: true}])
-		.reduce((m,v) => m.concat(Array.isArray(v)?v:[v]), [])
+		.concat([{ containerClose: true }])
+		.reduce((m, v) => m.concat(Array.isArray(v) ? v : [v]), [])
 }
 
-RootContainer.isRootContainer = function(element) {
+RootContainer.isRootContainer = function (element) {
 	return element && element.props && element.props._isRootContainer;
 }
 
-function prepChildren (element) {
+function prepChildren(element) {
 	return React.Children.toArray(element.props.children).map(
 		child => RootContainer.isRootContainer(child)
-			?RootContainer.flattenForRender(child)
-			:ensureRootElementWithContainer(child, element)
+			? RootContainer.flattenForRender(child)
+			: ensureRootElementWithContainer(child, element)
 	)
 }

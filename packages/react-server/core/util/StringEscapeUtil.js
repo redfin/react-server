@@ -2,9 +2,9 @@
 // see comment on escapeForScriptTag about how these are used
 var UNSAFE_CHARS = /[<>\/]/g;
 var REPLACEMENT_CHARS = {
-	'<' : '\\u003C',
-	'>' : '\\u003E',
-	'/' : '\\u002F',
+	'<': '\\u003C',
+	'>': '\\u003E',
+	'/': '\\u002F',
 };
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
 	 * Idea borrowed from Yahoo's express-state, but our use case is simpler:
 	 * https://github.com/yahoo/express-state
 	 */
-	escapeForScriptTag (str) {
+	escapeForScriptTag(str) {
 		if (!str) {
 			return str;
 		}
@@ -27,6 +27,5 @@ module.exports = {
 			return REPLACEMENT_CHARS[match];
 		});
 	},
-
 
 }

@@ -1,4 +1,4 @@
-import {ReactServerAgent} from 'react-server';
+import { ReactServerAgent } from 'react-server';
 export default class RequestToPortMiddleware {
 	handleRoute(next) {
 		if (typeof window === 'undefined') { //eslint-disable-line

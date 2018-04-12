@@ -1,8 +1,8 @@
-# babel-preset-react-server
+# babel-preset-react-server:
 
 A babel preset for working with react-server
 
-# Usage
+# Usage:
 
     npm install --save-dev babel-preset-react-server
 

@@ -1,10 +1,10 @@
-import {logging} from "./react-server";
+import { logging } from "./react-server";
 
 const logger = logging.getLogger(__LOGGER__);
 
 // takes in the err and stats object returned by a webpack compilation and returns
 // an error object if something serious happened, or null if things are ok.
-export default function handleCompilationErrors (err, stats){
+export default function handleCompilationErrors(err, stats) {
 	if (err) {
 		logger.error("Error during webpack build.");
 		logger.error(err);
@@ -24,5 +24,4 @@ export default function handleCompilationErrors (err, stats){
 	}
 	return null;
 }
-
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import {join} from "path";
-import {RootContainer} from "react-server";
+import { join } from "path";
+import { RootContainer } from "react-server";
 
 import Repo from "../lib/repo";
 import DocTitle from "../components/page-title";
@@ -12,10 +12,10 @@ import "./docs.less";
 
 export default class DocsPage {
 	handleRoute(next) {
-		const {path} = this.getRequest().getRouteParams();
+		const { path } = this.getRequest().getRouteParams();
 		this.bodyPromise = path
-			?Repo.getFile(join("/docs", `${path}.md`))
-			:Promise.resolve({text: GetStartedSection})
+			? Repo.getFile(join("/docs", `${path}.md`))
+			: Promise.resolve({ text: GetStartedSection })
 		this.contentsPromise = Repo.getContents()
 			.then(DocContents.setResponse)
 			.then(DataBundleCacheManager.addContents.bind({}, '/docs/'))

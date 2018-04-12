@@ -1,6 +1,6 @@
-import {ReactServerAgent, RootElement, Link} from "react-server";
+import { ReactServerAgent, RootElement, Link } from "react-server";
 
-const Okay = ({ok}) => <div>Okay: {""+ok}</div>
+const Okay = ({ ok }) => <div>Okay: {"" + ok}</div>
 
 export default class RootWhenPage {
 	handleRoute(next) {
@@ -20,8 +20,8 @@ export default class RootWhenPage {
 	}
 	getElements() {
 		const next = `/root/error?page=${
-			+(this.getRequest().getQuery().page||0)+1
-		}`
+			+(this.getRequest().getQuery().page || 0) + 1
+			}`
 		return [
 			<div>Before good data root</div>,
 			<RootElement when={this.good}>

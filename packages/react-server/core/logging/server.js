@@ -1,23 +1,23 @@
 var winston = require('winston')
-,   common  = require('./common')
-,   _ = {
-	mapValues     : require("lodash/mapValues"),
-	pickBy        : require("lodash/pickBy"),
-	isPlainObject : require("lodash/isPlainObject"),
-	isEmpty       : require("lodash/isEmpty"),
-	trimStart     : require("lodash/trimStart"),
-	truncate      : require("lodash/truncate"),
-}
-,   responseTransport = require('./response');
+	, common = require('./common')
+	, _ = {
+		mapValues: require("lodash/mapValues"),
+		pickBy: require("lodash/pickBy"),
+		isPlainObject: require("lodash/isPlainObject"),
+		isEmpty: require("lodash/isEmpty"),
+		trimStart: require("lodash/trimStart"),
+		truncate: require("lodash/truncate"),
+	}
+	, responseTransport = require('./response');
 
-var makeLogger = function(group, opts){
+var makeLogger = function (group, opts) {
 	var config = common.config[group];
 	var fileTransport = new (winston.transports.File)({
-		name      : 'file',
-		level     : config.baseLevel,
-		stream    : process.stdout,
-		json      : false,
-		timestamp : global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT,
+		name: 'file',
+		level: config.baseLevel,
+		stream: process.stdout,
+		json: false,
+		timestamp: global.TIMESTAMP_REACT_SERVER_LOG_OUTPUT,
 	});
 
 	var logger = new (winston.Logger)({
@@ -28,7 +28,7 @@ var makeLogger = function(group, opts){
 	});
 
 	// Need to be able to refresh this.
-	(logger.updateColorize = function(){
+	(logger.updateColorize = function () {
 		logger.transports.file.label = colorizeName(opts);
 		logger.transports.file.colorize = global.COLORIZE_REACT_SERVER_LOG_OUTPUT;
 	})();
@@ -47,19 +47,19 @@ var makeLogger = function(group, opts){
 	// For instantiating new transports later.
 	logger.opts = opts;
 
-	(config.extraTransports||[])
+	(config.extraTransports || [])
 		.forEach(transport => logger.add(transport, opts));
 
 	return logger;
 }
 
 // Error objects are weird.  Let's turn them into normal objects.
-function errorInterceptor (level, msg, meta) {
+function errorInterceptor(level, msg, meta) {
 
 	if (meta instanceof Error) {
-		meta = {error: meta};
+		meta = { error: meta };
 	} else if (meta && meta.status && meta.response) {
-		meta = {error: meta};
+		meta = { error: meta };
 	}
 
 	if (_.isPlainObject(meta)) {
@@ -70,7 +70,7 @@ function errorInterceptor (level, msg, meta) {
 }
 
 // massage the error into a format suitable for logging
-function normalizeError (err) {
+function normalizeError(err) {
 	if (err instanceof Error) {
 		return _.pickBy({
 			message: err.message,
@@ -115,7 +115,7 @@ function setLevel(group, level) {
 
 function addTransport(group, transport) {
 
-	if (!common.config[group].extraTransports){
+	if (!common.config[group].extraTransports) {
 		common.config[group].extraTransports = [];
 	}
 

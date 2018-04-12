@@ -1,6 +1,6 @@
-import {ReactServerAgent, RootElement} from "react-server";
+import { ReactServerAgent, RootElement } from "react-server";
 
-const Even = ({body}) => <div className="even">Hey look I'm even because I am {body}</div>;
+const Even = ({ body }) => <div className="even">Hey look I'm even because I am {body}</div>;
 
 export default class ForwardEvenPage {
 	handleRoute() {
@@ -10,9 +10,9 @@ export default class ForwardEvenPage {
 		else params = 0;
 
 		//fetch some data (should be from cache)
-		this.data = ReactServerAgent.get('/data/delay?ms=1000&val='+params);
+		this.data = ReactServerAgent.get('/data/delay?ms=1000&val=' + params);
 
-		return {code: 200};
+		return { code: 200 };
 	}
 
 	getElements() {

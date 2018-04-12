@@ -1,14 +1,14 @@
-import {Component} from "react";
-import {RootElement} from "react-server";
+import { Component } from "react";
+import { RootElement } from "react-server";
 import Q from "q";
 
 class TurnGreen extends Component {
 	componentDidMount() {
-		this.setState({color: "green"});
+		this.setState({ color: "green" });
 	}
 	render() {
-		const {color} = this.state || {};
-		return <div style={{backgroundColor: color || "red"}}>{this.props.children}</div>;
+		const { color } = this.state || {};
+		return <div style={{ backgroundColor: color || "red" }}>{this.props.children}</div>;
 	}
 }
 

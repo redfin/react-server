@@ -1,5 +1,5 @@
 import React from 'react';
-import {ReactServerAgent, RootElement, logging, TheFold} from 'react-server';
+import { ReactServerAgent, RootElement, logging, TheFold } from 'react-server';
 import NetworkCard from '../components/network-card';
 import StationList from '../components/station-list';
 import Header from '../components/header';
@@ -27,27 +27,27 @@ export default class NetworkPage {
 	getElements() {
 		return [
 			<RootElement key={0}>
-				<Header/>
+				<Header />
 			</RootElement>,
 			<RootElement when={this.data} key={1}>
-				<NetworkCard/>
+				<NetworkCard />
 			</RootElement>,
-			<TheFold key={2}/>,
+			<TheFold key={2} />,
 			<RootElement when={this.data} key={3}>
-				<StationList/>
+				<StationList />
 			</RootElement>,
 			<RootElement key={4}>
-				<Footer/>
+				<Footer />
 			</RootElement>,
 		];
 	}
 
 	getMetaTags() {
 		return [
-			{charset: 'utf8'},
-			{name: 'description', content: `Bike share availability in ${this.network}, powered by React Server`},
-			{generator: 'React Server'},
-			{keywords: 'React Server bike share'},
+			{ charset: 'utf8' },
+			{ name: 'description', content: `Bike share availability in ${this.network}, powered by React Server` },
+			{ generator: 'React Server' },
+			{ keywords: 'React Server bike share' },
 		];
 	}
 

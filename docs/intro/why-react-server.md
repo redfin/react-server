@@ -12,7 +12,7 @@ quickly in a mobile-first world.
 1. Encodes performance best practices into the framework, making it easy to
    build high performance websites by default.
 
-## What we talk about when we talk about performance
+## What we talk about when we talk about performance:
 
 When we talk about performance in `react-server`, we're mostly talking about
 _perceived performance_. We believe that
@@ -40,7 +40,7 @@ In order to facilitate blazing perceived performance, `react-server` implements 
 
 We'll examine each of these in turn and discuss why it makes it easier for web developers to write fast front ends, **by default**.
 
-## Parallelize backend queries
+## Parallelize backend queries:
 
 Traditional server-side rendering in frameworks like Ruby on Rails or Java
 Servlets has suffered from the fact that calls to the backend are usually
@@ -75,7 +75,7 @@ highly asynchronous server applications. `react-server`, however, assumes that
 you will access the backend in a massively parallel way, and it facilitates
 building a user interface on top of parallel, asynchronous data access.
 
-## Bundle data for transfer to browser
+## Bundle data for transfer to browser:
 
 One thing you quickly learn when you use React server-side rendering is that
 you have to "reconnect" React on the client side to the HTML markup you
@@ -121,7 +121,7 @@ the client return instantly, as they don't require an expensive network call
 to download data. From a developers perspective, this happens transparently
 and by default.
 
-## Stream pre-rendered HTML
+## Stream pre-rendered HTML:
 
 Once we have parallel backend services and data bundle transfer, we're
 well on our way to developing a web experience that has good perceived
@@ -151,7 +151,7 @@ a few milliseconds. Browsers are well equipped to render partial pages, and
 the user will be shown some content while the primary part of the page is
 still loading.
 
-## Streaming client initialization
+## Streaming client initialization:
 
 Beyond simple streaming of the HTML content, `react-server` also initializes
 the `React` components in the browser _as they arrive_.  You tell
@@ -167,7 +167,7 @@ is rendered and becomes interactive immediately.  If data for late
 `RootElements` continues to arrive in the _server_ that late data is
 _streamed_ to the browser's data bundle in time for the client render.
 
-## Render quickly despite a slow backend
+## Render quickly despite a slow backend:
 
 Now we have a server that is executing backend requests in parallel, sending
 down a client data cache, and streaming out HTML as soon as it's ready for the
@@ -245,7 +245,7 @@ and we won't increase the load on the backend service.
 doesn't need to do anything to get fault-tolerance and still have fast
 painting for the end user.
 
-## Enforce page hygiene through the `Page` API
+## Enforce page hygiene through the `Page` API:
 
 Beyond data loading, there are a ton of frontend best practices that have been
 known for years, primarily around how to load CSS and JavaScript in the most
@@ -279,7 +279,7 @@ they can be centrally implemented in `react-server` without changing client
 code. Providing an API between the developer and the HTML written out allows
 forward compatibility with new performance gains.
 
-## Enable single page applications without code bloat
+## Enable single page applications without code bloat:
 
 Navigating to a new page is one of the slowest things that happens in modern
 web apps. A new HTML page needs to be generated and downloaded, and only then
@@ -318,7 +318,7 @@ bugs). Under the covers, `react-server` uses
 page-to-page navigation is fast, but that adding new pages to an app doesn't
 slow it down.
 
-## Look ahead to HTTP/2
+## Look ahead to HTTP/2:
 
 Finally, we believe that `react-server` puts developers ahead of the game in
 the transition from HTTP/1.x to HTTP/2. **We haven't implemented any HTTP/2
@@ -364,7 +364,7 @@ translate very well to HTTP/2. A few of the ideas we have for HTTP/2 are:
   may become critical for best HTTP/2 performance, and `react-server` will be
   positioned perfectly to test out the best way to tune that.
 
-## Final thoughts
+## Final thoughts:
 
 React is rightly celebrated for its speed and ease-of-coding when rendering in
 the browser, but it requires some extra help to be truly fast on the

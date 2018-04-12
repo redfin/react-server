@@ -1,10 +1,10 @@
 
 var ReactServerAgent = require("../../ReactServerAgent")
-,   cheerio = require("cheerio")
-,   React = require("react")
-,   ReactDOMServer = require("react-dom/server")
-,   FragmentDataCache = require("../FragmentDataCache")
-;
+	, cheerio = require("cheerio")
+	, React = require("react")
+	, ReactDOMServer = require("react-dom/server")
+	, FragmentDataCache = require("../FragmentDataCache")
+	;
 
 var {
 	makeServer,
@@ -15,14 +15,14 @@ describe("FragmentDataCache", () => {
 
 	var server;
 
-	beforeAll( (done) => {
-		makeServer( (createdServer) => {
+	beforeAll((done) => {
+		makeServer((createdServer) => {
 			server = createdServer;
 			done();
 		});
 	});
 
-	afterAll( () => {
+	afterAll(() => {
 		// tear down server
 		server && server.close();
 	});
@@ -68,8 +68,8 @@ describe("FragmentDataCache", () => {
 					var $ = cheerio.load(htmlStr);
 
 					var node
-					,	dataStr
-					,	parsedData;
+						, dataStr
+						, parsedData;
 
 					node = $("#react-server-fragment-data-cache");
 					expect(node.length).toBe(0);
@@ -117,8 +117,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					, dataStr
+					, parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -140,7 +140,7 @@ describe("FragmentDataCache", () => {
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
@@ -152,15 +152,15 @@ describe("FragmentDataCache", () => {
 					// do nothing here
 				});
 
-			FragmentDataCache.createWhenReady({cacheNodeId: 'fooBarBaz'}).then(fragmentComponent => {
+			FragmentDataCache.createWhenReady({ cacheNodeId: 'fooBarBaz' }).then(fragmentComponent => {
 				expect(fragmentComponent).toBeDefined();
 
 				var htmlStr = ReactDOMServer.renderToStaticMarkup(fragmentComponent);
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					, dataStr
+					, parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(0);
@@ -185,14 +185,14 @@ describe("FragmentDataCache", () => {
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
 		it("does something reasonable when a request errors", withRlsContext(done => {
 
-			ReactServerAgent.get("/describe").then(res => {});
-			ReactServerAgent.get("/error").then(res => {});
+			ReactServerAgent.get("/describe").then(res => { });
+			ReactServerAgent.get("/error").then(res => { });
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -202,8 +202,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					, dataStr
+					, parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -233,17 +233,17 @@ describe("FragmentDataCache", () => {
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
 		it("does something reasonable when a request times out", withRlsContext(done => {
 
-			ReactServerAgent.get("/describe").then(res => {});
+			ReactServerAgent.get("/describe").then(res => { });
 			ReactServerAgent.get("/timeout")
 				.query({ delay: 1000 })
 				.timeout(100)
-				.then(res => {});
+				.then(res => { });
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -253,8 +253,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					, dataStr
+					, parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -286,8 +286,8 @@ describe("FragmentDataCache", () => {
 
 		it("dehydrates an array of entries when two requests are made to the same URL", withRlsContext(done => {
 
-			ReactServerAgent.get("/describe").query({"foo": "bar"}).then(res => res);
-			ReactServerAgent.get("/describe").query({"foo": "baz"}).then(res => res);
+			ReactServerAgent.get("/describe").query({ "foo": "bar" }).then(res => res);
+			ReactServerAgent.get("/describe").query({ "foo": "baz" }).then(res => res);
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -297,8 +297,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					, dataStr
+					, parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);

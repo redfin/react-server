@@ -22,11 +22,11 @@ class RootProvider extends React.Component {
 		if (Array.isArray(this.props.children)) {
 			this.props.children.forEach((element, index) => {
 				if (!RootProvider.isRootProvider(element)) {
-					wrappedElements.push(React.createElement(Provider, {key: index, store: this.props.store}, element));
+					wrappedElements.push(React.createElement(Provider, { key: index, store: this.props.store }, element));
 				}
 			});
 		} else {
-			wrappedElements.push(React.createElement(Provider, {key: 0, store: this.props.store}, this.props.children));
+			wrappedElements.push(React.createElement(Provider, { key: 0, store: this.props.store }, this.props.children));
 		}
 
 		return React.createElement('div', null, wrappedElements);

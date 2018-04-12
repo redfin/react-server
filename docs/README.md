@@ -1,4 +1,4 @@
-# React Server docs
+# React Server docs:
 
 Welcome to the React Server docs!  React Server assumes a separate back end
 server to serve a JSON api that it can call to get its data, and is a

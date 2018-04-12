@@ -1,5 +1,5 @@
 import React from 'react';
-import {ReactServerAgent, RootContainer} from 'react-server';
+import { ReactServerAgent, RootContainer } from 'react-server';
 import SourceBody from '../components/source-body';
 import PageTitle from '../components/page-title';
 import SourceContents from '../components/source-contents';
@@ -10,10 +10,10 @@ import './source.less';
 export default class SourcePage {
 	handleRoute(next) {
 		const page = this.getRequest().getRouteParams().path;
-		this.bodyPromise = page && ReactServerAgent.get('/api/source', {page})
-			.then(({body}) => body)
+		this.bodyPromise = page && ReactServerAgent.get('/api/source', { page })
+			.then(({ body }) => body)
 		this.contentsPromise = ReactServerAgent.get('/api/source-contents')
-			.then(({body}) => body)
+			.then(({ body }) => body)
 			.then(SourceContents.setResponse)
 			.then(DataBundleCacheManager.addContents.bind({}, '/source/'))
 		return next();

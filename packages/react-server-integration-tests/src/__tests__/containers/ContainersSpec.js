@@ -7,16 +7,16 @@ describe("A page's root elements", () => {
 
 	// Verify that we get our attributes set where they need to go.
 	_.forEach({
-		'RootElement'   : "[data-react-server-root-id]",
-		'RootContainer' : "[data-react-server-container]",
+		'RootElement': "[data-react-server-root-id]",
+		'RootContainer': "[data-react-server-container]",
 	}, (query, root) => {
 		_.forEach({
-			'id'    : 'foo',
-			'class' : 'bar',
-			'style' : 'baz',
+			'id': 'foo',
+			'class': 'bar',
+			'style': 'baz',
 		}, (value, attr) => desc(
 			`can have "${attr}" attribute on ${root}`,
-			'/attributesOn'+root,
+			'/attributesOn' + root,
 			element => expect(element).toBeTruthy() && expect(element.getAttribute(attr)).toBe(value),
 			query
 		));
@@ -26,21 +26,21 @@ describe("A page's root elements", () => {
 	// Single elements of various types.
 	// All should resolve to a single `<div>foo</div>`.
 	_.forEach({
-		"/singleDivNoArray"                 : "div with no array",
-		"/singleDivInArray"                 : "div in an array",
-		"/singlePromiseNoArray"             : "promise with no array",
-		"/singlePromiseInArray"             : "promise in an array",
-		"/singleRootElementNoArray"         : "RootElement with no array",
-		"/singleRootElementInArray"         : "RootElement in an array",
-		"/singleRootContainerNoArray"       : "RootContainer with no array",
-		"/singleRootContainerInArray"       : "RootContainer in an array",
-		"/singleRootElementInRootContainer" : "RootElement in a RootContainer",
+		"/singleDivNoArray": "div with no array",
+		"/singleDivInArray": "div in an array",
+		"/singlePromiseNoArray": "promise with no array",
+		"/singlePromiseInArray": "promise in an array",
+		"/singleRootElementNoArray": "RootElement with no array",
+		"/singleRootElementInArray": "RootElement in an array",
+		"/singleRootContainerNoArray": "RootContainer with no array",
+		"/singleRootContainerInArray": "RootContainer in an array",
+		"/singleRootElementInRootContainer": "RootElement in a RootContainer",
 	}, makeSingleDesc('can be a single'));
 
 	// Get props to root elements in various ways.
 	_.forEach({
-		"/propsFromEmitterRootElement"   : "RootElement listen",
-		"/propsFromEmitterRootContainer" : "RootContainer listen",
+		"/propsFromEmitterRootElement": "RootElement listen",
+		"/propsFromEmitterRootContainer": "RootContainer listen",
 	}, makeSingleDesc('can get props from'));
 
 	// Some machinery to factor out commonality.
@@ -48,10 +48,10 @@ describe("A page's root elements", () => {
 	// Note that with the default query this just grabs the first root
 	// element.  Won't always be index zero, since containers burn slots
 	// (but they don't have `data-react-server-root-id`).
-	function desc(txt, url, fn, query="[data-react-server-root-id]") {
+	function desc(txt, url, fn, query = "[data-react-server-root-id]") {
 		describe(txt, () => helper.testWithElement(url, query, fn));
-		var page = `./pages/${url[0]+url[1].toUpperCase()+url.slice(2)}`;
-		if (!seen[page]){
+		var page = `./pages/${url[0] + url[1].toUpperCase() + url.slice(2)}`;
+		if (!seen[page]) {
 			seen[page] = true;
 			pages.push(page);
 		}

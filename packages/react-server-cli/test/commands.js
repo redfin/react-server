@@ -90,17 +90,17 @@ function testStdOutput(stdOutput, includes) {
 	return !stdOutput;
 }
 
-function createAndChangeToTempDir(tmpPath){
+function createAndChangeToTempDir(tmpPath) {
 	if (fs.existsSync(tmpPath)) rimraf.sync(tmpPath);
 	fs.mkdirSync(tmpPath);
 	process.chdir(tmpPath);
 }
 
-function noDotDirectory(x){
+function noDotDirectory(x) {
 	return x !== '.';
 }
 
-function readDir(dirPath){
+function readDir(dirPath) {
 	const files = {};
 	if (fs.existsSync(dirPath)) {
 		readdirSyncRecursive(dirPath, noDotDirectory).forEach(filename => {

@@ -44,7 +44,9 @@
     "indent": [
       2,
       "tab",
-      { "SwitchCase": 1 }
+      {
+        "SwitchCase": 1
+      }
     ],
     "key-spacing": 0,
     "keyword-spacing": 2,
@@ -91,7 +93,12 @@
     "no-unreachable": 2,
     "no-unused-expressions": 0,
     "no-unused-vars": 2,
-    "no-use-before-define": ["error", { "functions": false }],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
     "no-wrap-func": 0,
     "quotes": [
       0,

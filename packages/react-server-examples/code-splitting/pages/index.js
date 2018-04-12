@@ -11,10 +11,10 @@ export default class CodeSplittingPage {
 		return "Code Splitting Demo";
 	}
 
-	getElements () {
+	getElements() {
 		return [
 			// childProps will be passed into the loaded component
-			<RootElement componentLoader={HeaderLoader} childProps={{ headerText: "Code Splitting Demo" }}/>,
+			<RootElement componentLoader={HeaderLoader} childProps={{ headerText: "Code Splitting Demo" }} />,
 			<Body />,
 			<RootElement componentLoader={FooterLoader} />,
 		];

@@ -3,8 +3,8 @@ import React from "react"
 export default class InternalServerErrorWithDocumentPage {
 	handleRoute() {
 		return {
-			code        : 500,
-			hasDocument : true,
+			code: 500,
+			hasDocument: true,
 		};
 	}
 

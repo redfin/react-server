@@ -33,5 +33,5 @@ function readFile(filename) {
 }
 
 function trim(str) {
-  return str.replace(/^\s+|\s+$/, '');
+	return str.replace(/^\s+|\s+$/, '');
 }

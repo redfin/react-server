@@ -1,18 +1,18 @@
 /* eslint-disable */
 
 // This is from https://slack.react-server.io/slackin.js
-export default function wireUpSlackinButton(){
+export default function wireUpSlackinButton() {
 
   // give up and resort to `target=_blank`
   // if we're not modern enough
   if (!document.body.getBoundingClientRect
-   || !document.body.querySelectorAll
-   || !window.postMessage) {
+    || !document.body.querySelectorAll
+    || !window.postMessage) {
     return
   }
 
   // search for a script tag pointing to slackin.js
-  function search (){
+  function search() {
     var replaced = 0
     var scripts = document.querySelectorAll('script')
     var script
@@ -34,7 +34,7 @@ export default function wireUpSlackinButton(){
   var LARGE // boolean for large/small mode, from query param
 
   // replace the script tag with an iframe
-  function replace (script){
+  function replace(script) {
     var parent = script.parentNode
     if (!parent) return
 
@@ -61,20 +61,20 @@ export default function wireUpSlackinButton(){
     parent.removeChild(script)
 
     // setup iframe RPC
-    iframe.onload = function (){
+    iframe.onload = function () {
       setup(iframe)
     }
   }
 
   // setup an "RPC" channel between iframe and us
-  function setup (iframe){
+  function setup(iframe) {
     var id = Math.random() * (1 << 24) | 0
     iframe.contentWindow.postMessage('slackin:' + id, '*')
-    window.addEventListener('message', function (e){
+    window.addEventListener('message', function (e) {
       if (typeof e.data !== 'string') return
 
       // show dialog upon click
-      if ('slackin-click:' + id  === e.data) {
+      if ('slackin-click:' + id === e.data) {
         showDialog(iframe)
       }
 
@@ -99,7 +99,7 @@ export default function wireUpSlackinButton(){
   // show the dialog around the iframe
   // by, yes, creating a new iframe
   var showing = false
-  function showDialog (iframe){
+  function showDialog(iframe) {
     if (showing) return
     showing = true
 
@@ -136,7 +136,7 @@ export default function wireUpSlackinButton(){
     ni.style.height = '15.5em'
     ni.style.borderWidth = 0
     ni.src = iframe.src.replace('iframe', 'iframe/dialog')
-    ni.onload = function (){
+    ni.onload = function () {
       setup(ni)
       window.addEventListener('scroll', dposition)
       window.addEventListener('resize', dposition)
@@ -146,7 +146,7 @@ export default function wireUpSlackinButton(){
     // arrows
     var a1 = document.createElement('div')
     var a2 = document.createElement('div');
-    [a1, a2].forEach(function (a){
+    [a1, a2].forEach(function (a) {
       a.style.border = 'solid transparent'
       a.style.pointerEvents = 'none'
       a.style.width = '0'
@@ -171,8 +171,8 @@ export default function wireUpSlackinButton(){
     div.appendChild(ni)
     document.body.appendChild(div)
 
-    function position (){
-      [div, a1, a2].forEach(function (el){
+    function position() {
+      [div, a1, a2].forEach(function (el) {
         el.style.left = ''
         el.style.right = ''
         el.style.bottom = ''
@@ -220,17 +220,17 @@ export default function wireUpSlackinButton(){
       div.style.left = left + 'px'
 
       a1.style.left =
-      a2.style.left = (iframeLeft - left + Math.round(iframePos.width / 2)) + 'px'
+        a2.style.left = (iframeLeft - left + Math.round(iframePos.width / 2)) + 'px'
     }
 
     // debounced positionining
     var timer
-    function dposition (){
+    function dposition() {
       clearTimeout(timer)
       timer = setTimeout(position, 100)
     }
 
-    function hide (){
+    function hide() {
       showing = false
       window.removeEventListener('scroll', dposition)
       window.removeEventListener('resize', dposition)
@@ -238,7 +238,7 @@ export default function wireUpSlackinButton(){
       document.documentElement.removeEventListener('click', click, true)
     }
 
-    function click (ev){
+    function click(ev) {
       if ('__slackin' != ev.target.className) {
         hide()
       }

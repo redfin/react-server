@@ -1,5 +1,5 @@
 import React from 'react';
-import {logging} from 'react-server';
+import { logging } from 'react-server';
 
 const logger = logging.getLogger(__LOGGER__);
 

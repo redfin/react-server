@@ -1,5 +1,5 @@
 import request from "request-promise";
-import {logging} from 'react-server';
+import { logging } from 'react-server';
 
 const logger = logging.getLogger(__LOGGER__);
 const citybikesApi = 'http://api.citybik.es/v2/networks';

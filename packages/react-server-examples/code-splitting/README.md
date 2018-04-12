@@ -1,4 +1,4 @@
-# Basic Code Splitting Example
+# Basic Code Splitting Example:
 
 A version of the HelloWorld page with code splitting enabled. This page has 3 parts to it, header, body, and a footer. The body is configured to be loaded on initial page load. The header will then load soon after that and with the footer loading around 6 seconds after the inital page was loaded. 
 
@@ -20,10 +20,10 @@ npm start
 
 Then go to [localhost:3000](http://localhost:3000/). You will see a simple page that pre-renders and that is interactive on load. It also will include hot reloading of React components in their own file.
 
-# How to do Code Splitting 
+# How to do Code Splitting
 `RootElement` will take an async function via the `componentLoader` prop. This function is expected to resolve to a single React component that `RootElement` will then render and pass any props from `listen`, `when`, and/or `childProps` into.
 
-# Example Usages
+# Example Usages:
 
 This will render the component that calling `loader` resolves to.
 ```jsx

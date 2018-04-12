@@ -1,4 +1,4 @@
-# react-server-examples/hello-world
+# react-server-examples/hello-world:
 
 Very simple example project for `react-server` which only shows server rendering
 and interactivity on the client side.
@@ -23,7 +23,7 @@ after `--`. For example:
 npm start -- --port=4000
 ```
 
-# Running the tests
+# Running the tests:
 
 To run the tests
 
@@ -47,7 +47,7 @@ issues with the installed dependencies; you can run it with `nsp check`.
 The last test is an end-to-end test, which starts the server and checks that it
 serves pages correctly; you can run it with `ava test.js`.
 
-# Developing using Docker and Docker Compose
+# Developing using Docker and Docker Compose:
 
 These steps assume you are familiar with docker and already have it installed.
 Some basics:

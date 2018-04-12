@@ -21,7 +21,7 @@ export default class SimplePage {
 ```
 
 
-# Understanding the page lifecycle
+# Understanding the page lifecycle:
 
 Page lifecycle methods are called in groups that can return asynchronously in
 any order.  We render the head element first
@@ -53,9 +53,9 @@ value; for instance, you can omit the head methods altogether and get a
 performant and featureful page.
 
 
-# Examples
+# Examples:
 
-### Full page
+### Full page:
 
 A `react-server` page that serves a full webpage.
 
@@ -118,7 +118,7 @@ class ExamplePage {
 }
 ```
 
-### Json endpoint
+### Json endpoint:
 
 ```js
 // returns a promise for example data
@@ -141,7 +141,7 @@ export default class ExampleJsonPage {
 }
 ```
 
-### Setting Config values
+### Setting Config values:
 
 For instance, to make a page into a fragment by setting the `isFragment` config
 value
@@ -176,7 +176,7 @@ export default ExamplePage;
 ```
 
 
-# Find out more
+# Find out more:
 
 Check the [page api](/docs/page-api.md) to learn more.  If you'd like to check the
 code, the page lifecycle is declared in

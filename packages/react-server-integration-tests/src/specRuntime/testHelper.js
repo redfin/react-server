@@ -1,6 +1,6 @@
 
 /* eslint-disable no-process-env */
-var	fs = require("fs"),
+var fs = require("fs"),
 	mkdirp = require("mkdirp"),
 	path = require("path"),
 	Browser = require('zombie'),
@@ -88,7 +88,7 @@ var routesArrayToMap = function (routesArray) {
 			// strip extension from filename, if given
 			fileName = fileName.substr(0, fileName.length - path.extname(fileName).length);
 		}
-		if (fileName.length >=4 && fileName.substr(-4) === "Page") fileName = fileName.substr(0, fileName.length - 4);
+		if (fileName.length >= 4 && fileName.substr(-4) === "Page") fileName = fileName.substr(0, fileName.length - 4);
 		if (fileName.length > 0) fileName = fileName.substr(0, 1).toLowerCase() + fileName.substr(1);
 		result["/" + fileName] = file;
 	});
@@ -96,7 +96,7 @@ var routesArrayToMap = function (routesArray) {
 }
 
 const startServer = function (specFile, routes, httpsOptions) {
-  // if we got an array, normalize it to a map of URLs to file paths.
+	// if we got an array, normalize it to a map of URLs to file paths.
 	if (Array.isArray(routes)) routes = routesArrayToMap(routes);
 
 	const testTempDir = path.join(__dirname, "../../test-temp");
@@ -108,7 +108,7 @@ const startServer = function (specFile, routes, httpsOptions) {
 		routesFile: routesFile,
 		hot: false,
 		port: PORT,
-		jsPort: +PORT+1,
+		jsPort: +PORT + 1,
 		logLevel: "emergency",
 		timingLogLevel: "none",
 		gaugeLogLevel: "no",
@@ -129,7 +129,7 @@ const startServer = function (specFile, routes, httpsOptions) {
 };
 
 const getServerBrowser = function (url, cb) {
-	const browser = getBrowser({runScripts:false}),
+	const browser = getBrowser({ runScripts: false }),
 		scheme = HTTPS ? 'https' : 'http';
 
 	browser.visit(`${scheme}://localhost:${PORT}${url}`).then(() => cb(browser), (e) => {
@@ -213,12 +213,12 @@ var testWithWindow = function (url, testFn) {
 			done();
 		}
 	}
-	it ("on client", function(done) {
+	it("on client", function (done) {
 		getClientWindow(url, (window) => {
 			callback(window, done);
 		});
 	});
-	it ("on transition", function(done) {
+	it("on transition", function (done) {
 		getTransitionWindow(url, (window) => {
 			callback(window, done);
 		});
@@ -242,17 +242,17 @@ var testWithDocument = function (url, testFn) {
 			done();
 		}
 	}
-	it ("on server", function(done) {
+	it("on server", function (done) {
 		getServerDocument(url, (document) => {
 			callback(document, done);
 		});
 	});
-	it ("on client", function(done) {
+	it("on client", function (done) {
 		getClientDocument(url, (document) => {
 			callback(document, done);
 		});
 	});
-	it ("on client transition", function(done) {
+	it("on client transition", function (done) {
 		getTransitionDocument(url, (document) => {
 			callback(document, done);
 		});
@@ -261,7 +261,7 @@ var testWithDocument = function (url, testFn) {
 
 // Used to test test browser state on server, client and on page-to-page transitions
 var testWithBrowser = function (url, testFn) {
-	var callback = (browser, done, isTransition=false) => {
+	var callback = (browser, done, isTransition = false) => {
 		if (testFn.length >= 3) {
 			testFn(browser, isTransition, done);
 		} else {
@@ -270,17 +270,17 @@ var testWithBrowser = function (url, testFn) {
 			done();
 		}
 	}
-	it ("on server", function(done) {
+	it("on server", function (done) {
 		getServerBrowser(url, (browser) => {
 			callback(browser, done);
 		});
 	});
-	it ("on client", function(done) {
+	it("on client", function (done) {
 		getClientBrowser(url, (browser) => {
 			callback(browser, done);
 		});
 	});
-	it ("on client transition", function(done) {
+	it("on client transition", function (done) {
 		getTransitionBrowser(url, (browser) => {
 			callback(browser, done, true);
 		});
@@ -301,11 +301,11 @@ var testSetupFn = function (specFile, routes, httpsOptions) {
 				.filter((key) => /(__clientTemp|test-temp)/.test(key))
 				.forEach((key) => delete require.cache[key]);
 
-			const {stop, started} = startServer(specFile, routes, httpsOptions);
+			const { stop, started } = startServer(specFile, routes, httpsOptions);
 			started.then(done, (e) => {
 				console.error("There was an error while starting the server.");
 				// No point in continuing.
-				setTimeout(() => {throw e});
+				setTimeout(() => { throw e });
 			});
 			stopFns.push(stop);
 		} catch (e) {

@@ -2,7 +2,7 @@
 
 React Server transpilation
 
-## Example
+## Example:
 
 **In**
 
@@ -18,13 +18,13 @@ var logger = require('react-server').logging.getLogger(__LOGGER__);
 var logger = require('react-server').logging.getLogger({ name: 'module.name', color: {} });
 ```
 
-## Installation
+## Installation:
 
 ```sh
 $ npm install babel-plugin-react-server
 ```
 
-## Usage
+## Usage:
 
 ### Via `.babelrc` (Recommended)
 
@@ -36,13 +36,13 @@ $ npm install babel-plugin-react-server
 }
 ```
 
-### Via CLI
+### Via CLI:
 
 ```sh
 $ babel --plugins react-server script.js
 ```
 
-### Via Node API
+### Via Node API:
 
 ```javascript
 require("babel-core").transform("code", {
@@ -51,7 +51,7 @@ require("babel-core").transform("code", {
 ```
 
 
-## Configuration
+## Configuration:
 
 A fully configured babel plugin in your babelrc would look be
 
@@ -67,7 +67,7 @@ A fully configured babel plugin in your babelrc would look be
 ```
 
 
-### Trim
+### Trim:
 
 A substring to trim off the front of the module name
 
@@ -77,7 +77,7 @@ A substring to trim off the front of the module name
 }
 ```
 
-### Token
+### Token:
 
 The token to replace in the source code with the module tag.  By default, uses
 the default logger token `__LOGGER__`, and two future reserved tokens,

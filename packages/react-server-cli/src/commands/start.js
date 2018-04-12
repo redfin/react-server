@@ -209,7 +209,7 @@ const startHotLoadJsServer = (compiler, port, bindIp, longTermCaching, httpsOpti
 const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) => {
 	return {
 		stop: () => Promise.resolve(),
-		started: new Promise((resolve, reject) => compiler.run((err, stats)=> {
+		started: new Promise((resolve, reject) => compiler.run((err, stats) => {
 			// even though we aren't using the compiled code (we're pointing at jsUrl),
 			// we still need to run the compilation to get the chunk file names.
 			try {
@@ -229,7 +229,7 @@ const startDummyJsServer = (compiler /*, port, longTermCaching, httpsOptions*/) 
 // stop. started is a promise that resolves when all necessary servers have been
 // started. stop is a method to stop all servers. It takes no arguments and
 // returns a promise that resolves when the server has stopped.
-export default function start(options){
+export default function start(options) {
 	setupLogging(options);
 	logProductionWarnings(options);
 
@@ -277,7 +277,7 @@ export default function start(options){
 			// ES6 destructuring without a preceding `let` or `const` results in a syntax error.  Therefore, the below
 			// statement must be wrapped in parentheses to work properly.
 			// http://exploringjs.com/es6/ch_destructuring.html#sec_leading-curly-brace-destructuring
-			({serverRoutes, compiler} = compileClient(options));
+			({ serverRoutes, compiler } = compileClient(options));
 		}
 
 		if (!jsUrl) {
@@ -296,7 +296,7 @@ export default function start(options){
 		return {
 			stop: () => Promise.all([jsServer.stop(), htmlServerPromise.then(server => server.stop())]),
 			started: Promise.all([jsServer.started, htmlServerPromise.then(server => server.started)])
-				.catch(e => {logger.error(e); throw e})
+				.catch(e => { logger.error(e); throw e })
 				.then(() => logger.notice(`Ready for requests on ${bindIp}:${port}.`)),
 		};
 	};

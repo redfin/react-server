@@ -4,7 +4,7 @@ import React from 'react';
 import Remarkable from 'remarkable';
 import hljs from '../lib/highlight.js';
 
-import {logging, navigateTo} from 'react-server';
+import { logging, navigateTo } from 'react-server';
 
 import './Markdown.less';
 
@@ -59,14 +59,14 @@ export default class Markdown extends React.Component {
 }
 
 Markdown.propTypes = {
-	source     : PropTypes.string,
-	reuseDom   : PropTypes.bool,
-	bundleData : PropTypes.bool,
+	source: PropTypes.string,
+	reuseDom: PropTypes.bool,
+	bundleData: PropTypes.bool,
 }
 
 Markdown.defaultProps = {
-	reuseDom   : false,
-	bundleData : true,
+	reuseDom: false,
+	bundleData: true,
 }
 
 function isInternal(a) {
@@ -75,13 +75,13 @@ function isInternal(a) {
 }
 
 // TODO: Let's make this available as a helper from React Server core.
-function addOnClickHandler(a, {reuseDom, bundleData}) {
+function addOnClickHandler(a, { reuseDom, bundleData }) {
 	a.onclick = function (e) {
 		// See Link.jsx in react-server/core/Link
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			navigateTo(a.getAttribute('href'), {reuseDom, bundleData});
+			navigateTo(a.getAttribute('href'), { reuseDom, bundleData });
 		} else {
 			// do normal browser navigate
 		}

@@ -2,7 +2,7 @@
 var JS_BUNDLE_SUFFIX = ".bundle.js";
 var CSS_ROLLUP_SUFFIX = ".styles.css";
 
-function getEntryPointNameFromRouteName (routeName) {
+function getEntryPointNameFromRouteName(routeName) {
 	return routeName + "Page";
 }
 

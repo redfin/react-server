@@ -2,15 +2,15 @@ import compileClient from "../compileClient"
 import handleCompilationErrors from "../handleCompilationErrors";
 import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
-import {logging} from "../react-server";
+import { logging } from "../react-server";
 
 const logger = logging.getLogger(__LOGGER__);
 
-export default function compile(options){
+export default function compile(options) {
 	setupLogging(options);
 	logProductionWarnings(options);
 
-	const {compiler} = compileClient(options);
+	const { compiler } = compileClient(options);
 
 	logger.notice("Starting compilation of client JavaScript...");
 	compiler.run((err, stats) => {

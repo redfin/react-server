@@ -107,7 +107,7 @@ export default (args = process.argv) => {
 			default: undefined,
 			type: "boolean",
 		})
-		.version(function() {
+		.version(function () {
 			return require('../package').version;
 		})
 		.alias('v', 'version')
@@ -116,10 +116,10 @@ export default (args = process.argv) => {
 		.demand(0)
 
 	const commands = {
-		"start"    : "Start the server",
-		"compile"  : "Compile static assets",
-		"init"     : "Initialize a React Server site",
-		"add-page" : "Add a page to an existing site",
+		"start": "Start the server",
+		"compile": "Compile static assets",
+		"init": "Initialize a React Server site",
+		"add-page": "Add a page to an existing site",
 	}
 
 	Object.keys(commands)

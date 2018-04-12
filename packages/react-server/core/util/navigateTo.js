@@ -1,6 +1,6 @@
 import ClientRequest from "../ClientRequest";
 import History from "../components/History";
-import {getCurrentRequestContext} from "../context/RequestContext";
+import { getCurrentRequestContext } from "../context/RequestContext";
 
 // This initiates a client transition to `path` with `options`.
 // Just a convenience wrapper.

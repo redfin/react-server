@@ -26,8 +26,8 @@ describe("A CSS page with assets", () => {
 
 	describe("can apply a css class", () => {
 		helper.testWithDocument("/cssWithAssets", (document) => {
-      // this test is really just to make sure that react-server-cli doesn't explode
-      // when compiling CSS that includes images and fonts.
+			// this test is really just to make sure that react-server-cli doesn't explode
+			// when compiling CSS that includes images and fonts.
 			expect(document.querySelector("head link[rel=stylesheet]").href).toMatch(/route0\.css/);
 		});
 	});

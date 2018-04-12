@@ -212,8 +212,8 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 		resolve: {
 			alias: {
 				// These need to be singletons.
-				"react"        : callerDependency("react"),
-				"react-server" : callerDependency("react-server"),
+				"react": callerDependency("react"),
+				"react-server": callerDependency("react-server"),
 			},
 		},
 		resolveLoader: {
@@ -228,7 +228,7 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 			}),
 			new ExtractTextPlugin(`[name]${longTermCaching ? ".[chunkhash]" : ""}.css`),
 			new webpack.optimize.CommonsChunkPlugin({
-				name:"common",
+				name: "common",
 			}),
 		],
 	};
@@ -243,7 +243,7 @@ function packageCodeForBrowser(entrypoints, outputDir, outputUrl, hot, minify, l
 		webpackConfig.plugins = [
 			...webpackConfig.plugins,
 			new webpack.DefinePlugin({
-				'process.env': {NODE_ENV: '"production"'},
+				'process.env': { NODE_ENV: '"production"' },
 			}),
 			// TODO: should this be done as babel plugin?
 			new webpack.optimize.UglifyJsPlugin(),
@@ -368,7 +368,7 @@ module.exports = {
 // the value to an object.
 function normalizeRoutesPage(page) {
 	if (typeof page === "string") {
-		return {default: page};
+		return { default: page };
 	}
 	return page;
 }

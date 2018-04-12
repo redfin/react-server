@@ -1,6 +1,6 @@
 import _ from "lodash";
 import fs from "fs";
-import {spawnSync} from "child_process";
+import { spawnSync } from "child_process";
 import chalk from "chalk";
 import fileExists from "../fileExists";
 import ConfigurationError from "../ConfigurationError";
@@ -34,11 +34,11 @@ const CONFIG = {
 	},
 }
 
-export default function init(){
+export default function init() {
 
 	if (!fileExists("package.json")) {
 		console.log(chalk.yellow("No package.json found.  Running `npm init --yes`"));
-		spawnSync("npm", ["init", "--yes"], {stdio: "inherit"});
+		spawnSync("npm", ["init", "--yes"], { stdio: "inherit" });
 	}
 
 	Object.keys(CONFIG).forEach(fn => {
@@ -49,7 +49,7 @@ export default function init(){
 
 	console.log(chalk.yellow("Installing dependencies"));
 
-	spawnSync("npm", ["install", "--save", ...DEPENDENCIES], {stdio: "inherit"});
+	spawnSync("npm", ["install", "--save", ...DEPENDENCIES], { stdio: "inherit" });
 
 	console.log(chalk.yellow("Installing devDependencies"));
 

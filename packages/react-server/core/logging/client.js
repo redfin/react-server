@@ -10,24 +10,24 @@
 
 var common = require('./common')
 
-var _console = ['log','error','warn','debug','info'].reduce((m,v) => {
+var _console = ['log', 'error', 'warn', 'debug', 'info'].reduce((m, v) => {
 	// IE9 doesn't even _define_ console unless the dev tools are open.
 	// IE9 also needs a real function for `apply` to work.
 	m[v] = (typeof console === 'undefined')
-		?() => {}
-		:Function.prototype.bind.call(console[v]||console.log, console)
+		? () => { }
+		: Function.prototype.bind.call(console[v] || console.log, console)
 	return m;
 }, {});
 
 var lvl_map = {
-	emergency : 'error',
-	alert     : 'error',
-	critical  : 'error',
-	error     : 'error',
-	warning   : 'warn',
-	notice    : 'warn',
-	debug     : 'debug',
-	info      : 'info',
+	emergency: 'error',
+	alert: 'error',
+	critical: 'error',
+	error: 'error',
+	warning: 'warn',
+	notice: 'warn',
+	debug: 'debug',
+	info: 'info',
 };
 var clog = lvl => _console[lvl_map[lvl] || 'log'];
 
@@ -38,7 +38,7 @@ var monochrome = typeof _console.log == "object";
 // we'll conform more-or-less to winston's interface for the `log` method for
 // consistency's sake.  This means passing a function as the fourth argument.
 // We'll use a noop.
-var noop = () => {};
+var noop = () => { };
 
 var transportQueue = [];
 
@@ -61,14 +61,14 @@ function scheduleTransport(tuple) {
 	}
 }
 
-var makeLogger = function(group, opts){
+var makeLogger = function (group, opts) {
 	var config = common.config[group]
 
 	var logger = {
 		opts,
 		name: opts.name,
 		level: config.baseLevel,
-		log: function(level, msg, meta){
+		log: function (level, msg, meta) {
 
 			if (this.transports.length) {
 				this.transports.forEach(transport => {
@@ -87,17 +87,17 @@ var makeLogger = function(group, opts){
 
 			clog(level).apply(
 				_console,
-				(monochrome?[`${level}: [${opts.name}]`]:[
-					'%c'+level+'%c: [%c'+opts.name+'%c]',
-					'color: '+config.colors[level],
+				(monochrome ? [`${level}: [${opts.name}]`] : [
+					'%c' + level + '%c: [%c' + opts.name + '%c]',
+					'color: ' + config.colors[level],
 					'color: black',
-					'color: '+opts.color.client,
+					'color: ' + opts.color.client,
 					'color: black',
 				]).concat(args)
 			);
 		},
 		transports: [],
-		add: function(transport, opts){
+		add: function (transport, opts) {
 			this.transports.push(new transport(opts));
 		},
 		stack: common.stack,
@@ -107,12 +107,12 @@ var makeLogger = function(group, opts){
 		// note that this has to be an ES-5 style function and cannot be an arrow function
 		// because arguments doesn't bind to the arrow function's arguments; it would bind
 		// to makeLogger's arguments.
-		logger[level] = function(a, b, c){
+		logger[level] = function (a, b, c) {
 			logger.log(level, a, b, c);
 		}
 	});
 
-	(config.extraTransports||[])
+	(config.extraTransports || [])
 		.forEach(transport => logger.add(transport, opts));
 
 	return logger;
@@ -120,7 +120,7 @@ var makeLogger = function(group, opts){
 
 var getLogger = common.makeGetLogger(makeLogger);
 
-var setLevel = function(group, level){
+var setLevel = function (group, level) {
 
 	// Update level for any future loggers.
 	common.config[group].baseLevel = level;
@@ -130,9 +130,9 @@ var setLevel = function(group, level){
 	});
 }
 
-var addTransport = function(group, transport){
+var addTransport = function (group, transport) {
 
-	if (!common.config[group].extraTransports){
+	if (!common.config[group].extraTransports) {
 		common.config[group].extraTransports = [];
 	}
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {logging} from 'react-server';
+import { logging } from 'react-server';
 
 const logger = logging.getLogger(__LOGGER__);
 const timeSinceTimestamp = s => {
@@ -11,7 +11,7 @@ const timeSinceTimestamp = s => {
 	return `${minutesSince} min, ${secondsSince} sec`;
 };
 
-const StationCard = ({station}) => {
+const StationCard = ({ station }) => {
 	logger.info(`rendering card for station ${JSON.stringify(station)}`);
 	return (
 		<div>{station.name} had {station.empty_slots} empty slots {timeSinceTimestamp(station.timestamp)} ago.</div>

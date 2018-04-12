@@ -1,4 +1,4 @@
-## Getting Started with React Server
+## Getting Started with React Server:
 
 The easiest way to get started is with our [yeoman generator](https://www.npmjs.com/package/generator-react-server). Open your terminal and type:
 

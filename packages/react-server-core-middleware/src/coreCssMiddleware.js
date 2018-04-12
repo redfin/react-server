@@ -3,7 +3,7 @@ export default (pathToStatic, manifest) => {
 		getHeadStylesheets(next) {
 			const routeName = this.getRequest().getRouteName();
 			const baseUrl = pathToStatic || (typeof window !== "undefined" ? window.__reactServerBase : "/");
-			manifest = manifest || (typeof window !== "undefined" ? window.__reactServerManifest: {});
+			manifest = manifest || (typeof window !== "undefined" ? window.__reactServerManifest : {});
 
 			if (!manifest || !manifest.cssChunksByName) {
 				throw new Error("No webpack manifest found while trying to find CSS files.");

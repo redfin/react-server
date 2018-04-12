@@ -7,11 +7,11 @@ var EventEmitter = require('events').EventEmitter,
 	ReactServerAgent = require("../ReactServerAgent"),
 	PageUtil = require("../util/PageUtil"),
 	DebugUtil = require("../util/DebugUtil"),
-	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
+	{ setResponseLoggerPage } = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => { } };
 
 class Navigator extends EventEmitter {
 
-	constructor (context, routes) {
+	constructor(context, routes) {
 		super();
 
 		this.router = new Router(routes.routes);
@@ -32,7 +32,7 @@ class Navigator extends EventEmitter {
 	 *
 	 * Default is History.events.PAGELOAD.
 	 */
-	navigate (request, type) {
+	navigate(request, type) {
 
 		logger.debug(`Navigating to ${request.getUrl()}`);
 		type = type || History.events.PAGELOAD;
@@ -62,53 +62,53 @@ class Navigator extends EventEmitter {
 		// if we're not going to proceed, so resources will be freed.
 		//
 		this
-		.startRoute(route, request, type)
+			.startRoute(route, request, type)
 
-		// We might have a data bundle on hand, or the request may
-		// have asked us to fetch it one.
-		.then(this._dealWithDataBundleLoading.bind(this, request))
+			// We might have a data bundle on hand, or the request may
+			// have asked us to fetch it one.
+			.then(this._dealWithDataBundleLoading.bind(this, request))
 
-		.then(() => {
-			if (this._ignoreCurrentNavigation){
-				// This is a one-time deal.
-				this._ignoreCurrentNavigation = false;
-				return;
-			}
-
-			/* Breathe... */
-
-			var loaders = route.config.page;
-
-			var deviceType = this.context.getDeviceType();
-
-			if (loaders[deviceType]) {
-				route.name += "-" + deviceType;
-			}
-
-			// Our route may have multiple page implementations if
-			// there are device-specific variations.
-			//
-			// We'll take one of those if the request device
-			// matches, otherwise we'll use the default.
-			//
-			// Note that the page object may either directly be a
-			// loader or it may be an object whose values are
-			// loaders.
-			(
-				loaders[deviceType] ||
-				loaders.default ||
-				loaders
-			)().done(pageConstructor => {
-				if (request.setRoute) {
-					request.setRoute(route);
+			.then(() => {
+				if (this._ignoreCurrentNavigation) {
+					// This is a one-time deal.
+					this._ignoreCurrentNavigation = false;
+					return;
 				}
-				this.handlePage(pageConstructor, request, type);
 
-			}, err => {
-				console.error("Error resolving page", err);
+				/* Breathe... */
+
+				var loaders = route.config.page;
+
+				var deviceType = this.context.getDeviceType();
+
+				if (loaders[deviceType]) {
+					route.name += "-" + deviceType;
+				}
+
+				// Our route may have multiple page implementations if
+				// there are device-specific variations.
+				//
+				// We'll take one of those if the request device
+				// matches, otherwise we'll use the default.
+				//
+				// Note that the page object may either directly be a
+				// loader or it may be an object whose values are
+				// loaders.
+				(
+					loaders[deviceType] ||
+					loaders.default ||
+					loaders
+				)().done(pageConstructor => {
+					if (request.setRoute) {
+						request.setRoute(route);
+					}
+					this.handlePage(pageConstructor, request, type);
+
+				}, err => {
+					console.error("Error resolving page", err);
+				});
+
 			});
-
-		});
 
 	}
 
@@ -155,8 +155,8 @@ class Navigator extends EventEmitter {
 		page.setRequest(request);
 
 		PageUtil.PageConfig.initFromPageWithDefaults(page, {
-			isFragment    : false,
-			isRawResponse : false,
+			isFragment: false,
+			isRawResponse: false,
 		});
 
 		// Set the page context on the response logger so it can figure
@@ -179,8 +179,8 @@ class Navigator extends EventEmitter {
 
 			// TODO: I think that 3xx/4xx/5xx shouldn't be considered "errors" in navigateDone, but that's
 			// how the code is structured right now, and I'm changing too many things at once at the moment. -sra.
-			if (handleRouteResult.code && ((handleRouteResult.code / 100)|0) !== 2) {
-				this.emit("navigateDone", {status: handleRouteResult.code, redirectUrl: handleRouteResult.location}, page, request.getUrl(), type);
+			if (handleRouteResult.code && ((handleRouteResult.code / 100) | 0) !== 2) {
+				this.emit("navigateDone", { status: handleRouteResult.code, redirectUrl: handleRouteResult.location }, page, request.getUrl(), type);
 				return;
 			}
 			if (handleRouteResult.page) {
@@ -195,7 +195,7 @@ class Navigator extends EventEmitter {
 		}).catch(err => {
 			logger.error("Error while handling route", err);
 
-			this.emit('navigateDone', {status: 500}, page, request.getUrl(), type);
+			this.emit('navigateDone', { status: 500 }, page, request.getUrl(), type);
 		});
 
 	}
@@ -213,22 +213,22 @@ class Navigator extends EventEmitter {
 		});
 	}
 
-	getState () {
+	getState() {
 		return {
 			loading: this._loading,
 			route: this._currentRoute,
 		}
 	}
 
-	getCurrentRoute () {
+	getCurrentRoute() {
 		return this._currentRoute;
 	}
 
-	getLoading () {
+	getLoading() {
 		return this._loading;
 	}
 
-	startRoute (route, request, type) {
+	startRoute(route, request, type) {
 
 		// If we're being called with a requested route, we'll need to
 		// tell the caller when they can proceed with their
@@ -254,21 +254,21 @@ class Navigator extends EventEmitter {
 
 			dfd = Q.defer(), promise = dfd.promise;
 
-			this._nextRoute = {route, request, type, dfd};
+			this._nextRoute = { route, request, type, dfd };
 		}
 
 		// If we're _currently_ navigating, we'll wait to start the
 		// next route until this navigation is complete.  Interleaved
 		// navigation causes all kinds of havoc.
-		if (!this._loading && this._nextRoute){
+		if (!this._loading && this._nextRoute) {
 
-			const {route, request, type, dfd} = this._nextRoute;
+			const { route, request, type, dfd } = this._nextRoute;
 
-			this._loading      = true;
+			this._loading = true;
 			this._currentRoute = route;
-			this._nextRoute    = null;
+			this._nextRoute = null;
 
-			this.emit('navigateStart', {route, request, type});
+			this.emit('navigateStart', { route, request, type });
 
 			// This allows the actual navigation to
 			// proceed.
@@ -278,7 +278,7 @@ class Navigator extends EventEmitter {
 		return promise;
 	}
 
-	finishRoute () {
+	finishRoute() {
 		this._loading = false;
 
 		this.emit('loadComplete');

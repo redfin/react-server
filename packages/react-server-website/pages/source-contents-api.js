@@ -1,6 +1,6 @@
 export default class SourceContentsApi {
 	setConfigValues() {
-		return {isRawResponse: true};
+		return { isRawResponse: true };
 	}
 
 	getContentType() {

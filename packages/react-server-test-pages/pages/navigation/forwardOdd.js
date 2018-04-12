@@ -1,6 +1,6 @@
-import {ReactServerAgent, RootElement} from "react-server";
+import { ReactServerAgent, RootElement } from "react-server";
 
-const Odd = ({body}) => <div className="odd">Hey look I'm odd because I am {body}</div>;
+const Odd = ({ body }) => <div className="odd">Hey look I'm odd because I am {body}</div>;
 
 export default class ForwardOddPage {
 	handleRoute() {
@@ -10,9 +10,9 @@ export default class ForwardOddPage {
 		else params = 0;
 
 		//fetch some data (should be from cache)
-		this.data = ReactServerAgent.get('/data/delay?ms=1000&val='+params);
+		this.data = ReactServerAgent.get('/data/delay?ms=1000&val=' + params);
 
-		return {code: 200};
+		return { code: 200 };
 	}
 
 	getElements() {

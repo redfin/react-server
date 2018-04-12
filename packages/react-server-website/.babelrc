@@ -1,3 +1,5 @@
 {
-	"presets": ["react-server"]
+	"presets": [
+		"react-server"
+	]
 }

@@ -39,7 +39,7 @@ if (SERVER_SIDE) {
 	var env = {
 
 		rehydrate: function (inputEnv) {
-			Object.keys(inputEnv).forEach( key => {
+			Object.keys(inputEnv).forEach(key => {
 				env[key] = inputEnv[key];
 			});
 

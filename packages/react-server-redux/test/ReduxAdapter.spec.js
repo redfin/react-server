@@ -1,6 +1,6 @@
 const test = require('ava');
-const {createStore} = require('redux');
-const {ReduxAdapter} = require('../src/index.js');
+const { createStore } = require('redux');
+const { ReduxAdapter } = require('../src/index.js');
 
 const TEST_ACTION_TYPE = 'ACTION_TEST_VALUE';
 
@@ -32,5 +32,5 @@ test.cb('ReduxAdapter when resolves when the pending value is ready', t => {
 		t.end();
 	});
 
-	t.context.store.dispatch({type: TEST_ACTION_TYPE, value: 'foo'});
+	t.context.store.dispatch({ type: TEST_ACTION_TYPE, value: 'foo' });
 });

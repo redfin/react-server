@@ -4,18 +4,18 @@ var Navigator = require('./Navigator'),
 
 class RequestContext {
 
-	constructor (routes) {
+	constructor(routes) {
 
 		this.navigator = new Navigator(this, routes);
 
-		this.navigator.on('page', page => {this.page = page});
+		this.navigator.on('page', page => { this.page = page });
 
 		this._navigateListeners = [];
 
 		this.registerRequestLocal();
 	}
 
-	static getCurrentRequestContext () {
+	static getCurrentRequestContext() {
 		return RequestLocals().instance;
 	}
 
@@ -25,41 +25,41 @@ class RequestContext {
 		RequestLocals().instance = this;
 	}
 
-	setServerStash (stash) {
+	setServerStash(stash) {
 		this.serverStash = stash;
 		return this;
 	}
 
-	getServerStash () {
+	getServerStash() {
 		return this.serverStash;
 	}
 
-	setDeviceType (type) {
+	setDeviceType(type) {
 		this.deviceType = type;
 		return this;
 	}
 
-	getDeviceType () {
+	getDeviceType() {
 		return this.deviceType;
 	}
 
-	getCurrentPath () {
+	getCurrentPath() {
 		return this.navigator.getCurrentRoute().url;
 	}
 
-	onNavigate (callback) {
+	onNavigate(callback) {
 		this.navigator.on('navigateDone', callback);
 	}
 
-	onNavigateStart (callback) {
+	onNavigateStart(callback) {
 		this.navigator.on('navigateStart', callback);
 	}
 
-	onLoadComplete (callback) {
+	onLoadComplete(callback) {
 		this.navigator.on('loadComplete', callback);
 	}
 
-	navigate (request, type) {
+	navigate(request, type) {
 		this.navigator.navigate(request, type);
 	}
 
@@ -67,7 +67,7 @@ class RequestContext {
 
 class RequestContextBuilder {
 
-	constructor () {
+	constructor() {
 	}
 
 	setRoutes(routes) {
@@ -75,11 +75,11 @@ class RequestContextBuilder {
 		return this;
 	}
 
-	setDefaultXhrHeadersFromRequest () {
+	setDefaultXhrHeadersFromRequest() {
 		return this;
 	}
 
-	create (extraOpts) {
+	create(extraOpts) {
 
 		return new RequestContext(this.routes, extraOpts);
 	}

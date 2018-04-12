@@ -1,5 +1,5 @@
 import React from 'react';
-import {RootElement} from 'react-server';
+import { RootElement } from 'react-server';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
@@ -8,20 +8,20 @@ import Error from '../components/error';
 import '../styles/index.scss';
 
 export default class NotFoundPage {
-	handleRoute () {
-		return {code: 404, hasDocument: true};
+	handleRoute() {
+		return { code: 404, hasDocument: true };
 	}
 
-	getElements () {
+	getElements() {
 		return [
 			<RootElement key={0}>
-				<Header/>
+				<Header />
 			</RootElement>,
 			<RootElement key={1}>
 				<Error />
 			</RootElement>,
 			<RootElement key={2}>
-				<Footer/>
+				<Footer />
 			</RootElement>,
 		]
 	}

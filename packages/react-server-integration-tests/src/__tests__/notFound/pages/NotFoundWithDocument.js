@@ -3,8 +3,8 @@ import React from "react"
 export default class NotFoundWithDocumentPage {
 	handleRoute() {
 		return {
-			code        : 404,
-			hasDocument : true,
+			code: 404,
+			hasDocument: true,
 		};
 	}
 

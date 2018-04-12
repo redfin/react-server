@@ -4,7 +4,7 @@ var React = require("react"),  //eslint-disable-line no-unused-vars
 class TransitionPage {
 	handleRoute() {
 		this.path = this.getRequest().getQuery().url;
-		return {code:200};
+		return { code: 200 };
 	}
 
 	getElements() {

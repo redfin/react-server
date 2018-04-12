@@ -51,7 +51,7 @@ In the example above:
   soon as all elements before it have rendered and been sent.  It won't
   receive any props.
 
-## On the server
+## On the server:
 - Elements are rendered as their promises resolve.
 - Elements are sent to the browser when they've been rendered and all elements
   before them have already been sent.
@@ -69,7 +69,7 @@ In the example above:
   notifying the `ClientController` that the DOM node for that element is
   ready, and it may be rendered client-side to make it interactive.
 
-## In the browser
+## In the browser:
 - Elements are always rendered in-order.
 - The initial render is always the _same_ as the server render.
 - Elements may re-render if `listen` emitters fire after the initial render.

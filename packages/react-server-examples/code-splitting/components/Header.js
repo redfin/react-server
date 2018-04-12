@@ -1,5 +1,5 @@
 import React from 'react';
-import {logging} from 'react-server';
+import { logging } from 'react-server';
 
 const logger = logging.getLogger(__LOGGER__);
 
@@ -8,7 +8,7 @@ export default ({ headerText }) => {
 
 	return (
 		<div className="header">
-			React-Server { headerText }
+			React-Server {headerText}
 		</div>
 	);
 }
