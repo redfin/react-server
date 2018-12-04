@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import Remarkable from 'remarkable';
@@ -58,9 +59,9 @@ export default class Markdown extends React.Component {
 }
 
 Markdown.propTypes = {
-	source     : React.PropTypes.string,
-	reuseDom   : React.PropTypes.bool,
-	bundleData : React.PropTypes.bool,
+	source     : PropTypes.string,
+	reuseDom   : PropTypes.bool,
+	bundleData : PropTypes.bool,
 }
 
 Markdown.defaultProps = {

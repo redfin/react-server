@@ -1,0 +1,4 @@
+{
+  "routesFile": "./routes.js",
+  "webpackConfig": "./webpackConfig.js"
+}

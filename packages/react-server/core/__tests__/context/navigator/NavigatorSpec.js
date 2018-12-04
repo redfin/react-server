@@ -13,7 +13,7 @@ class RequestContextStub {
 			this.navigator.navigate(request, type);
 		});
 	}
-	getMobileDetect() { return null; }
+	getDeviceType() { return null; }
 }
 
 

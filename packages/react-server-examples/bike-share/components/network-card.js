@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {logging, Link} from 'react-server';
 
@@ -11,17 +12,17 @@ const NetworkCard = ({id, name, location, company}) => {
 };
 
 NetworkCard.propTypes = {
-	company: React.PropTypes.any,
-	href: React.PropTypes.string,
-	id: React.PropTypes.string,
-	location: React.PropTypes.shape({
-		city: React.PropTypes.string,
-		country: React.PropTypes.string,
-		latitude: React.PropTypes.number,
-		longitude: React.PropTypes.number,
+	company: PropTypes.any,
+	href: PropTypes.string,
+	id: PropTypes.string,
+	location: PropTypes.shape({
+		city: PropTypes.string,
+		country: PropTypes.string,
+		latitude: PropTypes.number,
+		longitude: PropTypes.number,
 	}),
-	name: React.PropTypes.string,
-	stations: React.PropTypes.array,
+	name: PropTypes.string,
+	stations: PropTypes.array,
 };
 
 NetworkCard.displayName = 'NetworkCard';

@@ -17,6 +17,10 @@ module.exports = {
 		entry: "/root/when",
 		description: "<RootElement when={...}>",
 	},
+	RootOrder: {
+		entry: "/root/order",
+		description: "Out of order render",
+	},
 	RootProvider: {
 		entry: "/root/rootProvider",
 		description: "<RootProvider store={...}>",

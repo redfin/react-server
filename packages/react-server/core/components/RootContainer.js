@@ -1,3 +1,4 @@
+var PropTypes = require('prop-types');
 var React = require('react');
 var {
 	ensureRootElementWithContainer,
@@ -13,9 +14,9 @@ class RootContainer extends React.Component {
 module.exports = RootContainer;
 
 RootContainer.propTypes = {
-	listen: React.PropTypes.func,
-	when: React.PropTypes.object, // A promise.
-	_isRootContainer: React.PropTypes.bool,
+	listen: PropTypes.func,
+	when: PropTypes.object, // A promise.
+	_isRootContainer: PropTypes.bool,
 }
 
 RootContainer.defaultProps = {

@@ -1,7 +1,6 @@
 
 var React = require('react'),
 	ReactDOM = require('react-dom'),
-	MobileDetect = require('mobile-detect'),
 	logging = require('./logging'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
@@ -71,6 +70,7 @@ class ClientController extends EventEmitter {
 		}
 
 		this.context = buildContext(routes);
+		this.context.setDeviceType(dehydratedState.InitialContext.deviceType);
 		ReactServerAgent.cache().rehydrate(dehydratedState.InitialContext['ReactServerAgent.cache']);
 		this.mountNode = document.getElementById('content');
 
@@ -585,7 +585,8 @@ class ClientController extends EventEmitter {
 			,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
-			ReactDOM.render(element, root);
+			var renderFunc = ReactDOM.hydrate || ReactDOM.render;
+			renderFunc(element, root);
 
 			_.forEach(
 				getRootElementAttributes(element),
@@ -601,31 +602,35 @@ class ClientController extends EventEmitter {
 			}
 		};
 
-		// As elements become ready, prime them to render as soon as
-		// their mount point is available.
-		//
-		// Always render in order to proritize content higher in the
-		// page.
-		//
-		elementPromisesOr.reduce((chain, promise, index) => chain
-			.then(() => promise
-				.then(element => rootNodePromises[index]
-					.then(root => renderElement(element, root, index))
-					.catch(e => {
-						// The only case where this should evaluate to false is
-						// when `element` is a containerClose/containerOpen object
-						const componentType = typeof element.type === 'function'
-							? element.props.children.type.name
-							: 'element';
-						logger.error(`Error with element ${componentType}'s lifecycle methods at index ${index}`, e);
-					})
-				).catch(e => logger.error(`Error with element promise ${index}`, e))
-			),
-		Q()).then(retval.resolve);
+		const renderOne = (promise, index) => promise.then(
+			element => rootNodePromises[index]
+				.then(root => renderElement(element, root, index))
+				.catch(e => {
+					// The only case where this should evaluate to false is
+					// when `element` is a containerClose/containerOpen object
+					const componentType = typeof element.type === 'function'
+						? element.props.children.type.name
+						: 'element';
+					logger.error(`Error with element ${componentType}'s lifecycle methods at index ${index}`, e);
+				})
+		).catch(e => logger.error(`Error with element promise ${index}`, e))
 
-		// Look out for a failsafe timeout from the server on our
-		// first render.
-		if (!this._previouslyRendered){
+		if (this._previouslyRendered){
+
+			// On client transitions the root structure is laid out using a
+			// state machine that requires us to render in order.
+			elementPromisesOr.reduce(
+				(chain, promise, index) => chain.then(() => renderOne(promise, index)),
+				Q()
+			).then(retval.resolve);
+		} else {
+
+			// On the first render we can go out of order because the server
+			// has already laid out the root structure for us.
+			Q.all(elementPromisesOr.map(renderOne)).then(retval.resolve);
+
+			// Look out for a failsafe timeout from the server on our
+			// first render.
 			this._failDfd.promise.then(() => {
 				elementPromises.forEach((promise, index) => {
 					//Reject any elements that have failed to render
@@ -848,8 +853,6 @@ function buildContext(routes) {
 	var context = new RequestContext.Builder()
 		.setRoutes(routes)
 		.create();
-
-	context.setMobileDetect(new MobileDetect(navigator.userAgent));
 
 	return context;
 }

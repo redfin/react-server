@@ -1,0 +1,24 @@
+{
+  "name": "react-server-examples-code-splitting",
+  "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "main": "HelloWorld.js",
+  "scripts": {
+    "start": "IS_SERVER=true react-server start",
+    "clean": "rm -rf build __clientTemp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Kuang",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "q": "^2.0.3",
+    "react": "^15.4.1",
+    "react-dom": "15.4.1",
+    "react-server": "^0.6.3",
+    "react-server-cli": "^0.6.3"
+  },
+  "devDependencies": {
+    "babel-preset-react-server": "^0.6.0"
+  }
+}

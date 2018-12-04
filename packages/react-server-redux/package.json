@@ -1,6 +1,6 @@
 {
   "name": "react-server-redux",
-  "version": "0.6.3",
+  "version": "0.8.0",
   "description": "Redux support for React-Server",
   "main": "target/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "redux": "^3.6.0"
   },
   "peerDependencies": {
-    "react": "~0.14.2 || ^15.1.0"
+    "react": "~0.14.9 || ^15.3.0 || ^16.0.0"
   },
   "devDependencies": {
     "ava": "^0.17.0",

@@ -34,13 +34,13 @@ class RequestContext {
 		return this.serverStash;
 	}
 
-	setMobileDetect (mobileDetect) {
-		this.mobileDetect = mobileDetect;
+	setDeviceType (type) {
+		this.deviceType = type;
 		return this;
 	}
 
-	getMobileDetect () {
-		return this.mobileDetect;
+	getDeviceType () {
+		return this.deviceType;
 	}
 
 	getCurrentPath () {

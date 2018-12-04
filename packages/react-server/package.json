@@ -1,6 +1,6 @@
 {
   "name": "react-server",
-  "version": "0.6.3",
+  "version": "0.8.1",
   "description": "React framework with server render for blazing fast page load and seamless transitions between pages in the browser.",
   "main": "target/server/server.js",
   "browser": "target/client/client.js",
@@ -39,8 +39,8 @@
     "winston": "^2.3.0"
   },
   "peerDependencies": {
-    "react": "~0.14.2 || ^15.1.0",
-    "react-dom": "~0.14.2 || ^15.1.0",
+    "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
+    "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "superagent": "1.8.4"
   },
   "devDependencies": {
@@ -49,6 +49,7 @@
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-1": "^6.16.0",
+    "benchmark": "^2.1.4",
     "cheerio": "^0.22.0",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
@@ -68,8 +69,8 @@
     "gulp-sourcemaps": "^2.2.0",
     "memory-stream": "0.0.3",
     "minimist": "^1.2.0",
-    "react": "~0.14.2 || ^15.1.0",
-    "react-dom": "~0.14.2 || ^15.1.0",
+    "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
+    "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-server-gulp-module-tagger": "^0.6.0",
     "rimraf": "^2.5.4",
     "superagent": "^3.1.0"

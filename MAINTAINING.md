@@ -1,3 +1,9 @@
+### Dependencies
+
+- `npm install -g rimraf`
+- `npm install -g lerna`
+- `npm install -g del-cli`
+
 ### Deployment Checklist
 
 - `git checkout master && git pull upstream master`

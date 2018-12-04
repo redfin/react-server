@@ -10,10 +10,18 @@ class ClientRequest {
 		bundleData,
 		reuseDom,
 	}={}) {
-		this._url = url;
 		this._opts = {
 			bundleData,
 			reuseDom,
+		}
+
+		// Chop off the fragment identifier from the url i.e everything from the # to the end of the url
+		// if it exists to make this consistent with ExpressServerRequest.
+		var match = url.match(/([^#]*)/);
+		if (match === null || !match[1]) {
+			this._url = url
+		} else {
+			this._url = match[1];
 		}
 	}
 
@@ -38,11 +46,14 @@ class ClientRequest {
 	}
 
 	getQuery() {
-		var indexOfQuestion = this._url.indexOf("?");
-		if (-1 === indexOfQuestion) {
+		// Grab fragment after first "?"
+		var match = this._url.match(/\?(.*)/);
+
+		if (match === null || !match[1]) {
 			return {};
 		}
-		return decode(this._url.substring(indexOfQuestion + 1));
+
+		return decode(match[1]);
 	}
 
 	getHostname() {

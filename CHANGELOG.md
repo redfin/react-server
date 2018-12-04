@@ -1,3 +1,116 @@
+## v0.8.1 (2017-12-27)
+
+#### Bug fix
+* `react-server`
+  * [#972](https://github.com/redfin/react-server/pull/972) [react-server] Made ClientRequest chop off fragment identifiers from urls. ([@j-beatzz](https://github.com/j-beatzz))
+
+#### Committers: 1
+- Joshua LEO-Irabor ([j-beatzz](https://github.com/j-beatzz))
+
+## v0.8.0 (2017-11-06)
+
+#### Enhancement
+* `react-server-cli`, `react-server-redux`, `react-server`
+  * [#965](https://github.com/redfin/react-server/pull/965) Upgrade React to v16.0.0. ([@salehhamadeh](https://github.com/salehhamadeh))
+
+#### Bug fix
+* `generator-react-server`
+  * [#966](https://github.com/redfin/react-server/pull/966) [generator-react-server] Reference the correct file for the yeoman generator in package.json. ([@negativetwelve](https://github.com/negativetwelve))
+
+#### Committers: 2
+- Mark Miyashita ([negativetwelve](https://github.com/negativetwelve))
+- Saleh Hamadeh ([salehhamadeh](https://github.com/salehhamadeh))
+
+## v0.7.3 (2017-10-18)
+
+#### Enhancement
+* `react-server`
+  * [#963](https://github.com/redfin/react-server/pull/963) Add code splitting support to RootElement. ([@davidk107](https://github.com/davidk107))
+
+#### Performance
+* `react-server`
+  * [#960](https://github.com/redfin/react-server/pull/960) Reduce client logger overhead. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server`
+  * [#962](https://github.com/redfin/react-server/pull/962) Client transitions still need to render in order. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 2
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- David ([davidk107](https://github.com/davidk107))
+
+## v0.7.2 (2017-09-29)
+
+#### Bug fix
+* `react-server`
+  * [#955](https://github.com/redfin/react-server/pull/955) Classify "unknown" mobile devices as phones. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
+## v0.7.1 (2017-09-25)
+
+#### Bug fix
+* `react-server`
+  * [#953](https://github.com/redfin/react-server/pull/953) Pull device type from InitialContext. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
+## v0.7.0 (2017-09-12)
+
+#### Breaking change
+* `react-server`
+  * [#950](https://github.com/redfin/react-server/pull/950) Simplify device type routing. ([@gigabo](https://github.com/gigabo))
+
+#### Committers: 1
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+
+## v0.6.5 (2017-09-08)
+
+#### Enhancement
+* `react-server`
+  * [#948](https://github.com/redfin/react-server/pull/948) Add support for out-of-order render client side. ([@gigabo](https://github.com/gigabo))
+  * [#944](https://github.com/redfin/react-server/pull/944) Add english as the default document language. ([@monicatie](https://github.com/monicatie))
+
+#### Performance
+* `react-server`
+  * [#949](https://github.com/redfin/react-server/pull/949) Don't load cls-q browser-side. ([@gigabo](https://github.com/gigabo))
+  * [#926](https://github.com/redfin/react-server/pull/926) Add a simple benchmark for Navigator.handlePage. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-cli`
+  * [#947](https://github.com/redfin/react-server/pull/947) Fix require.cache.hasOwnProperty call for Node 8. ([@dfadev](https://github.com/dfadev))
+* `react-server`
+  * [#946](https://github.com/redfin/react-server/pull/946) Fix no onclick bug on Link Component. ([@hbucius](https://github.com/hbucius))
+  * [#939](https://github.com/redfin/react-server/pull/939) Exclude hash fragments when extracting query string. ([@mlolson](https://github.com/mlolson))
+
+#### Committers: 7
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Greenkeeper ([greenkeeperio-bot](https://github.com/greenkeeperio-bot))
+- Matt Olson ([mlolson](https://github.com/mlolson))
+- Robert Gay ([roblg](https://github.com/roblg))
+- Russ Panula ([dfadev](https://github.com/dfadev))
+- Monica Tie ([monicatie](https://github.com/monicatie))
+- hbucius ([hbucius](https://github.com/hbucius))
+
+## v0.6.4 (2017-04-20)
+
+#### Performance
+* `react-server`
+  * [#925](https://github.com/redfin/react-server/pull/925) Only add the errorInterceptor to the main logger. ([@gigabo](https://github.com/gigabo))
+
+#### Bug fix
+* `react-server-examples`
+  * [#924](https://github.com/redfin/react-server/pull/924) Update react-server dependencies on examples to latest. ([@nashio](https://github.com/nashio))
+* `react-server`
+  * [#927](https://github.com/redfin/react-server/pull/927) Another flash of unstyled content. ([@drewpc](https://github.com/drewpc))
+
+#### Committers: 3
+- Bo Borgerson ([gigabo](https://github.com/gigabo))
+- Ignacio Chavez ([nashio](https://github.com/nashio))
+- PC Drew ([drewpc](https://github.com/drewpc))
+
 ## v0.6.3 (2017-04-07)
 
 #### Breaking change

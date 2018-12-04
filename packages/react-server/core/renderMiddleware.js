@@ -76,7 +76,7 @@ module.exports = function(req, res, next, routes) {
 		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
 
-		context.setMobileDetect(new MobileDetect(req.get('user-agent')));
+		context.setDeviceType(getDeviceType(req));
 
 		var navigateDfd = Q.defer();
 
@@ -307,7 +307,7 @@ function writeHeader(req, res, context, start, pageObject) {
 	res.type('html');
 	res.set('Transfer-Encoding', 'chunked');
 
-	res.write("<!DOCTYPE html><html><head>");
+	res.write('<!DOCTYPE html><html lang="en"><head>');
 
 	// note: these responses can currently come back out-of-order, as many are returning
 	// promises. scripts and stylesheets are guaranteed
@@ -945,6 +945,7 @@ function bootstrapClient(res, lastElementSent) {
 
 	var initialContext = {
 		'ReactServerAgent.cache': ReactServerAgent.cache().dehydrate(),
+		'deviceType': RequestContext.getCurrentRequestContext().getDeviceType(),
 	};
 
 	res.expose(initialContext, 'InitialContext');
@@ -1068,6 +1069,25 @@ function getNonInternalConfigs() {
 		}
 	});
 	return nonInternal;
+}
+
+function getDeviceType(req) {
+	var md = new MobileDetect(req.get('user-agent'));
+
+	// "mobile" is the union of "phone" and "tablet" _except_ for
+	// "unknown" mobile devices, which are _neither_ phone _nor_ tablet.
+	//
+	// http://hgoebl.github.io/mobile-detect.js/doc/MobileDetect.html#mobile
+	//
+	// :rage:
+	//
+	// We'll call them "phone" to avoid introducing a weird third device
+	// type that depends on this implementation quirk of mobile-detect.
+	//
+	if (md.tablet()) return "tablet";
+	if (md.phone ()) return "phone";
+	if (md.mobile()) return "phone";
+	return "desktop";
 }
 
 module.exports._testFunctions = {

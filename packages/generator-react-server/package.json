@@ -1,6 +1,6 @@
 {
   "name": "generator-react-server",
-  "version": "0.6.3",
+  "version": "0.8.1",
   "description": "A react-server yeoman generator",
   "homepage": "http://github.com/redfin/react-server",
   "author": {
@@ -11,7 +11,7 @@
   "files": [
     "generators"
   ],
-  "main": "generators/index.js",
+  "main": "generators/app/index.js",
   "keywords": [
     "react-server",
     "react",
@@ -34,13 +34,18 @@
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
     "nsp": "^2.6.2",
-    "react-server-cli": "^0.6.3",
+    "react-server-cli": "^0.8.1",
     "rimraf": "^2.5.4",
     "shell-escape": "^0.2.0",
     "yeoman-assert": "^2.0.0",
     "yeoman-test": "^1.0.0"
   },
   "repository": "redfin/react-server",
+  "ava": {
+    "files": [
+      "!**/generators/app/templates/test.js"
+    ]
+  },
   "scripts": {
     "//": "Keep these in sync",
     "prepublish": "cp ../../.eslintrc generators/app/templates/_eslintrc",

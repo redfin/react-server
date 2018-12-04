@@ -1,32 +1,45 @@
 
 var React = require('react'),
+	PropTypes = require('prop-types'),
 	navigateTo = require("../util/navigateTo");
 
-module.exports = React.createClass({
-	displayName: 'Link',
+class Link extends React.Component {
 
-	propTypes: {
-		path       : React.PropTypes.string,
-		href       : React.PropTypes.string,
-		bundleData : React.PropTypes.bool,
-		reuseDom   : React.PropTypes.bool,
-		className  : React.PropTypes.string,
-	},
+	static get displayName() {
+		return 'Link';
+	}
 
-	getDefaultProps(){
+	static get propTypes() {
+		return {
+			path       : PropTypes.string,
+			href       : PropTypes.string,
+			onClick    : PropTypes.func,
+			bundleData : PropTypes.bool,
+			reuseDom   : PropTypes.bool,
+			className  : PropTypes.string,
+		};
+	}
+
+	static get defaultProps() {
 		return {
 			bundleData : false,
 			reuseDom   : false,
-		}
-	},
+		};
+	}
 
-	render: function () {
+	constructor(props) {
+		super(props);
+
+		this._onClick = this._onClick.bind(this);
+	}
+
+	render() {
 		return (
 			<a href={this.props.path || this.props.href} onClick={this._onClick} className={this.props.className}>{this.props.children}</a>
 		);
-	},
+	}
 
-	_onClick: function (e) {
+	_onClick(e) {
 
 		// TODO: IE8-9 detection
 
@@ -39,9 +52,13 @@ module.exports = React.createClass({
 				bundleData,
 				reuseDom,
 			});
+			if (this.props.onClick) {
+				this.props.onClick(e);
+			}
 		} else {
 			// do normal browser navigate
 		}
+	}
+}
 
-	},
-})
+module.exports = Link;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {logging} from 'react-server';
 
@@ -18,15 +19,15 @@ const StationCard = ({station}) => {
 };
 
 StationCard.propTypes = {
-	station: React.PropTypes.shape({
-		empty_slots: React.PropTypes.number, // eslint-disable-line
-		extra: React.PropTypes.object,
-		free_bikes: React.PropTypes.number, // eslint-disable-line
-		id: React.PropTypes.string,
-		latitude: React.PropTypes.number,
-		longitude: React.PropTypes.number,
-		name: React.PropTypes.string,
-		timestamp: React.PropTypes.string,
+	station: PropTypes.shape({
+		empty_slots: PropTypes.number, // eslint-disable-line
+		extra: PropTypes.object,
+		free_bikes: PropTypes.number, // eslint-disable-line
+		id: PropTypes.string,
+		latitude: PropTypes.number,
+		longitude: PropTypes.number,
+		name: PropTypes.string,
+		timestamp: PropTypes.string,
 	}),
 };
 
