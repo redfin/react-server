@@ -2,7 +2,6 @@ import webpack from "webpack"
 import path from "path"
 import mkdirp from "mkdirp"
 import fs from "fs"
-import callerDependency from "./callerDependency"
 import serverSideHotModuleReload from "./serverSideHotModuleReload"
 
 
@@ -93,7 +92,7 @@ export default (opts = {}) => {
 		hot,
 		minify,
 		longTermCaching,
-		stats
+		stats,
 	});
 	const compiler = webpack(clientConfig);
 
