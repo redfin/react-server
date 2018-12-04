@@ -101,9 +101,9 @@ export default function ({ entrypoints, outputDir, outputUrl, hot, minify, longT
 }
 
 function clean(thing) {
-    if (Array.isArray(thing)) {
-        return thing.filter(v => Boolean(v));
-    }
-    return Object.keys(thing)
-        .reduce((o, k) => thing[k] == null ? o : (o[k] = thing[k], o), {});
+	if (Array.isArray(thing)) {
+		return thing.filter(v => Boolean(v));
+	}
+	return Object.keys(thing)
+		.reduce((o, k) => thing[k] == null ? o : (o[k] = thing[k], o), {});
 }
