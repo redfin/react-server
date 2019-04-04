@@ -27,7 +27,7 @@
     "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
-    "babel-eslint": "^8.0.0",
+    "babel-eslint": "^7.0.0",
     "babel-plugin-react-require": "^3.0.0",
     "eslint": "^3.8.1",
     "gulp": "^3.9.1",

@@ -29,8 +29,8 @@
     "yosay": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^1.0.0-rc.2",
-    "babel-eslint": "^8.0.0",
+    "ava": "^0.17.0",
+    "babel-eslint": "^7.0.0",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
     "nsp": "^2.6.2",
@@ -56,6 +56,6 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">= 6.0.0"
+    "node": ">= 4.3.1"
   }
 }

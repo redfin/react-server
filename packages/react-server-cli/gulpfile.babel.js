@@ -10,9 +10,7 @@ gulp.task("default", () => {
 	return gulp.src("src/**/*.js")
 		.pipe(changed(dest))
 		.pipe(logging())
-		.pipe(babel({
-			rootMode: "upward",
-		}))
+		.pipe(babel())
 		.pipe(gulp.dest(dest));
 });
 

@@ -17,9 +17,7 @@ gulp.task('build-index', () => gulp.src('main.js')
 )
 
 gulp.task('build-lib', () => gulp.src(SRC)
-	.pipe(babel({
-		rootMode: "upward",
-	}))
+	.pipe(babel())
 	.pipe(gulp.dest("./lib"))
 );
 

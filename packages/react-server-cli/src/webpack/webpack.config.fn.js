@@ -31,9 +31,6 @@ export default function ({ entrypoints, outputDir, outputUrl, hot, minify, longT
 					test: /\.jsx?$/,
 					loader: "babel",
 					exclude: /node_modules/,
-					query: {
-						rootMode: "upward",
-					},
 				},
 				{
 					test: /\.css$/,

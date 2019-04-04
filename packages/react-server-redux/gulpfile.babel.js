@@ -13,9 +13,7 @@ gulp.task("eslint", [], () => gulp.src(SRC)
 );
 
 gulp.task("compile", () => gulp.src(SRC)
-	.pipe(babel({
-		rootMode: "upward",
-	}))
+	.pipe(babel())
 	.pipe(gulp.dest(DEST))
 );
 

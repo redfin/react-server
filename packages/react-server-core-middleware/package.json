@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "babel --root-mode upward src -d lib",
+    "build": "babel src -d lib",
     "clean": "rimraf lib",
     "lint": "eslint src",
     "test": "npm run lint"
@@ -32,6 +32,6 @@
     "rimraf": "^2.5.4",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
-    "babel-eslint": "^8.0.0"
+    "babel-eslint": "^7.0.0"
   }
 }

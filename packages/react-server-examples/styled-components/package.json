@@ -10,8 +10,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-	"@babel/runtime": "^7.0.0",
-    "babel-preset-react-server": "^0.6.0",
+    "babel-preset-react-server": "^0.4.8",
+    "babel-runtime": "^6.6.1",
     "color": "^0.11.3",
     "react": "^0.14.9",
     "react-dom": "0.14.9",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "ava": "^0.16.0",
-    "babel-eslint": "^8.0.0",
+    "babel-eslint": "^7.0.0",
     "eslint": "^3.8.0",
     "eslint-plugin-react": "^6.4.1",
     "snyk": "1.19.1"
