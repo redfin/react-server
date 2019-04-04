@@ -9,11 +9,11 @@
     "react-server-module-tagger": "^0.6.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.18.0",
-    "babel-eslint": "^7.0.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-stage-0": "^6.16.0",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+	"@babel/preset-env": "^7.0.0",
+	"@babel/preset-stage-0": "^7.0.0",
+    "babel-eslint": "^8.0.0",
     "eslint": "^3.8.1",
     "eslint-plugin-react": "^6.4.1",
     "mocha": "^3.2.0"
@@ -21,7 +21,7 @@
   "scripts": {
     "clean": "rm -rf lib npm-debug.log*",
     "lint": "eslint src/ test/index.js",
-    "build": "babel src -d lib",
+    "build": "babel --root-mode upward src -d lib",
     "test": "mocha --compilers js:babel-register && npm run lint",
     "test:watch": "npm run test -- --watch",
     "prepublish": "npm run clean && npm run build"

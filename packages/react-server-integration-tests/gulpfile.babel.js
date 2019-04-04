@@ -38,7 +38,9 @@ gulp.task("compile", () => {
 
 	return gulp.src("src/**")
 		.pipe(jsFilter)
-			.pipe(babel())
+			.pipe(babel({
+				rootMode: "upward",
+			}))
 		.pipe(jsFilter.restore)
 		.pipe(gulp.dest("target"));
 });

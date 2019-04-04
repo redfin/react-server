@@ -42,7 +42,8 @@ module.exports = function() {
 			},
 		},
 	};
-}
+};
+exports.default = module.exports;
 
 function convertObjectToObjectExpression(obj) {
 	const properties = [];
