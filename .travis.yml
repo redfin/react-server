@@ -7,6 +7,7 @@ node_js:
   - "6"
 before_install:
   - npm install -g 'npm@^6.4.0'
+  - npm --version
   - rm package-lock.json
 before_script:
   - npm run lint
