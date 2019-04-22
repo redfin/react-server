@@ -8,11 +8,11 @@
   "author": "Navtej",
   "license": "Apache License 2.0",
   "scripts": {
-	"prepublish": "npm run build",
-	"build": "../../node_modules/.bin/gulp build",
-	"lint": "gulp eslint",
-	"test": "gulp test",
-	"clean": "rimraf -- target npm-debug.log*"
+    "prepublish": "npm run build",
+    "build": "gulp build",
+    "lint": "gulp eslint",
+    "test": "gulp test",
+    "clean": "rimraf target npm-debug.log*"
   },
   "keywords": [
     "react",

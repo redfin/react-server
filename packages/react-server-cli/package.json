@@ -4,13 +4,13 @@
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
-	"ava-watch": "ava --watch",
-	"build": "../../node_modules/.bin/gulp",
-	"clean": "rimraf target npm-debug.log*",
-	"lint": "eslint src test",
-	"prepublish": "npm run build",
-	"test": "ava && gulp test",
-	"watch": "gulp && gulp watch"
+    "ava-watch": "ava --watch",
+    "build": "gulp",
+    "clean": "rimraf target npm-debug.log*",
+    "lint": "gulp eslint",
+    "prepublish": "npm run build",
+    "test": "ava && gulp test",
+    "watch": "gulp && gulp watch"
   },
   "author": "Sasha Aickin",
   "bin": {

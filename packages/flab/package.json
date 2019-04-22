@@ -8,12 +8,12 @@
     "string"
   ],
   "scripts": {
-	"prepublish": "npm run build",
-	"build": "mkdir -p string && npm run build-src && npm run build-min",
-	"build-src": "node stringify.js < LAB.src.js > string/src.js",
-	"build-min": "node minify.js < LAB.src.js | node stringify.js > string/min.js",
-	"clean": "rimraf string",
-	"test": "echo \"No tests yet...\""
+    "prepublish": "npm run build",
+    "build": "mkdir -p string && npm run build-src && npm run build-min",
+    "build-src": "node stringify.js < LAB.src.js > string/src.js",
+    "build-min": "node minify.js < LAB.src.js | node stringify.js > string/min.js",
+    "clean": "rimraf string",
+    "test": "echo \"No tests yet...\""
   },
   "repository": {
     "type": "git",

@@ -7,10 +7,10 @@
   "author": "Bo Borgerson",
   "license": "Apache License 2.0",
   "scripts": {
-	"build": "../../node_modules/.bin/gulp build",
-	"prepublish": "../../node_modules/.bin/gulp build",
-	"lint": "eslint src",
-	"clean": "rimraf lib npm-debug.log* index.js"
+    "build": "gulp build",
+    "clean": "rimraf lib npm-debug.log* index.js",
+    "lint": "gulp eslint",
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "lodash": "^4.16.4",

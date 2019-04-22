@@ -2,7 +2,7 @@
   "name": "react-server-examples",
   "private": true,
   "scripts": {
-	"lint": "eslint .",
-	"clean": "rimraf npm-debug.log*"
+    "lint": "gulp eslint",
+    "clean": "rimraf npm-debug.log*"
   }
 }

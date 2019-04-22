@@ -4,10 +4,10 @@
   "description": "Core page middleware for React Server",
   "main": "index.js",
   "scripts": {
-	"prepublish": "npm run build",
-	"build": "../../node_modules/.bin/babel --root-mode upward src -d lib",
-	"clean": "rimraf lib",
-	"lint": "eslint src"
+    "prepublish": "npm run build",
+    "build": "babel --root-mode upward src -d lib",
+    "clean": "rimraf lib",
+    "lint": "eslint src"
   },
   "repository": {
     "type": "git",

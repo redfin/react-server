@@ -9,12 +9,12 @@
     "react-server-module-tagger": "^0.6.0"
   },
   "scripts": {
-	"clean": "rm -rf lib npm-debug.log*",
-	"lint": "eslint src",
-	"build": "../../node_modules/.bin/babel --root-mode upward src -d lib",
-	"test": "mocha --compilers js:babel-register",
-	"test:watch": "npm run test -- --watch",
-	"prepublish": "npm run clean && npm run build"
+    "clean": "rm -rf lib npm-debug.log*",
+    "lint": "eslint src/ test/index.js",
+    "build": "../../node_modules/.bin/babel --root-mode upward src -d lib",
+    "test": "mocha --compilers js:babel-register",
+    "test:watch": "npm run test -- --watch",
+    "prepublish": "npm run clean && npm run build"
   },
   "keywords": [
     "react",

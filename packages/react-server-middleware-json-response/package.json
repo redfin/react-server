@@ -4,10 +4,10 @@
   "description": "JSON response middleware for React Server",
   "main": "index.js",
   "scripts": {
-	"prepublish": "npm run build",
-	"build": "../../node_modules/.bin/babel --root-mode upward index.src.js --out-file index.js",
-	"clean": "rimraf index.js",
-	"lint": "eslint index.src.js"
+    "prepublish": "npm run build",
+    "build": "babel --root-mode upward index.src.js --out-file index.js",
+    "clean": "rimraf index.js",
+    "lint": "eslint src"
   },
   "repository": {
     "type": "git",
