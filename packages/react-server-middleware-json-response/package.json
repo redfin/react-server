@@ -4,10 +4,10 @@
   "description": "JSON response middleware for React Server",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm run build",
-    "build": "babel index.src.js --out-file index.js",
-    "clean": "rimraf index.js",
-    "test": "eslint src"
+	"prepublish": "npm run build",
+	"build": "../../node_modules/.bin/babel --root-mode upward index.src.js --out-file index.js",
+	"clean": "rimraf index.js",
+	"lint": "eslint index.src.js"
   },
   "repository": {
     "type": "git",
@@ -26,12 +26,6 @@
   },
   "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-react-server": "^0.6.0",
-    "eslint": "^3.8.1",
-    "eslint-plugin-react": "^6.4.1",
-    "babel-eslint": "^7.0.0",
-    "rimraf": "^2.5.4"
+    "babel-preset-react-server": "^0.6.0"
   }
 }

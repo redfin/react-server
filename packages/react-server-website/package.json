@@ -8,8 +8,7 @@
     "build-assets": "npm run docs && NODE_ENV=production react-server compile",
     "start-prod": "NODE_ENV=production react-server start",
     "start": "react-server start",
-    "lint": "eslint routes.js gulpfile.js pages/ components/ middleware/ lib/",
-    "test": "npm run lint && nsp check",
+    "lint": "eslint .",
     "docs": "docco -o docs ./components/*.js ./lib/*.js ./middleware/*.js ./pages/*.js *.js && node build-dir-contents.js"
   },
   "license": "Apache-2.0",
@@ -23,13 +22,5 @@
     "react-server-cli": "^0.8.1",
     "react-server-data-bundle-cache": "^0.8.1",
     "remarkable": "^1.6.2"
-  },
-  "devDependencies": {
-    "babel-eslint": "^7.0.0",
-    "babel-preset-react-server": "^0.6.0",
-    "docco": "^0.7.0",
-    "eslint": "^3.8.1",
-    "eslint-plugin-react": "^6.4.1",
-    "nsp": "^2.6.2"
   }
 }

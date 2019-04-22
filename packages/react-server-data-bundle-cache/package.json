@@ -7,10 +7,10 @@
   "author": "Bo Borgerson",
   "license": "Apache License 2.0",
   "scripts": {
-    "prepublish": "gulp build",
-    "lint": "gulp eslint",
-    "test": "gulp test",
-    "clean": "rimraf lib npm-debug.log* index.js"
+	"build": "../../node_modules/.bin/gulp build",
+	"prepublish": "../../node_modules/.bin/gulp build",
+	"lint": "eslint src",
+	"clean": "rimraf lib npm-debug.log* index.js"
   },
   "dependencies": {
     "lodash": "^4.16.4",
@@ -21,17 +21,7 @@
     "react-server": "^0.8.1"
   },
   "devDependencies": {
-    "babel-eslint": "^7.0.0",
-    "babel-preset-es2015": "^6.18.0",
-    "eslint-plugin-react": "^6.4.1",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-cli": "^1.2.2",
-    "gulp-eslint": "^3.0.1",
-    "gulp-nsp": "^2.4.2",
-    "gulp-rename": "^1.2.2",
     "react-server": "^0.8.1",
-    "react-server-gulp-module-tagger": "^0.6.0",
-    "rimraf": "^2.5.4"
+    "react-server-gulp-module-tagger": "^0.6.0"
   }
 }

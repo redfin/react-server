@@ -45,7 +45,6 @@ module.exports = yeoman.Base.extend({
 			'_eslintrc',
 			'_gitignore',
 			'_reactserverrc',
-			'_nsprc',
 		].forEach(function (filename) {
 			var fn = filename.replace('_', '.');
 			_this.fs.copyTpl(
