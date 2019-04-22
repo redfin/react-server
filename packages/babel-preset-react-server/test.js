@@ -7,7 +7,7 @@ test('module can be required', t => {
 		require('.');
 		t.pass();
 	} catch (e) {
-		console.error(e);
+		console.error(e); //eslint-disable-line no-console
 		t.fail();
 	}
 });
@@ -23,7 +23,7 @@ function readFile(filename) {
 	return new Promise((resolve, reject) => {
 		fs.readFile(filename, (err, data) => {
 			if (err) {
-				console.error(err);
+				console.error(err); //eslint-disable-line no-console
 				reject(err);
 			} else {
 				resolve(data.toString());
@@ -33,5 +33,5 @@ function readFile(filename) {
 }
 
 function trim(str) {
-  return str.replace(/^\s+|\s+$/, '');
+	return str.replace(/^\s+|\s+$/, '');
 }

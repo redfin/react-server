@@ -18,6 +18,9 @@ const Header = ({ onHeaderClick }) => (
 		</tr>
 	</thead>
 );
+Header.propTypes = {
+	onHeaderClick: PropTypes.func.isRequired,
+};
 
 const Row = ({ id, name, mass, year, selected, onRowClick }) => {
 	const selectedClass = selected ? "info pointer" : "pointer";
@@ -26,6 +29,14 @@ const Row = ({ id, name, mass, year, selected, onRowClick }) => {
 			<td>{name}</td><td>{mass}</td><td>{year}</td>
 		</tr>
 	);
+};
+Row.propTypes = {
+	id: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	mass: PropTypes.string.isRequired,
+	year: PropTypes.string.isRequired,
+	selected: PropTypes.bool,
+	onRowClick: PropTypes.func.isRequired,
 };
 
 const Table = ({ header, meteors, onRowClick, onHeaderClick }) => (
@@ -44,6 +55,7 @@ const Table = ({ header, meteors, onRowClick, onHeaderClick }) => (
 );
 
 Table.propTypes = {
+	header: PropTypes.string.isRequired,
 	meteors: PropTypes.arrayOf(PropTypes.shape({
 		id: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
@@ -53,6 +65,6 @@ Table.propTypes = {
 	}).isRequired).isRequired,
 	onHeaderClick: PropTypes.func.isRequired,
 	onRowClick: PropTypes.func.isRequired,
-}
+};
 
 export default Table;

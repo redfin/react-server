@@ -6,6 +6,7 @@
   "scripts": {
     "build": "gulp build",
     "clean": "rimraf target npm-debug.log*",
+    "lint": "eslint src test",
     "test": "ava test/*.spec.js",
     "prepublish": "npm run build"
   },

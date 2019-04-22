@@ -2,13 +2,13 @@ import Q from 'q';
 import { Component } from 'react';
 import { RootElement } from 'react-server';
 
-class RenderError extends Component {
+class RenderError extends Component { // eslint-disable-line react/require-render-return
 	render() {
 		throw new Error('Error in render');
 	}
 }
 
-const ReceiveProps = OriginalComponent => class extends Component {
+const ReceiveProps = OriginalComponent => class extends Component { // eslint-disable-line react/display-name
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -33,7 +33,7 @@ const ReceiveProps = OriginalComponent => class extends Component {
 };
 
 const ComponentWillReceivePropsError = ReceiveProps(
-	class extends Component {
+	class extends Component { // eslint-disable-line react/display-name
 		componentWillReceiveProps() {
 			throw Error('Error in componentWillReceiveProps');
 		}
@@ -44,7 +44,7 @@ const ComponentWillReceivePropsError = ReceiveProps(
 );
 
 const ComponentDidReceivePropsError = ReceiveProps(
-	class extends Component {
+	class extends Component { // eslint-disable-line react/display-name
 		componentDidReceiveProps() {
 			throw Error('Error in componentDidReceiveProps');
 		}
@@ -55,7 +55,7 @@ const ComponentDidReceivePropsError = ReceiveProps(
 );
 
 const ComponentWillUpdateError = ReceiveProps(
-	class extends Component {
+	class extends Component { // eslint-disable-line react/display-name
 		componentWillUpdate() {
 			throw Error('Error in componentWillUpdate');
 		}
@@ -66,7 +66,7 @@ const ComponentWillUpdateError = ReceiveProps(
 );
 
 const ComponentDidUpdateError = ReceiveProps(
-	class extends Component {
+	class extends Component { // eslint-disable-line react/display-name
 		componentDidUpdate() {
 			throw Error('Error in componentDidUpdate');
 		}

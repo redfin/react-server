@@ -4,14 +4,6 @@ import { Component } from 'react';
 import './page-title.less';
 
 export default class PageTitle extends Component {
-	static getPropTypes() {
-		return {
-			viewSourceUrl: PropTypes.string,
-			serverVersion: PropTypes.string,
-			titleProvider: PropTypes.object,
-		};
-	}
-
 	render() {
 		let ctas;
 
@@ -49,3 +41,9 @@ export default class PageTitle extends Component {
 		);
 	}
 }
+PageTitle.propTypes = {
+	viewSourceUrl: PropTypes.string,
+	serverVersion: PropTypes.string,
+	titleProvider: PropTypes.object,
+};
+

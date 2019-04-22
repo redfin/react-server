@@ -7,7 +7,7 @@
     "prepublish": "npm run build",
     "build": "babel --root-mode upward index.src.js --out-file index.js",
     "clean": "rimraf index.js",
-    "lint": "eslint src"
+    "lint": "eslint index.src.js"
   },
   "repository": {
     "type": "git",

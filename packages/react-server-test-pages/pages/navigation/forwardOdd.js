@@ -1,6 +1,10 @@
 import {ReactServerAgent, RootElement} from "react-server";
+import PropTypes from "prop-types";
 
 const Odd = ({body}) => <div className="odd">Hey look I'm odd because I am {body}</div>;
+Odd.propTypes = {
+	body: PropTypes.any,
+};
 
 export default class ForwardOddPage {
 	handleRoute() {

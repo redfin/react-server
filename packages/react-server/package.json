@@ -10,7 +10,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "gulp build",
-    "lint": "gulp eslint",
+    "lint": "eslint core",
     "test": "gulp test",
     "clean": "rimraf target npm-debug.log*"
   },

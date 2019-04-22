@@ -46,5 +46,5 @@ new Suite()
 	.add("info noop transport", run(noopTransportLogger, 'info'), { defer: true })
 	.add("time no transports",  run(noTransportLogger,   'time'))
 	.add("time noop transport", run(noopTransportLogger, 'time'), { defer: true })
-	.on('cycle', (v) => console.log(v.target.name + "\t" + v.target.stats.mean))
-	.run()
+	.on('cycle', (v) => console.log(v.target.name + "\t" + v.target.stats.mean)) // eslint-disable-line no-console
+	.run();

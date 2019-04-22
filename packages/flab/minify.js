@@ -1,4 +1,4 @@
-require("get-stdin")().then(src => console.log(
+require("get-stdin")().then(src => console.log( // eslint-disable-line no-console
 	"\n"+
 	"/*! LAB.js (LABjs :: Loading And Blocking JavaScript)\n"+
 	"    v2.0.3 (c) Kyle Simpson\n"+

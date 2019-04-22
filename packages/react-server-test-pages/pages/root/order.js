@@ -1,6 +1,7 @@
 import {Component} from "react";
 import {RootElement} from "react-server";
 import Q from "q";
+import PropTypes from "prop-types";
 
 class TurnGreen extends Component {
 	componentDidMount() {
@@ -11,6 +12,9 @@ class TurnGreen extends Component {
 		return <div style={{backgroundColor: color || "red"}}>{this.props.children}</div>;
 	}
 }
+TurnGreen.propTypes = {
+	children: PropTypes.node,
+};
 
 export default class RootOrderPage {
 	handleRoute(next) {
