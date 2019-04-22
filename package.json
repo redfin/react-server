@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "audit": "npm audit --audit-level=high",
+    "audit": "npm audit && lerna exec --stream npm audit",
     "bootstrap": "npm i",
     "bootstrap-no-i": "lerna bootstrap",
     "build": "lerna run build",
@@ -67,7 +67,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "mockery": "^2.0.0",
-    "nsp": "^2.6.2",
+    "npm": "^6.4.0",
     "output-file-sync": "^1.1.2",
     "q": "1.4.1",
     "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
