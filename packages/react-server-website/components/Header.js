@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {Link, getCurrentRequestContext} from "react-server";
 
@@ -40,7 +41,12 @@ const HeaderLink = ({label, path, internal}) => {
 	} else {
 		return <li key={path} {...classIfActive(path, internal)}><a target="_blank" href={path}>{label}</a></li>
 	}
-}
+};
+HeaderLink.propTypes = {
+	label: PropTypes.string,
+	path: PropTypes.string,
+	internal: PropTypes.bool,
+};
 
 class MenuControl extends React.Component {
 	render() {
@@ -53,6 +59,9 @@ class MenuControl extends React.Component {
 		return controlContent;
 	}
 }
+MenuControl.propTypes = {
+	open: PropTypes.bool,
+};
 
 
 export default class Header extends React.Component {

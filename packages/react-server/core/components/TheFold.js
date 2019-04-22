@@ -1,6 +1,6 @@
 import {Component} from "react";
 
-export default class TheFold extends Component {
+export default class TheFold extends Component { // eslint-disable-line react/require-render-return
 	render() {
 		throw new Error("Something went wrong.  Trying to render the fold...");
 	}

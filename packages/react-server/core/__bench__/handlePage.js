@@ -36,5 +36,5 @@ new Suite()
 	.add("10",   run(  10), { defer: true })
 	.add("100",  run( 100), { defer: true })
 	.add("1000", run(1000), { defer: true })
-	.on('cycle', (v) => console.log(v.target.name + "\t" + v.target.stats.mean))
-	.run()
+	.on('cycle', (v) => console.log(v.target.name + "\t" + v.target.stats.mean)) // eslint-disable-line no-console
+	.run();

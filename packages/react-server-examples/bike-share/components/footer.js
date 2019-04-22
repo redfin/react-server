@@ -3,7 +3,7 @@ import {logging} from 'react-server';
 
 const logger = logging.getLogger(__LOGGER__);
 
-export default () => {
+const Footer = () => {
 	logger.info('rendering the footer');
 	return (<div className="footer">
 		<span>Brought to you by </span>
@@ -12,3 +12,5 @@ export default () => {
 		<a href="http://api.citybik.es/v2/">citybik.es</a>
 	</div>);
 };
+
+export default Footer;

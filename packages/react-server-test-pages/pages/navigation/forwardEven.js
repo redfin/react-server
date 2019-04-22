@@ -1,6 +1,10 @@
+import PropTypes from "prop-types";
 import {ReactServerAgent, RootElement} from "react-server";
 
 const Even = ({body}) => <div className="even">Hey look I'm even because I am {body}</div>;
+Even.propTypes = {
+	body: PropTypes.any,
+};
 
 export default class ForwardEvenPage {
 	handleRoute() {

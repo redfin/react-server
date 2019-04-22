@@ -13,6 +13,7 @@
     "build-src": "node stringify.js < LAB.src.js > string/src.js",
     "build-min": "node minify.js < LAB.src.js | node stringify.js > string/min.js",
     "clean": "rimraf string",
+    "lint": "eslint .",
     "test": "echo \"No tests yet...\""
   },
   "repository": {

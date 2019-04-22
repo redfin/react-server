@@ -6,9 +6,9 @@ let rs;
 
 test.before('start the server', async () => {
 	const stdout = await exec('npm run compile');
-	console.log(stdout);
+	console.log(stdout); // eslint-disable-line no-console
 	rs = cp.spawn('npm', ['start']);
-	rs.stderr.on('data', data => console.error(`ERR: ${data}`));
+	rs.stderr.on('data', data => console.error(`ERR: ${data}`)); // eslint-disable-line no-console
 	await sleep(10000);
 });
 
@@ -25,7 +25,7 @@ function exec(cmd, opts = {maxBuffer: 1024 * 100000}) {
 	return new Promise((resolve, reject) => {
 		cp.exec(cmd, opts, (error, stdout, stderr) => {
 			if (error) {
-				console.error(stderr);
+				console.error(stderr); // eslint-disable-line no-console
 				reject(error);
 				return;
 			}
@@ -40,7 +40,7 @@ function getResponseCode(url) {
 		const req = http.get({
 			hostname: 'localhost',
 			port: 3010,
-			path: url
+			path: url,
 		}, res => {
 			resolve(res.statusCode);
 		});

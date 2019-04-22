@@ -37,4 +37,5 @@ module.exports = RootProvider;
 
 RootProvider.propTypes = {
 	store: PropTypes.object.isRequired,
-}
+	children: PropTypes.node.isRequired,
+};
