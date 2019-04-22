@@ -13,6 +13,8 @@
     - Make sure it's `https://registry.npmjs.org/`
 - `npm run clean`
 - `npm run nuke && npm run bootstrap`
+- `npm run lint`
+- `npm run build`
 - `npm test`
 - `export GITHUB_AUTH="..."`
 - `npm run changelog >> CHANGELOG.md`

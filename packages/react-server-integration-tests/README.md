@@ -1,29 +1,32 @@
 # Testing `react-server`
 
-This directory contains integration tests that test the core features of `react-server` and `react-server-cli` as a server and client framework. Tests code can be found in the `react-server/integration-tests/src/__tests__` subdirectory.
+This directory contains integration tests that test the core features of `react-server` and `react-server-cli` as a server and client framework. Tests code can be found in the `react-server/packages/react-server-integration-tests/src/__tests__` subdirectory.
 
 ## To run all the tests
 
-1. cd to the `react-server/integration-tests` directory.
-1. If you haven't ever run tests before: `npm install -g gulp`.
-1. `npm install`
-1. `gulp test`
+1. Start at the root of the monorepo and follow the monorepo installation procedures.
+1. `npm run build`
+1. `lerna run test --stream --scope 'react-server-integration-tests'`
 
 You should see something like:
 
 ```
-$ gulp test
-[09:31:12] Using gulpfile ~/code/main/react-server/packages/react-server/gulpfile.js
-[09:31:12] Starting 'compileServer'...
-[09:31:12] Starting 'compileClient'...
-[09:31:14] Finished 'compileServer' after 2.16 s
-[09:31:14] Finished 'compileClient' after 2.15 s
-[09:31:14] Starting 'test'...
-..................................................
-
-50 specs, 0 failures
-Finished in 0 seconds
-[09:31:27] Finished 'test' after 13 s
+lerna info filter [ 'react-server-integration-tests' ]
+lerna info Executing command in 1 package: "npm run test"
+react-server-integration-tests: > react-server-integration-tests@0.8.1 test /Users/drewpc/Documents/SoprisApps/git-repos/react-server/packages/react-server-integration-tests
+react-server-integration-tests: > PORT=8771 gulp test
+react-server-integration-tests: [16:36:22] Failed to load external module @babel/register
+react-server-integration-tests: [16:36:22] Requiring external module babel-register
+react-server-integration-tests: [16:36:23] Using gulpfile ~/Documents/SoprisApps/git-repos/react-server/packages/react-server-integration-tests/gulpfile.babel.js
+react-server-integration-tests: [16:36:24] Starting 'compile'...
+react-server-integration-tests: [16:36:24] Finished 'compile' after 875 ms
+react-server-integration-tests: [16:36:24] Starting 'test'...
+react-server-integration-tests: ...........................................................................................................................................
+react-server-integration-tests: 139 specs, 0 failures
+react-server-integration-tests: Finished in 72.7 seconds
+react-server-integration-tests: [16:38:04] Finished 'test' after 1.22 min
+lerna success run Ran npm script 'test' in 1 package in 77.9s:
+lerna success - react-server-integration-tests
 ```
 
 Each little green dot is a test spec that passed. Every red "F" is a test that failed, but you probably know that if you have written Jasmine tests before. There may be a few errors logged to the console as part of tests that expect an error. As long as it says "0 failures", the tests passed.
@@ -39,7 +42,7 @@ We're using [Jasmine 2.3.x](http://jasmine.github.io/2.3/introduction.html) as o
 
 Let's say that we wanted to just test that `react-server` will render a simple "Hello, world!" page.
 
-First, make a subdirectory of `react-server/integration-tests/src/__tests__`, called "helloWorld". Please don't put Spec files and Page files directly in the `__tests__` directory. I expect that most of the `__tests__` sub-directories will have one Spec file and one or more Page files, but it's certainly reasonable to put multiple related Spec files in a directory together.
+First, make a subdirectory of `react-server/packages/react-server-integration-tests/src/__tests__`, called "helloWorld". Please don't put Spec files and Page files directly in the `__tests__` directory. I expect that most of the `__tests__` sub-directories will have one Spec file and one or more Page files, but it's certainly reasonable to put multiple related Spec files in a directory together.
 
 Next, we'd write a `Page` class that exercises the  functionality we want to test in `react-server`:
 

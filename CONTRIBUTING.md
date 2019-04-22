@@ -58,16 +58,25 @@ lerna run lint
 lerna exec -- david u
 ```
 
-You can also work on a single package by `cd`-ing into that module, and using
-normal `npm` scripts
+You can no longer work on a single package by `cd`-ing into that module, and using
+normal `npm` scripts.  This is because of the way lerna hoists commands up to the
+root level.  When working on a single package, instead run the lerna command with
+a scope of that package name.
 
+For example, from the root of the repo:
 ```
-cd packages/generator-react-server
-npm i
-npm test
+lerna run build --scope 'react-server'
+lerna run build --scope 'react-server-cli'
+lerna run test --scope 'react-server-cli'
 ```
 
-but you should still run a full monorepo build and test before submitting a pr.
+You should always run a full monorepo lint, build, and test before submitting a pr.
+```
+npm run lint
+npm run clean
+npm run build
+npm run test
+```
 
 ## Testing
 

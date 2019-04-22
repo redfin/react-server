@@ -8,8 +8,7 @@ Setup (from the repo root):
 
 ```bash
 $ npm run bootstrap
-$ cd packages/react-server-test-pages
-$ npm start
+$ lerna run start --stream --scope 'react-server-test-pages'
 ```
 
 Then hit http://localhost:3000/ to see what's available.
@@ -18,9 +17,10 @@ If you make changes in `packages/react-server` you'll need to `CTRL-C` and
 re-build `react-server` to pick them up.
 
 ```bash
-$ cd ../react-server && npm run prepublish && cd - && npm start
+$ lerna run build --stream --scope 'react-server'
+$ lerna run start --stream --scope 'react-server-test-pages'
 ```
 
-If you wish to run the test server in debug mode, simply replace `npm start` with `npm run debug`.
+If you wish to run the test server in debug mode, simply replace `start` with `debug`.
 
 Add pages in `entrypoints.js`.  Instructions are at the top.
