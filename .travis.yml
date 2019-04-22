@@ -1,18 +1,18 @@
 language: node_js
 node_js:
-  - "11"
-  - "10"
-  - "9"
-  - "8"
+- "11"
+- "10"
+- "9"
+- "8"
 before_install:
-  - npm install -g npm@latest
+- npm install -g npm@latest
 before_script:
-  - npm run lint
-  - npm run build
+- npm run lint
+- npm run build
 cache:
-  npm: true
-  directories:
-    - node_modules
+	npm: true
+	directories:
+	- node_modules
 	- packages/babel-plugin-react-server/node_modules
 	- packages/babel-preset-react-server/node_modules
 	- packages/generator-react-server/node_modules
@@ -27,15 +27,15 @@ cache:
 	- packages/react-server-test-pages/node_modules
 	- packages/react-server-website/node_modules
 env:
-  - CXX=g++-4.8
+- CXX=g++-4.8
 addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
+	apt:
+		sources:
+		- ubuntu-toolchain-r-test
+		packages:
+		- g++-4.8
 after_failure:
-  - npm run debug
+- npm run debug
 notifications:
-  slack:
-    secure: Q27D2038P10YOtme9Me2V1lWkcHk6l9edRFia21ngne8zIUTdkyfcrTsDsPlsU8QWXRBnEH3/ZEhML0lqXMuWdHboCweo06vogqfp2BV3Och2kLh/SL2cdvcayrKef9LaiGv6S/6Ycbhz3LvNC3kTP8uaXc8NXJxgahtrZ7ljIaK2ID9iht9RiLoGgMBj7j8xiqelAAFXDpw0xs4p+nb9JjY4TIaM7Bjvj7VMP4ak1dWlEJF7pRSfXlqZyogezu9oNxHHkzdcguGU8n5B3iHuNnJ91VRAQ9W081jXx/YSNhJxgujjoxEcz42tUAqFYolJQ2cuw0vvw4V9HkozAGcRomlXpGJs/U/sZK19/iP3/GVUuEIF181paIa7s7YYtBs+rGgtsRp2b+AoBvmsaLiZ94N0rzbucs+ltnFRrWxYtBo2oAaPjnexb0hGBwUmR9JjJFd5qG99IuWIf4FpMtqFv8Esrw+fFtz8CG9t6zSiuLZacElryPgaAYKGtVSnGPPhi2Lqk6quUGr/Snb6BJxGzNX6AS4xs5OItd8/d2/KX8jYi4VYtWy4GaJ0oX1qKHHgwTdaj81HOSLZUman93HmLETEUfvQ48F75ncxQS6HpiI8kLHSLFjUQsNU8j/AmEiSk+K17te0VuX9HhoOttnehGUS788ORO7rRFERf+FWtg=
+	slack:
+		secure: Q27D2038P10YOtme9Me2V1lWkcHk6l9edRFia21ngne8zIUTdkyfcrTsDsPlsU8QWXRBnEH3/ZEhML0lqXMuWdHboCweo06vogqfp2BV3Och2kLh/SL2cdvcayrKef9LaiGv6S/6Ycbhz3LvNC3kTP8uaXc8NXJxgahtrZ7ljIaK2ID9iht9RiLoGgMBj7j8xiqelAAFXDpw0xs4p+nb9JjY4TIaM7Bjvj7VMP4ak1dWlEJF7pRSfXlqZyogezu9oNxHHkzdcguGU8n5B3iHuNnJ91VRAQ9W081jXx/YSNhJxgujjoxEcz42tUAqFYolJQ2cuw0vvw4V9HkozAGcRomlXpGJs/U/sZK19/iP3/GVUuEIF181paIa7s7YYtBs+rGgtsRp2b+AoBvmsaLiZ94N0rzbucs+ltnFRrWxYtBo2oAaPjnexb0hGBwUmR9JjJFd5qG99IuWIf4FpMtqFv8Esrw+fFtz8CG9t6zSiuLZacElryPgaAYKGtVSnGPPhi2Lqk6quUGr/Snb6BJxGzNX6AS4xs5OItd8/d2/KX8jYi4VYtWy4GaJ0oX1qKHHgwTdaj81HOSLZUman93HmLETEUfvQ48F75ncxQS6HpiI8kLHSLFjUQsNU8j/AmEiSk+K17te0VuX9HhoOttnehGUS788ORO7rRFERf+FWtg=
