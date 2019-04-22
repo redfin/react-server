@@ -5,7 +5,7 @@ var {
 	getRootElementAttributes,
 } = require('./RootElement');
 
-class RootContainer extends React.Component {
+class RootContainer extends React.Component { // eslint-disable-line react/require-render-return
 	render() {
 		throw new Error("RootContainers can't go in non-RootContainers!");
 	}

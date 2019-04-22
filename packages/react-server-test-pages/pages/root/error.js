@@ -1,6 +1,10 @@
 import {ReactServerAgent, RootElement, Link} from "react-server";
+import PropTypes from "prop-types";
 
 const Okay = ({ok}) => <div>Okay: {""+ok}</div>
+Okay.propTypes = {
+	ok: PropTypes.number,
+};
 
 export default class RootWhenPage {
 	handleRoute(next) {

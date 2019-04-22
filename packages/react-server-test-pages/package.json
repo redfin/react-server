@@ -5,11 +5,8 @@
   "description": "Some pages to test out features of react-server",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm run build",
-    "build": "gulp build",
     "start": "react-server start",
-    "lint": "gulp eslint",
-    "test": "gulp test",
+    "lint": "eslint .",
     "clean": "rimraf npm-debug.log* __clientTemp target"
   },
   "author": "Bo Borgerson",

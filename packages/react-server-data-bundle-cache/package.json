@@ -9,7 +9,7 @@
   "scripts": {
     "build": "gulp build",
     "clean": "rimraf lib npm-debug.log* index.js",
-    "lint": "gulp eslint",
+    "lint": "eslint src",
     "prepublish": "npm run build"
   },
   "dependencies": {

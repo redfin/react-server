@@ -59,10 +59,11 @@ export default class Markdown extends React.Component {
 }
 
 Markdown.propTypes = {
+	children   : PropTypes.node,
 	source     : PropTypes.string,
 	reuseDom   : PropTypes.bool,
 	bundleData : PropTypes.bool,
-}
+};
 
 Markdown.defaultProps = {
 	reuseDom   : false,
