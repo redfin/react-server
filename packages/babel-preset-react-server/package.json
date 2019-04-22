@@ -4,7 +4,6 @@
   "description": "A recommended Babel config for working with react-server",
   "main": "index.js",
   "scripts": {
-	"lint": "eslint .",
 	"clean": "../../node_modules/.bin/rimraf npm-debug.log*",
     "prepublish": "npm run clean"
   },

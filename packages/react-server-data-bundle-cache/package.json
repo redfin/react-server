@@ -9,7 +9,7 @@
   "scripts": {
 	"build": "../../node_modules/.bin/gulp build",
 	"prepublish": "../../node_modules/.bin/gulp build",
-	"lint": "eslint src",
+	"lint": "gulp eslint",
 	"clean": "rimraf lib npm-debug.log* index.js"
   },
   "dependencies": {
