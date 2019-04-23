@@ -1,11 +1,11 @@
 {
   "routesFile": "./routes.json",
-  "host": "0.0.0.0",
+  "host": "localhost",
   "port": 3000,
-  "jsPort": 3001,
   "hot": true,
   "minify": false,
   "longTermCaching": false,
+  "compileOnStartup": true,
   "https": false,
   "logLevel": "debug",
   "env": {

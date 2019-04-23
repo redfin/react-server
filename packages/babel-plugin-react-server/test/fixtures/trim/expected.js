@@ -1,7 +1,9 @@
+"use strict";
+
 var logger = require('react-server').logging.getLogger({
-  name: 'trim.actual',
+  name: "trim.actual",
   color: {
     server: 207,
-    client: 'rgb(212,42,212)'
+    client: "rgb(212,42,212)"
   }
 });

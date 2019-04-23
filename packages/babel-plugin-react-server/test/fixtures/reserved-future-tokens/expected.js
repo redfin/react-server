@@ -1,3 +1,5 @@
+"use strict";
+
 ({
   name: "babel-plugin-react-server.test.fixtures.reserved-future-tokens.actual",
   color: {

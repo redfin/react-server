@@ -1,6 +1,6 @@
 import loggerSpec from 'react-server-module-tagger';
 import path from 'path';
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 module.exports = function() {
 	return {
@@ -42,7 +42,8 @@ module.exports = function() {
 			},
 		},
 	};
-}
+};
+exports.default = module.exports;
 
 function convertObjectToObjectExpression(obj) {
 	const properties = [];

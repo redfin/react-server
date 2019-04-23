@@ -1,4 +1,5 @@
 {
-	"presets": ["react-server"],
-	"plugins": ["add-module-exports"]
+	"presets": [
+		"react-server"
+	]
 }

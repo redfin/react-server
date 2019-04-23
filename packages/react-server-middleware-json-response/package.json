@@ -24,8 +24,9 @@
   "bugs": {
     "url": "https://github.com/redfin/react-server/issues"
   },
-  "homepage": "https://github.com/redfin/react-server#readme",
   "devDependencies": {
-    "babel-preset-react-server": "^0.6.0"
-  }
+    "babel-preset-react-server": "^0.6.0",
+    "babel-plugin-react-server": "^0.6.0"
+  },
+  "homepage": "https://github.com/redfin/react-server#readme"
 }

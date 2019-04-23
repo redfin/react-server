@@ -13,7 +13,10 @@ export default (pathToStatic, manifest) => {
 				text: `window.webpackManifest = ${JSON.stringify(manifest.jsChunksById)};`,
 			});
 
-			scripts.push(`${baseUrl}${manifest.jsChunksByName.common}`);
+			if (manifest.jsChunksByName.common) {
+				scripts.push(`${baseUrl}${manifest.jsChunksByName.common}`);
+			}
+
 			scripts.push(`${baseUrl}${manifest.jsChunksByName[routeName]}`);
 
 			return [

@@ -5,7 +5,7 @@ var logger = require('./logging').getLogger(__LOGGER__),
 	MobileDetect = require('mobile-detect'),
 	RequestContext = require('./context/RequestContext'),
 	RequestLocalStorage = require('./util/RequestLocalStorage'),
-	DebugUtil = require('./util/DebugUtil'),
+	DebugUtil = require('./util/DebugUtil').default,
 	RLS = RequestLocalStorage.getNamespace(),
 	flab = require('flab'),
 	Q = require('q'),
@@ -492,6 +492,16 @@ function renderScriptsAsync(scripts, res) {
 		// domain or have CORS headers.
 		if (RLS().page.getSplitJsLoad()) {
 			globalDefaults.UseCORSXHR = true;
+		}
+
+		if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
+			// ZombieJS does not handle loading async scripts in the proper order and ensuring that .wait() waits for
+			// execution.  Thus, we need to force LABjs to not use local XHRs in order for all tests to work properly.
+			// This used to work prior to combining the HTML and JS servers into a single server because the JS files
+			// were considered part of a different domain when running tests, so it never used XHR preloading, it used
+			// "cache preloading".
+			// https://github.com/getify/LABjs/blob/master/LAB.src.js#L152-L175
+			globalDefaults.UseLocalXHR = false;
 		}
 
 		// This is the full implementation of LABjs.

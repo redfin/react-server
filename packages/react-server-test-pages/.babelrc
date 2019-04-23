@@ -1,6 +1,4 @@
 {
-  "plugins": [
-    "react-require"
-  ],
-  "presets": ["es2015", "react"]
+  "plugins": ["react-require"],
+  "presets": ["react-server"]
 }

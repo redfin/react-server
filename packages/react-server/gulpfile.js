@@ -1,11 +1,11 @@
 var gulp = require("gulp"),
+	babel = require("gulp-babel"),
 	replace = require("gulp-replace"),
 	rename = require("gulp-rename"),
 	sourcemaps = require("gulp-sourcemaps"),
 	filter = require("gulp-filter"),
 	changed = require("gulp-changed"),
 	jasmine = require("gulp-jasmine"),
-	common = require("./buildutils/gulp-common"),
 	logging = require("react-server-gulp-module-tagger"),
 	istanbul = require('gulp-istanbul'),
 	gulpif = require("gulp-if"),
@@ -51,15 +51,17 @@ function compile(serverSide) {
 	var dest = 'target/' + (serverSide ? "server" : "client");
 	return gulp.src(src)
 		.pipe(codeFilter)
-			.pipe(changed(dest, {extension: '.js'}))
-			.pipe(logging())
-			.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
-			.pipe(gulpif(shouldSourcemap(), sourcemaps.init()))
-			.pipe(common.es6Transform())
-			.pipe(gulpif(shouldSourcemap(), sourcemaps.write()))
-			.pipe(rename(function (path) {
-				path.extname = ".js";
-			}))
+		.pipe(changed(dest, {extension: '.js'}))
+		.pipe(logging())
+		.pipe(replace("SERVER_SIDE", serverSide ? "true" : "false"))
+		.pipe(gulpif(shouldSourcemap(), sourcemaps.init()))
+		.pipe(babel({
+			rootMode: "upward",
+		}))
+		.pipe(gulpif(shouldSourcemap(), sourcemaps.write()))
+		.pipe(rename(function (path) {
+			path.extname = ".js";
+		}))
 		.pipe(codeFilter.restore)
 		.pipe(gulp.dest(dest));
 }

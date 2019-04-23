@@ -6,7 +6,7 @@ module.exports = {
 	Link: require('./components/Link'),
 	TheFold: require('./components/TheFold').default,
 	History: require('./components/History'),
-	navigateTo: require('./util/navigateTo'),
+	navigateTo: require('./util/navigateTo').default,
 	ClientRequest: require('./ClientRequest'),
 	components: {
 		FragmentDataCache: require('./components/FragmentDataCache'),
