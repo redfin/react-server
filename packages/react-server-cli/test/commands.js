@@ -56,7 +56,7 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 						(stdoutIncludes && !stdout.includes(stdoutIncludes)) ||
 						(stderrIncludes && !stderr.includes(stderrIncludes))
 					) &&
-					elapsed < 5000
+					elapsed < frequency * 10 // need enough time for webpack to compile on startup
 				) {
 					elapsed += frequency;
 					return;
