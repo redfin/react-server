@@ -1,4 +1,6 @@
-require("babel-core/register");
+require("@babel/register")({
+	rootMode: "upward",
+});
 
 const cli = require(".");
 cli.parseCliArgs().then((options) => {

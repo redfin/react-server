@@ -93,47 +93,6 @@ test('react-server-cli:parseCliArgs::host option can be modified using --host ar
 	t.true(Object.keys(defaultOptions).indexOf('host') > -1, 'host key exists in defaultOptions');
 });
 
-
-// **** js-port ****
-// jsPort will be undefined if no argument is provided
-test('react-server-cli:parseCliArgs::jsPort will be undefined if no argument is provided', async t => {
-	const args = [
-		...defaultArgs,
-		'compile',
-	];
-	const parsedArgs = await parseCliArgs(args);
-	t.is(parsedArgs.jsPort, undefined, 'jsPort is undefined if no argument is provided');
-});
-
-// jsPort options can be modified using --js-port argument
-test('react-server-cli:parseCliArgs::jsPort can be modified using --js-port flag', async t => {
-	const args = [
-		...defaultArgs,
-		'compile',
-		'--js-port',
-		'8081',
-	];
-	const parsedArgs = await parseCliArgs(args);
-	t.is(typeof parsedArgs.jsPort, 'number', 'jsPort is a number');
-	t.is(parsedArgs.jsPort, 8081, 'jsPort option is 8081');
-	t.true(Object.keys(defaultOptions).indexOf('jsPort') > -1, 'jsPort key exists in defaultOptions');
-});
-
-// jsPort options can be modified using --jsPort argument
-test('react-server-cli:parseCliArgs::jsPort can be modified using --jsPort flag', async t => {
-	const args = [
-		...defaultArgs,
-		'compile',
-		'--jsPort',
-		'8081',
-	];
-	const parsedArgs = await parseCliArgs(args);
-	t.is(typeof parsedArgs.jsPort, 'number', 'jsPort is a number');
-	t.is(parsedArgs.jsPort, 8081, 'jsPort option is 8081');
-	t.true(Object.keys(defaultOptions).indexOf('jsPort') > -1, 'jsPort key exists in defaultOptions');
-});
-
-
 // **** httpsOptions ****
 // httpsOptions always exists in parsed cli arguments
 test('react-server-cli:parseCliArgs::httpsOptions defaults to false', async t => {

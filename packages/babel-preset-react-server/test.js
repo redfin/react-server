@@ -1,6 +1,6 @@
 import test from 'ava';
 import fs from 'fs';
-import { transform } from 'babel-core';
+import { transform } from '@babel/core';
 
 test('module can be required', t => {
 	try {

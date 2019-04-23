@@ -1,4 +1,4 @@
 {
-	"args": ["start", "--routes-file", "routes.js", "--port", "8786", "--js-port", "8787"],
+	"args": ["start", "--routes-file", "routes.js", "--port", "8784"],
 	"stderrIncludes": "ReferenceError: undeclaredVariable is not defined"
 }

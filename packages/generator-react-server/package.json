@@ -39,14 +39,16 @@
   },
   "scripts": {
     "//": "Keep these in sync",
-    "prepublish": "cp ../../.eslintrc generators/app/templates/_eslintrc",
-    "test": "npm run ava && npm run lint",
+    "prepublish": "npm run build",
+    "build": "cp ../../.eslintrc generators/app/templates/_eslintrc",
+    "test": "npm run ava",
     "ava": "ava test --tap",
     "lint": "eslint generators/ test/",
     "clean": "rimraf npm-debug.log*"
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">= 4.3.1"
+    "node": ">= 6.0.0",
+    "npm": ">= 6.4.0"
   }
 }

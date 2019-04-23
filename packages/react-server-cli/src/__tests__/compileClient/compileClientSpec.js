@@ -76,7 +76,6 @@ describe("compileClient", () => {
 				const filePathRegexStrings = [
 					"var coreJsMiddleware = require(" + coreMiddlewareStringified + ").coreJsMiddleware;",
 					"var coreCssMiddleware = require(" + coreMiddlewareStringified + ").coreCssMiddleware;",
-					"require.ensure(" + filePathStringified + ", function() {",
 					"cb(unwrapEs6Module(require(" + filePathStringified + ")));",
 				];
 

@@ -1,7 +1,7 @@
 
 var React = require('react'),
 	PropTypes = require('prop-types'),
-	navigateTo = require("../util/navigateTo");
+	navigateTo = require("../util/navigateTo").default;
 
 class Link extends React.Component {
 

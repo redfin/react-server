@@ -1,5 +1,6 @@
 {
   "name": "react-server-integration-tests",
+  "version": "0.8.1",
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
@@ -9,6 +10,5 @@
   "devDependencies": {
     "react-server": "^0.8.1",
     "react-server-cli": "^0.8.1"
-  },
-  "version": "0.8.1"
+  }
 }

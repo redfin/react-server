@@ -13,14 +13,17 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lodash": "^4.16.4",
+    "prop-types": "^15.6.2",
     "q": "1.4.1",
     "react": "~0.14.9 || ^15.3.0 || ^16.0.0",
     "react-dom": "~0.14.9 || ^15.3.0 || ^16.0.0",
-    "react-server": "^0.8.1",
-    "react-server-cli": "^0.8.1",
-    "react-server-data-bundle-cache": "^0.8.1",
-    "react-server-middleware-json-response": "^0.6.1",
-    "react-server-redux": "^0.8.0",
+    "react-redux": "^7.0.1",
+    "react-server": "file:../react-server",
+    "react-server-cli": "file:../react-server-cli",
+    "react-server-data-bundle-cache": "file:../react-server-data-bundle-cache",
+    "react-server-middleware-json-response": "file:../react-server-middleware-json-response",
+    "react-server-redux": "file:../react-server-redux",
+    "redux": "^4.0.1",
     "redux-thunk": "^2.1.0"
   }
 }
