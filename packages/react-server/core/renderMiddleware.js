@@ -316,7 +316,7 @@ function writeHeader(req, res, context, start, pageObject) {
 		renderTitle(pageObject, res),
 		// PLAT-602: inline scripts come before stylesheets because
 		// stylesheet downloads block inline script execution.
-		(pageObject.getJsBelowTheFold() && !pageObject.getSplitJsLoad())
+		pageObject.getJsBelowTheFold()
 			? Q()
 			: renderScripts(pageObject, res),
 		renderStylesheets(pageObject, res)
@@ -484,30 +484,15 @@ function renderScriptsAsync(scripts, res) {
 	// Lazily load LAB the first time we spit out async scripts.
 	if (!RLS().didLoadLAB){
 
-		const globalDefaults = {AlwaysPreserveOrder:true};
-
-		// The "cache-preloading" option in stock LABjs doesn't work in modern
-		// Chrome. If you're configured for splitJsLoad then you'd better have
-		// xhr access to your scripts!  They need to either be on the same
-		// domain or have CORS headers.
-		if (RLS().page.getSplitJsLoad()) {
-			globalDefaults.UseCORSXHR = true;
-		}
-
 		// This is the full implementation of LABjs.
 		// Pass `?_debug_lab=1` for unminified source with debugging output.
 		res.write(DebugUtil.getLab() ? flab.src : flab.min);
 
 		// We always want scripts to be executed in order.
-		res.write(`$LAB.setGlobalDefaults(${JSON.stringify(globalDefaults)});`);
+		res.write("$LAB.setGlobalDefaults({AlwaysPreserveOrder:true});");
 
 		// We'll use this to store state between calls (see below).
 		res.write("window._tLAB=$LAB")
-
-		// If we're splitting our JS load from the execution of our JS then we
-		// need to tell LABjs to preload our bundles but hold off on executing
-		// them.
-		if (RLS().page.getSplitJsLoad()) res.write(".cork()");
 
 		// Only need to do this part once.
 		RLS().didLoadLAB = true;
@@ -934,12 +919,9 @@ function bootstrapClient(res, lastElementSent) {
 
 	logAboveTheFoldTime(res);
 
-	if (RLS().page.getSplitJsLoad()) {
-		// If we've corked our LABjs chain then we need to start executing JS.
-		renderScriptsSync([{text:'_tLAB.uncork()'}], res);
-	} else if (RLS().page.getJsBelowTheFold()) {
-		// Otherwise if we've deferred _all_ JS below the fold then we need to
-		// kick off our fetch/load of the page JS now.
+	// If we've deferred _all_ JS below the fold then we need to kick off our
+	// fetch/load of the page JS now.
+	if (RLS().page.getJsBelowTheFold()) {
 		renderScripts(RLS().page, res);
 	}
 
