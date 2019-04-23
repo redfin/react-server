@@ -3,7 +3,7 @@
   "scripts": {
     "audit": "npm audit && lerna exec --stream npm audit",
     "bootstrap": "npm i",
-    "bootstrap-no-i": "lerna bootstrap",
+    "bootstrap-no-i": "lerna bootstrap && lerna link --force-local",
     "build": "lerna run build",
     "changelog": "lerna-changelog",
     "clean": "rimraf lerna-debug.log && lerna run clean",

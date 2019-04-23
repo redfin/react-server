@@ -136,7 +136,7 @@ function installDeps() {
 			if (error) {
 				reject(error);
 			} else {
-				const localDeps = ['react-server-cli', 'react-server', 'babel-preset-react-server', 'babel-plugin-react-server']
+				const localDeps = ['react-server-cli', 'react-server']
 					.map(dep => path.resolve(path.join(__dirname, '../..', dep)));
 				cp.exec(shellescape(['npm', 'install'].concat(localDeps)), (error) => {
 					if (error) {
