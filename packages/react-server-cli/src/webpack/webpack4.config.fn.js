@@ -21,11 +21,6 @@ export default function ({entrypoints, outputDir, outputUrl, hot, minify, longTe
 		mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 		module: {
 			rules: clean([
-				hot && {
-					test: /\.(js|jsx)$/,
-					use: ["react-hot-loader/webpack"],
-					exclude: /node_modules/,
-				},
 				{
 					test: /\.(js|jsx)$/,
 					loader: "babel-loader",

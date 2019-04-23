@@ -1,4 +1,0 @@
-{
-  "plugins": ["react-require"],
-  "presets": ["react-server"]
-}

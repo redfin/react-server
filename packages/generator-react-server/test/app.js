@@ -14,11 +14,12 @@ test('generator-react-server:app creates default files', async t => {
 		})
 		.withPrompts({name: 'foo', dockerCfg: false})
 		.toPromise();
-	t.true(await exists('.babelrc', testDir));
+	t.true(await exists('.eslintrc', testDir));
 	t.true(await exists('.gitignore', testDir));
 	t.true(await exists('.reactserverrc', testDir));
 	t.true(await exists('components/hello-world.js', testDir));
 	t.true(await exists('pages/hello-world.js', testDir));
+	t.true(await exists('babel.config.js', testDir));
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
 	t.true(await exists('routes.json', testDir));
@@ -62,11 +63,12 @@ test('generator-react-server:app creates docker files', async t => {
 		})
 		.withPrompts({name: 'foo', dockerCfg: true})
 		.toPromise();
-	t.true(await exists('.babelrc', testDir));
+	t.true(await exists('.eslintrc', testDir));
 	t.true(await exists('.gitignore', testDir));
 	t.true(await exists('.reactserverrc', testDir));
 	t.true(await exists('components/hello-world.js', testDir));
 	t.true(await exists('pages/hello-world.js', testDir));
+	t.true(await exists('babel.config.js', testDir));
 	t.true(await exists('package.json', testDir));
 	t.true(await exists('README.md', testDir));
 	t.true(await exists('routes.json', testDir));
@@ -134,7 +136,7 @@ function installDeps() {
 			if (error) {
 				reject(error);
 			} else {
-				const localDeps = ['react-server-cli', 'react-server']
+				const localDeps = ['react-server-cli', 'react-server', 'babel-preset-react-server', 'babel-plugin-react-server']
 					.map(dep => path.resolve(path.join(__dirname, '../..', dep)));
 				cp.exec(shellescape(['npm', 'install'].concat(localDeps)), (error) => {
 					if (error) {
