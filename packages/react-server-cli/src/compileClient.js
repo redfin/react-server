@@ -145,7 +145,8 @@ function statsToManifest(stats) {
 				if (chunk.name) {
 					cssChunksByName[chunk.name] = file;
 				}
-			} else if (/\.js$/.test(file)) {
+			} else if (/^((?!hot-update).)*\.js$/.test(file)) {
+				// Ensure we're building a manifest that includes the main JS bundle, not any simple hot updates
 				jsChunksById[chunk.id] = file;
 				if (chunk.name) {
 					jsChunksByName[chunk.name] = file;

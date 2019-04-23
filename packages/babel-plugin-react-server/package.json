@@ -6,6 +6,7 @@
   "author": "Doug Wade <doug.wade@redfin.com>",
   "main": "lib/index.js",
   "dependencies": {
+    "@babel/types": "^7.0.0",
     "react-server-module-tagger": "^0.6.0"
   },
   "scripts": {
