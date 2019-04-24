@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "babel src -d lib",
+    "build": "babel --root-mode upward src -d lib",
     "clean": "rimraf lib",
-    "lint": "eslint src",
-    "test": "npm run lint"
+    "lint": "eslint src"
   },
   "repository": {
     "type": "git",

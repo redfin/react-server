@@ -1,7 +1,19 @@
 language: node_js
 node_js:
-  - node
+  - "11"
+  - "10"
+  - "9"
+  - "8"
+  - "6"
+before_install:
+  - npm install -g 'npm@^6.4.0'
+  - npm --version
+  - rm package-lock.json
+before_script:
+  - npm run lint
+  - npm run build
 cache:
+  npm: true
   directories:
     - node_modules
     - packages/babel-plugin-react-server/node_modules

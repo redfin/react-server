@@ -29,16 +29,7 @@
     "yosay": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
-    "babel-eslint": "^7.0.0",
-    "eslint": "^3.8.1",
-    "eslint-plugin-react": "^6.4.1",
-    "nsp": "^2.6.2",
-    "react-server-cli": "^0.8.1",
-    "rimraf": "^2.5.4",
-    "shell-escape": "^0.2.0",
-    "yeoman-assert": "^2.0.0",
-    "yeoman-test": "^1.0.0"
+    "react-server-cli": "^0.8.1"
   },
   "repository": "redfin/react-server",
   "ava": {
@@ -49,7 +40,7 @@
   "scripts": {
     "//": "Keep these in sync",
     "prepublish": "cp ../../.eslintrc generators/app/templates/_eslintrc",
-    "test": "npm run ava && npm run lint && nsp check",
+    "test": "npm run ava && npm run lint",
     "ava": "ava test --tap",
     "lint": "eslint generators/ test/",
     "clean": "rimraf npm-debug.log*"

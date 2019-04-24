@@ -8,7 +8,8 @@
     "string"
   ],
   "scripts": {
-    "prepublish": "mkdir -p string && npm run build-src && npm run build-min",
+    "prepublish": "npm run build",
+    "build": "mkdir -p string && npm run build-src && npm run build-min",
     "build-src": "node stringify.js < LAB.src.js > string/src.js",
     "build-min": "node minify.js < LAB.src.js | node stringify.js > string/min.js",
     "clean": "rimraf string",
@@ -30,10 +31,5 @@
   "bugs": {
     "url": "https://github.com/redfin/react-server/issues"
   },
-  "homepage": "https://github.com/redfin/react-server#readme",
-  "devDependencies": {
-    "get-stdin": "^5.0.1",
-    "rimraf": "^2.5.4",
-    "uglify-js": "^2.7.5"
-  }
+  "homepage": "https://github.com/redfin/react-server#readme"
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "react-server start",
     "lint": "eslint test.js pages",
-    "test": "npm run lint && nsp check && ava test.js"
+    "test": "npm run lint && ava test.js"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -22,7 +22,6 @@
     "ava": "^0.17.0",
     "babel-eslint": "^7.1.0",
     "eslint": "^3.11.1",
-    "eslint-plugin-react": "6.7.1",
-    "nsp": "^2.3.3"
+    "eslint-plugin-react": "6.7.1"
   }
 }

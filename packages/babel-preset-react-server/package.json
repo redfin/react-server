@@ -4,7 +4,6 @@
   "description": "A recommended Babel config for working with react-server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"All good!\"",
     "clean": "rimraf npm-debug.log*",
     "prepublish": "npm run clean"
   },
@@ -26,8 +25,6 @@
     "babel-preset-stage-0": "^6.16.0"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
-    "babel-core": "^6.18.0",
     "rimraf": "^2.5.4"
   }
 }
