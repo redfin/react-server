@@ -4,7 +4,7 @@
   "description": "calculates module level config",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint *.js",
+    "lint": "eslint .",
     "test": "ava test.js",
     "clean": "rimraf npm-debug.log*"
   },

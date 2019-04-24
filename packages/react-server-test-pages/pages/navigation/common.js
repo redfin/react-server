@@ -1,5 +1,9 @@
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint "react/no-deprecated": "warn" */
+
 import _ from "lodash";
 import {Component} from "react";
+import PropTypes from "prop-types";
 import {ReactServerAgent} from "react-server";
 
 // Each row listens to `navigateStart'.
@@ -52,6 +56,17 @@ export const PagePointer = ({page, row}) => <div className="page-pointer">
 	{+page === +row ? "➟" : ""}
 </div>;
 
+PagePointer.propTypes = {
+	page: PropTypes.number,
+	row: PropTypes.number,
+};
+
 export const RowIndex = ({row}) => <div className="row-index">Row {row}</div>;
+RowIndex.propTypes = {
+	row: PropTypes.number,
+};
 
 export const RowMS = ({ms}) => <div className="row-ms">{ms}ms</div>;
+RowMS.propTypes = {
+	ms: PropTypes.number,
+};

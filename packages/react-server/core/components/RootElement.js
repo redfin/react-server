@@ -1,3 +1,5 @@
+/* eslint "react/no-deprecated": "warn" */
+
 var React = require('react');
 const PropTypes = require('prop-types');
 var Q = require('q');
@@ -102,11 +104,14 @@ RootElement.propTypes = {
 	when: PropTypes.object, // A promise.
 	childProps: PropTypes.object,
 	_isRootElement: PropTypes.bool,
-}
+	children: PropTypes.node,
+	subscribe: PropTypes.func,
+	unsubscribe: PropTypes.func,
+};
 
 RootElement.defaultProps = {
 	_isRootElement: true,
-}
+};
 
 RootElement.isRootElement = function(element) {
 	return element && element.props && element.props._isRootElement;
@@ -127,7 +132,7 @@ RootElement.getRootElementAttributes = function(element) {
 	return attrs;
 }
 
-RootElement.ensureRootElementWithContainer = function(element, container) {
+RootElement.ensureRootElementWithContainer = function(element, container) { // eslint-disable-line react/display-name
 
 	// If it's _already_ a root element (or the fold), pass it along.
 	if (RootElement.isRootElement(element) || isTheFold(element) || (

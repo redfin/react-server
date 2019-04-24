@@ -67,11 +67,11 @@ module.exports = function(req, res, next, routes) {
 
 		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
-				.setRoutes(routes)
-				.setDefaultXhrHeadersFromRequest(req)
-				.create({
-					// TODO: context opts?
-				});
+			.setRoutes(routes)
+			.setDefaultXhrHeadersFromRequest(req)
+			.create({
+				// TODO: context opts?
+			});
 
 		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
@@ -423,7 +423,7 @@ function renderLinkTags (pageObject, res) {
 					Object.keys(linkTag)
 						.map(attr => `${attr}="${attrfy(linkTag[attr])}"`)
 						.join(' ')
-					}>`);
+				}>`);
 			}
 		}));
 	});
@@ -733,7 +733,7 @@ function writeBody(req, res, context, start, page) {
 	// Note that you can override `FAILSAFE_RENDER_TIMEOUT` with a
 	// `?_debug_render_timeout={ms}` query string parameter.
 	var totalWait     = DebugUtil.getRenderTimeout() || FAILSAFE_RENDER_TIMEOUT
-	,   timeRemaining = totalWait - (new Date - start)
+		,   timeRemaining = totalWait - (new Date - start)
 
 	var retval = Q.defer();
 	var writeBodyDfd = Q.defer();
@@ -816,10 +816,10 @@ function renderElement(res, element, context) {
 	}
 
 	var name  = PageUtil.getElementDisplayName(element)
-	,   start = RLS().startTime
-	,   timer = logger.timer(`renderElement.individual.${name}`)
-	,   html  = ''
-	,   attrs = {}
+		,   start = RLS().startTime
+		,   timer = logger.timer(`renderElement.individual.${name}`)
+		,   html  = ''
+		,   attrs = {}
 
 	try {
 		if (element !== null) {
@@ -1023,9 +1023,9 @@ function endResponse(req, res) {
 
 function logRequestStats(req, res, context, start){
 	var allRequests = ReactServerAgent.cache().getAllRequests()
-	,   notLoaded   = ReactServerAgent.cache().getLateRequests()
-	,   sock        = req.socket
-	,   stash       = context.getServerStash()
+		,   notLoaded   = ReactServerAgent.cache().getLateRequests()
+		,   sock        = req.socket
+		,   stash       = context.getServerStash()
 
 	// The socket can be re-used for multiple requests with keep-alive.
 	// Fortunately, until HTTP/2 rolls around, the requests over a given

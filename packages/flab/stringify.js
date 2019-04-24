@@ -1,4 +1,4 @@
-require("get-stdin")().then(src => console.log(
+require("get-stdin")().then(src => console.log( // eslint-disable-line no-console
 	'module.exports = ' + src
 		.replace(/\\/g, '\\\\')
 		.replace(/"/g, '\\"')

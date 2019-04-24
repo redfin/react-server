@@ -1,5 +1,5 @@
 var  SuperLogger = require('winston').Transport
-,	         RLS = require('../util/RequestLocalStorage').getNamespace();
+	,	         RLS = require('../util/RequestLocalStorage').getNamespace();
 
 // A subset of stats that are logged are not associated with requests
 // or occur before the request context is initialized. Simply ignore

@@ -9,6 +9,7 @@ import {
 import SvgDropdown from './assets/SvgDropdown';
 
 import './doc-contents.less'
+import PropTypes from "prop-types";
 
 const currentPath = () => getCurrentRequestContext().getCurrentPath();
 
@@ -16,18 +17,22 @@ const classIfActive = path => (path === currentPath())?{className:"active"}:{}
 
 const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 	<Link reuseDom bundleData path={path}>{name}</Link>
-</li>
+</li>;
 
 const ContentsLink = ({name, path}) => ContentsLinkWithMungedPath(
 	name, join("/docs", path)
-)
+);
 
 const ContentsSection = ({name, pages}) => (
 	<div className='contentsSection'>
 		<h3>{name}</h3>
 		<ul>{pages.map(ContentsLink)}</ul>
 	</div>
-)
+);
+ContentsSection.propTypes = {
+	name: PropTypes.string,
+	pages: PropTypes.array.isRequired,
+};
 
 export default class DocContents extends React.Component {
 	constructor(props) {
@@ -53,7 +58,7 @@ export default class DocContents extends React.Component {
 	}
 
 	toggleMenuOpen() {
-		console.log("MENUOPEN: ",this.state.menuOpen);
+		console.log("MENUOPEN: ",this.state.menuOpen); // eslint-disable-line no-console
 		this.setState( {menuOpen: !this.state.menuOpen} );
 	}
 
@@ -61,6 +66,9 @@ export default class DocContents extends React.Component {
 		this.setState( {menuOpen: false} );
 	}
 }
+DocContents.propTypes = {
+	contents: PropTypes.array.isRequired,
+};
 
 PageNameMixin(DocContents, {
 	prefix: "/docs/",

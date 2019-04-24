@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf npm-debug.log*",
+    "lint": "eslint .",
     "prepublish": "npm run clean"
   },
   "repository": "redfin/react-server",

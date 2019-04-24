@@ -7,7 +7,7 @@ var {
 	withRlsContext,
 	addJsonParserForContentType,
 	removeJsonParserForContentType,
-	SIMPLE_SUCCESS
+	SIMPLE_SUCCESS,
 } = require("../../test/util/reactServerAgentSupport");
 
 
@@ -45,7 +45,8 @@ describe("ReactServerAgent", () => {
 		}));
 
 		it("end() should pass err object on error HTTP status", withRlsContext(done => {
-			ReactServerAgent.get("/error").end( (err, res) => {
+			// Must have .end((err, res) => ...) or else the .end() function won't call the callback!
+			ReactServerAgent.get("/error").end( (err, res) => { // eslint-disable-line no-unused-vars
 				expect(err).not.toBeNull();
 				done();
 			});
@@ -53,7 +54,8 @@ describe("ReactServerAgent", () => {
 		}));
 
 		it("end() should treat 500 as error", withRlsContext(done => {
-			ReactServerAgent.get("/error").query({status: 500}).end( (err, res) => {
+			// Must have .end((err, res) => ...) or else the .end() function won't call the callback!
+			ReactServerAgent.get("/error").query({status: 500}).end( (err, res) => { // eslint-disable-line no-unused-vars
 				expect(err).not.toBeNull();
 				expect(err.status).toBe(500);
 				expect(err.response.body).toBeDefined();
@@ -121,7 +123,7 @@ describe("ReactServerAgent", () => {
 				.query({'foo': 'bar', 'baz': 'qux'})
 				.query('fish=water&88&cow=land')
 				.query({'a': 'b'})
-				.then( (res, err) => {
+				.then( (res) => {
 
 					expect(res.ok).toBe(true);
 
@@ -144,7 +146,7 @@ describe("ReactServerAgent", () => {
 		it("passes through headers", withRlsContext( (done) => {
 			ReactServerAgent.get('/describe')
 				.set({
-					'x-foo-bar-baz': 'foo'
+					'x-foo-bar-baz': 'foo',
 				})
 				.then( res => {
 					expect(res).toBeDefined();
@@ -244,7 +246,7 @@ describe("ReactServerAgent", () => {
 			ReactServerAgent.get('/timeout')
 				.query({ delay: 1000 })
 				.timeout(100)
-				.then(res => {
+				.then(() => {
 					// this is a failure!
 					expect(true).toBe(false);
 					done();
@@ -270,7 +272,7 @@ describe("ReactServerAgent", () => {
 			// only GET requests are cached at the moment
 			ReactServerAgent.get(URL)
 				.query({ type: FAKE_CONTENT_TYPE })
-				.then( (res) => {
+				.then( () => {
 
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
@@ -319,7 +321,7 @@ describe("ReactServerAgent", () => {
 
 			// only GET requests are cached at the moment
 			ReactServerAgent.get(URL)
-				.then( (res) => {
+				.then( () => {
 
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
@@ -336,10 +338,10 @@ describe("ReactServerAgent", () => {
 					ReactServerAgent.cache().rehydrate(dehydrated);
 
 					// after hydration, .body should be available again
-					var entry = cache.dataCache[URL][0];
-					expect(entry).toBeDefined();
-					expect(entry.res.text).toBeDefined();
-					expect(entry.res.body).toBeDefined();
+					var otherEntry = cache.dataCache[URL][0];
+					expect(otherEntry).toBeDefined();
+					expect(otherEntry.res.text).toBeDefined();
+					expect(otherEntry.res.body).toBeDefined();
 
 					done();
 				}).catch( (err) => {
@@ -365,7 +367,7 @@ describe("ReactServerAgent", () => {
 
 			// only GET requests are cached at the moment
 			ReactServerAgent.get(URL)
-				.then( (res) => {
+				.then( () => {
 
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
@@ -401,7 +403,7 @@ describe("ReactServerAgent", () => {
 					expect(res).toBeUndefined();
 					done();
 				})
-				.catch(err => {
+				.catch(() => {
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
@@ -428,7 +430,7 @@ describe("ReactServerAgent", () => {
 					expect(res).toBeUndefined();
 					done();
 				})
-				.catch(err => {
+				.catch(() => {
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
@@ -457,7 +459,7 @@ describe("ReactServerAgent", () => {
 					expect(res).toBeUndefined();
 					done();
 				})
-				.catch(err => {
+				.catch(() => {
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate({ responseBodyOnly: true });
 					var entry = getSingleDehydratedCacheEntry(dehydrated, URL);
@@ -485,7 +487,7 @@ describe("ReactServerAgent", () => {
 			var URL = "/describe";
 
 			ReactServerAgent.get(URL)
-				.then( (res) => {
+				.then( () => {
 
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
@@ -511,7 +513,7 @@ describe("ReactServerAgent", () => {
 			var URL = "/describe";
 
 			ReactServerAgent.get(URL).withHeaderInResponse()
-				.then( (res) => {
+				.then( () => {
 
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
@@ -550,9 +552,9 @@ describe("ReactServerAgent", () => {
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 
 		}));
 
@@ -581,9 +583,9 @@ describe("ReactServerAgent", () => {
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 		}));
 
 		it("does not have a cache collision for two requests to same url with different HTTP methods", withRlsContext(done => {
@@ -597,9 +599,9 @@ describe("ReactServerAgent", () => {
 				var [res1, res2] = results;
 				expect(res1).not.toBe(res2);
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 
 		}));
 
@@ -615,9 +617,9 @@ describe("ReactServerAgent", () => {
 				var [res1, res2] = results;
 				expect(res1).not.toBe(res2);
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 
 		}));
 
@@ -626,12 +628,12 @@ describe("ReactServerAgent", () => {
 			var URL = "/describe";
 
 			var p1 = ReactServerAgent.get(URL)
-						.query({ "foo": "bar" })
-						.then(res => res);
+				.query({ "foo": "bar" })
+				.then(res => res);
 
 			var p2 = ReactServerAgent.get(URL)
-						.query({ "foo": "baz"})
-						.then(res => res);
+				.query({ "foo": "baz"})
+				.then(res => res);
 
 			Q.all([p1, p2]).then(results => {
 				var [res1, res2] = results;
@@ -644,8 +646,8 @@ describe("ReactServerAgent", () => {
 				console.log(errors);
 				fail("An error occurred", errors);
 			})
-			.fin(done)
-			.done();
+				.fin(done)
+				.done();
 
 		}));
 
@@ -654,12 +656,12 @@ describe("ReactServerAgent", () => {
 			var URL = "/describe";
 
 			var p1 = ReactServerAgent.post(URL)
-						.send({ "foo": {"bar": 1} })
-						.then(res => res);
+				.send({ "foo": {"bar": 1} })
+				.then(res => res);
 
 			var p2 = ReactServerAgent.post(URL)
-						.send({ "foo": {"bar": "baz"} })
-						.then(res => res);
+				.send({ "foo": {"bar": "baz"} })
+				.then(res => res);
 
 			Q.all([p1, p2]).then(results => {
 				var [res1, res2] = results;
@@ -672,8 +674,8 @@ describe("ReactServerAgent", () => {
 				console.log(errors);
 				fail("An error occurred", errors);
 			})
-			.fin(done)
-			.done();
+				.fin(done)
+				.done();
 
 		}));
 
@@ -686,7 +688,7 @@ describe("ReactServerAgent", () => {
 					expect(res).toBeUndefined();
 					done();
 				})
-				.catch(err => {
+				.catch(() => {
 					var cache = ReactServerAgent.cache();
 					var dehydrated = cache.dehydrate();
 

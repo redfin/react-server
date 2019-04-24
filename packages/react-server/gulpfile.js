@@ -1,5 +1,4 @@
 var gulp = require("gulp"),
-	path = require('path'),
 	replace = require("gulp-replace"),
 	rename = require("gulp-rename"),
 	sourcemaps = require("gulp-sourcemaps"),
@@ -10,8 +9,7 @@ var gulp = require("gulp"),
 	logging = require("react-server-gulp-module-tagger"),
 	istanbul = require('gulp-istanbul'),
 	gulpif = require("gulp-if"),
-	minimist = require("minimist"),
-	eslint = require('gulp-eslint');
+	minimist = require("minimist");
 
 var availableOptions = {
 	'boolean': [ 'verbose', 'skipSourcemaps' ],
@@ -98,29 +96,10 @@ gulp.task("test-coverage", ["compileServer", "compileClient"], function(cb) {
 });
 
 
-gulp.task("test", ["jasmine", "eslint"]);
+gulp.task("test", ["jasmine"]);
 
 gulp.task("jasmine", ["compileServer", "compileClient"], function() {
 
 	return gulp.src(getSpecGlob("target/server/**/__tests__/**/"))
 		.pipe(jasmine(isVerbose() ? {verbose:true, includeStackTrace: true} : {}));
 });
-
-gulp.task("eslint", [], function() {
-	var srcMinusTest = src.concat([
-		"!core/**/__tests__/**/*",
-		"!**/*.json",
-	]);
-	return gulp.src(srcMinusTest)
-        // eslint() attaches the lint output to the eslint property
-        // of the file object so it can be used by other modules.
-        .pipe(eslint())
-        // eslint.format() outputs the lint results to the console.
-        // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format())
-        // To have the process exit with an error code (1) on
-        // lint error, return the stream and pipe to failOnError last.
-        .pipe(eslint.failAfterError());
-});
-
-// todo: add clean

@@ -1,4 +1,7 @@
+/* eslint "react/no-deprecated": "warn" */
+
 import _ from "lodash";
+import PropTypes from "prop-types";
 import React from "react";
 import {
 	Link,
@@ -62,7 +65,7 @@ class PickPointer extends React.Component {
 	}
 	_init(props) {
 		// Yep.  State from props.  :japanese_ogre:
-		this.state = _.pick(props, ['pick', 'row', 'page']);
+		this.state = _.pick(props, ['pick', 'row', 'page']); //eslint-disable-line react/no-direct-mutation-state
 	}
 	_pick() {
 		const {page, row} = this.state;
@@ -77,11 +80,16 @@ class PickPointer extends React.Component {
 	}
 }
 
-const NL       = ({row}) => <a href={LINK(row)}>Normal Link</a>
-const CT       = ({row}) => <Link path={LINK(row)}>CT</Link>
-const RD       = ({row}) => <Link reuseDom={true} path={LINK(row)}>CT/RD</Link>
-const BD       = ({row}) => <Link bundleData={true} path={LINK(row)}>CT/BD</Link>
-const BDRD     = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>CT/BD/RD</Link>
+const NL       = ({row}) => <a href={LINK(row)}>Normal Link</a>;
+NL.propTypes = { row: PropTypes.number };
+const CT       = ({row}) => <Link path={LINK(row)}>CT</Link>;
+CT.propTypes = { row: PropTypes.number };
+const RD       = ({row}) => <Link reuseDom={true} path={LINK(row)}>CT/RD</Link>;
+RD.propTypes = { row: PropTypes.number };
+const BD       = ({row}) => <Link bundleData={true} path={LINK(row)}>CT/BD</Link>;
+BD.propTypes = { row: PropTypes.number };
+const BDRD     = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>CT/BD/RD</Link>;
+BDRD.propTypes = { row: PropTypes.number };
 
 export default class NavigationPlaygroundPage {
 	handleRoute(next) {
@@ -98,7 +106,7 @@ export default class NavigationPlaygroundPage {
 	}
 	getElements() {
 		return [
-			<RootContainer>
+			<RootContainer key={0}>
 				<h1>Navigation Playground</h1>
 				<h2>Legend:</h2>
 				<ul>
@@ -107,7 +115,7 @@ export default class NavigationPlaygroundPage {
 					<li>BD: Bundle Data</li>
 				</ul>
 			</RootContainer>,
-			...this.data.map(promise => <RootContainer when={promise} className="row">
+			...this.data.map(promise => <RootContainer key={1} when={promise} className="row">
 				<PagePointer />
 				<PickPointer />
 				<RowIndex />

@@ -32,10 +32,10 @@ export default class Homepage {
 	getElements() {
 		return [
 			// A basic component
-			<Header />,
+			<Header key={1}/>,
 			// More complex container components using redux
-			<RootProvider store={this.meteorStore}>
-				<RootElement key={1} when={this.storeAdapter.when(['meteors'])}>
+			<RootProvider key={2} store={this.meteorStore}>
+				<RootElement when={this.storeAdapter.when(['meteors'])}>
 					<div className="row">
 						<div className="col-md-6">
 							<MeteorMap />
@@ -47,9 +47,9 @@ export default class Homepage {
 				</RootElement>
 			</RootProvider>,
 			// Mark when we want our js/css to bind on the client side
-			<TheFold />,
+			<TheFold key={3} />,
 			// A delayed loaded component
-			<RootElement key={2} when={this.promise}>
+			<RootElement key={4} when={this.promise}>
 				<Footer />
 			</RootElement>,
 		];

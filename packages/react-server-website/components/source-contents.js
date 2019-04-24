@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import {join} from "path";
 import PageNameMixin from "../lib/page-name-mixin";
@@ -16,16 +17,20 @@ const classIfActive = path => (path === currentPath())?{className:"active"}:{}
 
 const ContentsLinkWithMungedPath = (name, path) => <li {...classIfActive(path)}>
 	<Link reuseDom bundleData path={path}>{name}</Link>
-</li>
+</li>;
 
 const ContentsLink = ({name, path}) => ContentsLinkWithMungedPath(
 	name, join("/source", path)
-)
+);
 
 const SourceContentsSection = ({name, pages}) => <div className='contentsSection'>
 	<h3>{name}</h3>
 	<ul>{pages.map(ContentsLink)}</ul>
-</div>
+</div>;
+SourceContentsSection.propTypes = {
+	name: PropTypes.string,
+	pages: PropTypes.array.isRequired,
+};
 
 export default class SourceContents extends React.Component {
 	constructor(props) {
@@ -51,7 +56,7 @@ export default class SourceContents extends React.Component {
 	}
 
 	toggleMenuOpen() {
-		console.log("MENUOPEN: ",this.state.menuOpen);
+		console.log("MENUOPEN: ",this.state.menuOpen); // eslint-disable-line no-console
 		this.setState( {menuOpen: !this.state.menuOpen} );
 	}
 
@@ -59,6 +64,9 @@ export default class SourceContents extends React.Component {
 		this.setState( {menuOpen: false} );
 	}
 }
+SourceContents.propTypes = {
+	contents: PropTypes.array.isRequired,
+};
 
 PageNameMixin(SourceContents, {
 	prefix: "/source/",

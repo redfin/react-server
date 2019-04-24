@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {Link, getCurrentRequestContext} from "react-server";
 
@@ -38,9 +39,14 @@ const HeaderLink = ({label, path, internal}) => {
 	if (internal) {
 		return <li key={path} {...classIfActive(path, internal)}><Link path={path} bundleData>{label}</Link></li>
 	} else {
-		return <li key={path} {...classIfActive(path, internal)}><a target="_blank" href={path}>{label}</a></li>
+		return <li key={path} {...classIfActive(path, internal)}><a target="_blank" rel="noopener noreferrer" href={path}>{label}</a></li>
 	}
-}
+};
+HeaderLink.propTypes = {
+	label: PropTypes.string,
+	path: PropTypes.string,
+	internal: PropTypes.bool,
+};
 
 class MenuControl extends React.Component {
 	render() {
@@ -53,6 +59,9 @@ class MenuControl extends React.Component {
 		return controlContent;
 	}
 }
+MenuControl.propTypes = {
+	open: PropTypes.bool,
+};
 
 
 export default class Header extends React.Component {
@@ -61,6 +70,8 @@ export default class Header extends React.Component {
 		this.state = {
 			menuOpen: false,
 		};
+
+		this.headerNav = React.createRef();
 	}
 
 	componentDidMount() {
@@ -84,7 +95,7 @@ export default class Header extends React.Component {
 						<MenuControl open={this.state.menuOpen} />
 					</div>
 
-					<nav className="header-nav" ref="headerNav">
+					<nav className="header-nav" ref={this.headerNav}>
 						<ul>
 							{links.map(HeaderLink)}
 						</ul>
@@ -103,7 +114,7 @@ export default class Header extends React.Component {
 		// whole viewport. To prevent the user from scrolling the page behind
 		// the navigation menu, we prevent touchmove from firing.
 		if (!this.state.menuOpen) {
-			this.refs.headerNav.addEventListener('touchmove', function(event) {
+			this.headerNav.addEventListener('touchmove', function(event) {
 				event.preventDefault();
 				event.stopPropagation();
 			}, false);

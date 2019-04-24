@@ -62,53 +62,53 @@ class Navigator extends EventEmitter {
 		// if we're not going to proceed, so resources will be freed.
 		//
 		this
-		.startRoute(route, request, type)
+			.startRoute(route, request, type)
 
 		// We might have a data bundle on hand, or the request may
 		// have asked us to fetch it one.
-		.then(this._dealWithDataBundleLoading.bind(this, request))
+			.then(this._dealWithDataBundleLoading.bind(this, request))
 
-		.then(() => {
-			if (this._ignoreCurrentNavigation){
+			.then(() => {
+				if (this._ignoreCurrentNavigation){
 				// This is a one-time deal.
-				this._ignoreCurrentNavigation = false;
-				return;
-			}
+					this._ignoreCurrentNavigation = false;
+					return;
+				}
 
-			/* Breathe... */
+				/* Breathe... */
 
-			var loaders = route.config.page;
+				var loaders = route.config.page;
 
-			var deviceType = this.context.getDeviceType();
+				var deviceType = this.context.getDeviceType();
 
-			if (loaders[deviceType]) {
-				route.name += "-" + deviceType;
-			}
+				if (loaders[deviceType]) {
+					route.name += "-" + deviceType;
+				}
 
-			// Our route may have multiple page implementations if
-			// there are device-specific variations.
-			//
-			// We'll take one of those if the request device
-			// matches, otherwise we'll use the default.
-			//
-			// Note that the page object may either directly be a
-			// loader or it may be an object whose values are
-			// loaders.
-			(
-				loaders[deviceType] ||
+				// Our route may have multiple page implementations if
+				// there are device-specific variations.
+				//
+				// We'll take one of those if the request device
+				// matches, otherwise we'll use the default.
+				//
+				// Note that the page object may either directly be a
+				// loader or it may be an object whose values are
+				// loaders.
+				(
+					loaders[deviceType] ||
 				loaders.default ||
 				loaders
-			)().done(pageConstructor => {
-				if (request.setRoute) {
-					request.setRoute(route);
-				}
-				this.handlePage(pageConstructor, request, type);
+				)().done(pageConstructor => {
+					if (request.setRoute) {
+						request.setRoute(route);
+					}
+					this.handlePage(pageConstructor, request, type);
 
-			}, err => {
-				console.error("Error resolving page", err);
+				}, err => {
+					console.error("Error resolving page", err);
+				});
+
 			});
-
-		});
 
 	}
 

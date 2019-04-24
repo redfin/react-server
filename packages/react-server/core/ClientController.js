@@ -366,8 +366,8 @@ class ClientController extends EventEmitter {
 				title : newTitle,
 			});
 		})
-		.catch(err => { logger.error("Error while setting the document title", err) })
-		.done();
+			.catch(err => { logger.error("Error while setting the document title", err) })
+			.done();
 	}
 
 	_renderBase(page) {
@@ -415,8 +415,8 @@ class ClientController extends EventEmitter {
 
 				parent.appendChild(meta);
 			})
-			.catch( err => { logger.error("Error rendering meta tags", err); })
-			.done();
+				.catch( err => { logger.error("Error rendering meta tags", err); })
+				.done();
 		});
 	}
 
@@ -428,13 +428,13 @@ class ClientController extends EventEmitter {
 
 		// Then add all the link tags for the new page.
 		page.getLinkTags()
-		.forEach(promise => promise.then(PageUtil.makeArray).then(tags => tags.forEach(tag => {
-			document.head.appendChild(
-				[document.createElement('link'), PAGE_LINK_NODE_ID]
-				.concat(Object.keys(tag))
-				.reduce((link, attr) => (link.setAttribute(attr, tag[attr] || ''), link))
-			);
-		})).catch(err => logger.error("Error rendering link tags", err)).done());
+			.forEach(promise => promise.then(PageUtil.makeArray).then(tags => tags.forEach(tag => {
+				document.head.appendChild(
+					[document.createElement('link'), PAGE_LINK_NODE_ID]
+						.concat(Object.keys(tag))
+						.reduce((link, attr) => (link.setAttribute(attr, tag[attr] || ''), link))
+				);
+			})).catch(err => logger.error("Error rendering link tags", err)).done());
 	}
 
 	_render (page) {
@@ -582,7 +582,7 @@ class ClientController extends EventEmitter {
 			}
 
 			var name  = PageUtil.getElementDisplayName(element)
-			,   timer = logger.timer(`renderElement.individual.${name}`)
+				,   timer = logger.timer(`renderElement.individual.${name}`)
 
 			element = React.cloneElement(element, { context: this.context });
 			var renderFunc = ReactDOM.hydrate || ReactDOM.render;

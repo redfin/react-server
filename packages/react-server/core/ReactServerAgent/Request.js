@@ -1,8 +1,8 @@
 var superagent = require('superagent')
-,	logger = require('../logging').getLogger(__LOGGER__)
-,	Q = require('q')
-,	Plugins = require("./Plugins")
-,	merge = require("lodash/merge")
+	,	logger = require('../logging').getLogger(__LOGGER__)
+	,	Q = require('q')
+	,	Plugins = require("./Plugins")
+	,	merge = require("lodash/merge")
 ;
 
 /**

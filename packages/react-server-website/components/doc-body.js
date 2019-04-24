@@ -4,12 +4,6 @@ import { Component } from 'react';
 import Markdown from './Markdown';
 
 export default class DocBody extends Component {
-	static getPropTypes() {
-		return {
-			text: PropTypes.string.isRequired,
-		};
-	}
-
 	render() {
 		return (
 			<article className="DocBody">
@@ -18,3 +12,7 @@ export default class DocBody extends Component {
 		);
 	}
 }
+DocBody.propTypes = {
+	text: PropTypes.string.isRequired,
+};
+

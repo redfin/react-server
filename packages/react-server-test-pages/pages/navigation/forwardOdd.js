@@ -1,6 +1,12 @@
-import {ReactServerAgent, RootElement} from "react-server";
+/* eslint-disable react/react-in-jsx-scope */
 
-const Odd = ({body}) => <div className="odd">Hey look I'm odd because I am {body}</div>;
+import {ReactServerAgent, RootElement} from "react-server";
+import PropTypes from "prop-types";
+
+const Odd = ({body}) => <div className="odd">Hey look I&apos;m odd because I am {body}</div>;
+Odd.propTypes = {
+	body: PropTypes.any,
+};
 
 export default class ForwardOddPage {
 	handleRoute() {
@@ -17,7 +23,7 @@ export default class ForwardOddPage {
 
 	getElements() {
 		return [
-			<RootElement when={this.data}><Odd /></RootElement>,
+			<RootElement key={0} when={this.data}><Odd /></RootElement>,
 		];
 	}
 }

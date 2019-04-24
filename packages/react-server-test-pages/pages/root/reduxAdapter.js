@@ -34,14 +34,14 @@ function initAction() {
 }
 
 class BasicComponent extends React.Component {
-	propTypes: {
-		elementData: PropTypes.sting.isRequired,
-	}
-
 	render() {
 		return (<div>{this.props.elementData}</div>)
 	}
 }
+BasicComponent.propTypes = {
+	elementData: PropTypes.string.isRequired,
+};
+
 
 const mapStateToProps = function(state) {
 	return {
@@ -67,7 +67,7 @@ export default class ReduxAdapterPage {
 
 	getElements() {
 		return [
-			<RootProvider store={this._store}>
+			<RootProvider key={0} store={this._store}>
 				<RootElement when={this._storeAdapter.when(['elementData'])}>
 					<BasicReduxComponent></BasicReduxComponent>
 				</RootElement>

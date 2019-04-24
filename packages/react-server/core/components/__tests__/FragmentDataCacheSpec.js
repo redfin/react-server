@@ -1,9 +1,9 @@
 
 var ReactServerAgent = require("../../ReactServerAgent")
-,   cheerio = require("cheerio")
-,   React = require("react")
-,   ReactDOMServer = require("react-dom/server")
-,   FragmentDataCache = require("../FragmentDataCache")
+	,   cheerio = require("cheerio")
+	,   React = require("react")
+	,   ReactDOMServer = require("react-dom/server")
+	,   FragmentDataCache = require("../FragmentDataCache")
 ;
 
 var {
@@ -33,7 +33,7 @@ describe("FragmentDataCache", () => {
 			var URL = "/describe";
 
 			ReactServerAgent.get(URL)
-				.then(res => {
+				.then(() => {
 					var $ = cheerio.load(ReactDOMServer.renderToStaticMarkup(<FragmentDataCache />));
 
 					var dataStr = $("#react-server-fragment-data-cache").attr("data-react-server-data-cache");
@@ -48,7 +48,7 @@ describe("FragmentDataCache", () => {
 
 					done();
 				}).catch(err => {
-					console.log(err.stack);
+					console.log(err.stack); // eslint-disable-line no-console
 
 					// this will fail the test
 					expect(err).toBeUndefined();
@@ -63,13 +63,13 @@ describe("FragmentDataCache", () => {
 			var URL = "/describe";
 
 			ReactServerAgent.get(URL)
-				.then(res => {
+				.then(() => {
 					var htmlStr = ReactDOMServer.renderToStaticMarkup(<FragmentDataCache cacheNodeId="fooBarBaz" />);
 					var $ = cheerio.load(htmlStr);
 
 					var node
-					,	dataStr
-					,	parsedData;
+						,	dataStr
+						,	parsedData;
 
 					node = $("#react-server-fragment-data-cache");
 					expect(node.length).toBe(0);
@@ -89,7 +89,7 @@ describe("FragmentDataCache", () => {
 
 					done();
 				}).catch(err => {
-					console.log(err.stack);
+					console.log(err.stack); // eslint-disable-line no-console
 
 					// this will fail the test
 					expect(err).toBeUndefined();
@@ -106,7 +106,7 @@ describe("FragmentDataCache", () => {
 			var URL = "/describe";
 
 			ReactServerAgent.get(URL)
-				.then(res => {
+				.then(() => {
 					// do nothing here
 				});
 
@@ -117,8 +117,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -135,12 +135,12 @@ describe("FragmentDataCache", () => {
 
 				done();
 			}).catch(err => {
-				console.log(err.stack);
+				console.log(err.stack); // eslint-disable-line no-console
 				// this will cause the test to fail
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
@@ -148,7 +148,7 @@ describe("FragmentDataCache", () => {
 			var URL = "/describe";
 
 			ReactServerAgent.get(URL)
-				.then(res => {
+				.then(() => {
 					// do nothing here
 				});
 
@@ -159,8 +159,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(0);
@@ -180,19 +180,19 @@ describe("FragmentDataCache", () => {
 
 				done();
 			}).catch(err => {
-				console.log(err.stack);
+				console.log(err.stack); // eslint-disable-line no-console
 				// this will cause the test to fail
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
 		it("does something reasonable when a request errors", withRlsContext(done => {
 
-			ReactServerAgent.get("/describe").then(res => {});
-			ReactServerAgent.get("/error").then(res => {});
+			ReactServerAgent.get("/describe").then(() => {});
+			ReactServerAgent.get("/error").then(() => {});
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -202,8 +202,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -228,22 +228,22 @@ describe("FragmentDataCache", () => {
 
 				done();
 			}).catch(err => {
-				console.log(err.stack);
+				console.log(err.stack); // eslint-disable-line no-console
 				// this will cause the test to fail
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
 		it("does something reasonable when a request times out", withRlsContext(done => {
 
-			ReactServerAgent.get("/describe").then(res => {});
+			ReactServerAgent.get("/describe").then(() => {});
 			ReactServerAgent.get("/timeout")
 				.query({ delay: 1000 })
 				.timeout(100)
-				.then(res => {});
+				.then(() => {});
 
 			FragmentDataCache.createWhenReady().then(fragmentComponent => {
 
@@ -253,8 +253,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -276,7 +276,7 @@ describe("FragmentDataCache", () => {
 				done();
 
 			}).catch(err => {
-				console.log(err.stack);
+				console.log(err.stack); // eslint-disable-line no-console
 				// this will cause the test to fail
 				expect(err).toBeUndefined();
 				done();
@@ -297,8 +297,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -314,7 +314,7 @@ describe("FragmentDataCache", () => {
 				done();
 
 			}).catch(err => {
-				console.log(err.stack);
+				console.log(err.stack); // eslint-disable-line no-console
 				// this will cause the test to fail
 				expect(err).toBeUndefined();
 				done();

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import DataBundleCache from "react-server-data-bundle-cache";
 import {
@@ -22,6 +23,9 @@ const BASE = "/navigation/data-bundle-cache";
 const LINK = page => `${BASE}?page=${page}`
 
 const BundleLink = ({row}) => <Link bundleData={true} reuseDom={true} path={LINK(row)}>Go</Link>
+BundleLink.propTypes = {
+	row: PropTypes.number,
+};
 
 class PreloadLink extends React.Component {
 	constructor(props) {
@@ -43,6 +47,9 @@ class PreloadLink extends React.Component {
 
 	}
 }
+PreloadLink.propTypes = {
+	row: PropTypes.number,
+};
 
 let _cacheEnabled = false;
 
@@ -72,11 +79,11 @@ export default class DataBundleCachePage {
 	}
 	getElements() {
 		return [
-			<RootContainer>
+			<RootContainer key={1}>
 				<h1>Data Bundle Cache</h1>
 				<CacheToggle />
 			</RootContainer>,
-			...this.data.map(promise => <RootContainer when={promise} className="row">
+			...this.data.map(promise => <RootContainer key={2} when={promise} className="row">
 				<PagePointer />
 				<RowIndex />
 				<RowMS />

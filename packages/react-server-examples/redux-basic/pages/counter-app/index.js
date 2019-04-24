@@ -6,24 +6,22 @@ import store from '../store'
 
 export default class CounterPage {
 	getElements() {
-		return [
-			<RootProvider store={store}>
-				<RootElement key={0}>
-					<Counter
-						value={store.getState()}
-						onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
-						onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
-					/>
-				</RootElement>
-				<RootElement key={1}>
-					<Counter
-						value={store.getState()}
-						onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
-						onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
-					/>
-				</RootElement>
-			</RootProvider>,
-		]
+		return <RootProvider store={store}>
+			<RootElement key={0}>
+				<Counter
+					value={store.getState()}
+					onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
+					onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
+				/>
+			</RootElement>
+			<RootElement key={1}>
+				<Counter
+					value={store.getState()}
+					onIncrement={() => store.dispatch({ type: 'INCREMENT' })}
+					onDecrement={() => store.dispatch({ type: 'DECREMENT' })}
+				/>
+			</RootElement>
+		</RootProvider>;
 	}
 
 	getMetaTags() {

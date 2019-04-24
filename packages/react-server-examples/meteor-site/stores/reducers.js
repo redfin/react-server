@@ -54,7 +54,7 @@ const meteors = (state = {
 					meteors: state.meteors.map(t => meteor(t, action)),
 				});
 			}
-		case SORT_METEORS:
+		case SORT_METEORS: // eslint-disable-line no-fallthrough
 			if (state.meteors) {
 				switch (action.id) {
 					case "mass":
@@ -72,7 +72,7 @@ const meteors = (state = {
 						});
 				}
 			}
-		default:
+		default: // eslint-disable-line no-fallthrough
 			return state;
 	}
 }
