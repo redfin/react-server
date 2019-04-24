@@ -29,6 +29,7 @@
     "@babel/core": "^7.4.3",
     "babel-eslint": "^9.0.0",
     "babel-preset-react-server": "^0.6.0",
-    "rimraf": "^2.5.4"
-  }
+    "babel-plugin-react-server": "^0.6.0",
+    "rimraf": "^2.6.3"
+	}
 }
