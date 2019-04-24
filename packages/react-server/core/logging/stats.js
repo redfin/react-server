@@ -47,10 +47,10 @@ var loggers = {};
 function wrapLogger(getLoggerForConfig, opts) {
 
 	var mainLogger    = getLoggerForConfig('main',  opts)
-	,   timeLogger    = getLoggerForConfig('time',  opts)
-	,   gaugeLogger   = getLoggerForConfig('gauge', opts)
-	,   classifyTime  = makeTimeClassifier(opts)
-	,   classifyGauge = makeGaugeClassifier(opts)
+		,   timeLogger    = getLoggerForConfig('time',  opts)
+		,   gaugeLogger   = getLoggerForConfig('gauge', opts)
+		,   classifyTime  = makeTimeClassifier(opts)
+		,   classifyGauge = makeGaugeClassifier(opts)
 
 	// These are methods that are exposed on the primary logger.
 	// They just dispatch to appropriate log levels on secondary loggers.
@@ -65,9 +65,9 @@ function wrapLogger(getLoggerForConfig, opts) {
 	mainLogger.timer = (token, opts) => {
 
 		var t0 = new Date // For use by `timer.stop`.
-		,   tt = t0       // For use by `timer.tick`.
-		,   nt = 0        // Number of times `tick` has been called.
-		,   ct = 0        // For storing return values.
+			,   tt = t0       // For use by `timer.tick`.
+			,   nt = 0        // Number of times `tick` has been called.
+			,   ct = 0        // For storing return values.
 
 		return {
 

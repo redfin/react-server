@@ -82,7 +82,7 @@ describe("compileClient", () => {
 
 				const fileData = mockFs.toString();
 				filePathRegexStrings.map((regex) => {
-					expect(fileData).toMatch(regex.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"));
+					expect(fileData).toMatch(regex.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")); //eslint-disable-line no-useless-escape
 				});
 
 				finishTest();

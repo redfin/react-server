@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import entrypoints from "../entrypoints";
 import _ from "lodash";
 

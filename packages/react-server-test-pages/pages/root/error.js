@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {ReactServerAgent, RootElement, Link} from "react-server";
 import PropTypes from "prop-types";
 
@@ -25,24 +27,24 @@ export default class RootWhenPage {
 	getElements() {
 		const next = `/root/error?page=${
 			+(this.getRequest().getQuery().page||0)+1
-		}`
+		}`;
 		return [
-			<div>Before good data root</div>,
-			<RootElement when={this.good}>
+			<div key={0}>Before good data root</div>,
+			<RootElement key={1} when={this.good}>
 				<Okay />
 			</RootElement>,
-			<div>After good data root</div>,
-			<div>Before bad data root</div>,
-			<RootElement when={this.bad}>
+			<div key={2}>After good data root</div>,
+			<div key={3}>Before bad data root</div>,
+			<RootElement key={4} when={this.bad}>
 				<Okay />
 			</RootElement>,
-			<div>After bad data root</div>,
-			<div>Before worse data root</div>,
-			<RootElement when={this.worse}>
+			<div key={5}>After bad data root</div>,
+			<div key={6}>Before worse data root</div>,
+			<RootElement key={7} when={this.worse}>
 				<Okay />
 			</RootElement>,
-			<div>After worse data root</div>,
-			<Link path={next}>Next</Link>,
+			<div key={8}>After worse data root</div>,
+			<Link key={9} path={next}>Next</Link>,
 		]
 	}
 }

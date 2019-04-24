@@ -79,11 +79,11 @@ export default class DataBundleCachePage {
 	}
 	getElements() {
 		return [
-			<RootContainer>
+			<RootContainer key={1}>
 				<h1>Data Bundle Cache</h1>
 				<CacheToggle />
 			</RootContainer>,
-			...this.data.map(promise => <RootContainer when={promise} className="row">
+			...this.data.map(promise => <RootContainer key={2} when={promise} className="row">
 				<PagePointer />
 				<RowIndex />
 				<RowMS />

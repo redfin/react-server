@@ -552,9 +552,9 @@ describe("ReactServerAgent", () => {
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 
 		}));
 
@@ -583,9 +583,9 @@ describe("ReactServerAgent", () => {
 				expect(getSingleDehydratedCacheEntry(dehydrated, URL).requesters).toBe(2);
 
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 		}));
 
 		it("does not have a cache collision for two requests to same url with different HTTP methods", withRlsContext(done => {
@@ -599,9 +599,9 @@ describe("ReactServerAgent", () => {
 				var [res1, res2] = results;
 				expect(res1).not.toBe(res2);
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 
 		}));
 
@@ -617,9 +617,9 @@ describe("ReactServerAgent", () => {
 				var [res1, res2] = results;
 				expect(res1).not.toBe(res2);
 			})
-			.catch(err => fail(err.stack))
-			.fin(done)
-			.done();
+				.catch(err => fail(err.stack))
+				.fin(done)
+				.done();
 
 		}));
 
@@ -628,12 +628,12 @@ describe("ReactServerAgent", () => {
 			var URL = "/describe";
 
 			var p1 = ReactServerAgent.get(URL)
-						.query({ "foo": "bar" })
-						.then(res => res);
+				.query({ "foo": "bar" })
+				.then(res => res);
 
 			var p2 = ReactServerAgent.get(URL)
-						.query({ "foo": "baz"})
-						.then(res => res);
+				.query({ "foo": "baz"})
+				.then(res => res);
 
 			Q.all([p1, p2]).then(results => {
 				var [res1, res2] = results;
@@ -646,8 +646,8 @@ describe("ReactServerAgent", () => {
 				console.log(errors);
 				fail("An error occurred", errors);
 			})
-			.fin(done)
-			.done();
+				.fin(done)
+				.done();
 
 		}));
 
@@ -656,12 +656,12 @@ describe("ReactServerAgent", () => {
 			var URL = "/describe";
 
 			var p1 = ReactServerAgent.post(URL)
-						.send({ "foo": {"bar": 1} })
-						.then(res => res);
+				.send({ "foo": {"bar": 1} })
+				.then(res => res);
 
 			var p2 = ReactServerAgent.post(URL)
-						.send({ "foo": {"bar": "baz"} })
-						.then(res => res);
+				.send({ "foo": {"bar": "baz"} })
+				.then(res => res);
 
 			Q.all([p1, p2]).then(results => {
 				var [res1, res2] = results;
@@ -674,8 +674,8 @@ describe("ReactServerAgent", () => {
 				console.log(errors);
 				fail("An error occurred", errors);
 			})
-			.fin(done)
-			.done();
+				.fin(done)
+				.done();
 
 		}));
 

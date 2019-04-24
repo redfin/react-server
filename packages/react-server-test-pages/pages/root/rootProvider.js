@@ -31,11 +31,11 @@ export default class RootProviderPage {
 	getElements() {
 		const store = createStore(simpleReducer);
 		return [
-			<RootProvider store={store}>
-				<RootElement>
+			<RootProvider key={0} store={store}>
+				<RootElement key={1}>
 					<BasicReduxComponent></BasicReduxComponent>
 				</RootElement>
-				<RootElement>
+				<RootElement key={2}>
 					<BasicReduxComponent></BasicReduxComponent>
 				</RootElement>
 				<div>Basic Div</div>

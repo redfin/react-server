@@ -1,15 +1,15 @@
 var replace = require("gulp-replace")
-,   forEach = require("gulp-foreach")
-,   loggerSpec = require("react-server-module-tagger")
+	,   forEach = require("gulp-foreach")
+	,   loggerSpec = require("react-server-module-tagger");
 
 // This pattern matches either of these:
 //   - "__LOGGER__"
 //   - "__LOGGER__({ /* options */ })"
 var isWindows = ('win32' === process.platform)
-,   DEFAULT_REPLACE_TOKEN = tokenToRegExp("__LOGGER__|__CHANNEL__|__CACHE__")
-,   THIS_MODULE   = isWindows
-	? /(?:[^\\]+\\node_modules\\)?react-server-gulp-module-tagger\\index\.js$/
-	: /(?:[^\/]+\/node_modules\/)?react-server-gulp-module-tagger\/index\.js$/
+	,   DEFAULT_REPLACE_TOKEN = tokenToRegExp("__LOGGER__|__CHANNEL__|__CACHE__")
+	,   THIS_MODULE   = isWindows
+		? /(?:[^\\]+\\node_modules\\)?react-server-gulp-module-tagger\\index\.js$/
+		: /(?:[^/]+\/node_modules\/)?react-server-gulp-module-tagger\/index\.js$/;
 
 module.exports = function(config) {
 	config || (config = {});

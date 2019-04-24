@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {ReactServerAgent, RootElement} from "react-server";
 
 export default class RootWhenPage {
@@ -8,11 +10,11 @@ export default class RootWhenPage {
 	}
 	getElements() {
 		return [
-			<div>Immediate</div>,
-			<RootElement when={this.data}>
+			<div key={0}>Immediate</div>,
+			<RootElement key={1} when={this.data}>
 				<div>After one second data request</div>
 			</RootElement>,
-			<div>Immediate</div>,
+			<div key={2}>Immediate</div>,
 		]
 	}
 }

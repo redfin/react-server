@@ -1,3 +1,5 @@
+/* eslint "react/no-deprecated": "warn" */
+
 import _ from "lodash";
 import PropTypes from "prop-types";
 import React from "react";
@@ -63,7 +65,7 @@ class PickPointer extends React.Component {
 	}
 	_init(props) {
 		// Yep.  State from props.  :japanese_ogre:
-		this.state = _.pick(props, ['pick', 'row', 'page']);
+		this.state = _.pick(props, ['pick', 'row', 'page']); //eslint-disable-line react/no-direct-mutation-state
 	}
 	_pick() {
 		const {page, row} = this.state;
@@ -104,7 +106,7 @@ export default class NavigationPlaygroundPage {
 	}
 	getElements() {
 		return [
-			<RootContainer>
+			<RootContainer key={0}>
 				<h1>Navigation Playground</h1>
 				<h2>Legend:</h2>
 				<ul>
@@ -113,7 +115,7 @@ export default class NavigationPlaygroundPage {
 					<li>BD: Bundle Data</li>
 				</ul>
 			</RootContainer>,
-			...this.data.map(promise => <RootContainer when={promise} className="row">
+			...this.data.map(promise => <RootContainer key={1} when={promise} className="row">
 				<PagePointer />
 				<PickPointer />
 				<RowIndex />

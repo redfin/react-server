@@ -1,14 +1,14 @@
 var winston = require('winston')
-,   common  = require('./common')
-,   _ = {
-	mapValues     : require("lodash/mapValues"),
-	pickBy        : require("lodash/pickBy"),
-	isPlainObject : require("lodash/isPlainObject"),
-	isEmpty       : require("lodash/isEmpty"),
-	trimStart     : require("lodash/trimStart"),
-	truncate      : require("lodash/truncate"),
-}
-,   responseTransport = require('./response');
+	,   common  = require('./common')
+	,   _ = {
+		mapValues     : require("lodash/mapValues"),
+		pickBy        : require("lodash/pickBy"),
+		isPlainObject : require("lodash/isPlainObject"),
+		isEmpty       : require("lodash/isEmpty"),
+		trimStart     : require("lodash/trimStart"),
+		truncate      : require("lodash/truncate"),
+	}
+	,   responseTransport = require('./response');
 
 var makeLogger = function(group, opts){
 	var config = common.config[group];

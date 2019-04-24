@@ -1,8 +1,8 @@
 
 var logger = require('../logging').getLogger(__LOGGER__)
-,	Q = require('q')
-,	merge = require("lodash/merge")
-,	isEqual = require("lodash/isEqual")
+	,	Q = require('q')
+	,	merge = require("lodash/merge")
+	,	isEqual = require("lodash/isEqual")
 ;
 
 // TODO: we should figure out a way to consolidate this with SuperAgentExtender

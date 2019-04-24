@@ -1,9 +1,9 @@
 var ReactServerAgent = require("../../ReactServerAgent")
-,	RLS = require("../../util/RequestLocalStorage")
+	,	RLS = require("../../util/RequestLocalStorage")
 ;
 
 var PORT = 4221
-,	SIMPLE_SUCCESS = "SUCCESS"
+	,	SIMPLE_SUCCESS = "SUCCESS"
 ;
 
 module.exports = {

@@ -1,3 +1,6 @@
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint "react/no-deprecated": "warn" */
+
 import _ from "lodash";
 import {Component} from "react";
 import PropTypes from "prop-types";

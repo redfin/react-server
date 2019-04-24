@@ -1,3 +1,6 @@
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint "react/no-deprecated": "warn" */
+
 import Q from 'q';
 import { Component } from 'react';
 import { RootElement } from 'react-server';
@@ -108,8 +111,8 @@ class MissingKeyPropInArrayIterator extends Component {
 	render() {
 		return (
 			<div>
-				<h2>Missing Key Prop in Array Iterator Warning</h2>
-				{ [1,2,3,4].map(n => <span>{n}</span>) }
+				<h2 key={0}>Missing Key Prop in Array Iterator Warning</h2>
+				{ [1,2,3,4].map(n => <span key={n}>{n}</span>) }
 			</div>
 		);
 	}
@@ -118,17 +121,17 @@ class MissingKeyPropInArrayIterator extends Component {
 export default class ErrorReportingPage {
 	getElements() {
 		return [
-			<h1>Error Logging Tests</h1>,
-			<h2>Render error</h2>,
-			<RenderError/>,
-			<ComponentWillMountError/>,
-			<ComponentDidMountError/>,
-			<ComponentWillReceivePropsError/>,
-			<ComponentDidReceivePropsError/>,
-			<ComponentWillUpdateError/>,
-			<ComponentDidUpdateError/>,
-			<RootElementWhenPromiseFailure/>,
-			<MissingKeyPropInArrayIterator/>,
+			<h1 key={0}>Error Logging Tests</h1>,
+			<h2 key={1}>Render error</h2>,
+			<RenderError key={2}/>,
+			<ComponentWillMountError key={3}/>,
+			<ComponentDidMountError key={4}/>,
+			<ComponentWillReceivePropsError key={5}/>,
+			<ComponentDidReceivePropsError key={6}/>,
+			<ComponentWillUpdateError key={7}/>,
+			<ComponentDidUpdateError key={8}/>,
+			<RootElementWhenPromiseFailure key={9}/>,
+			<MissingKeyPropInArrayIterator key={10}/>,
 		];
 	}
 }

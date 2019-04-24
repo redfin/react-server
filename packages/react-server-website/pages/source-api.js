@@ -1,6 +1,6 @@
 import path from 'path';
 
-const extractBody = new RegExp('<body[^>]*>((.|[\n\r])*)<\/body>'); // eslint-disable-line no-control-regex
+const extractBody = new RegExp('<body[^>]*>((.|[\n\r])*)</body>'); // eslint-disable-line no-control-regex
 
 export default class SourceApi {
 	setConfigValues() {

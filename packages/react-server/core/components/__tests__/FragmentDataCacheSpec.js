@@ -1,9 +1,9 @@
 
 var ReactServerAgent = require("../../ReactServerAgent")
-,   cheerio = require("cheerio")
-,   React = require("react")
-,   ReactDOMServer = require("react-dom/server")
-,   FragmentDataCache = require("../FragmentDataCache")
+	,   cheerio = require("cheerio")
+	,   React = require("react")
+	,   ReactDOMServer = require("react-dom/server")
+	,   FragmentDataCache = require("../FragmentDataCache")
 ;
 
 var {
@@ -68,8 +68,8 @@ describe("FragmentDataCache", () => {
 					var $ = cheerio.load(htmlStr);
 
 					var node
-					,	dataStr
-					,	parsedData;
+						,	dataStr
+						,	parsedData;
 
 					node = $("#react-server-fragment-data-cache");
 					expect(node.length).toBe(0);
@@ -117,8 +117,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -140,7 +140,7 @@ describe("FragmentDataCache", () => {
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
@@ -159,8 +159,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(0);
@@ -185,7 +185,7 @@ describe("FragmentDataCache", () => {
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
@@ -202,8 +202,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -233,7 +233,7 @@ describe("FragmentDataCache", () => {
 				expect(err).toBeUndefined();
 				done();
 			})
-			.done();
+				.done();
 
 		}));
 
@@ -253,8 +253,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
@@ -297,8 +297,8 @@ describe("FragmentDataCache", () => {
 				var $ = cheerio.load(htmlStr);
 
 				var node
-				,	dataStr
-				,	parsedData;
+					,	dataStr
+					,	parsedData;
 
 				node = $("#react-server-fragment-data-cache");
 				expect(node.length).toBe(1);
