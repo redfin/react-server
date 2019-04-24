@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {ReactServerAgent} from "react-server";
 
 export default class ForwardPage {

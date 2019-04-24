@@ -105,7 +105,7 @@ function normalizeLocalUrl(url) {
 	if (typeof url === 'string') {
 		url = url
 			.replace(/^http[s]?:/, '')
-			.replace(new RegExp("^\/\/" + location.host), '');
+			.replace(new RegExp("^//" + location.host), '');
 	}
 
 	return url;

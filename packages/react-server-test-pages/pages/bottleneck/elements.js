@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import "./colors/red.scss";
 import "./colors/blue.scss";
 import "./colors/purple.scss";

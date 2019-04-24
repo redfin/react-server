@@ -1,3 +1,5 @@
+/* eslint "react/no-deprecated": "warn" */
+
 var React = require('react');
 const PropTypes = require('prop-types');
 var Q = require('q');

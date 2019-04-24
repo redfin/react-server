@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {ReactServerAgent, RootContainer, RootElement} from "react-server";
 import "./colors/red.scss";
 import "./colors/green.scss";
@@ -26,11 +28,11 @@ export default class LargeDataRequestsPage {
 
 	getElements() {
 		return [
-			<div className="red-thing">Data requests starting...</div>,
-			<RootContainer>
+			<div key={0} className="red-thing">Data requests starting...</div>,
+			<RootContainer key={1}>
 				{elements}
 			</RootContainer>,
-			<div className="green-thing">Content should be above me.</div>,
+			<div key={2} className="green-thing">Content should be above me.</div>,
 		];
 	}
 }

@@ -11,7 +11,7 @@ var {isTheFold, markTheFold} = require('../components/TheFold');
 var PageConfig = (function(){
 	var logger = require("../logging").getLogger(__LOGGER__({label: 'PageConfig'}));
 
-  // Below here are helpers. They are hidden from outside callers.
+	// Below here are helpers. They are hidden from outside callers.
 	var _getCurrentConfigObject = function(){
 
 		// Return the current mutable config.

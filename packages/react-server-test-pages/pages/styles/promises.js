@@ -23,7 +23,7 @@ export default class StylePromises {
 
 	getElements () {
 		return [
-			<div>
+			<div key={0}>
 				<h2>If the background is GREEN at page load, all is well!</h2>
 				<div>If it flashes red first, all is _not_ well.</div>
 			</div>,

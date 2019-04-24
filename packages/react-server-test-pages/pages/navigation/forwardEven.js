@@ -1,7 +1,9 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import PropTypes from "prop-types";
 import {ReactServerAgent, RootElement} from "react-server";
 
-const Even = ({body}) => <div className="even">Hey look I'm even because I am {body}</div>;
+const Even = ({body}) => <div className="even">Hey look I&apos;m even because I am {body}</div>;
 Even.propTypes = {
 	body: PropTypes.any,
 };
@@ -21,7 +23,7 @@ export default class ForwardEvenPage {
 
 	getElements() {
 		return [
-			<RootElement when={this.data}><Even /></RootElement>,
+			<RootElement key={0} when={this.data}><Even /></RootElement>,
 		];
 	}
 }

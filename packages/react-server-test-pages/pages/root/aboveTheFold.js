@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {
 	ReactServerAgent,
 	RootContainer,
@@ -15,17 +17,17 @@ export default class RootWhenPage {
 	}
 	getElements() {
 		return [
-			<RootContainer when={this.data}>
+			<RootContainer key={0} when={this.data}>
 				<div>One</div>
 			</RootContainer>,
-			<RootElement when={this.data}><div>Two</div></RootElement>,
-			<RootContainer>
+			<RootElement key={1} when={this.data}><div>Two</div></RootElement>,
+			<RootContainer key={2}>
 				<div>Three - there should be script tags starting from right after me.</div>
 				<TheFold />
 				<RootElement when={this.data}><div>Four</div></RootElement>
 			</RootContainer>,
-			<div>Five</div>,
-			<div>
+			<div key={3}>Five</div>,
+			<div key={4}>
 				<Link path={"/root/aboveTheFold"}>JS in HEAD</Link> |
 				<Link path={"/root/aboveThefold?jsBelowTheFold=1"}>JS below the fold</Link>
 			</div>,

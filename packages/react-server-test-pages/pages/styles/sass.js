@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import "./sass.scss"
 import "./sass.sass"
 

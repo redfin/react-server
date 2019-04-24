@@ -1,6 +1,6 @@
 
 // see comment on escapeForScriptTag about how these are used
-var UNSAFE_CHARS = /[<>\/]/g;
+var UNSAFE_CHARS = /[<>/]/g;
 var REPLACEMENT_CHARS = {
 	'<' : '\\u003C',
 	'>' : '\\u003E',

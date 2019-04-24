@@ -67,7 +67,7 @@ export default class ReduxAdapterPage {
 
 	getElements() {
 		return [
-			<RootProvider store={this._store}>
+			<RootProvider key={0} store={this._store}>
 				<RootElement when={this._storeAdapter.when(['elementData'])}>
 					<BasicReduxComponent></BasicReduxComponent>
 				</RootElement>

@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {Component} from "react";
 import {RootElement} from "react-server";
 import Q from "q";
@@ -28,10 +30,10 @@ export default class RootOrderPage {
 	}
 	getElements() {
 		return [
-			<RootElement when={this.first}>
+			<RootElement key={0} when={this.first}>
 				<TurnGreen>This should turn green second</TurnGreen>
 			</RootElement>,
-			<RootElement when={this.second}>
+			<RootElement key={1} when={this.second}>
 				<TurnGreen>This should turn green first</TurnGreen>
 			</RootElement>,
 		]

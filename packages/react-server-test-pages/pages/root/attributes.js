@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {RootContainer, RootElement, Link} from "react-server";
 
 const url = color => `/root/attributes?color=${color}`;

@@ -1,3 +1,5 @@
+/* eslint-disable react/react-in-jsx-scope */
+
 import {navigateTo} from "react-server";
 import PropTypes from "prop-types";
 
