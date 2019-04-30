@@ -67,6 +67,15 @@ Once you're hungry for more, dig into [the React Server documentation](https://r
 the [`react-server`](packages/react-server) code.
 ** **
 
+#### Migrating from react-server 0.8.1 to 1.0.0
+
+This release is a major, potentially breaking, change which upgrades react-server's dependencies from webpack 1.x to webpack 4.x, and babel 6.x to babel 7.x.
+
+If using default react-server configuration, you should be able to update to 1.0.0 without issue. However, if you have extended the default react-server webpack config using the `webpackConfig` option, you may need to update your webpack configuration options to match [Webpack 4.x Documentation](https://webpack.js.org/concepts).
+
+**Note**: If you are having trouble loading css bundles in `mode = production`, try switching from `import` to `require()` syntax. https://github.com/webpack-contrib/mini-css-extract-plugin/issues/27
+
+
 #### Want to help?
 
 Great!  There's a lot to do!
