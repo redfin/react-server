@@ -15,12 +15,8 @@ export default (args = process.argv) => {
 			type: "number",
 		})
 		.option("host", {
-			describe: "The public host name combined with js-port used to construct URLs for static content. Ignored when js-url is set.",
+			describe: "The public host name used to construct URLs for static content. Ignored when js-url is set.",
 			type: "string",
-		})
-		.option("js-port", {
-			describe: "Port to start listening for react-server's JavaScript. Default is 3001.",
-			type: "number",
 		})
 		.option("bind-ip", {
 			describe: "IP address to bind to. Default: 0.0.0.0 (any)",

@@ -6,7 +6,7 @@ var EventEmitter = require('events').EventEmitter,
 	History = require("../components/History"),
 	ReactServerAgent = require("../ReactServerAgent"),
 	PageUtil = require("../util/PageUtil"),
-	DebugUtil = require("../util/DebugUtil"),
+	DebugUtil = require("../util/DebugUtil").default,
 	{setResponseLoggerPage} = SERVER_SIDE ? require('../logging/response') : { setResponseLoggerPage: () => {} };
 
 class Navigator extends EventEmitter {

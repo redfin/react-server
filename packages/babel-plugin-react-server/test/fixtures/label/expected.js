@@ -1,3 +1,5 @@
+"use strict";
+
 var logger = require('react-server').logging.getLogger({
   label: "foo",
   name: "babel-plugin-react-server.test.fixtures.label.actual.foo",

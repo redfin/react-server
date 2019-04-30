@@ -18,6 +18,20 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 		const tmpPath = path.join(testPath, 'tmp');
 		createAndChangeToTempDir(tmpPath);
 
+		if (!Object.entries) {
+			// This is for Node 6, which doesn't support Object.entries
+			Object.entries = (obj) => {
+				const ownProps = Object.keys( obj );
+				let i = ownProps.length;
+				const resArray = new Array(ownProps.length); // preallocate the Array
+				while (i--) {
+					resArray[i] = [ownProps[i], obj[ownProps[i]]];
+				}
+
+				return resArray;
+			};
+		}
+
 		// Write files to temporary location
 		Object.entries(readDir(path.join(testPath, 'in-files')))
 			.forEach(([filename, content]) =>
@@ -56,7 +70,7 @@ fs.readdirSync(fixturesPath).forEach(testName => {
 						(stdoutIncludes && !stdout.includes(stdoutIncludes)) ||
 						(stderrIncludes && !stderr.includes(stderrIncludes))
 					) &&
-					elapsed < 5000
+					elapsed < frequency * 10 // need enough time for webpack to compile on startup
 				) {
 					elapsed += frequency;
 					return;

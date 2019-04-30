@@ -16,7 +16,7 @@ test('server is running', async t => {
 });
 
 test.after.always('shut down the server', async () => {
-	rs.kill('SIGHUP');
+	rs.kill();
 });
 
 // gets the response code for an http request

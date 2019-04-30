@@ -1,6 +1,0 @@
-{
-  "plugins": [
-    "react-require"
-  ],
-  "presets": ["es2015", "react"]
-}

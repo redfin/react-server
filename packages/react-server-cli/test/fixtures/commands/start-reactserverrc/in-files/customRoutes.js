@@ -1,3 +1,8 @@
 module.exports = {
-	routes: {},
+	routes: {
+		"one": {
+			"path": "/",
+			"page": "../../../BasicPage.js",
+		},
+	},
 };

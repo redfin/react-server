@@ -13,7 +13,6 @@ It helps to setup your project with per-environment settings that are appropriat
   "routesFile": "./routes.json",
   "host": "localhost",
   "port": 3000,
-  "jsPort": 3001,
   "hot": false,
   "minify": false,
   "longTermCaching": true,

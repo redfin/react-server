@@ -1,4 +1,9 @@
 {
   "middleware": [],
-  "routes": {}
+  "routes": {
+	  "one": {
+		  "path": "/",
+		  "page": "../../../BasicPage.js"
+	  }
+  }
 }

@@ -41,7 +41,6 @@ module.exports = yeoman.Base.extend({
 		var _this = this;
 
 		[
-			'_babelrc',
 			'_eslintrc',
 			'_gitignore',
 			'_reactserverrc',
@@ -57,6 +56,7 @@ module.exports = yeoman.Base.extend({
 		var files = [
 			'pages/hello-world.js',
 			'components/hello-world.js',
+			'babel.config.js',
 			'package.json',
 			'README.md',
 			'routes.json',

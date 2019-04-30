@@ -1,4 +1,4 @@
-# Goal: include everything in target/, buildutils/, _except_ for __tests__ dirs
+# Goal: include everything in target/, _except_ for __tests__ dirs
 
 # test-specific dirs
 **/__tests__/

@@ -1,4 +1,8 @@
 {
-	"presets": ["react-server"],
-	"plugins": ["add-module-exports"]
+	"plugins": [
+		"react-hot-loader/babel"
+	],
+	"presets": [
+		"react-server"
+	]
 }
