@@ -24,7 +24,10 @@
     - Put correct version in place of `Unreleased`
     - Remove private packages from headings
 - `git commit -a -m "v<RELEASE>"`
-- `lerna publish from-git --dist-tag prerelease `
+- `git tag "v<RELEASE>"`
+- `git push origin`
+- `git push origin "v<RELEASE>"`
+- `lerna publish from-git [--dist-tag prerelease]`
 - Edit release tag on GitHub and paste the changelog entry in.
 
 ### Updating annotated source code
