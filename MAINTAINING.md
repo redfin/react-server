@@ -7,8 +7,6 @@
 ### Deployment Checklist
 
 - `git checkout master && git pull upstream master`
-- verify `packages/generator-react-server/generators/app/templates/package.json` has the
-  correct versions of react-server packages
 - `npm config get registry`
     - Make sure it's `https://registry.npmjs.org/`
 - `npm run clean`
@@ -17,13 +15,16 @@
 - `npm run build`
 - `npm test`
 - `export GITHUB_AUTH="..."`
+- `lerna version --no-push --no-changelog --no-git-tag-version`
+- verify `packages/generator-react-server/generators/app/templates/package.json` has the
+  correct versions of react-server packages
 - `npm run changelog >> CHANGELOG.md`
 - Edit `CHANGELOG.md`:
     - Move new entry to top
     - Put correct version in place of `Unreleased`
     - Remove private packages from headings
-- `git add CHANGELOG.md`
-- `lerna publish`
+- `git commit -a -m "v<RELEASE>"`
+- `lerna publish from-git --dist-tag prerelease `
 - Edit release tag on GitHub and paste the changelog entry in.
 
 ### Updating annotated source code

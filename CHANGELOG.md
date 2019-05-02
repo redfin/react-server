@@ -1,3 +1,24 @@
+## 1.0.0-alpha.0 (2019-05-02)
+
+#### :boom: Breaking Change
+* `babel-plugin-react-server`, `babel-preset-react-server`, `generator-react-server`, `react-server-cli`, `react-server-core-middleware`, `react-server-data-bundle-cache`, `react-server-examples`, `react-server-integration-tests`, `react-server-middleware-json-response`, `react-server-redux`, `react-server-test-pages`, `react-server-website`, `react-server`
+  * [#1003](https://github.com/redfin/react-server/pull/1003) Upgrade to Webpack 4 + Babel 7 ([@davidgolden](https://github.com/davidgolden))
+
+#### :memo: Documentation
+* [#1004](https://github.com/redfin/react-server/pull/1004) update documentation for 1.0.0 release ([@davidgolden](https://github.com/davidgolden))
+
+#### :house: Internal
+* `babel-plugin-react-server`, `babel-preset-react-server`, `flab`, `generator-react-server`, `react-server-cli`, `react-server-core-middleware`, `react-server-data-bundle-cache`, `react-server-examples`, `react-server-gulp-module-tagger`, `react-server-integration-tests`, `react-server-middleware-json-response`, `react-server-module-tagger`, `react-server-redux`, `react-server-test-pages`, `react-server-website`, `react-server`
+  * [#1002](https://github.com/redfin/react-server/pull/1002) Do Lint Better ([@drewpc](https://github.com/drewpc))
+  * [#1001](https://github.com/redfin/react-server/pull/1001) Upgrade lerna ([@drewpc](https://github.com/drewpc))
+
+#### Committers: 5
+- Abdul Qoyyuum ([@Qoyyuum](https://github.com/Qoyyuum))
+- David Golden ([@davidgolden](https://github.com/davidgolden))
+- Michael Skinner ([@mcskinner](https://github.com/mcskinner))
+- PC Drew ([@drewpc](https://github.com/drewpc))
+- Robert Gay ([@roblg](https://github.com/roblg))
+
 ## v0.8.1 (2017-12-27)
 
 #### Bug fix

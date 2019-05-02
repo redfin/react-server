@@ -1,6 +1,6 @@
 {
   "name": "react-server-examples",
-  "version": "0.8.1",
+  "version": "1.0.0-alpha.0",
   "private": true,
   "scripts": {
     "lint": "eslint .",

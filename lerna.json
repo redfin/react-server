@@ -3,12 +3,12 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.8.1",
+  "version": "1.0.0-alpha.0",
   "command": {
-	"bootstrap": {
-		"hoist": true
-	}
-},
+    "bootstrap": {
+      "hoist": true
+    }
+  },
   "changelog": {
     "repo": "redfin/react-server",
     "labels": {
