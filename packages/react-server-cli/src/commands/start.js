@@ -14,6 +14,7 @@ import setupLogging from "../setupLogging";
 import logProductionWarnings from "../logProductionWarnings";
 import expressState from 'express-state';
 import cookieParser from 'cookie-parser';
+import fs from 'fs';
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
@@ -93,10 +94,12 @@ const startServer = (serverRoutes, options, compiler, config) => {
 		}));
 	} else {
 		// Only compile the webpack configs manually if we're not in hot mode
-		logger.notice("Compiling Webpack bundle prior to starting server");
-		compiler.run((err, stats) => {
-			handleCompilationErrors(err, stats);
-		});
+		if (compiler) {
+			logger.notice("Compiling Webpack bundle prior to starting server");
+			compiler.run((err, stats) => {
+				handleCompilationErrors(err, stats);
+			});
+		}
 
 		server.use('/', compression(), express.static(`__clientTemp/build`, {
 			maxage: longTermCaching ? '365d' : '0s',
@@ -179,9 +182,36 @@ export default function start(options) {
 	const {
 		port,
 		bindIp,
+		compileOnStartup,
+		hot,
 	} = options;
 
-	const {serverRoutes, compiler, config} = compileClient(options);
+	const routesFileLocation = path.join(process.cwd(), '__clientTemp/routes_server.js');
+	let serverRoutes,
+		compiler,
+		config;
+
+	if ((hot === false || hot === "false") && (compileOnStartup === false || compileOnStartup === "false")) {
+		logger.debug('Not running the compiler because hot is false and compileOnStartup is false');
+		serverRoutes = new Promise((resolve, reject) => {
+			fs.access(routesFileLocation, fs.constants.R_OK, (err) => {
+				if (err) {
+					reject("You must manually compile your application when compileOnStartup is set to false.");
+				} else {
+					// We need to replace the promise returned by the compiler with an already-resolved promise with the path
+					// of the compiled routes file.
+					resolve(routesFileLocation);
+				}
+			});
+		});
+
+		// it is safe to ignore setting the compiler and config variables
+	} else {
+		// ES6 destructuring without a preceding `let` or `const` results in a syntax error.  Therefore, the below
+		// statement must be wrapped in parentheses to work properly.
+		// http://exploringjs.com/es6/ch_destructuring.html#sec_leading-curly-brace-destructuring
+		({serverRoutes, compiler, config} = compileClient(options));
+	}
 
 	logger.notice("Starting server...");
 
