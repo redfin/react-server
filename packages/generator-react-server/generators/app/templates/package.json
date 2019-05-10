@@ -10,6 +10,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "@babel/core": "^7.0.0",
     "@babel/runtime": "^7.0.0",
     "babel-preset-react-server": "^1.0.0-alpha.0",
     "react": "^15.4.1",

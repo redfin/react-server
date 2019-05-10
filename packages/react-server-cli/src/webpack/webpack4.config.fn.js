@@ -1,11 +1,10 @@
-import webpack from "webpack"
-import callerDependency from "../callerDependency"
-import path from "path"
-
-const ExtractCssChunks = require("extract-css-chunks-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const TerserPlugin = require('terser-webpack-plugin');
+import ExtractCssChunksPlugin from "extract-css-chunks-webpack-plugin";
+import OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 import StatsPlugin from "webpack-stats-plugin";
+import callerDependency from "../callerDependency";
+import path from "path";
+import webpack from "webpack";
+
 
 export default function ({entrypoints, outputDir, outputUrl, hot, minify, longTermCaching, stats}) {
 	return {
@@ -47,7 +46,7 @@ export default function ({entrypoints, outputDir, outputUrl, hot, minify, longTe
 					test: /\.(sa|sc|c)ss$/,
 					use: [
 						{
-							loader: ExtractCssChunks.loader,
+							loader: ExtractCssChunksPlugin.loader,
 							options: {
 								hot: hot,
 							},
@@ -77,13 +76,9 @@ export default function ({entrypoints, outputDir, outputUrl, hot, minify, longTe
 		},
 		optimization: {
 			minimize: minify,
-			minimizer: clean([
-				minify && new TerserPlugin(),
-				minify && new OptimizeCSSAssetsPlugin(),
-			]),
 		},
 		plugins: clean([
-			new ExtractCssChunks({
+			new ExtractCssChunksPlugin({
 				// Options similar to the same options in webpackOptions.output
 				// both options are optional
 				filename: `[name]${longTermCaching ? ".[contenthash]" : ""}.css`,
@@ -94,7 +89,13 @@ export default function ({entrypoints, outputDir, outputUrl, hot, minify, longTe
 				fields: ["assets", "assetsByChunkName", "chunks", "errors", "warnings", "version", "hash", "time", "filteredModules", "children", "modules"],
 			}),
 
-			!minify && new webpack.SourceMapDevToolPlugin(),
+			// We always like sourcemaps, so if we're minifying then put the sourcemaps in a separate file
+			// in the sourcemaps/ directory, otherwise inline the sourcemap with the file.
+			new webpack.SourceMapDevToolPlugin({
+				filename: minify ? 'sourcemaps/[file].map' : false,
+			}),
+
+			minify && new OptimizeCSSAssetsPlugin(),
 
 			hot && new webpack.HotModuleReplacementPlugin(),
 		]),
