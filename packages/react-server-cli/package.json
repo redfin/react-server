@@ -1,6 +1,6 @@
 {
   "name": "react-server-cli",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "A command line to run react-server",
   "main": "target/index.js",
   "scripts": {
@@ -45,7 +45,7 @@
     "q": "1.4.1",
     "raw-loader": "^2.0.0",
     "react-hot-loader": "^4.8.2",
-    "react-server-core-middleware": "^1.0.0-alpha.0",
+    "react-server-core-middleware": "^1.0.0-alpha.1",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.2.3",
@@ -56,9 +56,9 @@
     "yargs": "^3.32.0"
   },
   "devDependencies": {
-    "babel-preset-react-server": "^1.0.0-alpha.0",
-    "react-server": "^1.0.0-alpha.0",
-    "react-server-gulp-module-tagger": "^1.0.0-alpha.0"
+    "babel-preset-react-server": "^1.0.0-alpha.1",
+    "react-server": "^1.0.0-alpha.1",
+    "react-server-gulp-module-tagger": "^1.0.0-alpha.1"
   },
   "ava": {
     "tap": true,

@@ -14,10 +14,10 @@
 - `npm run lint`
 - `npm run build`
 - `npm test`
-- `export GITHUB_AUTH="..."`
 - `lerna version --no-push --no-changelog --no-git-tag-version`
 - verify `packages/generator-react-server/generators/app/templates/package.json` has the
-  correct versions of react-server packages
+- verify `packages/react-server-data-bundle-cache/package.json` has the correct versions of react-server packages
+- `export GITHUB_AUTH="..."`
 - `npm run changelog >> CHANGELOG.md`
 - Edit `CHANGELOG.md`:
     - Move new entry to top

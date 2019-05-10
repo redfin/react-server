@@ -1,6 +1,6 @@
 {
   "name": "react-server-test-pages",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "private": true,
   "description": "Some pages to test out features of react-server",
   "main": "index.js",

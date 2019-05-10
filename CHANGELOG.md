@@ -1,3 +1,12 @@
+## 1.0.0-alpha.1 (2019-05-10)
+
+#### :bug: Bug Fix
+* `generator-react-server`, `react-server-cli`
+  * [#1006](https://github.com/redfin/react-server/pull/1006) compileOnStartup implementation missing ([@drewpc](https://github.com/drewpc))
+
+#### Committers: 1
+- PC Drew ([@drewpc](https://github.com/drewpc))
+
 ## 1.0.0-alpha.0 (2019-05-02)
 
 #### :boom: Breaking Change

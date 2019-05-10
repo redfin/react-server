@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-react-server",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "A recommended Babel config for working with react-server",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "babel-plugin-react-server": "^1.0.0-alpha.0"
+    "babel-plugin-react-server": "^1.0.0-alpha.1"
   },
   "devDependencies": {
     "rimraf": "^2.5.4"

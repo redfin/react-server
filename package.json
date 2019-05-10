@@ -15,7 +15,7 @@
     "update-dependencies": "david u && lerna exec david u"
   },
   "changelog": {
-	"repo": "redfin/react-server",
+    "repo": "redfin/react-server",
     "labels": {
       "breaking change": ":boom: Breaking Change",
       "enhancement": ":rocket: Enhancement",

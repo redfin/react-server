@@ -1,6 +1,6 @@
 {
   "name": "react-server-gulp-module-tagger",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "A gulp plugin to replace tags with module information",
   "main": "index.js",
   "scripts": {
@@ -18,6 +18,6 @@
     "gulp-foreach": "0.1.0",
     "gulp-plumber": "^1.1.0",
     "gulp-replace": "^0.5.4",
-    "react-server-module-tagger": "^1.0.0-alpha.0"
+    "react-server-module-tagger": "^1.0.0-alpha.1"
   }
 }

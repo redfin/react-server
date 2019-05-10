@@ -1,6 +1,6 @@
 {
   "name": "react-server-integration-tests",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "private": true,
   "description": "Integration tests for react-server",
   "scripts": {
@@ -8,7 +8,7 @@
     "clean": "rimraf target __clientTemp npm-debug.log*"
   },
   "devDependencies": {
-    "react-server": "^1.0.0-alpha.0",
-    "react-server-cli": "^1.0.0-alpha.0"
+    "react-server": "^1.0.0-alpha.1",
+    "react-server-cli": "^1.0.0-alpha.1"
   }
 }
