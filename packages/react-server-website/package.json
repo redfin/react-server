@@ -1,6 +1,6 @@
 {
   "name": "react-server-website",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "A react-server instance",
   "main": "HelloWorld.js",
   "private": true,

@@ -1,6 +1,6 @@
 {
   "name": "react-server-middleware-json-response",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "JSON response middleware for React Server",
   "main": "index.js",
   "scripts": {
@@ -25,8 +25,8 @@
     "url": "https://github.com/redfin/react-server/issues"
   },
   "devDependencies": {
-    "babel-plugin-react-server": "^1.0.0-alpha.1",
-    "babel-preset-react-server": "^1.0.0-alpha.1"
+    "babel-plugin-react-server": "^1.0.0-alpha.2",
+    "babel-preset-react-server": "^1.0.0-alpha.2"
   },
   "homepage": "https://github.com/redfin/react-server#readme"
 }

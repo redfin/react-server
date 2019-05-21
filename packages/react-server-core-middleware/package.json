@@ -1,6 +1,6 @@
 {
   "name": "react-server-core-middleware",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Core page middleware for React Server",
   "main": "index.js",
   "scripts": {
@@ -28,8 +28,8 @@
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.4.3",
     "babel-eslint": "^9.0.0",
-    "babel-plugin-react-server": "^1.0.0-alpha.1",
-    "babel-preset-react-server": "^1.0.0-alpha.1",
+    "babel-plugin-react-server": "^1.0.0-alpha.2",
+    "babel-preset-react-server": "^1.0.0-alpha.2",
     "rimraf": "^2.6.3"
   }
 }

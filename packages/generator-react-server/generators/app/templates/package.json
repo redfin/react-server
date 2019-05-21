@@ -12,11 +12,11 @@
   "dependencies": {
     "@babel/core": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "babel-preset-react-server": "^1.0.0-alpha.1",
+    "babel-preset-react-server": "^1.0.0-alpha.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
-    "react-server": "^1.0.0-alpha.1",
-    "react-server-cli": "^1.0.0-alpha.1",
+    "react-server": "^1.0.0-alpha.2",
+    "react-server-cli": "^1.0.0-alpha.2",
     "superagent": "1.8.4"
   },
   "devDependencies": {

@@ -1,3 +1,12 @@
+## 1.0.0-alpha.2 (2019-05-21)
+
+#### :bug: Bug Fix
+* `react-server-cli`, `react-server-integration-tests`
+  * [#1008](https://github.com/redfin/react-server/pull/1008) larger than expected bundle files ([@drewpc](https://github.com/drewpc))
+
+#### Committers: 1
+- PC Drew ([@drewpc](https://github.com/drewpc))
+
 ## 1.0.0-alpha.1 (2019-05-10)
 
 #### :bug: Bug Fix
