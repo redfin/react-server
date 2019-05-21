@@ -213,11 +213,15 @@ module.exports = {
 					return {
 						done: function(cb) {`);
 			if (isClient) {
-				// No need for require.ensure() here because we are already splitting code based on the routes by having
-				// multiple entry points.  Using require.ensure() or import() will create unnecessary bundles as well
-				// as confuse the browser because it will load some JS/CSS files via FLAB and some via Webpack's
-				// dynamic loader.  Best to just stick with the basic implementation.
-				routesOutput.push(`cb(unwrapEs6Module(require(${relativePathToPage})));`);
+				// Turns out, for now, we do need to keep require.ensure() here.  This should be migrated to
+				// use import() in the future, but there's an issue with Babel not recognizing import() without
+				// another plugin: https://babeljs.io/docs/en/babel-plugin-syntax-dynamic-import/#installation
+				// The JS/CSS files loaded by FLAB are the entrypoint/initial files.  Webpack's dynamic loader
+				// handles loading the other chunks.
+				routesOutput.push(`
+							require.ensure(${relativePathToPage}, function() {
+								cb(unwrapEs6Module(require(${relativePathToPage})));
+							});`);
 			} else {
 				routesOutput.push(`
 							try {
