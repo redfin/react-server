@@ -251,7 +251,7 @@ a good idea to only do this in production mode.
 
 The following options are available.  Note that options on the command-line
 are dash-separated (e.g. `--webpack-config`), but options in config files are
-camel-cased (e.g. `webpackConfig`). (TODO: Support dash-separated options in config)
+camel-cased (e.g. `webpackConfig`). 
 
 #### --routes
 The routes file to load.

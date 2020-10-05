@@ -23,7 +23,6 @@ describe("ReactServerAgent", () => {
 	});
 
 	afterAll( () => {
-		// tear down server
 		server && server.close();
 	});
 
@@ -45,7 +44,6 @@ describe("ReactServerAgent", () => {
 		}));
 
 		it("end() should pass err object on error HTTP status", withRlsContext(done => {
-			// Must have .end((err, res) => ...) or else the .end() function won't call the callback!
 			ReactServerAgent.get("/error").end( (err, res) => { // eslint-disable-line no-unused-vars
 				expect(err).not.toBeNull();
 				done();
@@ -54,7 +52,6 @@ describe("ReactServerAgent", () => {
 		}));
 
 		it("end() should treat 500 as error", withRlsContext(done => {
-			// Must have .end((err, res) => ...) or else the .end() function won't call the callback!
 			ReactServerAgent.get("/error").query({status: 500}).end( (err, res) => { // eslint-disable-line no-unused-vars
 				expect(err).not.toBeNull();
 				expect(err.status).toBe(500);
@@ -224,23 +221,13 @@ describe("ReactServerAgent", () => {
 				.then(res => {
 					// lowercase
 					expect(res.body.req.headers['content-type']).toBe("application/x-www-form-urlencoded");
-					// TODO: check data somehow?
+			
 					done();
 				})
 				.done();
 		}));
 
-		// TODO: need a body parser middleware set up for this to work
-		// it("sends post params", withRlsContext( (done) => {
-		// 	ReactServerAgent.post('/describe')
-		// 		.send({ "hello": "world" })
-		// 		.then( (res, err) => {
-
-		// 			expect(true).toBe(false);
-
-		// 			done();
-		// 		});
-		// }));
+	
 
 		it("times out as expected", withRlsContext( (done) => {
 			ReactServerAgent.get('/timeout')

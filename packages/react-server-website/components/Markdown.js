@@ -14,15 +14,12 @@ export default class Markdown extends React.Component {
 	render() {
 		let content = this.props.children || this.props.source;
 
-		// The markdown handling returns a wad of HTML, so place it directly
-		// into the component.
 		return <div className="dangerous-markdown" dangerouslySetInnerHTML={{
 			__html: this._renderMarkdown(content),
 		}} />
 	}
 
 	_renderMarkdown(content) {
-		// Remarkable hljs handling, from documentation
 		const md = new Remarkable({
 			highlight: function (str, lang) {
 				if (lang && hljs.getLanguage(lang)) {
@@ -75,16 +72,13 @@ function isInternal(a) {
 	return href.startsWith('/');
 }
 
-// TODO: Let's make this available as a helper from React Server core.
 function addOnClickHandler(a, {reuseDom, bundleData}) {
 	a.onclick = function (e) {
-		// See Link.jsx in react-server/core/Link
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
 			navigateTo(a.getAttribute('href'), {reuseDom, bundleData});
 		} else {
-			// do normal browser navigate
 		}
 	}
 }

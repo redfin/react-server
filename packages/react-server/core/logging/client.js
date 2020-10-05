@@ -4,7 +4,7 @@
  * Our server-side logging library doesn't work client-side.  This just
  * implements the interface with basic output to `console.log`.
  *
- * TODO: For production use we should mimic the interface with NOOPs.
+ * 
  *
  */
 

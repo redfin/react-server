@@ -1,4 +1,3 @@
-/* eslint "react/no-deprecated": "warn" */
 
 var React = require('react');
 const PropTypes = require('prop-types');
@@ -30,15 +29,12 @@ class RootElement extends React.Component {
 				var fromLastChange = now - this._t1;
 				this._t1           = now;
 
-				// Log some stuff about the change.
 				[`byName.${name}`, 'all'].forEach(tag => {
 					logger.time(`change.fromMount.${tag}`, fromMount);
 					logger.time(`change.fromLastChange.${tag}`, fromLastChange);
 					logger.gauge(`change.count.${tag}`, count);
 				});
 
-				// Okay, now we've complained about it
-				// sufficiently, let's go ahead and update.
 				const newChildProps = _.assign({}, this.state.childProps, childProps);
 				this.setState({
 					childProps: newChildProps,
@@ -52,9 +48,6 @@ class RootElement extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		// Incase we receive new props such as during client transitions
-		// We will want to update our state's childProp with any new childProps
-		// that may have been passed in. This still respects props as the ultimate source of truth
 		const newChildProps = _.assign({}, this.state.childProps, nextProps.childProps);
 		this.setState({
 			childProps: newChildProps,
@@ -63,7 +56,6 @@ class RootElement extends React.Component {
 
 	render() {
 
-		// We'll use these to log stuff about re-renders.
 		if (!this._t0) {
 			this._t0 = this._t1 = new Date;
 			this._changeCount = 0;
@@ -76,7 +68,6 @@ class RootElement extends React.Component {
 				{ text: this.props.children }
 			);
 
-			// Don't keep choking on it.  Just gut it.
 			return <div />;
 		}
 
@@ -101,7 +92,7 @@ module.exports = RootElement;
 
 RootElement.propTypes = {
 	listen: PropTypes.func,
-	when: PropTypes.object, // A promise.
+	when: PropTypes.object, 
 	childProps: PropTypes.object,
 	_isRootElement: PropTypes.bool,
 	children: PropTypes.node,
@@ -123,7 +114,6 @@ RootElement.getRootElementAttributes = function(element) {
 
 	if (props.className) attrs.class = props.className;
 
-	// TODO: Others?
 	[
 		'id',
 		'style',
@@ -134,14 +124,9 @@ RootElement.getRootElementAttributes = function(element) {
 
 RootElement.ensureRootElementWithContainer = function(element, container) { // eslint-disable-line react/display-name
 
-	// If it's _already_ a root element (or the fold), pass it along.
 	if (RootElement.isRootElement(element) || isTheFold(element) || (
 
-		// Alternatively, if it's a control object pass it along.
-		//
-		// We exclude strings here since we already gripe about them
-		// at render time.
-		//
+	
 		!React.isValidElement(element) && typeof element !== 'string'
 	)){
 		return element;

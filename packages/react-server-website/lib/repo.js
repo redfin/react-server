@@ -19,8 +19,8 @@ export default class Repo {
 	}
 
 	static provideFile(path) {
-		// TODO: Use config for this.
-		if (process.env.LOCAL_DOCS) { // eslint-disable-line no-process-env
+		
+		if (process.env.LOCAL_DOCS) { 
 			return Promise.resolve(require(join("../../..", path)))
 				.then(obj => typeof obj === "string" ? obj :JSON.stringify(obj))
 		} else {

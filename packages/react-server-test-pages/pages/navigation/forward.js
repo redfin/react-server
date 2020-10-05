@@ -12,14 +12,13 @@ export default class ForwardPage {
 			params = 0;
 		}
 
-		//fetch some data
 		this.data = ReactServerAgent.get('/data/delay?ms=1000&val='+params);
 
 		return this.data.then((res) => {
-			//then depending on said data, forward to one of two pages, and pass along the data we pre-fetched
+			
 			if (res.body % 2 === 0) {
-				// TODO: change this to use isBrowser when that check is available.
-				if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
+
+				if (typeof window !== 'undefined') { 
 					return require.ensure(["./forwardEven"], () => {
 						return {
 							page: require("./forwardEven").default,
@@ -31,8 +30,8 @@ export default class ForwardPage {
 					};
 				}
 			} else {
-				// TODO: change this to use isBrowser when that check is available.
-				if (typeof window !== 'undefined') { //would be nice if this is `process.env.isServer`
+				
+				if (typeof window !== 'undefined') { 
 					return require.ensure(["./forwardOdd"], () => {
 						return {
 							page: require("./forwardOdd").default,

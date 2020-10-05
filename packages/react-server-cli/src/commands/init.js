@@ -9,7 +9,6 @@ const DEPENDENCIES = [
 	"react-server",
 	"babel-preset-react-server",
 
-	// TODO: Modernize our peer deps and remove versions here.
 	"react@^15.4.1",
 	"react-dom@^15.4.1",
 	"superagent@1.8.4",

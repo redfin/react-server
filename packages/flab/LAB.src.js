@@ -238,28 +238,22 @@
 			if (script_obj.crossOrigin) script.crossOrigin = script_obj.crossOrigin;
 			create_script_load_listener(script,registry_item,"finished",preload_execute_finished);
 
-			// script elem was real-preloaded
 			if (registry_item.elem) {
 				registry_item.elem = null;
 			}
-			// script was XHR preloaded
 			else if (registry_item.text) {
-				script.onload = script.onreadystatechange = null;	// script injection doesn't fire these events
+				script.onload = script.onreadystatechange = null;	
 				script.text = registry_item.text;
 			}
-			// script was cache-preloaded
 			else {
 				script.src = script_obj.real_src;
 			}
 			append_to.insertBefore(script,append_to.firstChild);
 
-			// manually fire execution callback for injected scripts, since events don't fire
 			if (registry_item.text) {
 				preload_execute_finished();
 			}
 		}
-
-		// process the script request setup
 		function do_script(chain_opts,script_obj,chain_group,preload_this_script) {
 			var registry_item,
 				registry_items,
@@ -269,14 +263,12 @@
 
 			script_obj.src = canonical_uri(script_obj.src,chain_opts[_BasePath]);
 			script_obj.real_src = script_obj.src +
-				// append cache-bust param to URL?
 				(chain_opts[_CacheBust] ? ((/\?.*$/.test(script_obj.src) ? "&_" : "?_") + ~~(Math.random()*1E9) + "=") : "")
 			;
 
 			if (!registry[script_obj.src]) registry[script_obj.src] = {items:[],finished:false};
 			registry_items = registry[script_obj.src].items;
 
-			// allowing duplicates, or is this the first recorded load of this script?
 			if (chain_opts[_AllowDuplicates] || registry_items.length == 0) {
 				registry_item = registry_items[registry_items.length] = {
 					ready:false,
@@ -286,9 +278,9 @@
 				};
 
 				request_script(chain_opts,script_obj,registry_item,
-					// which callback type to pass?
+					
 					(
-					 	(preload_this_script) ? // depends on script-preloading
+					 	(preload_this_script) ? 
 						function(){
 							registry_item.ready = true;
 							for (var i=0; i<registry_item.ready_listeners.length; i++) {
@@ -298,7 +290,6 @@
 						} :
 						function(){ script_executed(registry_item); }
 					),
-					// signal if script-preloading should be used or not
 					preload_this_script
 				);
 			}
@@ -313,7 +304,6 @@
 			}
 		}
 
-		// creates a closure for each separate chain spawned from this $LAB instance, to keep state cleanly separated between chains
 		function create_chain() {
 			var chainedAPI,
 				chain_opts = merge_objs(global_defaults,{}),
@@ -324,7 +314,6 @@
 				group
 			;
 
-			// called when a script has finished preloading
 			function chain_script_ready(script_obj,exec_trigger) {
 				if (chain_opts[_Debug]) log_msg("script preload finished: "+script_obj.real_src);
 				script_obj.ready = true;
@@ -332,24 +321,20 @@
 					if (chain_opts[_Debug]) log_msg("script execute start: "+script_obj.real_src);
 					exec_trigger();
 				}
-				advance_exec_cursor(); // will only check for 'ready' scripts to be executed
+				advance_exec_cursor(); 
 			}
 
-			// called when a script has finished executing
 			function chain_script_executed(script_obj,chain_group) {
 				if (chain_opts[_Debug]) log_msg("script execution finished: "+script_obj.real_src);
 				script_obj.ready = script_obj.finished = true;
 				script_obj.exec_trigger = null;
-				// check if chain group is all finished
 				for (var i=0; i<chain_group.scripts.length; i++) {
 					if (!chain_group.scripts[i].finished) return;
 				}
-				// chain_group is all finished if we get this far
 				chain_group.finished = true;
 				advance_exec_cursor();
 			}
 
-			// main driver for executing each part of the chain
 			function advance_exec_cursor() {
 				if (chain_is_corked) return;
 				while (exec_cursor < chain.length) {
@@ -366,23 +351,19 @@
 					}
 					exec_cursor++;
 				}
-				// we've reached the end of the chain (so far)
 				if (exec_cursor == chain.length) {
 					scripts_currently_loading = false;
 					group = false;
 				}
 			}
 
-			// setup next chain script group
 			function init_script_chain_group() {
 				if (!group || !group.scripts) {
 					chain.push(group = {scripts:[],finished:true});
 				}
 			}
 
-			// API for $LAB chains
 			chainedAPI = {
-				// start loading one or more scripts
 				script:function(){
 					for (var i=0; i<arguments.length; i++) {
 						(function(script_obj,script_list){
@@ -425,7 +406,6 @@
 					}
 					return chainedAPI;
 				},
-				// force LABjs to pause in execution at this point in the chain, until the execution thus far finishes, before proceeding
 				wait:function(){
 					if (arguments.length > 0) {
 						for (var i=0; i<arguments.length; i++) {
@@ -454,7 +434,6 @@
 				}
 			};
 
-			// the first chain link API (includes `setOptions` only this first time)
 			return {
 				script:chainedAPI.script,
 				wait:chainedAPI.wait,
@@ -467,9 +446,7 @@
 			};
 		}
 
-		// API for each initial $LAB instance (before chaining starts)
 		instanceAPI = {
-			// main API functions
 			setGlobalDefaults:function(opts){
 				merge_objs(opts,global_defaults);
 				return instanceAPI;
@@ -487,9 +464,6 @@
 				return create_chain().cork.apply(null,arguments);
 			},
 
-			// built-in queuing for $LAB `script()` and `wait()` calls
-			// useful for building up a chain programmatically across various script locations, and simulating
-			// execution of the chain
 			queueScript:function(){
 				queue[queue.length] = {type:"script", args:[].slice.call(arguments)};
 				return instanceAPI;
@@ -507,13 +481,11 @@
 				return $L;
 			},
 
-			// rollback `[global].$LAB` to what it was before this file was loaded, the return this current instance of $LAB
 			noConflict:function(){
 				global.$LAB = _$LAB;
 				return instanceAPI;
 			},
 
-			// create another clean instance of $LAB
 			sandbox:function(){
 				return create_sandbox();
 			}
@@ -522,19 +494,8 @@
 		return instanceAPI;
 	}
 
-	// create the main instance of $LAB
 	global.$LAB = create_sandbox();
 
-
-	/* The following "hack" was suggested by Andrea Giammarchi and adapted from: http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
-	   NOTE: this hack only operates in FF and then only in versions where document.readyState is not present (FF < 3.6?).
-
-	   The hack essentially "patches" the **page** that LABjs is loaded onto so that it has a proper conforming document.readyState, so that if a script which does
-	   proper and safe dom-ready detection is loaded onto a page, after dom-ready has passed, it will still be able to detect this state, by inspecting the now hacked
-	   document.readyState property. The loaded script in question can then immediately trigger any queued code executions that were waiting for the DOM to be ready.
-	   For instance, jQuery 1.4+ has been patched to take advantage of document.readyState, which is enabled by this hack. But 1.3.2 and before are **not** safe or
-	   fixed by this hack, and should therefore **not** be lazy-loaded by script loader tools such as LABjs.
-	*/
 	(function(addEvent,domLoaded,handler){
 		if (document.readyState == null && document[addEvent]){
 			document.readyState = "loading";

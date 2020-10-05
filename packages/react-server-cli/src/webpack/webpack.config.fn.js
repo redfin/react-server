@@ -94,7 +94,6 @@ export default function ({ entrypoints, outputDir, outputUrl, hot, minify, longT
 			minify && new webpack.DefinePlugin({
 				'process.env': {NODE_ENV: '"production"'},
 			}),
-			// TODO: should this be done as babel plugin?
 			minify && new webpack.optimize.UglifyJsPlugin(),
 			!minify && new webpack.SourceMapDevToolPlugin(),
 			hot && new webpack.HotModuleReplacementPlugin(),

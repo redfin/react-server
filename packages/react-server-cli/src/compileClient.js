@@ -4,17 +4,7 @@ import mkdirp from "mkdirp"
 import fs from "fs"
 import serverSideHotModuleReload from "./serverSideHotModuleReload"
 
-// commented out to please eslint, but re-add if logging is needed in this file.
-// import {logging} from "react-server"
-// const logger = logging.getLogger(__LOGGER__);
 
-// compiles the routes file for browser clients using webpack.
-// returns a tuple of { compiler, serverRoutes }. compiler is a webpack compiler
-// that is ready to have run called, and serverRoutes is a promise that resolve to
-// a path to the transpiled server routes file path. The promise only resolves
-// once the compiler has been run. The file path returned from the promise
-// can be required and passed in to reactServer.middleware().
-// TODO: add options for sourcemaps.
 export default (opts = {}) => {
 	const {
 		routes,
@@ -29,10 +19,7 @@ export default (opts = {}) => {
 		longTermCaching = false,
 	} = opts;
 
-	// support legacy webpack configuration name
 	if (longTermCaching && hot) {
-		// chunk hashes can't be used in hot mode, so we can't use long-term caching
-		// and hot mode at the same time.
 		throw new Error("Hot reload cannot be used with long-term caching. Please disable either long-term caching or hot reload.");
 	}
 
@@ -43,7 +30,6 @@ export default (opts = {}) => {
 
 	const routesDirAbsolute = path.resolve(process.cwd(), routesDir);
 
-	// for each route, let's create an entrypoint file that includes the page file and the routes file
 	let bootstrapFile = writeClientBootstrapFile(workingDirAbsolute, opts);
 	const entrypointBase = hot ? [
 		require.resolve("webpack-hot-middleware/client") + '?path=/__react_server_hmr__&timeout=20000&reload=true',
@@ -63,12 +49,8 @@ export default (opts = {}) => {
 		}
 	}
 
-	// now rewrite the routes file out in a webpack-compatible way.
 	writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, null, true);
 
-	// finally, let's pack this up with webpack.
-
-	// support legacy webpack configuration name
 	const userWebpackConfigOpt = webpackConfig || opts['webpack-config'];
 
 	const config = getWebpackConfig(userWebpackConfigOpt, {
@@ -105,9 +87,6 @@ export default (opts = {}) => {
 	};
 }
 
-// get the webpack configuration object
-// loads data from default configuration at webpack/webpack4.config.fn.js, and
-// extends it by calling user-supplied function, if one was provided
 function getWebpackConfig(userWebpackConfigOpt, wpAffectingOpts) {
 
 	let extend = (data) => { return data }
@@ -121,16 +100,6 @@ function getWebpackConfig(userWebpackConfigOpt, wpAffectingOpts) {
 	return extend(baseConfig);
 }
 
-// takes in the stats object from a successful compilation and returns a manifest
-// object that characterizes the results of the compilation for CSS/JS loading
-// and integrity checking. the manifest has the following entries:
-//   jsChunksByName: an object that maps chunk names to their JS entrypoint file.
-//   cssChunksByName: an object that maps chunk names to their CSS file. Note that
-//     not all named chunks necessarily have a CSS file, so not all names will
-//     show up as a key in this object.
-//   jsChunksById: an object that maps chunk ids to their JS entrypoint file.
-//   hash: the overall hash of the build, which can be used to check integrity
-//     with prebuilt sources.
 function statsToManifest(stats) {
 	const jsChunksByName = {};
 	const cssChunksByName = {};
@@ -146,7 +115,6 @@ function statsToManifest(stats) {
 					cssChunksByName[chunk.name] = file;
 				}
 			} else if (/^((?!hot-update).)*\.js$/.test(file)) {
-				// Ensure we're building a manifest that includes the main JS bundle, not any simple hot updates
 				jsChunksById[chunk.id] = file;
 				if (chunk.name) {
 					jsChunksByName[chunk.name] = file;
@@ -163,7 +131,6 @@ function statsToManifest(stats) {
 	};
 }
 
-// writes out a routes file that can be used at runtime.
 export function writeWebpackCompatibleRoutesFile(routes, routesDir, workingDirAbsolute, staticUrl, isClient, manifest) {
 	let routesOutput = [];
 
@@ -187,12 +154,8 @@ module.exports = {
 	for (let routeName of Object.keys(routes.routes)) {
 		let route = routes.routes[routeName];
 
-		// On the line below specifying 'method', if the route doesn't have a method, we'll set it to `undefined` so that
-		// routr passes through and matches any method
-		// https://github.com/yahoo/routr/blob/v2.1.0/lib/router.js#L49-L57
 		let method = route.method;
 
-		// Safely check for an empty object, array, or string and specifically set it to 'undefined'
 		if (method === undefined || method === null || method === {} || method.length === 0) {
 			method = undefined; // 'undefined' is the value that routr needs to accept any method
 		}
@@ -213,12 +176,6 @@ module.exports = {
 					return {
 						done: function(cb) {`);
 			if (isClient) {
-				// Turns out, for now, we do need to keep require.ensure() here.  This should be migrated to
-				// use import() in the future, but there's an issue with Babel not recognizing import() without
-				// another plugin: https://babeljs.io/docs/en/babel-plugin-syntax-dynamic-import/#installation
-				// The JS/CSS files loaded by FLAB are the entrypoint/initial files.  Webpack's dynamic loader
-				// handles loading the other chunks.
-				routesOutput.push(`
 							require.ensure(${relativePathToPage}, function() {
 								cb(unwrapEs6Module(require(${relativePathToPage})));
 							});`);
@@ -263,9 +220,6 @@ function normalizeRoutesPage(page) {
 	return page;
 }
 
-// writes out a bootstrap file for the client which in turn includes the client
-// routes file. note that outputDir must be the same directory as the client routes
-// file, which must be named "routes_client".
 function writeClientBootstrapFile(outputDir, opts) {
 	const outputFile = outputDir + "/entry.js";
 	fs.writeFileSync(outputFile, `
