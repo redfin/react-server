@@ -4,8 +4,6 @@ var logger = require('../logging').getLogger(__LOGGER__)
 	,	merge = require("lodash/merge")
 	,	isEqual = require("lodash/isEqual")
 ;
-
-// TODO: we should figure out a way to consolidate this with SuperAgentExtender
 var responseBodyParsers = {
 	'application/json': function (text) {
 		if (text && text.trim) {
@@ -39,8 +37,6 @@ class CacheEntry {
 		this.loaded = false;
 		this.res = undefined;
 		this.err = undefined;
-		// copy the rest of the properties from input requestData
-		// to this.requestData
 
 		this.url = requestData.urlPath;
 		this.requestData = {};
@@ -52,7 +48,6 @@ class CacheEntry {
 
 		var err = this.err;
 		if (err) {
-			// create a shallow copy of the error object
 			var errCopy = merge({}, err);
 			if (errCopy.response) {
 				errCopy.response = this._copyResponseForDehydrate(errCopy.response, { responseBodyOnly });
@@ -128,10 +123,8 @@ class CacheEntry {
 		this.res = this._rehydrateResponse(state.res);
 		this.err = err;
 
-		// TODO FIXME: these won't work if the response from the server was an error
-
+	
 		if (this.loaded) {
-			// call setResponse to resolve the deferred
 			if (this.res) {
 				this.setResponse(this.res);
 			} else if (this.err) {
@@ -147,9 +140,7 @@ class CacheEntry {
 		if (!res) return res;
 
 		if (res._hasBody) {
-			// re-parse the text of the response body serialized by the server.
-			// if the body wasn't in a known format, it will have been included directly
-
+	
 			var parse = responseBodyParsers[res.type];
 			if (!parse) {
 				logger.warning(`Unparseable content type for ${this.url}: ${res.type}, but response._hasBody was true. (This may be a bug in ReactServerAgent)`);
@@ -164,16 +155,12 @@ class CacheEntry {
 	}
 
 	setResponse (res) {
-		// TODO: store superagent response? or body? or payload?
-
+	
 		if (SERVER_SIDE){
 
-			// Pull out the pieces of the response we care about.
-			// This would be a NOOP client-side, so we'll skip it.
 			res = this._trimResponseData(res);
 		}
 
-		// Stash away a reference to the response.
 		this.res    = res;
 		this.loaded = true;
 

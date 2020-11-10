@@ -23,26 +23,16 @@ var _ = {
 	map: require('lodash/map'),
 };
 
-// TODO FIXME ??
-// It *might* be worthwhile to get rid of all the closure-y things in render()
-// https://developers.google.com/speed/articles/optimizing-javascript
-
-// If an element hasn't rendered in this long it gets the axe.
 var FAILSAFE_RENDER_TIMEOUT = 20e3;
 
-// If a page's `handleRoute` fails to resolve this fast it gets the axe.
+
 var FAILSAFE_ROUTER_TIMEOUT = 20e3;
 
-// We'll use this for keeping track of request concurrency per worker.
 var ACTIVE_REQUESTS = 0;
 
-// Some non-content items that can live in the elements array.
 var ELEMENT_PENDING         = -1;
 var ELEMENT_ALREADY_WRITTEN = -2;
 
-/**
- * renderMiddleware entrypoint. Called by express for every request.
- */
 module.exports = function(req, res, next, routes) {
 	RequestLocalStorage.startRequest(() => {
 		ACTIVE_REQUESTS++;
@@ -53,9 +43,6 @@ module.exports = function(req, res, next, routes) {
 		logger.debug(`Incoming request for ${req.path}`);
 
 		initResponseCompletePromise(res);
-
-		// monkey-patch `res.write` so that we don't try to write to the stream if it's
-		// already closed
 		var origWrite = res.write;
 		res.write = function () {
 			if (!res.finished) {
@@ -65,22 +52,18 @@ module.exports = function(req, res, next, routes) {
 			}
 		};
 
-		// TODO? pull this context building into its own middleware
 		var context = new RequestContext.Builder()
 			.setRoutes(routes)
 			.setDefaultXhrHeadersFromRequest(req)
 			.create({
-				// TODO: context opts?
 			});
 
-		// Need this stuff in for logging.
 		context.setServerStash({ req, res, start, startHR });
 
 		context.setDeviceType(getDeviceType(req));
 
 		var navigateDfd = Q.defer();
 
-		// setup navigation handler (TODO: should we have a 'once' version?)
 		context.onNavigate( (err, page) => {
 
 			if (!navigateDfd.promise.isPending()) {
@@ -91,24 +74,16 @@ module.exports = function(req, res, next, routes) {
 				return;
 			}
 
-			// Success.
 			navigateDfd.resolve();
 
 
 			if (err) {
-				// The page can elect to proceed to render
-				// even with a non-2xx response.  If it
-				// _doesn't_ do so then we're done.
 				var done = !(page && page.getHasDocument());
 
 				if (err.status === 301 || err.status === 302 || err.status === 307) {
 					if (done){
-						// This adds a boilerplate body.
 						res.redirect(err.status, err.redirectUrl);
 					} else {
-						// This expects our page to
-						// render a body.  Hope they
-						// know what they're doing.
 						res.set('Location', err.redirectUrl);
 					}
 				} else if (done) {
@@ -131,10 +106,8 @@ module.exports = function(req, res, next, routes) {
 
 		const timeout = setTimeout(navigateDfd.reject, FAILSAFE_ROUTER_TIMEOUT);
 
-		// Don't leave dead timers hanging around.
 		navigateDfd.promise.then(() => clearTimeout(timeout));
 
-		// If we fail to navigate, we'll throw a 500 and move on.
 		navigateDfd.promise.catch(() => {
 			logger.error("Failed to navigate after FAILSAFE_ROUTER_TIMEOUT", {
 				page: context.navigator.getCurrentRoute().name,
@@ -164,16 +137,7 @@ function handleResponseComplete(req, res, context, start, page) {
 
 	RLS().responseCompletePromise.then(RequestLocalStorage.bind(() => {
 
-		// All intentional response completion should funnel through
-		// this function.  If this value starts climbing gradually
-		// that's an indication that we have some _unintentional_
-		// response completion going on that we should deal with.
 		ACTIVE_REQUESTS--;
-
-		// Note that if the navigator couldn't even map the request to
-		// a page, we won't be able to call middleware
-		// `handleComplete()` here.
-		//
 		if (page) {
 			logRequestStats(req, res, context, start, page);
 
@@ -190,18 +154,12 @@ function renderPage(req, res, context, start, page) {
 
 	var timer = logger.timer("lifecycle.individual");
 
-	// Protects some browsers (Chrome, IE) against MIME sniffing attacks.
-	// see: http://security.stackexchange.com/a/12916
 	res.set('X-Content-Type-Options', 'nosniff');
 
 	res.status(page.getStatus()||200);
 
-	// Handy to have random access to this rather than needing to thread it
-	// through everywhere.
 	RLS().page = page;
 
-	// Each of these functions has the same signature and returns a
-	// promise, so we can chain them up with a promise reduction.
 	var lifecycleMethods;
 	if (PageUtil.PageConfig.get('isFragment')){
 		lifecycleMethods = fragmentLifecycle();
@@ -222,20 +180,16 @@ function renderPage(req, res, context, start, page) {
 	).catch(err => {
 		logger.error("Error in renderPage chain", err)
 
-		// Register `finish` listener before ending response.
 		handleResponseComplete(req, res, context, start, page);
 
-		// Bummer.
 		res.status(500).end();
 	});
 
-	// TODO: we probably want a "we're not waiting any longer for this"
-	// timeout as well, and cancel the waiting deferreds
 }
 
 function rawResponseLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
+		Q(), 
 		setHttpHeaders,
 		setContentType,
 		writeResponseData,
@@ -246,7 +200,7 @@ function rawResponseLifecycle () {
 
 function fragmentLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
+		Q(), 
 		setHttpHeaders,
 		writeDebugComments,
 		writeBody,
@@ -257,7 +211,7 @@ function fragmentLifecycle () {
 
 function dataBundleLifecycle () {
 	return [
-		Q(), // NOOP lead-in to prime the reduction
+		Q(),
 		setDataBundleContentType,
 		writeDataBundle,
 		handleResponseComplete,
@@ -284,8 +238,6 @@ function setDataBundleContentType(req, res) {
 }
 
 function setHttpHeaders(req, res, context, start, pageObject) {
-	// Write out custom page-defined http headers. Headers may be overwritten later on in the render chain
-	// (e.g. transfer encoding, content type)
 	const handler = header => res.set(header[0], header[1]);
 
 	return Q(pageObject.getHeaders()).then(headers => headers.forEach(handler));
@@ -296,12 +248,6 @@ function setContentType(req, res, context, start, pageObject) {
 }
 
 function writeHeader(req, res, context, start, pageObject) {
-	// This is awkward and imprecise.  We don't want to put `<script>`
-	// tags between divs above the fold, so we're going to keep separate
-	// track of time client and server side. Then we'll put `<noscript>`
-	// tags with data elements representing offset from our _server_ base
-	// time that we'll apply to our _client_ base time as a proxy for when
-	// the element arrived (when it's actually when we _sent_ it).
 	RLS().timingDataT0 = new Date;
 
 	res.type('html');
@@ -309,13 +255,9 @@ function writeHeader(req, res, context, start, pageObject) {
 
 	res.write('<!DOCTYPE html><html lang="en"><head>');
 
-	// note: these responses can currently come back out-of-order, as many are returning
-	// promises. scripts and stylesheets are guaranteed
 	return Q.all([
 		renderDebugComments(pageObject, res),
 		renderTitle(pageObject, res),
-		// PLAT-602: inline scripts come before stylesheets because
-		// stylesheet downloads block inline script execution.
 		(pageObject.getJsBelowTheFold() && !pageObject.getSplitJsLoad())
 			? Q()
 			: renderScripts(pageObject, res),
@@ -326,19 +268,14 @@ function writeHeader(req, res, context, start, pageObject) {
 				renderBaseTag(pageObject, res),
 			])),
 	]).then(() => {
-		// once we have finished rendering all of the pieces of the head element, we
-		// can close the head and start the body element.
 		res.write(`</head>`);
 
-		// Get headers out right away so secondary resource download can start.
 		flushRes(res);
 	});
 }
 
 function flushRes(res){
 
-	// This method is only defined on the response object if the compress
-	// middleware is installed, so we need to guard our calls.
 	if (res.flush) {
 		res.flush()
 		if (!RLS().didLogFirstFlush){
@@ -358,7 +295,6 @@ function renderDebugComments (pageObject, res) {
 		res.write(`<!-- ${debugComment.label}: ${debugComment.value} -->`);
 	});
 
-	// resolve immediately.
 	return Q("");
 }
 
@@ -452,10 +388,7 @@ function renderBaseTag(pageObject, res) {
 
 function renderScriptsSync(scripts, res) {
 
-	// right now, the getXXXScriptFiles methods return synchronously, no promises, so we can render
-	// immediately.
 	scripts.forEach( (script) => {
-		// make sure there's a leading '/'
 		if (!script.type) script.type = "text/javascript";
 
 		if (script.href) {
@@ -470,26 +403,13 @@ function renderScriptsSync(scripts, res) {
 
 function renderScriptsAsync(scripts, res) {
 
-	// Nothing to do if there are no scripts.
 	if (!scripts.length) return;
 
-	// Don't need "type" in <script> tags anymore.
-	//
-	// http://www.w3.org/TR/html/scripting-1.html#the-script-element
-	//
-	// > The default, which is used if the attribute is absent, is "text/javascript".
-	//
 	res.write("<script>");
-
-	// Lazily load LAB the first time we spit out async scripts.
 	if (!RLS().didLoadLAB){
 
 		const globalDefaults = {AlwaysPreserveOrder:true};
 
-		// The "cache-preloading" option in stock LABjs doesn't work in modern
-		// Chrome. If you're configured for splitJsLoad then you'd better have
-		// xhr access to your scripts!  They need to either be on the same
-		// domain or have CORS headers.
 		if (RLS().page.getSplitJsLoad()) {
 			globalDefaults.UseCORSXHR = true;
 		}

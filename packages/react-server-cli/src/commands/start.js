@@ -18,23 +18,16 @@ import fs from 'fs';
 
 const logger = reactServer.logging.getLogger(__LOGGER__);
 
-// returns a method that can be used to stop the server. the returned method
-// returns a promise to indicate when the server is actually stopped.
 const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
 
 	const sockets = [];
 
-	// If we're testing then we want to be able to bail out quickly.  Zombie
-	// (the test browser) makes keepalive connections to our static asset
-	// server, and we don't need to be polite to it when we're tearing down.
-	if (process.env.NODE_ENV === "test") { // eslint-disable-line no-process-env
 		httpServer.on('connection', socket => sockets.push(socket));
 	}
 
 	return () => {
 		return new Promise((resolve, reject) => {
 
-			// This will only have anything if we're testing.  See above.
 			sockets.forEach(socket => socket.destroy());
 
 			if (webpackDevMiddlewareInstance) {
@@ -59,10 +52,6 @@ const serverToStopPromise = (httpServer, webpackDevMiddlewareInstance) => {
 	};
 };
 
-
-// given the server routes file and a port, start a react-server server at
-// http://host:port/. returns an object with two properties, started and stop;
-// see the default function doc for explanation.
 const startServer = (serverRoutes, options, compiler, config) => {
 	const {
 		port,
@@ -93,7 +82,6 @@ const startServer = (serverRoutes, options, compiler, config) => {
 			path: '/__react_server_hmr__',
 		}));
 	} else {
-		// Only compile the webpack configs manually if we're not in hot mode
 		if (compiler) {
 			logger.notice("Compiling Webpack bundle prior to starting server");
 			compiler.run((err, stats) => {
@@ -127,11 +115,9 @@ const startServer = (serverRoutes, options, compiler, config) => {
 
 					expressState.extend(server);
 
-					// parse cookies into req.cookies property
 					server.use(cookieParser());
 
-					// sets the namespace that data will be exposed into client-side
-					// TODO: express-state doesn't do much for us until we're using a templating library
+				
 					server.set('state namespace', '__reactServerState');
 
 					server.use((req, res, next) => {
@@ -171,10 +157,6 @@ const startServer = (serverRoutes, options, compiler, config) => {
 };
 
 
-// if used to start a server, returns an object with two properties, started and
-// stop. started is a promise that resolves when the server has been
-// started. stop is a method to stop the server. It takes no arguments and
-// returns a promise that resolves when the server has stopped.
 export default function start(options) {
 	setupLogging(options);
 	logProductionWarnings(options);
@@ -198,18 +180,12 @@ export default function start(options) {
 				if (err) {
 					reject("You must manually compile your application when compileOnStartup is set to false.");
 				} else {
-					// We need to replace the promise returned by the compiler with an already-resolved promise with the path
-					// of the compiled routes file.
 					resolve(routesFileLocation);
 				}
 			});
 		});
 
-		// it is safe to ignore setting the compiler and config variables
 	} else {
-		// ES6 destructuring without a preceding `let` or `const` results in a syntax error.  Therefore, the below
-		// statement must be wrapped in parentheses to work properly.
-		// http://exploringjs.com/es6/ch_destructuring.html#sec_leading-curly-brace-destructuring
 		({serverRoutes, compiler, config} = compileClient(options));
 	}
 

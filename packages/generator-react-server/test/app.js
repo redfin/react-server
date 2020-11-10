@@ -1,10 +1,10 @@
-//import cp from 'child_process';
+
 import fs from 'fs';
 import path from 'path';
 import test from 'ava';
 import helpers from 'yeoman-test';
 import { defaultOptions } from 'react-server-cli';
-//import shellescape from 'shell-escape';
+
 
 test('generator-react-server:app creates default files', async t => {
 	let testDir;
@@ -76,31 +76,6 @@ test('generator-react-server:app creates docker files', async t => {
 	t.true(await exists('docker-compose.yml', testDir));
 });
 
-/*
-// TODO: fix this test.
-// This test is disabled for the time being because it continuously fails.  Because we're trying to
-// install react-server, react-server-cli, and babel-preset-react-server using the local versions
-// and those each have modules hoisted to the parent directory, the npm install always fails.
-// This needs to be reworked to support installing the local version of those packages with non-hoisted
-// dependencies.
-test('generator-react-server:app passes the test target', async t => {
-	let testDir;
-	console.log("Running generator...");
-	await helpers.run(path.join(__dirname, '../generators/app'))
-		.inTmpDir(dir => {
-			testDir = dir;
-		})
-		.withPrompts({name: 'foo', dockerCfg: false})
-		.toPromise();
-
-	console.log("Installing dependencies...");
-	await installDeps();
-	console.log("Running ./generators/app/test.js");
-	let testServerResult = await runsSuccessfully('npm test', testDir);
-	console.error("SERVER TEST RESULT: " + testServerResult);
-	t.falsy(testServerResult);
-});
- */
 
 function exists(filename, dir) {
 	filename = path.join(dir, filename);
@@ -123,40 +98,3 @@ function readFile(filename, dir) {
 	});
 }
 
-/*
-// Disabled until the last test is restored.
-function runsSuccessfully(command, dir) {
-	return new Promise((resolve) => {
-		cp.exec(command, {
-			cwd: dir,
-		}, (error, stdout, stderr) => {
-			if (error) {
-				console.log(stdout);
-				console.error(error);
-				console.error(stderr);
-			}
-			resolve(error);
-		});
-	});
-}
-
-function installDeps() {
-	return new Promise((resolve, reject) => {
-		cp.exec('npm install', (error) => {
-			if (error) {
-				reject(error);
-			} else {
-				const localDeps = ['react-server-cli', 'react-server', 'babel-preset-react-server']
-					.map(dep => path.resolve(path.join(__dirname, '../..', dep)));
-				cp.exec(shellescape(['npm', 'install'].concat(localDeps)), (error) => {
-					if (error) {
-						reject(error);
-					} else {
-						resolve();
-					}
-				});
-			}
-		});
-	});
-}
- */
