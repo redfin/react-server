@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+	<head>
+		<title>react-server Timeline</title>
+		<style>
+			body {
+				font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+				margin: 0px;
+			}
+			.content {
+				height: 100%;
+				width: 750px;
+				padding: 0 10px;
+			}
+			#header {
+				display: inline-block;
+			}
+			button {
+				margin: 10px;
+			}
+			.headerContent {
+				width: 100%;
+				position: fixed;
+				z-index: 100;
+				background: white;
+				padding: 0 8px;
+			}
+			.bodyContent {
+				padding: 60px 8px 0 8px;
+			}
+		</style>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/highcharts-more.js"></script>
+		<script src="popup.js"></script>
+	</head>
+	<body>
+		<div class="content">
+			<div class="headerContent">
+				<h1 id="header">Timeline (react-server)</h1>
+				<button id="mobileMode">Mobile</button>
+				<button id="desktopMode">Desktop</button>
+			</div>
+			<div class="bodyContent">
+				<div id="status">Loading....</div>
+				<div id="timeline"></div>
+			</div>
+		</div>
+	</body>
+</html>

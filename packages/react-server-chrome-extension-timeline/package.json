@@ -1,0 +1,15 @@
+{
+  "name": "react-server-chrome-extension-timeline",
+  "version": "1.0.0",
+  "description": "This extension will display the timeline for react-server applications",
+  "main": "popup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "waterfall",
+    "extension"
+  ],
+  "author": "Bharath Rengarajan",
+  "license": "Apache-2.0"
+}

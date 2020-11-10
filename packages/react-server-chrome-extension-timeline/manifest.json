@@ -1,0 +1,21 @@
+{
+	"manifest_version": 2,
+
+	"name": "react-server Timeline",
+	"description": "This extension will display the timeline for react-server applications",
+	"version": "1.0",
+
+	"browser_action": {
+		"default_icon": "timelineIcon.png",
+		"default_popup": "popup.html",
+		"default_title": "Generate react-server Timeline"
+	},
+	"permissions": [
+		"tabs",
+		"activeTab",
+		"webRequest",
+		"webRequestBlocking",
+		"https://code.highcharts.com/"
+	 ],
+	"content_security_policy": "script-src 'unsafe-eval' https://code.highcharts.com/; object-src 'unsafe-eval'"
+}
