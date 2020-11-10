@@ -15,6 +15,9 @@ export function getNetworks(req, res) {
 		})
 		.catch(err => {
 			res.status(500).send(err);
+		})
+		.catch(err=> {
+			res.status(404).send(err);
 		});
 }
 
@@ -30,5 +33,6 @@ export function getNetwork(req, res) {
 		})
 		.catch(err => {
 			res.status(500).send(err);
+			res.status(404).send(err);
 		});
 }
