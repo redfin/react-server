@@ -22,7 +22,8 @@ function Request(method, urlPath, cache) {
 	this._headers = {};
 	this._timeout = null;
 	this._type = "json"; // superagent's default, only for POST/PUT/PATCH methods
-
+	// CORS off by default
+	this._withCredentials = false;
 	// public field
 	this.aborted = undefined; //default to undefined
 }
@@ -122,6 +123,15 @@ Request.prototype.toJSON = function(){
 		urlPath: this._urlPath,
 	};
 }
+
+// Enable CORS
+Request.prototype.withCredentials = function (on) {
+	if (on === undefined) {
+		on = true;
+	}
+	this._withCredentials = on;
+	return this;
+};
 
 /**
  * Wrap superagent's end() method to create an entry in a request-local
@@ -234,6 +244,11 @@ function buildSuperagentRequest() {
 		} else {
 			throw new Error(`ReactServerAgent.type("form-data") not allowed server-side`);
 		}
+	}
+
+	//Set CORS flag
+	if (this._withCredentials) {
+		req.withCredentials(this._withCredentials);
 	}
 
 	// query parameters exist if there are more than one set
