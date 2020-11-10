@@ -41,9 +41,6 @@ class Link extends React.Component {
 
 	_onClick(e) {
 
-		// TODO: IE8-9 detection
-
-		// TODO: if OSX && key.isMeta?
 		if (!e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -56,7 +53,7 @@ class Link extends React.Component {
 				this.props.onClick(e);
 			}
 		} else {
-			// do normal browser navigate
+			
 		}
 	}
 }
