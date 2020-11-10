@@ -13,7 +13,7 @@ describe("renderMiddleware", () => {
 
 	describe("null values", () => {
 		beforeAll(() => {
-			page = PageUtil.createPageChain([new NullValuesPage()]);
+			page = PageUtil.createPageChain(NullValuesPage);
 		});
 
 		beforeEach(() => {
@@ -51,7 +51,7 @@ describe("renderMiddleware", () => {
 
 	describe("promises with null values", () => {
 		beforeAll(() => {
-			page = PageUtil.createPageChain([new NullValuePromisesPage()]);
+			page = PageUtil.createPageChain(NullValuePromisesPage);
 		});
 
 		beforeEach(() => {
@@ -89,7 +89,7 @@ describe("renderMiddleware", () => {
 
 	describe("good values", () => {
 		beforeAll(() => {
-			page = PageUtil.createPageChain([new NormalValuesPage()]);
+			page = PageUtil.createPageChain(NormalValuesPage);
 		});
 
 		beforeEach(() => {

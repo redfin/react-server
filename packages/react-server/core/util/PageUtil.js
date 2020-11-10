@@ -145,6 +145,15 @@ var PAGE_METHODS = {
 	getResponseData    : [() => "", Q],
 };
 
+// Apply the standardization functions to each default implementation.
+Object.keys(PAGE_METHODS).forEach(method => {
+	var [defaultImpl, standardize] = PAGE_METHODS[method];
+	var standardizedDefaultImpl = function() {
+		return standardize(defaultImpl.apply(this, arguments));
+	}
+	PAGE_METHODS[method] = [standardizedDefaultImpl, standardize];
+});
+
 // These are similar to `PAGE_METHODS`, but differ as follows:
 //
 //   - They are not chained.
@@ -214,26 +223,6 @@ function makeSetter(key){
 	return val => {
 		(RLS().mixinValues||(RLS().mixinValues={}))[key] = val;
 	}
-}
-
-// This attaches `PAGE_MIXIN` methods to page/middleware classes.
-//
-// It does this only _once_, and thereafter short-circuits.
-//
-function lazyMixinPageUtilMethods(page){
-	var proto = Object.getPrototypeOf(page);
-	if (proto._haveMixedInPageUtilMethods) return;
-
-	proto._haveMixedInPageUtilMethods = true;
-
-	Object.keys(PAGE_MIXIN).forEach(method => {
-		if (proto[method]){
-			throw new Error(`PAGE_MIXINS method override: ${
-				(proto.constructor||{}).name
-			}.${method}`);
-		}
-		proto[method] = PAGE_MIXIN[method];
-	});
 }
 
 // These `standardize*` functions show what will happen to the output of your
@@ -318,19 +307,65 @@ function logInvocation(name, func){
 	}
 }
 
-// Return `fn` with a wrapper that puts its return value through `standardize`
-// on the way out.
-function makeStandard(standardize, fn){
-	return function(){
-		return standardize(fn.apply(null, [].slice.call(arguments)));
-	}
-}
-
 function makeArray(valueOrArray) {
 	if (!Array.isArray(valueOrArray)) {
 		return [valueOrArray];
 	}
 	return valueOrArray;
+}
+
+/**
+ * recursively adds the middleware in the pages array to array.
+ */
+function addPageMiddlewareToArray(pages, array) {
+	if (!pages) return;
+
+	pages.forEach((page) => {
+
+		if (Object.getOwnPropertyNames(page).length === 0) {
+			throw new Error("Tried to instantiate a page or middleware class that was an empty object. Did you forget to assign a class to module.exports?");
+		}
+
+		if (page.middleware) {
+			addPageMiddlewareToArray(page.middleware(), array);
+		}
+
+		prepPageForUse(page);
+
+		array.push(page);
+	});
+}
+
+function prepPageForUse(page) {
+
+	// Hack around es6 classes.
+	var proto = Object.getPrototypeOf(new page);
+
+	// We may have already hit this middleware.
+	if (!proto._reactServerHasAugmented) {
+
+		proto._reactServerHasAugmented = true;
+
+		// Mix in the methods that the page will be able to call on itself.
+		Object.keys(PAGE_MIXIN).forEach(method => {
+
+			if (proto[method]) {
+				throw new Error(`PAGE_MIXINS method override: ${page.name}.${method}`);
+			}
+			proto[method] = PAGE_MIXIN[method];
+		});
+
+		Object.keys(PAGE_METHODS).forEach(method => {
+			var orig = proto[method];
+			if (orig) {
+				var standardize = PAGE_METHODS[method][1];
+
+				proto[method] = function() {
+					return standardize(orig.apply(this, arguments));
+				}
+			}
+		});
+	}
 }
 
 var PageUtil = {
@@ -350,7 +385,19 @@ var PageUtil = {
 	//   - PAGE_METHODS
 	//   - PAGE_HOOKS
 	//
-	createPageChain(pages) {
+	createPageChain(pageConstructor, globalMiddleware) {
+
+		// instantiate the pages we need to fulfill this request.
+		var classes = pageConstructor.__rsClasses || (pageConstructor.__rsClasses = []);
+
+		if (!classes.length) {
+
+			addPageMiddlewareToArray(globalMiddleware, classes);
+			addPageMiddlewareToArray([pageConstructor], classes);
+		}
+
+		var pages = classes.map(Page => new Page);
+
 		/* eslint-disable no-loop-func */
 
 		// This will be our return value.
@@ -360,16 +407,12 @@ var PageUtil = {
 		//
 		var pageChain = Object.create(PAGE_CHAIN_PROTOTYPE);
 
-		// Make sure all page classes have been augmented with the
-		// methods provided by `PAGE_MIXIN`.
-		pages.forEach(lazyMixinPageUtilMethods);
-
 		// Wire up the chained methods.
 		for (var method in PAGE_METHODS){
 
 			if (!PAGE_METHODS.hasOwnProperty(method)) continue;
 
-			var [defaultImpl, standardize] = PAGE_METHODS[method];
+			var [defaultImpl] = PAGE_METHODS[method];
 
 			// Take bound methods for each page/middleware that
 			// implements (plus the default implementation), and
@@ -385,7 +428,6 @@ var PageUtil = {
 				.filter      (page => page[method])
 				.map         (page => page[method].bind(page))
 				.concat      ([defaultImpl])
-				.map         (makeStandard.bind(null, standardize))
 				.reduceRight ((next, cur) => cur.bind(null, next))
 			);
 		}
